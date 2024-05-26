@@ -2,6 +2,14 @@ import awkward as ak
 from coffea.analysis_tools import PackedSelection
 
 def createSelection(events):
+    """Baseline selection for the analysis.
+        Applies the following selection:
+            - 2 leptons
+            - 2 <= nJets
+            - leptons[0].pt > 60
+            - mlljj > 800t
+            - flavor selections
+    """
 
     good_elecs = events.good_elecs
     good_muons = events.good_muons

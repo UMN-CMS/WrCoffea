@@ -1,0 +1,8 @@
+- name: TTTo2L2Nu2018.yaml
+  mc_campaign: 2018UL
+  x_sec: 88
+  n_events: 145020000
+  lumi: 59.78
+  files:
+    - root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL18NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/130000/0804DEBA-97D5-BE46-BB9D-B1125570966E.root
+    - root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL18NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/130000/10671CD1-1127-0842-AE7F-AF20DA985C45.root
