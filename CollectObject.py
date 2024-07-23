@@ -32,3 +32,31 @@ class CollectObject:
             self.CreateMask(variable, cut)
         return self.objects[self.mask]
 
+    def Muon(self, cuts):
+        self.objects = self.events["Muon"]
+        self.mask = ak.ones_like(self.objects["pt"], dtype=bool)
+        for variable, cut in cuts.items():
+            self.CreateMask(variable, cut)
+        return self.objects[self.mask]
+
+    def Tau(self, cuts):
+        self.objects = self.events["Tau"]
+        self.mask = ak.ones_like(self.objects["pt"], dtype=bool)
+        for variable, cut in cuts.items():
+            self.CreateMask(variable, cut)
+        return self.objects[self.mask]
+
+    def Jet(self, cuts):
+        self.objects = self.events["Jet"]
+        self.mask = ak.ones_like(self.objects["pt"], dtype=bool)
+        for variable, cut in cuts.items():
+            self.CreateMask(variable, cut)
+        return self.objects[self.mask]
+
+    def FatJet(self, cuts):
+        self.objects = self.events["FatJet"]
+        self.mask = ak.ones_like(self.objects["pt"], dtype=bool)
+        for variable, cut in cuts.items():
+            self.CreateMask(variable, cut)
+        return self.objects[self.mask]
+
