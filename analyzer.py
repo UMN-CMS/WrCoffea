@@ -9,6 +9,7 @@ import hist
 import dask.array as da
 import dask_awkward as dak
 from coffea.analysis_tools import PackedSelection
+from CollectObject import CollectObject
 import time
 import re
 
@@ -175,8 +176,15 @@ class WrAnalysis(processor.ProcessorABC):
         # OBJECT SELECTION #
         ####################
 
-        # muon and electron selections are broken out into standalone functions
-        tightElectrons, looseElectrons = selectElectrons(events)
+        coll = CollectObject(events)
+        tightElectrons = coll.Electron({
+            "pt" : (">", 53),
+            "eta" : ("<", 2.4),
+        })
+        looseElectrons = coll.Electron({
+            "pt" : (">", 53),
+            "eta" : ("<", 2.4),
+        })
         nTightElectrons = ak.num(tightElectrons)
 
         tightMuons, looseMuons = selectMuons(events)
