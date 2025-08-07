@@ -217,6 +217,20 @@ class WrAnalysis(processor.ProcessorABC):
                 hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jj}'),
                 hist.storage.Weight(),
             ),
+            'WRMass4_restDeltaR':dah.hist.Hist(
+                hist.axis.StrCategory([], name="process", label="Process", growth=True),
+                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+                hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
+                hist.storage.Weight(),
+            ),
+            'WRMass5_restDeltaR':dah.hist.Hist(
+                hist.axis.StrCategory([], name="process", label="Process", growth=True),
+                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+                hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
+                hist.storage.Weight(),
+            ),
         }
 
     def create_hist(self, name, process, region, bins, label):
@@ -503,10 +517,11 @@ class WrAnalysis(processor.ProcessorABC):
             output['WRMass5_pseudo3'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjjj,weight=weights.weight()[cut])
             output['WRMass4_pseudo'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomass=mjj,weight=weights.weight()[cut])
             output['WRMass5_pseudo'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjj,weight=weights.weight()[cut])
-
-        """ with open('output.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(writestring) """
+        
+            wrcand=(tightLeptons[cut][:, 0] + tightLeptons[cut][:, 1] + AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).boostvec
+            restdr_j3_min = ak.min(AK4Jets[cut][:,2].boost(-wrcand).delta_r(AK4Jets[cut][:,:2].boost(-wrcand)),axis=1)
+            output['WRMass4_restDeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=restdr_j3_min,weight=weights.weight()[cut])
+            output['WRMass5_restDeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=restdr_j3_min,weight=weights.weight()[cut])
 
         output["weightStats"] = weights.weightStatistics
         return output

@@ -43,6 +43,7 @@ class WrAnalysis(processor.ProcessorABC):
             'NCand_Lepton_1_Pt': self.create_hist('pt_threeobject_subleadlep', 'process', 'region', (800, 0, 8000), r'p^{T}_{ljj} [GeV]'),
             'WRCand_Mass': self.create_hist('mass_fourobject', 'process', 'region', (800, 0, 8000), r'm_{lljj} [GeV]'),
             'WRCand_Pt': self.create_hist('pt_fourobject', 'process', 'region', (800, 0, 8000), r'p^{T}_{lljj} [GeV]'),
+            'mass_WR': self.create_hist('mass_WR','process','region', (100, 0,8000), r'$m_{W_R}$ [GeV]'),
         }
 
     def create_hist(self, name, process, region, bins, label):
@@ -68,10 +69,10 @@ class WrAnalysis(processor.ProcessorABC):
 
     def selectJets(self, events):
         """Select AK4 and AK8 jets."""
-        ak4_jets = (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
+#        ak4_jets = (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
 
         # Usual Requirement
-#        ak4_jets = (events.Jet.pt > 40) & (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
+        ak4_jets = (events.Jet.pt > 40) & (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
         return events.Jet[ak4_jets]
 
     def check_mass_point_resolved(self):
@@ -246,9 +247,28 @@ class WrAnalysis(processor.ProcessorABC):
         # Fill histogram
         for region, cuts in regions.items():
             cut = selections.all(*cuts)
-            """ count = ak.num(tightLeptons[cut][:, 1].mass,axis=0).compute()
-            print(count) """
             self.fill_basic_histograms(output, region, cut, process, AK4Jets, tightLeptons, weights)
+            if process == "Signal":
+                wr_pdg_id = 34
+                gen = events.GenPart
+
+                # boolean jagged mask: [nEvents][nGenPart] 
+                is_wr = abs(gen.pdgId) == wr_pdg_id
+
+                # 1) broadcast your 1D event-weights to the same shape as gen.mass
+                weights_arr       = weights.weight()                               # [nEvents]
+                weights_per_part, _ = ak.broadcast_arrays(weights_arr, gen.mass)   # both now [nEvents][nGenPart]
+
+                # 2) mask & flatten masses and weights
+                wr_masses  = ak.flatten(gen.mass[is_wr])         
+                wr_weights = ak.flatten(weights_per_part[is_wr])
+
+                output['mass_WR'].fill(
+                    process = process,
+                    region  = "gen",         # or whatever label you like
+                    mass_WR = wr_masses,
+                    weight  = wr_weights
+                )
 
         output["weightStats"] = weights.weightStatistics
         return output
