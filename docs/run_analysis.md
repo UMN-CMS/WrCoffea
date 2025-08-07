@@ -102,19 +102,3 @@ Similar to above, one can also specifcy `--dir` and `--name` to save files to sp
 ```
 ./bin/analyze_all.sh bkg RunIISummer20UL18 --dir 3jets --name dr1p5
 ```
-<<<<<<< HEAD
-
-## Preprocessing
-To preprocess the background datasets (needs to be done if a file in `configs/` is updated),
-```
-python3 scripts/make_skimmed_json.py RunIISummer20UL18 mc --umn
-```
-where `RunIISummer20UL18` can be replaced with `Run3Summer22` to preprocess Run3 datasets and `mc` can be replaced with `signal` or `data`.
-
-Signal samples can be preprocessed with,
-```
-python3 scripts/make_skimmed_json.py Run2Autumn18 sig --umn
-```
-
-=======
->>>>>>> e14a0a6563e6ced4c1759db3419d604b40e9c814
