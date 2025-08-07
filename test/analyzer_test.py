@@ -19,10 +19,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class WrAnalysis(processor.ProcessorABC):
-    def __init__(self, mass_point=None,exclusive=False, sf_file=None):
+    def __init__(self, mass_point, sf_file=None):
         self._signal_sample = mass_point
-        self.exc=exclusive
-        
+
         self.make_output = lambda: {
             'pt_leading_lepton':        self.create_hist('pt_leadlep',        'process', 'region', (200,   0, 2000), r'$p_{T}$ of the leading lepton [GeV]'),
             'eta_leading_lepton':       self.create_hist('eta_leadlep',       'process', 'region', (60,   -3,    3), r'$\eta$ of the leading lepton'),
@@ -97,9 +96,6 @@ class WrAnalysis(processor.ProcessorABC):
 
     def selectJets(self, events):
         """Select AK4 and AK8 jets."""
-#        ak4_jets = (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
-
-        # Usual Requirement
         ak4_jets = (events.Jet.pt > 40) & (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
         return events.Jet[ak4_jets]
 
@@ -123,10 +119,7 @@ class WrAnalysis(processor.ProcessorABC):
 
     def add_resolved_selections(self, selections, tightElectrons, tightMuons, AK4Jets, mlljj, dr_jl_min, dr_j1j2, dr_l1l2):
         selections.add("twoTightLeptons", (ak.num(tightElectrons) + ak.num(tightMuons)) == 2)
-        if self.exc:
-            selections.add("minTwoAK4Jets", ak.num(AK4Jets) == 2)
-        else:
-            selections.add("minTwoAK4Jets", ak.num(AK4Jets) >= 2)
+        selections.add("minTwoAK4Jets", ak.num(AK4Jets) >= 2)
         selections.add("leadTightLeptonPt60", (ak.any(tightElectrons.pt > 60, axis=1) | ak.any(tightMuons.pt > 60, axis=1)))
         selections.add("mlljj>800", mlljj > 800)
         selections.add("dr>0.4", (dr_jl_min > 0.4) & (dr_j1j2 > 0.4) & (dr_l1l2 > 0.4))
@@ -301,28 +294,7 @@ class WrAnalysis(processor.ProcessorABC):
         # Fill histogram
         for region, cuts in regions.items():
             cut = selections.all(*cuts)
-            self.fill_basic_histograms(output, region, cut, process, AK4Jets, tightLeptons, weights)
-            # if process == "Signal":
-            #     wr_pdg_id = 34
-            #     gen = events.GenPart
-
-            #     # boolean jagged mask: [nEvents][nGenPart] 
-            #     is_wr = abs(gen.pdgId) == wr_pdg_id
-
-            #     # 1) broadcast your 1D event-weights to the same shape as gen.mass
-            #     weights_arr       = weights.weight()                               # [nEvents]
-            #     weights_per_part, _ = ak.broadcast_arrays(weights_arr, gen.mass)   # both now [nEvents][nGenPart]
-
-            #     # 2) mask & flatten masses and weights
-            #     wr_masses  = ak.flatten(gen.mass[is_wr])         
-            #     wr_weights = ak.flatten(weights_per_part[is_wr])
-
-            #     output['mass_WR'].fill(
-            #         process = process,
-            #         region  = "gen",         # or whatever label you like
-            #         mass_WR = wr_masses,
-            #         weight  = wr_weights
-            #     )
+            self.fill_basic_histograms(output, region, cut, process, AK4Jets, tightLeptons, weights,)
 
         output["weightStats"] = weights.weightStatistics
         return output

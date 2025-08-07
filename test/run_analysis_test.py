@@ -17,7 +17,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../python`')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from analyzer_3j import WrAnalysis as WrAnalysis_3j
 from analyzer import WrAnalysis
 from dask.distributed import Client
 from dask.diagnostics import ProgressBar
@@ -76,13 +75,8 @@ def validate_arguments(args, sig_points):
 
 def run_analysis(args, filtered_fileset):
     to_compute = apply_to_fileset(
-<<<<<<< HEAD
-        data_manipulation=WrAnalysis(mass_point=args.mass,exclusive=args.exc) if args.dir!="3jets" else WrAnalysis_3j(mass_point=args.mass,exclusive=args.exc),
-        fileset=max_files(max_chunks(filtered_fileset,)),
-=======
         data_manipulation=WrAnalysis(mass_point=args.mass, sf_file=args.reweight),
         fileset=max_files(max_chunks(filtered_fileset,),),
->>>>>>> e14a0a6563e6ced4c1759db3419d604b40e9c814
         schemaclass=NanoAODSchema,
 #        uproot_options={"handler": uproot.MultiThreadedXRootDSource, "timeout": 60}
     )
@@ -103,11 +97,7 @@ if __name__ == "__main__":
     optional.add_argument("--dir", type=str, default=None, help="Create a new output directory.")
     optional.add_argument("--name", type=str, default=None, help="Append the filenames of the output ROOT files.")
     optional.add_argument("--debug", action='store_true', help="Debug mode (don't compute histograms)")
-<<<<<<< HEAD
-    optional.add_argument("--exc",default=False, action='store_true', help="Exclusively 2 or 3 Jets")
-=======
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
->>>>>>> e14a0a6563e6ced4c1759db3419d604b40e9c814
     args = parser.parse_args()
 
     signal_points = Path(f'data/{args.era}_mass_points.csv')

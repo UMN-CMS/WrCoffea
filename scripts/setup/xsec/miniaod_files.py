@@ -77,6 +77,7 @@ if __name__ == "__main__":
         "era",
         type=str,
         choices=[
+            "RunIISpring16",
             "RunIIAutumn18", "RunIISummer20UL16", "RunIISummer20UL17", "RunIISummer20UL18",
             "Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix"
         ],

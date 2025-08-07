@@ -6,7 +6,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 208.977,
+        "xsec": 140.0,
         "datatype": "mc"
     },
     "/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -16,7 +16,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 181.3,
+        "xsec": 139.2,
         "datatype": "mc"
     },
     "/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -26,7 +26,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 50.4177,
+        "xsec": 38.4,
         "datatype": "mc"
     },
     "/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -36,7 +36,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 6.98394,
+        "xsec": 5.174,
         "datatype": "mc"
     },
     "/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -46,7 +46,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 1.68141,
+        "xsec": 1.258,
         "datatype": "mc"
     },
     "/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -56,7 +56,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 0.775392,
+        "xsec": 0.5598,
         "datatype": "mc"
     },
     "/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -66,7 +66,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 0.186222,
+        "xsec": 0.1305,
         "datatype": "mc"
     },
     "/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -76,7 +76,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
         "physics_group": "DYJets",
-        "xsec": 0.00438495,
+        "xsec": 0.002997,
         "datatype": "mc"
     },
     "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -86,7 +86,7 @@
         "era": "RunIISummer20UL18",
         "dataset": "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8",
         "physics_group": "TTbar",
-        "xsec": 88.29,
+        "xsec": 88.56,
         "datatype": "mc"
     },
     "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
@@ -95,7 +95,7 @@
         "year": "2018",
         "era": "RunIISummer20UL18",
         "dataset": "ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8",
-        "physics_group": "tW",
+        "physics_group": "TW",
         "xsec": 19.2,
         "datatype": "mc"
     },
@@ -105,7 +105,7 @@
         "year": "2018",
         "era": "RunIISummer20UL18",
         "dataset": "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8",
-        "physics_group": "tW",
+        "physics_group": "TW",
         "xsec": 19.2,
         "datatype": "mc"
     },
@@ -235,7 +235,7 @@
         "year": "2018",
         "era": "RunIISummer20UL18",
         "dataset": "ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8",
-        "physics_group": "TTX",
+        "physics_group": "TTV",
         "xsec": 0.5407,
         "datatype": "mc"
     },
@@ -245,7 +245,7 @@
         "year": "2018",
         "era": "RunIISummer20UL18",
         "dataset": "ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8",
-        "physics_group": "TTX",
+        "physics_group": "TTV",
         "xsec": 0.4611,
         "datatype": "mc"
     },

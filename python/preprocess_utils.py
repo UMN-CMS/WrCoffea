@@ -6,6 +6,7 @@ import difflib
 
 # Mapping of eras to dataset paths
 ERA_MAPPING = {
+    "RunIISpring16": {"run": "RunII", "year": "2016"},
     "RunIIAutumn18": {"run": "RunII", "year": "2018"},
     "RunIISummer20UL16": {"run": "RunII", "year": "2016"},
     "RunIISummer20UL17": {"run": "RunII", "year": "2017"},

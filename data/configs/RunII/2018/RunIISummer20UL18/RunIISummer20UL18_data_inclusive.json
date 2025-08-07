@@ -1,0 +1,20 @@
+{
+    "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
+        "das_name": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+        "run": "RunII",
+        "year": "2018",
+        "era": "RunIISummer20UL18",
+        "dataset": "SingleMuon_Run2018B",
+        "physics_group": "Muon",
+        "datatype": "data"
+    },
+    "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+        "das_name": "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+        "run": "RunII",
+        "year": "2018",
+        "era": "RunIISummer20UL18",
+        "dataset": "EGamma_Run2018B",
+        "physics_group": "EGamma",
+        "datatype": "data"
+    }
+}

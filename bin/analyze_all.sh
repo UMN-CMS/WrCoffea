@@ -6,35 +6,26 @@ set -o pipefail
 ERA_OPTIONS=(
   RunIISummer20UL18
   Run3Summer22
+  Run3Summer22EE
 )
 
 # Data options for Run3Summer22
 DATA_OPTIONS=(
-  EGamma
   Muon
+  EGamma
 )
 
 # MC options (for all eras)
 MC_OPTIONS=(
   DYJets
   TTbar
-  tW
+  TW
   WJets
   TTbarSemileptonic
   SingleTop
-  TTX
+  TTV
   Diboson
   Triboson
-)
-
-# MASS options for signal mode
-MASS_OPTIONS=(
-  WR1200_N200 WR1200_N400 WR1200_N600 WR1200_N800 WR1200_N1100
-  WR1600_N400 WR1600_N600 WR1600_N800 WR1600_N1200 WR1600_N1500
-  WR2000_N400 WR2000_N800 WR2000_N1000 WR2000_N1400 WR2000_N1900
-  WR2400_N600 WR2400_N800 WR2400_N1200 WR2400_N1800 WR2400_N2300
-  WR2800_N600 WR2800_N1000 WR2800_N1400 WR2800_N2000 WR2800_N2700
-  WR3200_N800 WR3200_N1200 WR3200_N1600 WR3200_N2400 WR3200_N3000
 )
 
 # Validate mandatory arguments: mode and era
@@ -63,13 +54,47 @@ if [ "${valid}" != "true" ]; then
   exit 1
 fi
 
+# Build MASS_OPTIONS dynamically based on era
+case "${SELECTED_ERA}" in
+  RunIISummer20UL18)
+    # keep your existing UL18 list
+    MASS_OPTIONS=(
+      WR1200_N200 WR1200_N400 WR1200_N600 WR1200_N800 WR1200_N1100
+      WR1600_N400 WR1600_N600 WR1600_N800 WR1600_N1200 WR1600_N1500
+      WR2000_N400 WR2000_N800 WR2000_N1000 WR2000_N1400 WR2000_N1900
+      WR2400_N600 WR2400_N800 WR2400_N1200 WR2400_N1800 WR2400_N2300
+      WR2800_N600 WR2800_N1000 WR2800_N1400 WR2800_N2000 WR2800_N2700
+      WR3200_N800 WR3200_N1200 WR3200_N1600 WR3200_N2400 WR3200_N3000
+    )
+    ;;
+  Run3Summer22|Run3Summer22EE)
+    # for Run3 you want WR = 2000,4000,6000,8000
+    MASS_OPTIONS=()
+    for wr in 2000 4000 6000 8000; do
+      # highest N is wr - 100 (e.g. 2000→1900, 6000→5900)
+      max_n=$((wr - 100))
+      for ((n=100; n<=max_n; n+=200)); do
+        MASS_OPTIONS+=( "WR${wr}_N${n}" )
+      done
+    done
+    ;;
+  *)
+    echo "Error: No signal mass list defined for era '${SELECTED_ERA}'"
+    exit 1
+    ;;
+esac
+
+# Now shift off mode & era, EXTRA_ARGS will remain the same
+shift 2
+EXTRA_ARGS=( "$@" )
+
 # Shift off the mode and era arguments, leaving additional options (if any)
-if [ "$#" -ge 3 ]; then
-  shift 2
-  EXTRA_ARGS=("$@")
-else
-  EXTRA_ARGS=()
-fi
+#if [ "$#" -ge 3 ]; then
+#  shift 2
+#  EXTRA_ARGS=("$@")
+#else
+#  EXTRA_ARGS=()
+#fi
 
 # Function for data and bkg modes
 run_analysis() {

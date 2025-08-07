@@ -18,7 +18,7 @@ The output `txt` files are saved in the same directory
 
 * The following script computes the cross-section of each dataset with GenXSecAnalyzer, and saves the output to log files.
 ```
-./compute_xsecs.sh
+./compute_xsecs.sh Run3Summer22
 ```
 * This bash script changes directories to a CMS environment, runs `ana.py` to compute the cross-section, and then `save_xsec.py` to save the output to log files to `data/xsec/`..
 

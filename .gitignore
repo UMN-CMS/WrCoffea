@@ -9,10 +9,13 @@ data/xsec/RunII
 data/xsec/Run3
 data/jsons
 data/skims
+data/reweights
 data/filepaths
-data/filepaths/Run3/2022/*
 scripts/setup/signal
 scripts/setup/skims/tmp/
+scripts/copy_skims.sh
+scripts/download_and_patch_datasets.py
+scripts/merge_das_datasets.py
 *~
 __pycache__
 *.pyc

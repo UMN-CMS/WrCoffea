@@ -8,7 +8,6 @@ Welcome to the WR analyzer! This repository provides tools for analyzing and pro
 - [Plotting](docs/plotting.md) – Instructions for generating plots from histogram ROOT files.
 - [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
 - [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
-- [Extending the analyzer](README.md#extending-the-analyzer) – Guidelines for contributing to the analyzer
 ---
 
 ## 📂 Repository Structure
@@ -58,13 +57,3 @@ If using UMN’s setup, use:
 ```bash
 source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
 ```
-
-### Adding a New Study
-1. Copy an existing script from `src/`:
-   ```bash
-   cp src/analyzer.py test/dev_analyzer.py
-   ```
-2. Modify the script to include your custom selections and histograms.
-3. Once finalized, integrate your study into the main pipeline via `bin/`, `python/`, or `src/`.
-
----

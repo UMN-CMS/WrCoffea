@@ -24,14 +24,17 @@ def mkdir(path):
         os.mkdir(path)
 
 def main(campaign, process, dataset):
-    print(f"Starting job creation for dataset: {dataset}")
-    run = campaign[:4]
+    print(f"\nStarting job creation for dataset: {dataset}")
+#    run = campaign[:4]
     if campaign == "Run3Summer22" or campaign == "Run3Summer22EE":
         run = "Run3"
         year = "2022"
     elif campaign == "Run3Summer23" or campaign == "Run3Summer23BPix":
         run = "Run3"
         year = "2023"
+    elif campaign == "RunIISummer20UL18":
+        run = "RunII"
+        year = "2018"
 
     jobdir = f"/uscms_data/d1/bjackson/WrCoffea/scripts/setup/skims/tmp/{run}/{year}/{campaign}"
     # Define base directory
@@ -43,20 +46,21 @@ def main(campaign, process, dataset):
         return
 
     # Build argument list
-    print("Filelist:")
+#    print("Filelist:")
     arguments = []
     counter = 1
 
     for filename in os.listdir(base_path):
-        print(f"{filename}")
-        if dataset in filename:
+#        print(f"filename: {filename}")
+#        print("dataset", dataset)
+        if filename == f"{dataset}.txt":
             file_path = base_path / filename  # Use Path object
 
             try:
                 with file_path.open("r") as f:
                     lines = f.readlines()
                     for line in lines:
-                        print(line)
+#                        print(line)
                         arguments.append(f"{counter} {campaign} {process} {dataset} {line.strip()}\n")
                         counter += 1
             except Exception as e:

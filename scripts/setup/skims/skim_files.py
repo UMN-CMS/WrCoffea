@@ -105,8 +105,8 @@ def make_skimmed_events(events):
     leading_lepton = leptons_padded[:, 0]
     subleading_lepton = leptons_padded[:, 1]
 
-    lead_pt_cut = 5 #30
-    sublead_pt_cut = 5 #30
+    lead_pt_cut = 52 #5
+    sublead_pt_cut = 45 #5
     event_filters = (
         (ak.fill_none(leading_lepton.pt, 0) > lead_pt_cut) &
         (ak.fill_none(subleading_lepton.pt, 0) > sublead_pt_cut)
@@ -198,8 +198,8 @@ def process_file(sliced_dataset, dataset_key, dataset, file_index, era, run):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process dataset and run.')
-    parser.add_argument("era", type=str, choices=["RunIISummer20UL1y", "RunIISummer20UL18", "Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix"], help="Era (e.g. RunIISummer20UL18NanoAODv9)")
-    parser.add_argument('process', type=str, choices=["DYJets","TTbar", "tW", "WJets", "TTbarSemileptonic", "SingleTop", "TTX", "Diboson", "Triboson", "SingleMuon", "EGamma", "Muon"],  help='Physics group to process (e.g. DYJets)')
+    parser.add_argument("era", type=str, choices=["RunIISummer20UL18", "Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix"], help="Era (e.g. RunIISummer20UL18NanoAODv9)")
+    parser.add_argument('process', type=str, choices=["DYJets","TTbar", "TW", "WJets", "TTbarSemileptonic", "SingleTop", "TTV", "Diboson", "Triboson", "SingleMuon", "EGamma", "Muon"],  help='Physics group to process (e.g. DYJets)')
     parser.add_argument('dataset', type=str, help='Dataset to process (e.g. TTTo2L2Nu')
     parser.add_argument('--start', type=int, default=1, help='File number at which to start')
     args = parser.parse_args()
@@ -208,6 +208,7 @@ if __name__ == "__main__":
 
     if "18" in args.era:
         run = "RunII"
+        year = "2018"
     elif "Run3Summer22" in args.era:
         run = "Run3"
         year = "2022"
