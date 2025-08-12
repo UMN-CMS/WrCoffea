@@ -102,7 +102,7 @@ if __name__ == "__main__":
     optional.add_argument("--debug", action='store_true', help="Debug mode (don't compute histograms)")
     optional.add_argument("--exc",default=False, action='store_true', help="Exclusively 2 or 3 Jets")
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
-    args = parser.parse_args()<<<<<<< HEAD
+    args = parser.parse_args()
 
     signal_points = Path(f'data/{args.era}_mass_points.csv')
     MASS_CHOICES = load_masses_from_csv(signal_points)

@@ -1,54 +1,62 @@
 from coffea import processor
 from coffea.analysis_tools import Weights, PackedSelection
-#from coffea.lumi_tools import LumiData, LumiMask, LumiList
+from coffea.lumi_tools import LumiData, LumiMask, LumiList
+# from coffea.lookup_tools.dense_lookup import dense_lookup
 import awkward as ak
 import hist.dask as dah
 import hist
 import numpy as np
+import os
 import re
 import time
 import logging
 import warnings
+import json
 import dask_awkward as dak
-# import csv
+import csv
+
 warnings.filterwarnings("ignore",module="coffea.*")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class WrAnalysis(processor.ProcessorABC):
-    def __init__(self, mass_point=None,exclusive=False):
+    def __init__(self, mass_point=None,exclusive=False, sf_file=None):
         self._signal_sample = mass_point
         self.exc=exclusive
-
+        
         self.make_output = lambda: {
-            'Lepton_0_Pt': self.create_hist('pt_leadlep', 'process', 'region', (200, 0, 2000), r'p_{T} of the leading lepton [GeV]'),
-            'Lepton_0_Eta': self.create_hist('eta_leadlep', 'process', 'region', (60, -3, 3), r'#eta of the leading lepton'),
-            'Lepton_0_Phi': self.create_hist('phi_leadlep', 'process', 'region', (80, -4, 4), r'#phi of the leading lepton'),
-            'Lepton_1_Pt': self.create_hist('pt_subleadlep', 'process', 'region', (200, 0, 2000), r'p_{T} of the subleading lepton [GeV]'),
-            'Lepton_1_Eta': self.create_hist('eta_subleadlep', 'process', 'region', (60, -3, 3), r'#eta of the subleading lepton'),
-            'Lepton_1_Phi': self.create_hist('phi_subleadlep', 'process', 'region', (80, -4, 4), r'#phi of the subleading lepton'),
-            'Jet_0_Pt': self.create_hist('pt_leadjet', 'process', 'region', (200, 0, 2000), r'p_{T} of the leading jet [GeV]'),
-            'Jet_0_Eta': self.create_hist('eta_leadjet', 'process', 'region', (60, -3, 3), r'#eta of the leading jet [GeV]'),
-            'Jet_0_Phi': self.create_hist('phi_leadjet', 'process', 'region', (80, -4, 4), r'#phi of the leading jet'),
-            'Jet_1_Pt': self.create_hist('pt_subleadjet', 'process', 'region', (200, 0, 2000), r'p_{T} of the subleading jet [GeV]'),
-            'Jet_1_Eta': self.create_hist('eta_subleadjet', 'process', 'region', (60, -3, 3), r'#eta of the subleading jet [GeV]'),
-            'Jet_1_Phi': self.create_hist('phi_subleadjet', 'process', 'region', (80, -4, 4), r'#phi of the subleading jet'),
-            'Jet_2_Pt': self.create_hist('pt_thirdjet', 'process', 'region', (200, 0, 2000), r'p_{T} of the third jet [GeV]'),
-            'Jet_2_Eta': self.create_hist('eta_thirdjet', 'process', 'region', (60, -3, 3), r'#eta of the third jet [GeV]'),
-            'Jet_2_Phi': self.create_hist('phi_thirdjet', 'process', 'region', (80, -4, 4), r'#phi of the third jet'),
-            'Delta_r20': self.create_hist('del_r20', 'process', 'region', (80, 0, 6), 'Delta R Third Jet and Lead Jet'),
-            'Delta_r21': self.create_hist('del_r21', 'process', 'region', (80, 0, 6), 'Delta R Third Jet and SubLead Jet'),
-            'ZCand_Mass': self.create_hist('mass_dileptons', 'process', 'region', (5000, 0, 5000), r'm_{ll} [GeV]'),
-            'ZCand_Pt': self.create_hist('pt_dileptons', 'process', 'region', (200, 0, 2000), r'p^{T}_{ll} [GeV]'),
-            'Dijet_Mass': self.create_hist('mass_dijet', 'process', 'region', (500, 0, 5000), r'm_{jj} [GeV]'),
-            'Dijet_Pt': self.create_hist('pt_dijet', 'process', 'region', (500, 0, 5000), r'p^{T}_{jj} [GeV]'),
-            'NCand_Lepton_0_Mass': self.create_hist('mass_threeobject_leadlep', 'process', 'region', (800, 0, 8000), r'm_{ljj} [GeV]'),
-            'NCand_Lepton_0_Pt': self.create_hist('pt_threeobject_leadlep', 'process', 'region', (800, 0, 8000), r'p^{T}_{ljj} [GeV]'),
-            'NCand_Lepton_1_Mass': self.create_hist('mass_threeobject_subleadlep', 'process', 'region', (800, 0, 8000), r'm_{ljj} [GeV]'),
-            'NCand_Lepton_1_Pt': self.create_hist('pt_threeobject_subleadlep', 'process', 'region', (800, 0, 8000), r'p^{T}_{ljj} [GeV]'),
-            'WRCand_Mass': self.create_hist('mass_fiveobject', 'process', 'region', (800, 0, 8000), r'm_{lljjj} [GeV]'),
-            'WRCand_Pt': self.create_hist('pt_fiveobject', 'process', 'region', (800, 0, 8000), r'p^{T}_{lljjj} [GeV]'),
+            'pt_leading_lepton':        self.create_hist('pt_leadlep',        'process', 'region', (200,   0, 2000), r'$p_{T}$ of the leading lepton [GeV]'),
+            'eta_leading_lepton':       self.create_hist('eta_leadlep',       'process', 'region', (60,   -3,    3), r'$\eta$ of the leading lepton'),
+            'phi_leading_lepton':       self.create_hist('phi_leadlep',       'process', 'region', (80,   -4,    4), r'$\phi$ of the leading lepton'),
+
+            'pt_subleading_lepton':     self.create_hist('pt_subleadlep',     'process', 'region', (200,   0, 2000), r'$p_{T}$ of the subleading lepton [GeV]'),
+            'eta_subleading_lepton':    self.create_hist('eta_subleadlep',    'process', 'region', (60,   -3,    3), r'$\eta$ of the subleading lepton'),
+            'phi_subleading_lepton':    self.create_hist('phi_subleadlep',    'process', 'region', (80,   -4,    4), r'$\phi$ of the subleading lepton'),
+
+            'pt_leading_jet':           self.create_hist('pt_leadjet',           'process', 'region', (200,   0, 2000), r'$p_{T}$ of the leading jet [GeV]'),
+            'eta_leading_jet':          self.create_hist('eta_leadjet',          'process', 'region', (60,   -3,    3), r'$\eta$ of the leading jet'),
+            'phi_leading_jet':          self.create_hist('phi_leadjet',          'process', 'region', (80,   -4,    4), r'$\phi$ of the leading jet'),
+
+            'pt_subleading_jet':        self.create_hist('pt_subleadjet',        'process', 'region', (200,   0, 2000), r'$p_{T}$ of the subleading jet [GeV]'),
+            'eta_subleading_jet':       self.create_hist('eta_subleadjet',       'process', 'region', (60,   -3,    3), r'$\eta$ of the subleading jet'),
+            'phi_subleading_jet':       self.create_hist('phi_subleadjet',       'process', 'region', (80,   -4,    4), r'$\phi$ of the subleading jet'),
+
+            'mass_dilepton':            self.create_hist('mass_dilepton',            'process', 'region', (5000,  0, 5000), r'$m_{\ell\ell}$ [GeV]'),
+            'pt_dilepton':              self.create_hist('pt_dilepton',              'process', 'region', (200,   0, 2000), r'$p_{T,\ell\ell}$ [GeV]'),
+
+            'mass_dijet':               self.create_hist('mass_dijet',               'process', 'region', (500,   0, 5000), r'$m_{jj}$ [GeV]'),
+            'pt_dijet':                 self.create_hist('pt_dijet',                 'process', 'region', (500,   0, 5000), r'$p_{T,jj}$ [GeV]'),
+
+            'mass_threeobject_leadlep':  self.create_hist('mass_threeobject_leadlep',  'process', 'region', (800,   0, 8000), r'$m_{\ell jj}$ [GeV]'),
+            'pt_threeobject_leadlep':    self.create_hist('pt_threeobject_leadlep',    'process', 'region', (800,   0, 8000), r'$p_{T,\ell jj}$ [GeV]'),
+
+            'mass_threeobject_subleadlep': self.create_hist('mass_threeobject_subleadlep', 'process', 'region', (800,   0, 8000), r'$m_{\ell jj}$ [GeV]'),
+            'pt_threeobject_subleadlep':   self.create_hist('pt_threeobject_subleadlep',   'process', 'region', (800,   0, 8000), r'$p_{T,\ell jj}$ [GeV]'),
+
+            'mass_fourobject':        self.create_hist('mass_fourobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
+            'pt_fourobject':          self.create_hist('pt_fourobject',          'process', 'region', (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
+
             'WRMass4_DeltaR':dah.hist.Hist(
                 hist.axis.StrCategory([], name="process", label="Process", growth=True),
                 hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
@@ -233,6 +241,24 @@ class WrAnalysis(processor.ProcessorABC):
             ),
         }
 
+        # ——— Load SF lookup if provided ———
+        if sf_file:
+            fname    = os.path.basename(sf_file)
+            self.variable = fname.replace("_sf.json", "")
+            with open(sf_file) as jf:
+                data = json.load(jf)
+            edges = np.array(data["edges"], dtype=float)
+            sf_EE  = np.array(data["sf_ee_resolved_dy_cr"], dtype=float)
+            sf_MM  = np.array(data["sf_mumu_resolved_dy_cr"], dtype=float)
+
+            self.lookup_EE = dense_lookup(sf_EE, [edges])
+            self.lookup_MM = dense_lookup(sf_MM, [edges])
+            logger.info(f"Loaded {self.variable} SF lookup from {sf_file}")
+        else:
+            self.variable = None
+            self.lookup_EE = None
+            self.lookup_MM = None
+
     def create_hist(self, name, process, region, bins, label):
         """Helper function to create histograms."""
         return dah.hist.Hist(
@@ -256,10 +282,10 @@ class WrAnalysis(processor.ProcessorABC):
 
     def selectJets(self, events):
         """Select AK4 and AK8 jets."""
-        ak4_jets = (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
+#        ak4_jets = (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
 
         # Usual Requirement
-#        ak4_jets = (events.Jet.pt > 40) & (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
+        ak4_jets = (events.Jet.pt > 40) & (np.abs(events.Jet.eta) < 2.4) & (events.Jet.isTightLeptonVeto)
         return events.Jet[ak4_jets]
 
     def check_mass_point_resolved(self):
@@ -282,7 +308,6 @@ class WrAnalysis(processor.ProcessorABC):
 
     def add_resolved_selections(self, selections, tightElectrons, tightMuons, AK4Jets, mlljj, dr_jl_min, dr_j1j2, dr_j1j3, dr_j2j3, dr_l1l2):
         selections.add("twoTightLeptons", (ak.num(tightElectrons) + ak.num(tightMuons)) == 2)
-        
         if self.exc:
             selections.add("minTwoAK4Jets", ak.num(AK4Jets) == 3)
         else:
@@ -294,54 +319,66 @@ class WrAnalysis(processor.ProcessorABC):
 
     def fill_basic_histograms(self, output, region, cut,  process, jets, leptons, weights):
         """Helper function to fill histograms dynamically."""
-        # Define a list of variables and their corresponding histograms
         variables = [
-            ('Lepton_0_Pt', leptons[:, 0].pt, 'pt_leadlep'),
-            ('Lepton_0_Eta', leptons[:, 0].eta, 'eta_leadlep'),
-            ('Lepton_0_Phi', leptons[:, 0].phi, 'phi_leadlep'),
-            ('Lepton_1_Pt', leptons[:, 1].pt, 'pt_subleadlep'),
-            ('Lepton_1_Eta', leptons[:, 1].eta, 'eta_subleadlep'),
-            ('Lepton_1_Phi', leptons[:, 1].phi, 'phi_subleadlep'),
-            ('Jet_0_Pt', jets[:, 0].pt, 'pt_leadjet'),
-            ('Jet_0_Eta', jets[:, 0].eta, 'eta_leadjet'),
-            ('Jet_0_Phi', jets[:, 0].phi, 'phi_leadjet'),
-            ('Jet_1_Pt', jets[:, 1].pt, 'pt_subleadjet'),
-            ('Jet_1_Eta', jets[:, 1].eta, 'eta_subleadjet'),
-            ('Jet_1_Phi', jets[:, 1].phi, 'phi_subleadjet'),
-            ('Jet_2_Pt', jets[:, 2].pt, 'pt_thirdjet'),
-            ('Jet_2_Eta', jets[:, 2].eta, 'eta_thirdjet'),
-            ('Jet_2_Phi', jets[:, 2].phi, 'phi_thirdjet'),
-            ('Delta_r20',jets[:,2].delta_r(jets[:,0]),'del_r20'),
-            ('Delta_r21',jets[:,2].delta_r(jets[:,1]),'del_r21'),
-            ('ZCand_Mass', (leptons[:, 0] + leptons[:, 1]).mass, 'mass_dileptons'),
-            ('ZCand_Pt', (leptons[:, 0] + leptons[:, 1]).pt, 'pt_dileptons'),
-            ('Dijet_Mass', (jets[:, 0] + jets[:, 1]).mass, 'mass_dijet'),
-            ('Dijet_Pt', (jets[:, 0] + jets[:, 1]).pt, 'pt_dijet'),
-            ('NCand_Lepton_0_Mass', (leptons[:, 0] + jets[:, 0] + jets[:, 1]).mass, 'mass_threeobject_leadlep'),
-            ('NCand_Lepton_0_Pt', (leptons[:, 0] + jets[:, 0] + jets[:, 1]).pt, 'pt_threeobject_leadlep'),
-            ('NCand_Lepton_1_Mass', (leptons[:, 1] + jets[:, 0] + jets[:, 1]).mass, 'mass_threeobject_subleadlep'),
-            ('NCand_Lepton_1_Pt', (leptons[:, 1] + jets[:, 0] + jets[:, 1]).pt, 'pt_threeobject_subleadlep'),
-            ('WRCand_Mass', (leptons[:, 0] + leptons[:, 1] + jets[:, 0] + jets[:, 1] + jets[:, 2]).mass, 'mass_fiveobject'),
-            ('WRCand_Pt', (leptons[:, 0] + leptons[:, 1] + jets[:, 0] + jets[:, 1] + jets[:, 2]).pt, 'pt_fiveobject'),
+            ('pt_leading_lepton',         leptons[:,0].pt,    'pt_leadlep'),
+            ('eta_leading_lepton',        leptons[:,0].eta,   'eta_leadlep'),
+            ('phi_leading_lepton',        leptons[:,0].phi,   'phi_leadlep'),
+            ('pt_subleading_lepton',      leptons[:,1].pt,    'pt_subleadlep'),
+            ('eta_subleading_lepton',     leptons[:,1].eta,   'eta_subleadlep'),
+            ('phi_subleading_lepton',     leptons[:,1].phi,   'phi_subleadlep'),
+            ('pt_leading_jet',            jets[:,0].pt,       'pt_leadjet'),
+            ('eta_leading_jet',           jets[:,0].eta,      'eta_leadjet'),
+            ('phi_leading_jet',           jets[:,0].phi,      'phi_leadjet'),
+            ('pt_subleading_jet',         jets[:,1].pt,       'pt_subleadjet'),
+            ('eta_subleading_jet',        jets[:,1].eta,      'eta_subleadjet'),
+            ('phi_subleading_jet',        jets[:,1].phi,      'phi_subleadjet'),
+            ('mass_dilepton',             (leptons[:,0] + leptons[:,1]).mass, 'mass_dilepton'),
+            ('pt_dilepton',               (leptons[:,0] + leptons[:,1]).pt,   'pt_dilepton'),
+            ('mass_dijet',                (jets[:,0] + jets[:,1]).mass,       'mass_dijet'),
+            ('pt_dijet',                  (jets[:,0] + jets[:,1]).pt,         'pt_dijet'),
+            ('mass_threeobject_leadlep',   (leptons[:,0] + jets[:,0] + jets[:,1]).mass, 'mass_threeobject_leadlep'),
+            ('pt_threeobject_leadlep',     (leptons[:,0] + jets[:,0] + jets[:,1]).pt,   'pt_threeobject_leadlep'),
+            ('mass_threeobject_subleadlep',(leptons[:,1] + jets[:,0] + jets[:,1]).mass, 'mass_threeobject_subleadlep'),
+            ('pt_threeobject_subleadlep',  (leptons[:,1] + jets[:,0] + jets[:,1]).pt,   'pt_threeobject_subleadlep'),
+            ('mass_fourobject',         (leptons[:,0] + leptons[:,1] + jets[:,0] + jets[:,1]).mass, 'mass_fourobject'),
+            ('pt_fourobject',           (leptons[:,0] + leptons[:,1] + jets[:,0] + jets[:,1]).pt,   'pt_fourobject'),
         ]
 
-        # Loop over variables and fill corresponding histograms
+        if self.variable is not None:
+            for _, vals_array, axis_name in variables:
+                if axis_name == self.variable:
+                    vals_all = vals_array
+                    break
+
         for hist_name, values, axis_name in variables:
+            vals = values[cut]
+            w    = weights.weight()[cut]
+
+            if process == "DYJets" and self.lookup_EE is not None:
+                if region.startswith("wr_ee_resolved_dy_cr") or region.startswith("wr_ee_resolved_sr"):
+                    corr = self.lookup_EE(vals_all[cut])
+                elif region.startswith("wr_mumu_resolved_dy_cr") or region.startswith("wr_mumu_resolved_sr"):
+                    corr = self.lookup_MM(vals_all[cut])
+                else:
+                    corr = 1.0
+                w = w * corr
+
             output[hist_name].fill(
-                process=process,
-                region=region,
-                **{axis_name: values[cut]},
-                weight=weights.weight()[cut]
-            )
+                 process=process,
+                 region=region,
+                 **{axis_name: vals},
+                 weight=w
+             )
 
     def process(self, events): 
         output = self.make_output()
-        
         metadata = events.metadata
         mc_campaign = metadata["era"]
         process = metadata["physics_group"]
         dataset = metadata["dataset"]
         isRealData = not hasattr(events, "genWeight")
+
+        proc_name = events.metadata["physics_group"]
         isMC = hasattr(events, "genWeight")
 
         logger.info(f"Analyzing {len(events)} {dataset} events.")
@@ -349,14 +386,9 @@ class WrAnalysis(processor.ProcessorABC):
         if isRealData:
             if mc_campaign == "RunIISummer20UL18":
                 lumi_mask = LumiMask("data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt")
-            elif mc_campaign == "Run3Summer22":
+            elif mc_campaign == "Run3Summer22" or mc_campaign == "Run3Summer22EE":
                 lumi_mask = LumiMask("data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt")
             events = events[lumi_mask(events.run, events.luminosityBlock)]
-#            num_events_after_mask = len(events["run"].compute())  # Compute using a lightweight branch
-#            lumi_list = LumiList(events.run, events.luminosityBlock)
-#            lumi_data = LumiData(f"lumi2018.csv", is_inst_lumi=False)
-#            lumi = lumi_data.get_lumi(lumi_list)
-#            print(lumi.compute())
 
         output['mc_campaign'] = mc_campaign
         output['process'] = process
@@ -364,7 +396,6 @@ class WrAnalysis(processor.ProcessorABC):
         if not isRealData:
             output['x_sec'] = events.metadata["xsec"] 
 
-        # Process signal samples
         if process == "Signal": self.check_mass_point_resolved()
 
         # Object selection
@@ -383,7 +414,7 @@ class WrAnalysis(processor.ProcessorABC):
         AK4Jets = ak.pad_none(AK4Jets, 3, axis=1)
 
         mll = ak.fill_none((tightLeptons[:, 0] + tightLeptons[:, 1]).mass, False)
-        mlljj = ak.fill_none((tightLeptons[:, 0] + tightLeptons[:, 1] + AK4Jets[:, 0] + AK4Jets[:, 1]+ AK4Jets[:, 2]).mass, False)
+        mlljj = ak.fill_none((tightLeptons[:, 0] + tightLeptons[:, 1] + AK4Jets[:, 0] + AK4Jets[:, 1]).mass, False)
 
         dr_jl_min = ak.fill_none(ak.min(AK4Jets[:,:3].nearest(tightLeptons).delta_r(AK4Jets[:,:3]), axis=1), False)
         dr_j1j2 = ak.fill_none(AK4Jets[:,0].delta_r(AK4Jets[:,1]), False)
@@ -407,17 +438,29 @@ class WrAnalysis(processor.ProcessorABC):
             muTrig = events.HLT.Mu50 | events.HLT.HighPtTkMu100
             selections.add("eeTrigger", (eTrig & (nTightElectrons == 2) & (nTightMuons == 0)))
             selections.add("mumuTrigger", (muTrig & (nTightElectrons == 0) & (nTightMuons == 2)))
-            selections.add("emuTrigger", (eTrig & muTrig & (nTightElectrons == 1) & (nTightMuons == 1)))
+            selections.add("emuTrigger", ((eTrig | muTrig) & (nTightElectrons == 1) & (nTightMuons == 1))) #Delete etrig
 
         # Event Weights
         weights = Weights(size=None, storeIndividual=True)
-        if isMC:
+        if not isRealData:
+            # per-event weight
             eventWeight = events.genWeight
-            if not process == "Signal":
-                unqiue_gensumws = np.unique(events.genEventSumw.compute())
-            output['sumw'] = ak.sum(eventWeight) if process == "Signal" else np.sum(unqiue_gensumws)
-        elif isRealData:
+
+            if mc_campaign == "RunIISummer20UL18" and process == "DYJets":
+                eventWeight = eventWeight * 1.35
+
+            if process != "Signal":
+                unique_sumws = np.unique(events.genEventSumw.compute())
+                orig_sumw    = float(np.sum(unique_sumws))
+                output['sumw'] = orig_sumw
+            else:
+                orig_sumw     = float(ak.sum(eventWeight).compute())
+                output['sumw'] = orig_sumw
+        else:
+            # data: dummy weight and no efficiency calculation
             eventWeight = abs(np.sign(events.event))
+            orig_sumw   = None
+
         weights.add("event_weight", weight=eventWeight)
 
         # Channel selections
@@ -428,16 +471,17 @@ class WrAnalysis(processor.ProcessorABC):
         # mll selections
         selections.add("60mll150", ((mll > 60) & (mll < 150)))
         selections.add("400mll", (mll > 400))
-        selections.add("150mll", (mll > 150))
 
         # Define analysis regions
         regions = {
-            'WR_EE_Resolved_DYCR': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'eejj'],
-            'WR_MuMu_Resolved_DYCR': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'mumujj'],
-            'WR_EMu_Resolved_CR': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'emuTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'emujj'],
-            'WR_EMu_Resolved_Sideband': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'emuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'emujj'],
-            'WR_EE_Resolved_SR': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'eejj'],
-            'WR_MuMu_Resolved_SR': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'mumujj'],
+            # Drell-Yan Control Regions
+            'wr_ee_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'eejj'],
+            'wr_mumu_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'mumujj'],
+            #EMu Sideband Control Region
+            'wr_resolved_flavor_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'emuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'emujj'],
+            # Signal Regions
+            'wr_ee_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'eejj'],
+            'wr_mumu_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'mumujj'],
         }
 
         # Fill histogram
@@ -523,8 +567,23 @@ class WrAnalysis(processor.ProcessorABC):
             output['WRMass4_restDeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=restdr_j3_min,weight=weights.weight()[cut])
             output['WRMass5_restDeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=restdr_j3_min,weight=weights.weight()[cut])
 
+            if region == 'wr_ee_resolved_sr':
+                gen = events.GenPart
+                is_top = abs(gen.pdgId) == 6
+                not_init = abs(gen[is_top].parent.pdgId) == 9900012
+                my_events=np.sum(abs((gen[is_top])[not_init].pdgId).compute())//6
+
+                is_wr = abs(gen.pdgId) == 34
+                isfirst = abs(gen[is_wr].parent.pdgId) != 34
+                all_events = np.sum(abs((gen[is_wr])[isfirst].pdgId).compute())//34
+
+                with open('topevents.csv', 'a', newline='') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow([self._signal_sample, my_events, all_events])
+
         output["weightStats"] = weights.weightStatistics
         return output
 
     def postprocess(self, accumulator):
+        print("In postprocess")
         return accumulator

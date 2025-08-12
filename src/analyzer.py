@@ -1,7 +1,7 @@
 from coffea import processor
 from coffea.analysis_tools import Weights, PackedSelection
 from coffea.lumi_tools import LumiData, LumiMask, LumiList
-from coffea.lookup_tools.dense_lookup import dense_lookup
+# from coffea.lookup_tools.dense_lookup import dense_lookup
 import awkward as ak
 import hist.dask as dah
 import hist
