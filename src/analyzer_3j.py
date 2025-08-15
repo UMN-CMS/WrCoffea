@@ -57,6 +57,8 @@ class WrAnalysis(processor.ProcessorABC):
             'mass_fourobject':        self.create_hist('mass_fourobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':          self.create_hist('pt_fourobject',          'process', 'region', (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
 
+            #'best_fiveobject':        self.create_hist('best_fiveobject',        'process', 'region', (160,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
+            
             'WRMass4_DeltaR':dah.hist.Hist(
                 hist.axis.StrCategory([], name="process", label="Process", growth=True),
                 hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
@@ -524,6 +526,8 @@ class WrAnalysis(processor.ProcessorABC):
             pseudomagic3=pt_min/mjjj
             pseudomagic=pt_min/mjj
             
+            #best_mlljjj=ak.where(mjjl>1500,mlljj1,mlljjj)
+            
             """ count= ak.num(mlljj1, axis=0).compute()
             j1tb=ak.where(AK4Jets[cut][:, 0].partonFlavour==5,1,0)
             j2tb=ak.where(AK4Jets[cut][:, 1].partonFlavour==5,1,0)
@@ -561,25 +565,28 @@ class WrAnalysis(processor.ProcessorABC):
             output['WRMass5_pseudo3'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjjj,weight=weights.weight()[cut])
             output['WRMass4_pseudo'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomass=mjj,weight=weights.weight()[cut])
             output['WRMass5_pseudo'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjj,weight=weights.weight()[cut])
-        
+
+            #output['best_fiveobject'].fill(process=process,region=region,best_fiveobject=best_mlljjj,weight=weights.weight()[cut])
+            
             wrcand=(tightLeptons[cut][:, 0] + tightLeptons[cut][:, 1] + AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).boostvec
             restdr_j3_min = ak.min(AK4Jets[cut][:,2].boost(-wrcand).delta_r(AK4Jets[cut][:,:2].boost(-wrcand)),axis=1)
             output['WRMass4_restDeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=restdr_j3_min,weight=weights.weight()[cut])
             output['WRMass5_restDeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=restdr_j3_min,weight=weights.weight()[cut])
 
-            if region == 'wr_ee_resolved_sr':
-                gen = events.GenPart
-                is_top = abs(gen.pdgId) == 6
-                not_init = abs(gen[is_top].parent.pdgId) == 9900012
-                my_events=np.sum(abs((gen[is_top])[not_init].pdgId).compute())//6
 
-                is_wr = abs(gen.pdgId) == 34
-                isfirst = abs(gen[is_wr].parent.pdgId) != 34
-                all_events = np.sum(abs((gen[is_wr])[isfirst].pdgId).compute())//34
+            # if region == 'wr_ee_resolved_sr':
+            #     gen = events.GenPart
+            #     is_top = abs(gen.pdgId) == 6
+            #     not_init = abs(gen[is_top].parent.pdgId) == 9900012
+            #     my_events=np.sum(abs((gen[is_top])[not_init].pdgId).compute())//6
 
-                with open('topevents.csv', 'a', newline='') as csvfile:
-                    writer = csv.writer(csvfile)
-                    writer.writerow([self._signal_sample, my_events, all_events])
+            #     is_wr = abs(gen.pdgId) == 34
+            #     isfirst = abs(gen[is_wr].parent.pdgId) != 34
+            #     all_events = np.sum(abs((gen[is_wr])[isfirst].pdgId).compute())//34
+
+            #     with open('topevents.csv', 'a', newline='') as csvfile:
+            #         writer = csv.writer(csvfile)
+            #         writer.writerow([self._signal_sample, my_events, all_events])
 
         output["weightStats"] = weights.weightStatistics
         return output
