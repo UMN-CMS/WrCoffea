@@ -59,7 +59,7 @@ If using UMN’s setup, use:
 source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
 ```
 
-### Update Plotter Submodule
+## Update Plotter Submodule
 To update the commit of the WR_Plotter submodule, use the following commands
 ```
 cd WR_Plotter
