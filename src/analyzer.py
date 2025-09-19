@@ -16,6 +16,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def some_event_weight(ones):
+    return (1.0 + np.array([0.05, -0.05], dtype=np.float32)) * ones[:, None]
+
 def _minimal_repeated_unit(s: str) -> str:
     """
     Heuristic: find the smallest substring which, when repeated, can reconstruct s.
@@ -90,11 +93,19 @@ class WrAnalysis(processor.ProcessorABC):
     def create_hist(self, name, process, region, bins, label):
         """Helper function to create histograms."""
         return (
-            hist.Hist.new.StrCat([], name="process", label="Process", growth=True)
-            .StrCat([], name="region", label="Analysis Region", growth=True)
+            hist.Hist.new
+            .StrCat([], name="process", label="Process", growth=True)
+            .StrCat([], name="region",  label="Analysis Region", growth=True)
+            .StrCat([], name="syst",    label="Systematic", growth=True)  # <— NEW
             .Reg(*bins, name=name, label=label)
             .Weight()
         )
+#        return (
+#            hist.Hist.new.StrCat([], name="process", label="Process", growth=True)
+#            .StrCat([], name="region", label="Analysis Region", growth=True)
+#            .Reg(*bins, name=name, label=label)
+#            .Weight()
+#        )
 
     def selectElectrons(self, events):
         tight_electrons = (events.Electron.pt > 53) & (np.abs(events.Electron.eta) < 2.4) & (events.Electron.cutBased_HEEP)
@@ -129,7 +140,7 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add("mlljj>800", mlljj > 800)
         selections.add("dr>0.4", (dr_jl_min > 0.4) & (dr_j1j2 > 0.4) & (dr_l1l2 > 0.4))
 
-    def fill_basic_histograms(self, output, region, cut, process_name, jets, leptons, weights):
+    def fill_basic_histograms(self, output, region, cut, process_name, jets, leptons, weights, syst_weights):
         variables = [
             ('pt_leading_lepton',         leptons[:, 0].pt,    'pt_leadlep'),
             ('eta_leading_lepton',        leptons[:, 0].eta,   'eta_leadlep'),
@@ -174,12 +185,26 @@ class WrAnalysis(processor.ProcessorABC):
                     corr = 1.0
                 w = w * corr
 
-            output[hist_name].fill(
-                process=process_name,
-                region=region,
-                **{axis_name: vals},
-                weight=w
-            )
+            # Fill once per systematic label
+            for syst_label, syst_w_full in syst_weights.items():
+                syst_w = syst_w_full[cut]
+                output[hist_name].fill(
+                    process=process_name,
+                    region=region,
+                    syst=syst_label,           # <— NEW axis
+                    **{axis_name: vals},
+                    weight=w * syst_w
+                )
+
+#            output[hist_name].fill(
+#                process=process_name,
+#                region=region,
+#                **{axis_name: vals},
+#                weight=w
+#            )
+
+    def some_event_weight(ones):
+        return (1.0 + np.array([0.05, -0.05], dtype=np.float32)) * ones[:, None]
 
     def process(self, events):
         output = self.make_output()
@@ -190,9 +215,23 @@ class WrAnalysis(processor.ProcessorABC):
         dataset = metadata.get("sample", "")
         isRealData = not hasattr(events, "genWeight")
 
+        events.add_systematic("Toy", "UpDownSystematic", "weight", some_event_weight)
+        ones = np.ones(len(events), dtype=np.float32)
+        toy_up   = events.systematics.Toy.up.weight_Toy
+        toy_down = events.systematics.Toy.down.weight_Toy
+
+        syst_weights = {
+            "Nominal":      ones,
+            "ToyUp":        toy_up,
+            "ToyDown":      toy_down,
+        }
+
 #        logger.info(f"\n\nAnalyzing {len(events)} {dataset} events.\n\n")
+#        if process_name == "DYJets":
+#            events.add_systematic("scale_var", "UpDownSystematic", "weight", flat_variation)
 
         if isRealData:
+            syst_weights = {"Nominal": ones}
             if mc_campaign == "RunIISummer20UL18":
                 lumi_mask = LumiMask("data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt")
             elif mc_campaign in ("Run3Summer22", "Run3Summer22EE"):
@@ -281,7 +320,7 @@ class WrAnalysis(processor.ProcessorABC):
 
         for region, cuts in regions.items():
             cut = selections.all(*cuts)
-            self.fill_basic_histograms(output, region, cut, process_name, AK4Jets, tightLeptons, weights)
+            self.fill_basic_histograms(output, region, cut, process_name, AK4Jets, tightLeptons, weights, syst_weights)
 
         nested_output = {
             dataset: {

@@ -10,6 +10,62 @@ from python.preprocess_utils import get_era_details
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
+# --- Add these helpers ---
+
+def _normalize_syst_name(syst: str) -> str:
+    """
+    Turn 'RenFactScaleUp' -> 'renfactscaleup' (root-key friendly, lowercase).
+    """
+    return "".join(ch.lower() for ch in syst if ch.isalnum())
+
+def _folder_and_hist_names(region: str, syst: str, hist_stem: str):
+    """
+    For syst == 'Nominal':
+        folder:  <region>/
+        hist:    <hist_stem>_<region>
+    For syst != 'Nominal':
+        folder:  syst_<norm>_<region>/
+        hist:    <hist_stem>_syst_<norm>_<region>
+    """
+    if syst == "Nominal":
+        folder = f"{region}"
+        hname  = f"{hist_stem}_{region}"
+    else:
+        norm = _normalize_syst_name(syst)
+        folder = f"syst_{norm}_{region}"
+        hname  = f"{hist_stem}_syst_{norm}_{region}"
+    return folder, hname
+
+
+def split_hists_with_syst(summed_hists, *, sum_over_process=True):
+    out = {}
+    for hist_name, h in summed_hists.items():
+        try:
+            region_ax = h.axes["region"]
+            syst_ax   = h.axes["syst"]
+        except KeyError as e:
+            logging.error("Missing expected axis in histogram '%s': %s", hist_name, e)
+            continue
+
+        has_proc = any(ax.name == "process" for ax in h.axes)
+
+        regions = [region_ax.value(i) for i in range(region_ax.size)]
+        systs   = [syst_ax.value(i)   for i in range(syst_ax.size)]
+
+        for reg in regions:
+            for sy in systs:
+                # Slice first
+                hh = h[{region_ax.name: reg, syst_ax.name: sy}]
+
+                # Then optionally remove the 'process' axis
+                if sum_over_process and has_proc and any(ax.name == "process" for ax in hh.axes):
+                    idxs_to_keep = [i for i, ax in enumerate(hh.axes) if ax.name != "process"]
+                    if len(idxs_to_keep) < hh.ndim:
+                        hh = hh.project(*idxs_to_keep)
+
+                out[(reg, sy, hist_name)] = hh
+    return out
+
 def save_histograms(histograms, args):
     """
     Takes in raw histograms, processes them and saves the output to ROOT files.
@@ -44,13 +100,37 @@ def save_histograms(histograms, args):
 
     # Process histograms
 #    scaled_hists = scale_hists(histograms)
+
     summed_hist = sum_hists(histograms)
-    split_histograms_dict = split_hists(summed_hist)
+# summed_hist = sum_hists(histograms)          # you already have this
+    split_histograms_dict = split_hists_with_syst(summed_hist, sum_over_process=True)
 
     with uproot.recreate(output_file) as root_file:
-        for (region, hist_name), hist_obj in split_histograms_dict.items():
-            path = f'/{region}/{hist_name}_{region}'
+        for (region, syst, hist_name), hist_obj in split_histograms_dict.items():
+            # Use the *variable axis* name (e.g. 'phi_leadlep') as the stem:
+            # We assume your last axis is the variable axis and its name is what you want on disk.
+            # If you prefer to use 'hist_name' literally, replace 'var_stem' with 'hist_name'.
+            try:
+                # Grab the 1D/ND variable axis name(s); here we use the first non-category axis.
+                var_axes = [ax for ax in hist_obj.axes if ax.__class__.__name__ != "StrCategory"]
+                var_stem = var_axes[0].name if var_axes else hist_name
+            except Exception:
+                var_stem = hist_name
+
+            folder, hname = _folder_and_hist_names(region, syst, var_stem)
+
+            # Examples:
+            # Nominal:            'wr_ee_resolved_dy_cr/phi_leadlep_wr_ee_resolved_dy_cr'
+            # RenFactScaleUp:     'syst_renfactscaleup_wr_ee_resolved_dy_cr/phi_leadlep_syst_renfactscaleup_wr_ee_resolved_dy_cr'
+            path = f"/{folder}/{hname}"
             root_file[path] = hist_obj
+
+#    split_histograms_dict = split_hists(summed_hist)
+
+#    with uproot.recreate(output_file) as root_file:
+#        for (region, hist_name), hist_obj in split_histograms_dict.items():
+#            path = f'/{region}/{hist_name}_{region}'
+ #           root_file[path] = hist_obj
 
     logging.info(f"Histograms saved to {output_file}.")
 

@@ -38,3 +38,6 @@ venv/
 .venv/
 wr-env/
 coffea_env
+.cmslpc-local-conf
+bootstrap.sh
+shell
