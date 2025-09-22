@@ -226,10 +226,6 @@ class WrAnalysis(processor.ProcessorABC):
             "ToyDown":      toy_down,
         }
 
-#        logger.info(f"\n\nAnalyzing {len(events)} {dataset} events.\n\n")
-#        if process_name == "DYJets":
-#            events.add_systematic("scale_var", "UpDownSystematic", "weight", flat_variation)
-
         if isRealData:
             syst_weights = {"Nominal": ones}
             if mc_campaign == "RunIISummer20UL18":
@@ -275,7 +271,7 @@ class WrAnalysis(processor.ProcessorABC):
             muTrig = events.HLT.Mu50 | events.HLT.OldMu100 | events.HLT.TkMu100
             selections.add("eeTrigger", (eTrig & (nTightElectrons == 2) & (nTightMuons == 0)))
             selections.add("mumuTrigger", (muTrig & (nTightElectrons == 0) & (nTightMuons == 2)))
-            selections.add("emuTrigger", (eTrig & muTrig & (nTightElectrons == 1) & (nTightMuons == 1)))
+            selections.add("emuTrigger", ((eTrig | muTrig) & (nTightElectrons == 1) & (nTightMuons == 1)))
         elif mc_campaign in ("Run3Summer22", "Run3Summer23BPix", "Run3Summer22EE", "Run3Summer23"):
             eTrig = events.HLT.Ele32_WPTight_Gsf | events.HLT.Photon200 | events.HLT.Ele115_CaloIdVT_GsfTrkIdT
             muTrig = events.HLT.Mu50 | events.HLT.HighPtTkMu100
