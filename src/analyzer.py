@@ -15,25 +15,32 @@ warnings.filterwarnings("ignore", module="coffea.*")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Move this to a file that gets imported.
+LUMI_JSONS = {
+    "RunIISummer20UL18": "data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
+    "Run3Summer22":      "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
+    "Run3Summer22EE":    "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
+}
 
-def some_event_weight(ones):
-    return (1.0 + np.array([0.05, -0.05], dtype=np.float32)) * ones[:, None]
+# Systematic Uncertainties: Integrated Luminosity
+LUMI_UNC = {
+    "RunIISummer20UL18": 0.025,  # 2.5% (UL2018) https://cds.cern.ch/record/2676164/files/LUM-18-002-pas.pdf
+    "Run3Summer22":      0.014,  # 1.4% (2022) https://cds.cern.ch/record/2890833/files/LUM-22-001-pas.pdf
+    "Run3Summer22EE":    0.014,  # 1.4% (2022EE) https://cds.cern.ch/record/2890833/files/LUM-22-001-pas.pdf
+}
 
-def _minimal_repeated_unit(s: str) -> str:
+def make_lumi_updown(delta):
     """
-    Heuristic: find the smallest substring which, when repeated, can reconstruct s.
-    If none obvious, return s itself.
+    Returns a function compatible with events.add_systematic(..., 'weight', func)
+    It will be called with a length-N array (e.g. ones) and must return shape (N, 2):
+    [:,0] = Up, [:,1] = Down multiplicative factors.
     """
-    if not isinstance(s, str) or len(s) == 0:
-        return s
-    for size in range(1, len(s) // 2 + 1):
-        if len(s) % size != 0:
-            continue
-        unit = s[:size]
-        if unit * (len(s) // size) == s:
-            return unit
-    return s  # fallback
-
+    def _lumi_ud(ones):
+        # ones: shape (N,)
+        # return: shape (N, 2) with [Up, Down]
+        updown = np.array([1.0 + delta, 1.0 - delta], dtype=np.float32)
+        return ones[:, None] * updown[None, :]
+    return _lumi_ud
 
 class WrAnalysis(processor.ProcessorABC):
     def __init__(self, mass_point, sf_file=None):
@@ -100,12 +107,6 @@ class WrAnalysis(processor.ProcessorABC):
             .Reg(*bins, name=name, label=label)
             .Weight()
         )
-#        return (
-#            hist.Hist.new.StrCat([], name="process", label="Process", growth=True)
-#            .StrCat([], name="region", label="Analysis Region", growth=True)
-#            .Reg(*bins, name=name, label=label)
-#            .Weight()
-#        )
 
     def selectElectrons(self, events):
         tight_electrons = (events.Electron.pt > 53) & (np.abs(events.Electron.eta) < 2.4) & (events.Electron.cutBased_HEEP)
@@ -191,20 +192,11 @@ class WrAnalysis(processor.ProcessorABC):
                 output[hist_name].fill(
                     process=process_name,
                     region=region,
-                    syst=syst_label,           # <— NEW axis
+                    syst=syst_label,
                     **{axis_name: vals},
                     weight=w * syst_w
                 )
 
-#            output[hist_name].fill(
-#                process=process_name,
-#                region=region,
-#                **{axis_name: vals},
-#                weight=w
-#            )
-
-    def some_event_weight(ones):
-        return (1.0 + np.array([0.05, -0.05], dtype=np.float32)) * ones[:, None]
 
     def process(self, events):
         output = self.make_output()
@@ -215,27 +207,14 @@ class WrAnalysis(processor.ProcessorABC):
         dataset = metadata.get("sample", "")
         isRealData = not hasattr(events, "genWeight")
 
-        events.add_systematic("Toy", "UpDownSystematic", "weight", some_event_weight)
-        ones = np.ones(len(events), dtype=np.float32)
-        toy_up   = events.systematics.Toy.up.weight_Toy
-        toy_down = events.systematics.Toy.down.weight_Toy
-
-        syst_weights = {
-            "Nominal":      ones,
-            "ToyUp":        toy_up,
-            "ToyDown":      toy_down,
-        }
-
-        if isRealData:
-            syst_weights = {"Nominal": ones}
-            if mc_campaign == "RunIISummer20UL18":
-                lumi_mask = LumiMask("data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt")
-            elif mc_campaign in ("Run3Summer22", "Run3Summer22EE"):
-                lumi_mask = LumiMask("data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt")
-            events = events[lumi_mask(events.run, events.luminosityBlock)]
-
         if process_name == "Signal":
             self.check_mass_point_resolved()
+
+        if isRealData:
+            json_path = os.environ.get("LUMI_JSON", LUMI_JSONS.get(mc_campaign))
+            if json_path:
+                lumi_mask = LumiMask(json_path)
+                events = events[lumi_mask(events.run, events.luminosityBlock)]
 
         # Object selection
         tightElectrons, _ = self.selectElectrons(events)
@@ -279,9 +258,20 @@ class WrAnalysis(processor.ProcessorABC):
             selections.add("mumuTrigger", (muTrig & (nTightElectrons == 0) & (nTightMuons == 2)))
             selections.add("emuTrigger", ((eTrig | muTrig) & (nTightElectrons == 1) & (nTightMuons == 1)))
 
+
+        selections.add("eejj", ((ak.num(tightElectrons) == 2) & (ak.num(tightMuons) == 0)))
+        selections.add("mumujj", ((ak.num(tightElectrons) == 0) & (ak.num(tightMuons) == 2)))
+        selections.add("emujj", ((ak.num(tightElectrons) == 1) & (ak.num(tightMuons) == 1)))
+
+        # mll selections
+        selections.add("60mll150", ((mll > 60) & (mll < 150)))
+        selections.add("200mll", (mll > 200))
+        selections.add("400mll", (mll > 400))
+        selections.add("nocut", ak.ones_like(events.run, dtype=bool))
+
         # Event Weights
         weights = Weights(len(events))
-        if not (not hasattr(events, "genWeight")):  # is MC
+        if hasattr(events, "genWeight"):  # is MC
             eventWeight = abs(np.sign(events.event))
             if mc_campaign == "RunIISummer20UL18" and process_name == "DYJets":
                 eventWeight = eventWeight * 1.35
@@ -297,13 +287,40 @@ class WrAnalysis(processor.ProcessorABC):
 
         weights.add("event_weight", weight=eventWeight)
 
-        selections.add("eejj", ((ak.num(tightElectrons) == 2) & (ak.num(tightMuons) == 0)))
-        selections.add("mumujj", ((ak.num(tightElectrons) == 0) & (ak.num(tightMuons) == 2)))
-        selections.add("emujj", ((ak.num(tightElectrons) == 1) & (ak.num(tightMuons) == 1)))
 
-        # mll selections
-        selections.add("60mll150", ((mll > 60) & (mll < 150)))
-        selections.add("400mll", (mll > 400))
+        # --- Systematics via events.add_systematic ---
+        ones = np.ones(len(events), dtype=np.float32)
+        if isRealData:
+            # Data: no MC theory/systematic weights
+            ones = np.ones(len(events), dtype=np.float32)
+            syst_weights = {"Nominal": ones}
+        else:
+            if mc_campaign not in LUMI_UNC:
+                raise KeyError(
+                    f"No luminosity uncertainty defined for era '{mc_campaign}'. "
+                    f"Please add it to LUMI_UNC."
+                )
+
+            lumi_unc = LUMI_UNC[mc_campaign]
+
+            # MC: add integrated luminosity uncertainty as an Up/Down weight systematic
+            events.add_systematic(
+                    "Lumi",
+                    "UpDownSystematic",
+                    "weight",
+                    make_lumi_updown(lumi_unc)
+            )
+
+            # Grab the Up/Down factors produced by the systematic
+            lumi_up   = events.systematics.Lumi.up.weight_Lumi
+            lumi_down = events.systematics.Lumi.down.weight_Lumi
+
+            syst_weights = {
+                "Nominal":  ones,
+                "LumiUp":   lumi_up,    # multiplicative factors, length-N
+                "LumiDown": lumi_down,
+            }
+
 
         # Define regions
         regions = {
@@ -317,6 +334,54 @@ class WrAnalysis(processor.ProcessorABC):
         for region, cuts in regions.items():
             cut = selections.all(*cuts)
             self.fill_basic_histograms(output, region, cut, process_name, AK4Jets, tightLeptons, weights, syst_weights)
+
+        cutflow_regions = {
+            "wr_ee_resolved": {
+                "cutflow_order": [
+                    "nocut",            
+                    "twoTightLeptons",
+                    "eeTrigger",    
+                    "minTwoAK4Jets",    
+                    "dr>0.4",
+                    "200mll",
+                    "mlljj>800",
+                    "400mll",
+                ],
+            },
+            "wr_mumu_resolved": {
+                "cutflow_order": [
+                    "nocut",
+                    "twoTightLeptons",
+                    "mumuTrigger",
+                    "minTwoAK4Jets",
+                    "dr>0.4",
+                    "200mll",
+                    "mlljj>800",
+                    "400mll",
+                ],
+            },
+        }
+
+
+        for region, info in cutflow_regions.items():
+            order = info["cutflow_order"]
+
+            # Weighted cutflow
+            cf = selections.cutflow(*order, weights=weights)
+            res = cf.yieldhist(weighted=True)
+            h_onecut, h_cum = res[0], res[1]
+            output.setdefault("cutflow", {})
+            output["cutflow"].setdefault(region, {})
+            output["cutflow"][region]["onecut"] = h_onecut
+            output["cutflow"][region]["cumulative"] = h_cum
+
+            # Unweighted cutflow
+            cf_unw = selections.cutflow(*order, weights=None)
+            res_unw = cf_unw.yieldhist(weighted=False)
+            h_onecut_unw, h_cum_unw = res_unw[0], res_unw[1]
+            output["cutflow"][region]["onecut_unweighted"] = h_onecut_unw
+            output["cutflow"][region]["cumulative_unweighted"] = h_cum_unw
+
 
         nested_output = {
             dataset: {
