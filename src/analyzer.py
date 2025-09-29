@@ -593,13 +593,14 @@ class WrAnalysis(processor.ProcessorABC):
         for region, cuts in resolved_regions.items():
             self.fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
 
+        
         # Fill the cutflow histograms
         cutflow_regions = {
             "wr_ee_resolved": {
-                "cutflow_order": resolved_selections.all("two_tight_electrons","e_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"),
+                "cutflow_order": ["two_tight_electrons","e_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
             },
             "wr_mumu_resolved": {
-                "cutflow_order": resolved_selections.all("two_tight_muons", "mu_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"),
+                "cutflow_order": ["two_tight_muons", "mu_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
             },
         }
 
