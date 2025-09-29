@@ -475,6 +475,50 @@ class WrAnalysis(processor.ProcessorABC):
                     weight=w_cut * sw,
                 )
 
+    def fill_resolved_cutflows(self, output, selections, weights):
+        """
+        Compute and store weighted & unweighted one-cut and cumulative cutflows.
+
+        Parameters
+        ----------
+        output : dict
+            Analysis output accumulator (mutated in place).
+        selections : PackedSelection
+            The selection object with named cuts already added.
+        cutflow_regions : dict[str, dict]
+            Mapping of region name -> {"cutflow_order": [cut1, cut2, ...]}.
+        weights : Weights
+            Coffea Weights object used for weighted cutflows.
+        """
+        # Fill the cutflow histograms
+        cutflow_regions = {
+            "wr_ee_resolved": {
+                "cutflow_order": ["two_tight_electrons","e_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
+            },
+            "wr_mumu_resolved": {
+                "cutflow_order": ["two_tight_muons", "mu_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
+            },
+        }
+
+        for region, info in cutflow_regions.items():
+            order = info["cutflow_order"]
+
+            # Weighted cutflow
+            cf = selections.cutflow(*order, weights=weights)
+            res = cf.yieldhist(weighted=True)
+            h_onecut, h_cum = res[0], res[1]
+
+            output.setdefault("cutflow", {})
+            output["cutflow"].setdefault(region, {})
+            output["cutflow"][region]["onecut"] = h_onecut
+            output["cutflow"][region]["cumulative"] = h_cum
+
+            # Unweighted cutflow
+            res_unw = cf.yieldhist(weighted=False)
+            h_onecut_unw, h_cum_unw = res_unw[0], res_unw[1]
+            output["cutflow"][region]["onecut_unweighted"] = h_onecut_unw
+            output["cutflow"][region]["cumulative_unweighted"] = h_cum_unw
+
     def process(self, events):
         output = self.make_output()
         metadata = events.metadata
@@ -498,12 +542,9 @@ class WrAnalysis(processor.ProcessorABC):
 
         # Resolved selections
         resolved_selections = self.resolved_selections(tight_leptons, ak4_jets, triggers=triggers)
-        print(f"\n\nresolved_selections: {resolved_selections}\n\n")
 
         # TO-DO
-        # Boosted selections
         boosted_selections = self.boosted_selections(tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
-        print(f"\n\nboosted_selections: {boosted_selections}\n\n")        
 
         weights = self.build_event_weights(events, metadata, is_mc, is_data, mc_campaign, process_name)
 
@@ -526,42 +567,10 @@ class WrAnalysis(processor.ProcessorABC):
         for region, cuts in resolved_regions.items():
             self.fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
 
-        
-        # Fill the cutflow histograms
-        cutflow_regions = {
-            "wr_ee_resolved": {
-                "cutflow_order": ["two_tight_electrons","e_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
-            },
-            "wr_mumu_resolved": {
-                "cutflow_order": ["two_tight_muons", "mu_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
-            },
-        }
+        # Fill the resolved cutflow histograms
+        self.fill_resolved_cutflows(output, resolved_selections, weights)
 
-        for region, info in cutflow_regions.items():
-            order = info["cutflow_order"]
-
-            # Weighted cutflow
-            cf = resolved_selections.cutflow(*order, weights=weights)
-
-            res = cf.yieldhist(weighted=True)
-            h_onecut, h_cum = res[0], res[1]
-            output.setdefault("cutflow", {})
-            output["cutflow"].setdefault(region, {})
-            output["cutflow"][region]["onecut"] = h_onecut
-            output["cutflow"][region]["cumulative"] = h_cum
-
-            # Unweighted cutflow
-            cf_unw = resolved_selections.cutflow(*order, weights=None)
-            res_unw = cf_unw.yieldhist(weighted=False)
-            h_onecut_unw, h_cum_unw = res_unw[0], res_unw[1]
-            output["cutflow"][region]["onecut_unweighted"] = h_onecut_unw
-            output["cutflow"][region]["cumulative_unweighted"] = h_cum_unw
-
-        nested_output = {
-            dataset: {
-                **output,
-            }
-        }
+        nested_output = {dataset: {**output}}
         
         return nested_output
 
