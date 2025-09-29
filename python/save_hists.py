@@ -5,12 +5,33 @@ from pathlib import Path
 import hist
 from hist import Hist
 from python.preprocess_utils import get_era_details
+from typing import Dict
 
-# Set up logging configuration
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 
-# --- Add these helpers ---
+def _is_simple_cutflow(kinds) -> bool:
+    if isinstance(kinds, Hist):
+        return True
+    if isinstance(kinds, dict):
+        keys = set(kinds.keys())
+        return keys <= {"cumulative"} and isinstance(kinds.get("cumulative"), Hist)
+    return False
+
+
+def _save_cutflows(root_file, cutflow_summed: Dict[str, dict]):
+    for region, kinds in cutflow_summed.items():
+        # Case 1: simple counter → save flat as cutflow/<region>
+        if _is_simple_cutflow(kinds):
+            h = kinds if isinstance(kinds, Hist) else kinds["cumulative"]
+            root_file[f"/cutflow/{region}"] = h
+            continue
+
+        # Case 2: full region with multiple hists → make a folder
+        base = f"/cutflow/{region}"
+        for name in ("onecut", "cumulative", "onecut_unweighted", "cumulative_unweighted"):
+            h = kinds.get(name)
+            if isinstance(h, Hist):
+                root_file[f"{base}/{name}"] = h
 
 def _normalize_syst_name(syst: str) -> str:
     """
@@ -19,14 +40,6 @@ def _normalize_syst_name(syst: str) -> str:
     return "".join(ch.lower() for ch in syst if ch.isalnum())
 
 def _folder_and_hist_names(region: str, syst: str, hist_stem: str):
-    """
-    For syst == 'Nominal':
-        folder:  <region>/
-        hist:    <hist_stem>_<region>
-    For syst != 'Nominal':
-        folder:  syst_<norm>_<region>/
-        hist:    <hist_stem>_syst_<norm>_<region>
-    """
     if syst == "Nominal":
         folder = f"{region}"
         hname  = f"{hist_stem}_{region}"
@@ -36,6 +49,30 @@ def _folder_and_hist_names(region: str, syst: str, hist_stem: str):
         hname  = f"{hist_stem}_syst_{norm}_{region}"
     return folder, hname
 
+def _sum_cutflow_hists(my_hists):
+    out = {}
+    for dataset_payload in my_hists.values():
+        cfmap = dataset_payload.get("cutflow") or dataset_payload.get("__cutflow__") or {}
+        if not isinstance(cfmap, dict):
+            continue
+
+        for region, parts in cfmap.items():
+            if not isinstance(parts, dict):
+                # old/flat style fallback (rare)
+                if isinstance(parts, Hist):
+                    out.setdefault(region, {})
+                    out[region].setdefault("cumulative", parts.copy())
+                continue
+
+            out.setdefault(region, {})
+            for name in ("onecut", "cumulative", "onecut_unweighted", "cumulative_unweighted"):
+                h = parts.get(name)
+                if isinstance(h, Hist):
+                    if name in out[region]:
+                        out[region][name] += h
+                    else:
+                        out[region][name] = h.copy()
+    return out
 
 def split_hists_with_syst(summed_hists, *, sum_over_process=True):
     out = {}
@@ -54,10 +91,8 @@ def split_hists_with_syst(summed_hists, *, sum_over_process=True):
 
         for reg in regions:
             for sy in systs:
-                # Slice first
                 hh = h[{region_ax.name: reg, syst_ax.name: sy}]
 
-                # Then optionally remove the 'process' axis
                 if sum_over_process and has_proc and any(ax.name == "process" for ax in hh.axes):
                     idxs_to_keep = [i for i, ax in enumerate(hh.axes) if ax.name != "process"]
                     if len(idxs_to_keep) < hh.ndim:
@@ -67,26 +102,18 @@ def split_hists_with_syst(summed_hists, *, sum_over_process=True):
     return out
 
 def save_histograms(histograms, args):
-    """
-    Takes in raw histograms, processes them and saves the output to ROOT files.
-    """
     run, year, era = get_era_details(args.era)
     sample = args.sample
     hnwr_mass= args.mass
 
-    # Define working directory and era mapping
     working_dir = Path("WR_Plotter")
 
-    # Build working directory
-   # Build working directory
     if getattr(args, 'dir', None):
         output_dir = working_dir / 'rootfiles' / run / year / era / args.dir
     else:
         output_dir = working_dir / 'rootfiles' / run / year / era
 
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Build filename based on sample
 
     if getattr(args, 'name', None):
         filename_prefix = f"WRAnalyzer_{args.name}"
@@ -98,49 +125,28 @@ def save_histograms(histograms, args):
     else:
         output_file= output_dir / f"{filename_prefix}_{sample}.root"
 
-    # Process histograms
-#    scaled_hists = scale_hists(histograms)
-
     summed_hist = sum_hists(histograms)
-# summed_hist = sum_hists(histograms)          # you already have this
     split_histograms_dict = split_hists_with_syst(summed_hist, sum_over_process=True)
+
+    cutflow_summed = _sum_cutflow_hists(histograms)
 
     with uproot.recreate(output_file) as root_file:
         for (region, syst, hist_name), hist_obj in split_histograms_dict.items():
-            # Use the *variable axis* name (e.g. 'phi_leadlep') as the stem:
-            # We assume your last axis is the variable axis and its name is what you want on disk.
-            # If you prefer to use 'hist_name' literally, replace 'var_stem' with 'hist_name'.
             try:
-                # Grab the 1D/ND variable axis name(s); here we use the first non-category axis.
                 var_axes = [ax for ax in hist_obj.axes if ax.__class__.__name__ != "StrCategory"]
                 var_stem = var_axes[0].name if var_axes else hist_name
             except Exception:
                 var_stem = hist_name
-
             folder, hname = _folder_and_hist_names(region, syst, var_stem)
+            root_file[f"/{folder}/{hname}"] = hist_obj
 
-            # Examples:
-            # Nominal:            'wr_ee_resolved_dy_cr/phi_leadlep_wr_ee_resolved_dy_cr'
-            # RenFactScaleUp:     'syst_renfactscaleup_wr_ee_resolved_dy_cr/phi_leadlep_syst_renfactscaleup_wr_ee_resolved_dy_cr'
-            path = f"/{folder}/{hname}"
-            root_file[path] = hist_obj
-
-#    split_histograms_dict = split_hists(summed_hist)
-
-#    with uproot.recreate(output_file) as root_file:
-#        for (region, hist_name), hist_obj in split_histograms_dict.items():
-#            path = f'/{region}/{hist_name}_{region}'
- #           root_file[path] = hist_obj
+        _save_cutflows(root_file, cutflow_summed)
 
     logging.info(f"Histograms saved to {output_file}.")
 
 
 def scale_hists(data):
-    """
-    Scale histograms by x_sec/sumw.
-    """
     for dataset_key, dataset_info in data.items():
-#        if 'x_sec' in dataset_info and 'sumw' in dataset_info and dataset_info['process'] != 'Signal':
         if 'x_sec' in dataset_info and 'sumw' in dataset_info:
             sf = dataset_info['x_sec']/dataset_info['nevts']
             for key, value in dataset_info.items():
@@ -151,9 +157,6 @@ def scale_hists(data):
     return data
 
 def sum_hists(my_hists):
-    """
-    Sum histograms across datasets (e.g. Merge all of the HT binned DY histograms into a single DYJets).
-    """
     if not my_hists:
         raise ValueError("No histogram data provided.")
 
@@ -178,9 +181,6 @@ def sum_hists(my_hists):
     return sum_histograms
 
 def split_hists(summed_hists):
-    """
-    Take the hist object and split it into seperate histogram (for example, make seperate histograms for ee and mumu).
-    """
     split_histograms = {}
 
     for hist_name, sum_hist in summed_hists.items():

@@ -59,9 +59,9 @@ class WrAnalysis(processor.ProcessorABC):
             'pt_fourobject':               self.create_hist('pt_fourobject',               (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
 
             # Cutflow histograms
-            'two_tight_leptons':           self.create_hist('two_tight_leptons',           (1,     0, 1),    r'Two tight leptons'),
-            'two_tight_electrons':         self.create_hist('two_tight_electrons',         (1,     0, 1),    r'Two tight electrons'),
-            'two_tight_muons':             self.create_hist('two_tight_muons',             (1,     0, 1),    r'Two tight muons'),
+        #    'two_tight_leptons':           self.create_hist('two_tight_leptons',           (1,     0, 1),    r'Two tight leptons'),
+        #    'two_tight_electrons':         self.create_hist('two_tight_electrons',         (1,     0, 1),    r'Two tight electrons'),
+        #    'two_tight_muons':             self.create_hist('two_tight_muons',             (1,     0, 1),    r'Two tight muons'),
 
         }
 
@@ -504,6 +504,32 @@ class WrAnalysis(processor.ProcessorABC):
 #            'two_tight_electrons':         self.create_hist('two_tight_electrons',         (1,     0, 1),    r'Two tight electrons'),
 #            'two_tight_muons':             self.create_hist('two_tight_muons',             (1,     0, 1),    r'Two tight muons'),
         # Fill them in the cutflow folder, but above wr_ee_resolved and wr_mumu_resolved
+
+        # --- Basic cut-count histograms (placed in output['cutflow'] above region entries) ---
+        output.setdefault("cutflow", {})
+
+        # Build masks from your selections
+        m_two_e  = selections.all("two_tight_electrons")
+        m_two_mu = selections.all("two_tight_muons")
+        m_two_ll = m_two_e | m_two_mu
+
+        w = weights.weight()
+
+        def _fill_single_bin_hist(name: str, label: str, mask):
+            """Make a 1-bin [0,1) histogram and fill the bin at 0.5 for passing events."""
+            h = hist.Hist(
+                hist.axis.Regular(1, 0, 1, name=name, label=label),
+                storage=hist.storage.Weight(),
+            )
+            w_pass = ak.to_numpy(w[mask])
+            if w_pass.size > 0:
+                coords = np.full(w_pass.size, 0.5, dtype=float)
+                h.fill(**{name: coords}, weight=w_pass)
+            output["cutflow"][name] = h
+
+        _fill_single_bin_hist("two_tight_leptons",   r"Two tight leptons",   m_two_ll)
+        _fill_single_bin_hist("two_tight_electrons", r"Two tight electrons", m_two_e)
+        _fill_single_bin_hist("two_tight_muons",     r"Two tight muons",     m_two_mu)
 
         ####
         cutflow_regions = {
