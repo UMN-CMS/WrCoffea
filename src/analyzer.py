@@ -34,6 +34,7 @@ class WrAnalysis(processor.ProcessorABC):
         self._signal_sample = mass_point
 
         self.make_output = lambda: {
+            # Kinematic histograms
             'pt_leading_lepton':           self.create_hist('pt_leadlep',                  (200,   0, 2000), r'$p_{T}$ of the leading lepton [GeV]'),
             'eta_leading_lepton':          self.create_hist('eta_leadlep',                 (60,   -3,    3), r'$\eta$ of the leading lepton'),
             'phi_leading_lepton':          self.create_hist('phi_leadlep',                 (80,   -4,    4), r'$\phi$ of the leading lepton'),
@@ -56,6 +57,12 @@ class WrAnalysis(processor.ProcessorABC):
             'pt_threeobject_subleadlep':   self.create_hist('pt_threeobject_subleadlep',   (800,   0, 8000), r'$p_{T,\ell jj}$ [GeV]'),
             'mass_fourobject':             self.create_hist('mass_fourobject',             (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':               self.create_hist('pt_fourobject',               (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
+
+            # Cutflow histograms
+            'two_tight_leptons':           self.create_hist('two_tight_leptons',           (1,     0, 1),    r'Two tight leptons'),
+            'two_tight_electrons':         self.create_hist('two_tight_electrons',         (1,     0, 1),    r'Two tight electrons'),
+            'two_tight_muons':             self.create_hist('two_tight_muons',             (1,     0, 1),    r'Two tight muons'),
+
         }
 
     def create_hist(self, name, bins, label):
@@ -490,7 +497,15 @@ class WrAnalysis(processor.ProcessorABC):
         weights : Weights
             Coffea Weights object used for weighted cutflows.
         """
-        # Fill the cutflow histograms
+        #TASK
+        #####
+        # Right here I want you to fill the histograms
+#            'two_tight_leptons':           self.create_hist('two_tight_leptons',           (1,     0, 1),    r'Two tight leptons'),
+#            'two_tight_electrons':         self.create_hist('two_tight_electrons',         (1,     0, 1),    r'Two tight electrons'),
+#            'two_tight_muons':             self.create_hist('two_tight_muons',             (1,     0, 1),    r'Two tight muons'),
+        # Fill them in the cutflow folder, but above wr_ee_resolved and wr_mumu_resolved
+
+        ####
         cutflow_regions = {
             "wr_ee_resolved": {
                 "cutflow_order": ["two_tight_electrons","e_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
