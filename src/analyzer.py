@@ -70,44 +70,46 @@ class WrAnalysis(processor.ProcessorABC):
         )
 
     def fill_resolved_histograms(self, output, region, cut, process_name, jets, leptons, weights, syst_weights):
-        resolved_hists = [
-            ('pt_leading_lepton',         leptons[:, 0].pt,    'pt_leadlep'),
-            ('eta_leading_lepton',        leptons[:, 0].eta,   'eta_leadlep'),
-            ('phi_leading_lepton',        leptons[:, 0].phi,   'phi_leadlep'),
-            ('pt_subleading_lepton',      leptons[:, 1].pt,    'pt_subleadlep'),
-            ('eta_subleading_lepton',     leptons[:, 1].eta,   'eta_subleadlep'),
-            ('phi_subleading_lepton',     leptons[:, 1].phi,   'phi_subleadlep'),
-            ('pt_leading_jet',            jets[:, 0].pt,       'pt_leadjet'),
-            ('eta_leading_jet',           jets[:, 0].eta,      'eta_leadjet'),
-            ('phi_leading_jet',           jets[:, 0].phi,      'phi_leadjet'),
-            ('pt_subleading_jet',         jets[:, 1].pt,       'pt_subleadjet'),
-            ('eta_subleading_jet',        jets[:, 1].eta,      'eta_subleadjet'),
-            ('phi_subleading_jet',        jets[:, 1].phi,      'phi_subleadjet'),
-            ('mass_dilepton',             (leptons[:, 0] + leptons[:, 1]).mass, 'mass_dilepton'),
-            ('pt_dilepton',               (leptons[:, 0] + leptons[:, 1]).pt,   'pt_dilepton'),
-            ('mass_dijet',                (jets[:, 0] + jets[:, 1]).mass,       'mass_dijet'),
-            ('pt_dijet',                  (jets[:, 0] + jets[:, 1]).pt,         'pt_dijet'),
-            ('mass_threeobject_leadlep',  (leptons[:, 0] + jets[:, 0] + jets[:, 1]).mass, 'mass_threeobject_leadlep'),
-            ('pt_threeobject_leadlep',    (leptons[:, 0] + jets[:, 0] + jets[:, 1]).pt,   'pt_threeobject_leadlep'),
-            ('mass_threeobject_subleadlep', (leptons[:, 1] + jets[:, 0] + jets[:, 1]).mass, 'mass_threeobject_subleadlep'),
-            ('pt_threeobject_subleadlep',  (leptons[:, 1] + jets[:, 0] + jets[:, 1]).pt,   'pt_threeobject_subleadlep'),
-            ('mass_fourobject',           (leptons[:, 0] + leptons[:, 1] + jets[:, 0] + jets[:, 1]).mass, 'mass_fourobject'),
-            ('pt_fourobject',             (leptons[:, 0] + leptons[:, 1] + jets[:, 0] + jets[:, 1]).pt,   'pt_fourobject'),
+        leptons_cut = leptons[cut]
+        jets_cut    = jets[cut]
+        w_cut       = weights.weight()[cut]
+        syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
+
+        resolved_specs = [
+            ('pt_leading_lepton',        lambda L,J: L[:, 0].pt,                               'pt_leadlep'),
+            ('eta_leading_lepton',       lambda L,J: L[:, 0].eta,                              'eta_leadlep'),
+            ('phi_leading_lepton',       lambda L,J: L[:, 0].phi,                              'phi_leadlep'),
+            ('pt_subleading_lepton',     lambda L,J: L[:, 1].pt,                               'pt_subleadlep'),
+            ('eta_subleading_lepton',    lambda L,J: L[:, 1].eta,                              'eta_subleadlep'),
+            ('phi_subleading_lepton',    lambda L,J: L[:, 1].phi,                              'phi_subleadlep'),
+            ('pt_leading_jet',           lambda L,J: J[:, 0].pt,                               'pt_leadjet'),
+            ('eta_leading_jet',          lambda L,J: J[:, 0].eta,                              'eta_leadjet'),
+            ('phi_leading_jet',          lambda L,J: J[:, 0].phi,                              'phi_leadjet'),
+            ('pt_subleading_jet',        lambda L,J: J[:, 1].pt,                               'pt_subleadjet'),
+            ('eta_subleading_jet',       lambda L,J: J[:, 1].eta,                              'eta_subleadjet'),
+            ('phi_subleading_jet',       lambda L,J: J[:, 1].phi,                              'phi_subleadjet'),
+            ('mass_dilepton',            lambda L,J: (L[:, 0] + L[:, 1]).mass,                 'mass_dilepton'),
+            ('pt_dilepton',              lambda L,J: (L[:, 0] + L[:, 1]).pt,                   'pt_dilepton'),
+            ('mass_dijet',               lambda L,J: (J[:, 0] + J[:, 1]).mass,                 'mass_dijet'),
+            ('pt_dijet',                 lambda L,J: (J[:, 0] + J[:, 1]).pt,                   'pt_dijet'),
+            ('mass_threeobject_leadlep', lambda L,J: (L[:, 0] + J[:, 0] + J[:, 1]).mass,       'mass_threeobject_leadlep'),
+            ('pt_threeobject_leadlep',   lambda L,J: (L[:, 0] + J[:, 0] + J[:, 1]).pt,         'pt_threeobject_leadlep'),
+            ('mass_threeobject_subleadlep', lambda L,J: (L[:, 1] + J[:, 0] + J[:, 1]).mass,    'mass_threeobject_subleadlep'),
+            ('pt_threeobject_subleadlep',   lambda L,J: (L[:, 1] + J[:, 0] + J[:, 1]).pt,      'pt_threeobject_subleadlep'),
+            ('mass_fourobject',          lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).mass, 'mass_fourobject'),
+            ('pt_fourobject',            lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).pt,   'pt_fourobject'),
         ]
 
-        for hist_name, values, axis_name in resolved_hists:
-            vals = values[cut]
-            w = weights.weight()[cut]
-
-            # Fill once per systematic label
-            for syst_label, syst_w_full in syst_weights.items():
-                syst_w = syst_w_full[cut]
+        for hist_name, expr, axis_name in resolved_specs:
+            vals = expr(leptons_cut, jets_cut)
+#            vals = ak.to_numpy(ak.fill_none(vals, np.nan))
+            for syst_label, sw in syst_weights_cut.items():
                 output[hist_name].fill(
                     process=process_name,
                     region=region,
                     syst=syst_label,
                     **{axis_name: vals},
-                    weight=w * syst_w
+                    weight=w_cut * sw,
                 )
 
     def apply_lumi_mask(self, events, mc_campaign, is_data):
