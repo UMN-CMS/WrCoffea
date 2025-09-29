@@ -68,48 +68,6 @@ class WrAnalysis(processor.ProcessorABC):
             .Weight()
         )
 
-    def fill_resolved_histograms(self, output, region, cut, process_name, jets, leptons, weights, syst_weights):
-        leptons_cut = leptons[cut]
-        jets_cut    = jets[cut]
-        w_cut       = weights.weight()[cut]
-        syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
-
-        resolved_specs = [
-            ('pt_leading_lepton',           lambda L,J: L[:, 0].pt,                                   'pt_leadlep'),
-            ('eta_leading_lepton',          lambda L,J: L[:, 0].eta,                                  'eta_leadlep'),
-            ('phi_leading_lepton',          lambda L,J: L[:, 0].phi,                                  'phi_leadlep'),
-            ('pt_subleading_lepton',        lambda L,J: L[:, 1].pt,                                   'pt_subleadlep'),
-            ('eta_subleading_lepton',       lambda L,J: L[:, 1].eta,                                  'eta_subleadlep'),
-            ('phi_subleading_lepton',       lambda L,J: L[:, 1].phi,                                  'phi_subleadlep'),
-            ('pt_leading_jet',              lambda L,J: J[:, 0].pt,                                   'pt_leadjet'),
-            ('eta_leading_jet',             lambda L,J: J[:, 0].eta,                                  'eta_leadjet'),
-            ('phi_leading_jet',             lambda L,J: J[:, 0].phi,                                  'phi_leadjet'),
-            ('pt_subleading_jet',           lambda L,J: J[:, 1].pt,                                   'pt_subleadjet'),
-            ('eta_subleading_jet',          lambda L,J: J[:, 1].eta,                                  'eta_subleadjet'),
-            ('phi_subleading_jet',          lambda L,J: J[:, 1].phi,                                  'phi_subleadjet'),
-            ('mass_dilepton',               lambda L,J: (L[:, 0] + L[:, 1]).mass,                     'mass_dilepton'),
-            ('pt_dilepton',                 lambda L,J: (L[:, 0] + L[:, 1]).pt,                       'pt_dilepton'),
-            ('mass_dijet',                  lambda L,J: (J[:, 0] + J[:, 1]).mass,                     'mass_dijet'),
-            ('pt_dijet',                    lambda L,J: (J[:, 0] + J[:, 1]).pt,                       'pt_dijet'),
-            ('mass_threeobject_leadlep',    lambda L,J: (L[:, 0] + J[:, 0] + J[:, 1]).mass,           'mass_threeobject_leadlep'),
-            ('pt_threeobject_leadlep',      lambda L,J: (L[:, 0] + J[:, 0] + J[:, 1]).pt,             'pt_threeobject_leadlep'),
-            ('mass_threeobject_subleadlep', lambda L,J: (L[:, 1] + J[:, 0] + J[:, 1]).mass,           'mass_threeobject_subleadlep'),
-            ('pt_threeobject_subleadlep',   lambda L,J: (L[:, 1] + J[:, 0] + J[:, 1]).pt,             'pt_threeobject_subleadlep'),
-            ('mass_fourobject',             lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).mass, 'mass_fourobject'),
-            ('pt_fourobject',               lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).pt,   'pt_fourobject'),
-        ]
-
-        for hist_name, expr, axis_name in resolved_specs:
-            vals = expr(leptons_cut, jets_cut)
-            for syst_label, sw in syst_weights_cut.items():
-                output[hist_name].fill(
-                    process=process_name,
-                    region=region,
-                    syst=syst_label,
-                    **{axis_name: vals},
-                    weight=w_cut * sw,
-                )
-
     def apply_lumi_mask(self, events, mc_campaign, is_data):
         """
         Apply golden JSON luminosity mask to data.
@@ -131,7 +89,6 @@ class WrAnalysis(processor.ProcessorABC):
             logger.warning(f"No lumi JSON found for era '{mc_campaign}'. Data left unmasked.")
 
         return events
-
 
     def select_leptons(self, events):
         # --- TIGHT masks ---
@@ -190,7 +147,6 @@ class WrAnalysis(processor.ProcessorABC):
 
         return tight_leps, loose_leps
 
-
     def select_jets(self, events):
         # --- AK4 jet selection ---
         ak4_mask = (
@@ -241,7 +197,6 @@ class WrAnalysis(processor.ProcessorABC):
 
         emu_trig = e_trig | mu_trig
         return e_trig, mu_trig, emu_trig
-
 
     def resolved_selections(self, tight_leptons, ak4_jets, triggers=None):
         """
@@ -320,23 +275,30 @@ class WrAnalysis(processor.ProcessorABC):
 
         return selections
 
-    def boosted_baseline(self, tight_leptons, resolved_mask, triggers=None):
+    def boosted_selections(self, tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=None):
         """
-        Build PackedSelection for the boosted region.
+        Unified boosted selection builder.
 
-        Criteria:
-          - event is NOT resolved
-          - leading tight lepton pT > 60 GeV
+        Always builds:
+          - Baseline:     ~resolved AND lead tight lepton pT > 60 (and triggers if provided)
+          - DY control:   exactly-one-tight, ΔR(loose,AK8)<0.8 (same flavor), and
+                          [ (60<mll<150 AND Δφ(l_tight,AK8)>2.0) OR (no 60–150 AND LSF>0.75 jet with Δφ>2.0) ],
+                          with flavor exclusivity (exactly one flavor passes)
+          - Signal region: exactly-one-tight, ΔR(loose,AK8)<0.8 (same flavor), m_ll>200, m(l_tight,AK8)>800,
+                          and at least one LSF>0.75 AK8 with Δφ(l_tight,AK8)>2.0; flavor exclusive
+
         """
         selections = PackedSelection()
 
-        # Pad to always have 1 lepton
-        lpad = ak.pad_none(tight_leptons, 1)
-        l1 = lpad[:, 0]
+        resolved_mask = resolved_selections.all(
+                "two_tight_leptons", "lead_tight_lepton_pt60", "sublead_tight_pt53", "min_two_ak4_jets", "dr_all_pairs_gt0p4"
+        )
 
-        # Add criteria
+        # --- Leading tight lepton & baseline  ---------------------------------------------------------
+        lt = ak.pad_none(tight_leptons, 1)[:, 0]
+
         selections.add("not_resolved", ~resolved_mask)
-        selections.add("lead_tight_lepton_pt60", ak.fill_none(l1.pt > 60, False))
+        selections.add("lead_tight_lepton_pt60", ak.fill_none(lt.pt > 60, False))
 
         if triggers is not None:
             e_trig, mu_trig, emu_trig = triggers
@@ -346,154 +308,86 @@ class WrAnalysis(processor.ProcessorABC):
 
         boosted_mask = selections.all("not_resolved", "lead_tight_lepton_pt60")
 
-        return selections, boosted_mask
+        # --- Common per-event building blocks (used by DY-CR and SR) ---------------------------------
+        # Exactly one tight lepton
+        exactly_one_tight = ak.num(tight_leptons) == 1
+        selections.add("exactly_one_tight", ak.fill_none(exactly_one_tight, False))
 
-    def boosted_dy_cr(self, resolved_mask, tight_leptons, loose_leptons, ak8_jets):
-        """
-        Boosted DY control region (on top of boosted baseline).
-
-        Exactly one flavor (electrons-only OR muons-only) must satisfy all DY-CR
-        requirements together with the boosted baseline:
-          - exactly one tight lepton in the event
-          - at least one loose lepton of that flavor within ΔR(loose, AK8) < 0.8
-          - EITHER:
-              A) there exists a loose lepton of that flavor with 60 < m(tight, loose) < 150 GeV
-                 AND there exists an AK8 (no LSF requirement) with Δφ(tight, AK8) > 2.0
-            OR
-              B) if no loose lepton of that flavor satisfies 60–150, there exists an AK8 with LSF>0.75
-                 with Δφ(tight, AK8) > 2.0
-        """
-        # Build boosted baseline here (mirrors resolved_* helpers pattern)
-        boosted_selections, boosted_mask = self.boosted_baseline(tight_leptons, resolved_mask)
-
-        # --- Leading tight lepton and exactly-one-tight
-        lt = ak.pad_none(tight_leptons, 1)[:, 0]
-        exactly_one_tight = (ak.num(tight_leptons) == 1)
-        boosted_selections.add("exactly_one_tight", ak.fill_none(exactly_one_tight, False))
-
-        # --- Split loose leptons by flavor (you added 'flavor' upstream)
+        # Split loose leptons by flavor
         loose_e = loose_leptons[loose_leptons.flavor == "electron"]
         loose_m = loose_leptons[loose_leptons.flavor == "muon"]
 
-        # --- Common AK8 Δφ requirements (per-event)
-        dphi_no_lsf   = lt.deltaphi(ak8_jets)  # (events, n_ak8)
-        any_dphi_noL  = ak.fill_none(ak.any(dphi_no_lsf > 2.0, axis=-1), False)
-        boosted_selections.add("ak8_dphi_gt2_no_lsf", any_dphi_noL)
-
-        ak8_with_lsf  = ak8_jets[ak8_jets.lsf3 > 0.75]
-        dphi_with_lsf = lt.deltaphi(ak8_with_lsf)  # (events, n_ak8_lsf)
-        any_dphi_L    = ak.fill_none(ak.any(dphi_with_lsf > 2.0, axis=-1), False)
-        boosted_selections.add("ak8_dphi_gt2_with_lsf", any_dphi_L)
-
-        # --- Per-flavor m(tight, loose) in 60–150 (per-event)
-        m_ll_e = (lt[:, None] + loose_e).mass  # (events, n_e)
-        m_ll_m = (lt[:, None] + loose_m).mass  # (events, n_m)
-        has_e_mll_60_150 = ak.fill_none(ak.any((m_ll_e > 60) & (m_ll_e < 150), axis=-1), False)
-        has_m_mll_60_150 = ak.fill_none(ak.any((m_ll_m > 60) & (m_ll_m < 150), axis=-1), False)
-        boosted_selections.add("has_e_mll_60_150", has_e_mll_60_150)
-        boosted_selections.add("has_m_mll_60_150", has_m_mll_60_150)
-
-        # --- Per-flavor ΔR(loose, AK8) < 0.8 using cartesian (robust broadcasting)
+        # ΔR(loose, AK8) < 0.8 (per flavor)
         pairs_e = ak.cartesian({"l": loose_e, "j": ak8_jets}, axis=1, nested=False)
-        dr_e    = pairs_e["l"].deltaR(pairs_e["j"])  # (events, n_e * n_ak8)
-        has_e_dr08 = ak.fill_none(ak.any(dr_e < 0.8, axis=-1), False)
-
         pairs_m = ak.cartesian({"l": loose_m, "j": ak8_jets}, axis=1, nested=False)
-        dr_m    = pairs_m["l"].deltaR(pairs_m["j"])
+        dr_e = pairs_e["l"].deltaR(pairs_e["j"])
+        dr_m = pairs_m["l"].deltaR(pairs_m["j"])
+        has_e_dr08 = ak.fill_none(ak.any(dr_e < 0.8, axis=-1), False)
         has_m_dr08 = ak.fill_none(ak.any(dr_m < 0.8, axis=-1), False)
+        selections.add("has_e_dr08", has_e_dr08)
+        selections.add("has_m_dr08", has_m_dr08)
 
-        boosted_selections.add("has_e_dr08", has_e_dr08)
-        boosted_selections.add("has_m_dr08", has_m_dr08)
-
-        # --- Per-flavor branch logic (A or B), then full per-flavor pass (all 1D)
-        e_branch_a = has_e_mll_60_150 & any_dphi_noL
-        e_branch_b = (~has_e_mll_60_150) & any_dphi_L
-        m_branch_a = has_m_mll_60_150 & any_dphi_noL
-        m_branch_b = (~has_m_mll_60_150) & any_dphi_L
-
-        electron_pass = exactly_one_tight & has_e_dr08 & (e_branch_a | e_branch_b)
-        muon_pass     = exactly_one_tight & has_m_dr08 & (m_branch_a | m_branch_b)
-
-        boosted_selections.add("electron_pass_dycr", ak.fill_none(electron_pass, False))
-        boosted_selections.add("muon_pass_dycr",     ak.fill_none(muon_pass, False))
-
-        # --- Flavor exclusivity over full requirement: exactly one flavor passes
-        exclusive_one_flavor = electron_pass ^ muon_pass
-        boosted_selections.add("exclusive_one_flavor", ak.fill_none(exclusive_one_flavor, False))
-
-        # Final DY-CR mask on top of boosted baseline
-        dy_cr_mask = boosted_mask & ak.fill_none(exclusive_one_flavor, False)
-        return boosted_selections, dy_cr_mask
-
-    def boosted_sr(self, resolved_mask, tight_leptons, loose_leptons, ak8_jets):
-        """
-        Boosted Signal Region (on top of boosted baseline).
-
-        Exactly one flavor (electrons-only OR muons-only) must satisfy all SR requirements
-        together with the boosted baseline:
-          - exactly one tight lepton in the event
-          - at least one loose lepton of that flavor within ΔR(loose, AK8) < 0.8
-          - m(ℓ_tight, ℓ_loose) > 200 GeV (per flavor)
-          - m(ℓ_tight, AK8)     > 800 GeV (common)
-          - at least one AK8 with LSF>0.75 has Δφ(ℓ_tight, AK8) > 2.0 (common)
-        """
-        # Build boosted baseline (mirrors your resolved_* helpers)
-        boosted_selections, boosted_mask = self.boosted_baseline(tight_leptons, resolved_mask)
-
-        # Leading tight lepton & exactly-one-tight
-        lt = ak.pad_none(tight_leptons, 1)[:, 0]
-        exactly_one_tight = (ak.num(tight_leptons) == 1)
-        boosted_selections.add("exactly_one_tight", ak.fill_none(exactly_one_tight, False))
-
-        # Split loose leptons by flavor (tagged upstream)
-        loose_e = loose_leptons[loose_leptons.flavor == "electron"]
-        loose_m = loose_leptons[loose_leptons.flavor == "muon"]
-
-        # --- Per-flavor m(ℓ_tight, ℓ_loose) > 200
+        # m(l_tight, l_loose) per flavor
         m_ll_e = (lt[:, None] + loose_e).mass
         m_ll_m = (lt[:, None] + loose_m).mass
+
+        # For DY-CR: 60 < mll < 150
+        has_e_mll_60_150 = ak.fill_none(ak.any((m_ll_e > 60) & (m_ll_e < 150), axis=-1), False)
+        has_m_mll_60_150 = ak.fill_none(ak.any((m_ll_m > 60) & (m_ll_m < 150), axis=-1), False)
+        selections.add("has_e_mll_60_150", has_e_mll_60_150)
+        selections.add("has_m_mll_60_150", has_m_mll_60_150)
+
+        # For SR: mll > 200
         has_e_mll_gt200 = ak.fill_none(ak.any(m_ll_e > 200, axis=-1), False)
         has_m_mll_gt200 = ak.fill_none(ak.any(m_ll_m > 200, axis=-1), False)
-        boosted_selections.add("has_e_mll_gt200", has_e_mll_gt200)
-        boosted_selections.add("has_m_mll_gt200", has_m_mll_gt200)
+        selections.add("has_e_mll_gt200", has_e_mll_gt200)
+        selections.add("has_m_mll_gt200", has_m_mll_gt200)
 
-        # --- Common m(ℓ_tight, AK8) > 800
+        # Common m(l_tight, AK8) > 800 (SR)
         m_ltj = (lt[:, None] + ak8_jets).mass
         has_m_ltj_gt800 = ak.fill_none(ak.any(m_ltj > 800, axis=-1), False)
-        boosted_selections.add("has_m_ltj_gt800", has_m_ltj_gt800)
+        selections.add("has_m_ltj_gt800", has_m_ltj_gt800)
 
-        # --- Common Δφ(ℓ_tight, AK8 with LSF>0.75) > 2.0
-        ak8_with_lsf  = ak8_jets[ak8_jets.lsf3 > 0.75]
-        dphi_with_lsf = lt.deltaphi(ak8_with_lsf)                     # (events, n_ak8_lsf)
-        has_ak8_lsf_dphi_gt2 = ak.fill_none(ak.any(dphi_with_lsf > 2.0, axis=-1), False)
-        boosted_selections.add("ak8_lsf_dphi_gt2", has_ak8_lsf_dphi_gt2)
+        # Δφ(l_tight, AK8) conditions
+        dphi_any_ak8 = lt.deltaphi(ak8_jets)
+        any_dphi_gt2 = ak.fill_none(ak.any(dphi_any_ak8 > 2.0, axis=-1), False)  # used in DY-CR branch A
+        selections.add("ak8_dphi_gt2_no_lsf", any_dphi_gt2)
 
-        # --- Per-flavor ΔR(loose, AK8) < 0.8 using cartesian (robust)
-        pairs_e = ak.cartesian({"l": loose_e, "j": ak8_jets}, axis=1, nested=False)
-        dr_e    = pairs_e["l"].deltaR(pairs_e["j"])
-        has_e_dr08 = ak.fill_none(ak.any(dr_e < 0.8, axis=-1), False)
+        ak8_with_lsf = ak8_jets[ak8_jets.lsf3 > 0.75]
+        dphi_lsf = lt.deltaphi(ak8_with_lsf)
+        any_dphi_lsf_gt2 = ak.fill_none(ak.any(dphi_lsf > 2.0, axis=-1), False)  # DY-CR branch B and SR req
+        selections.add("ak8_lsf_dphi_gt2", any_dphi_lsf_gt2)
 
-        pairs_m = ak.cartesian({"l": loose_m, "j": ak8_jets}, axis=1, nested=False)
-        dr_m    = pairs_m["l"].deltaR(pairs_m["j"])
-        has_m_dr08 = ak.fill_none(ak.any(dr_m < 0.8, axis=-1), False)
+        # --- DY control region (flavor-exclusive) -----------------------------------------------------
+        e_branch_a = has_e_mll_60_150 & any_dphi_gt2
+        e_branch_b = (~has_e_mll_60_150) & any_dphi_lsf_gt2
+        m_branch_a = has_m_mll_60_150 & any_dphi_gt2
+        m_branch_b = (~has_m_mll_60_150) & any_dphi_lsf_gt2
 
-        boosted_selections.add("has_e_dr08", has_e_dr08)
-        boosted_selections.add("has_m_dr08", has_m_dr08)
+        e_pass_dycr = exactly_one_tight & has_e_dr08 & (e_branch_a | e_branch_b)
+        m_pass_dycr = exactly_one_tight & has_m_dr08 & (m_branch_a | m_branch_b)
 
-        # --- Per-flavor SR pass: exactly-one-tight & ΔR<0.8 & m_ll>200 & m_ltj>800
-        electron_pass = exactly_one_tight & has_e_dr08 & has_e_mll_gt200 & has_m_ltj_gt800
-        muon_pass     = exactly_one_tight & has_m_dr08 & has_m_mll_gt200 & has_m_ltj_gt800
+        selections.add("electron_pass_dycr", ak.fill_none(e_pass_dycr, False))
+        selections.add("muon_pass_dycr",     ak.fill_none(m_pass_dycr, False))
 
-        boosted_selections.add("electron_pass_bsr", ak.fill_none(electron_pass, False))
-        boosted_selections.add("muon_pass_bsr",     ak.fill_none(muon_pass, False))
+        exclusive_one_flavor_dycr = e_pass_dycr ^ m_pass_dycr
+        selections.add("exclusive_one_flavor_dycr", ak.fill_none(exclusive_one_flavor_dycr, False))
 
-        # Flavor exclusivity over full SR requirement
-        exclusive_one_flavor_bsr = electron_pass ^ muon_pass
-        boosted_selections.add("exclusive_one_flavor_bsr", ak.fill_none(exclusive_one_flavor_bsr, False))
+        dy_cr_mask = boosted_mask & ak.fill_none(exclusive_one_flavor_dycr, False)
 
-        # Final SR mask: boosted baseline & (exactly one flavor passes) & Δφ with LSF jet
-        sr_mask = boosted_mask & exclusive_one_flavor_bsr & has_ak8_lsf_dphi_gt2
-        return boosted_selections, sr_mask
+        # --- Signal region (flavor-exclusive) ---------------------------------------------------------
+        e_pass_sr = exactly_one_tight & has_e_dr08 & has_e_mll_gt200 & has_m_ltj_gt800
+        m_pass_sr = exactly_one_tight & has_m_dr08 & has_m_mll_gt200 & has_m_ltj_gt800
+
+        selections.add("electron_pass_bsr", ak.fill_none(e_pass_sr, False))
+        selections.add("muon_pass_bsr",     ak.fill_none(m_pass_sr, False))
+
+        exclusive_one_flavor_bsr = e_pass_sr ^ m_pass_sr
+        selections.add("exclusive_one_flavor_bsr", ak.fill_none(exclusive_one_flavor_bsr, False))
+
+        sr_mask = boosted_mask & ak.fill_none(exclusive_one_flavor_bsr, False) & any_dphi_lsf_gt2
+
+        return selections
 
     def build_event_weights(self, events, metadata, is_mc, is_data, mc_campaign, process_name):
         """
@@ -539,6 +433,48 @@ class WrAnalysis(processor.ProcessorABC):
 
         return weights
 
+    def fill_resolved_histograms(self, output, region, cut, process_name, jets, leptons, weights, syst_weights):
+        leptons_cut = leptons[cut]
+        jets_cut    = jets[cut]
+        w_cut       = weights.weight()[cut]
+        syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
+
+        resolved_specs = [
+            ('pt_leading_lepton',           lambda L,J: L[:, 0].pt,                                   'pt_leadlep'),
+            ('eta_leading_lepton',          lambda L,J: L[:, 0].eta,                                  'eta_leadlep'),
+            ('phi_leading_lepton',          lambda L,J: L[:, 0].phi,                                  'phi_leadlep'),
+            ('pt_subleading_lepton',        lambda L,J: L[:, 1].pt,                                   'pt_subleadlep'),
+            ('eta_subleading_lepton',       lambda L,J: L[:, 1].eta,                                  'eta_subleadlep'),
+            ('phi_subleading_lepton',       lambda L,J: L[:, 1].phi,                                  'phi_subleadlep'),
+            ('pt_leading_jet',              lambda L,J: J[:, 0].pt,                                   'pt_leadjet'),
+            ('eta_leading_jet',             lambda L,J: J[:, 0].eta,                                  'eta_leadjet'),
+            ('phi_leading_jet',             lambda L,J: J[:, 0].phi,                                  'phi_leadjet'),
+            ('pt_subleading_jet',           lambda L,J: J[:, 1].pt,                                   'pt_subleadjet'),
+            ('eta_subleading_jet',          lambda L,J: J[:, 1].eta,                                  'eta_subleadjet'),
+            ('phi_subleading_jet',          lambda L,J: J[:, 1].phi,                                  'phi_subleadjet'),
+            ('mass_dilepton',               lambda L,J: (L[:, 0] + L[:, 1]).mass,                     'mass_dilepton'),
+            ('pt_dilepton',                 lambda L,J: (L[:, 0] + L[:, 1]).pt,                       'pt_dilepton'),
+            ('mass_dijet',                  lambda L,J: (J[:, 0] + J[:, 1]).mass,                     'mass_dijet'),
+            ('pt_dijet',                    lambda L,J: (J[:, 0] + J[:, 1]).pt,                       'pt_dijet'),
+            ('mass_threeobject_leadlep',    lambda L,J: (L[:, 0] + J[:, 0] + J[:, 1]).mass,           'mass_threeobject_leadlep'),
+            ('pt_threeobject_leadlep',      lambda L,J: (L[:, 0] + J[:, 0] + J[:, 1]).pt,             'pt_threeobject_leadlep'),
+            ('mass_threeobject_subleadlep', lambda L,J: (L[:, 1] + J[:, 0] + J[:, 1]).mass,           'mass_threeobject_subleadlep'),
+            ('pt_threeobject_subleadlep',   lambda L,J: (L[:, 1] + J[:, 0] + J[:, 1]).pt,             'pt_threeobject_subleadlep'),
+            ('mass_fourobject',             lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).mass, 'mass_fourobject'),
+            ('pt_fourobject',               lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).pt,   'pt_fourobject'),
+        ]
+
+        for hist_name, expr, axis_name in resolved_specs:
+            vals = expr(leptons_cut, jets_cut)
+            for syst_label, sw in syst_weights_cut.items():
+                output[hist_name].fill(
+                    process=process_name,
+                    region=region,
+                    syst=syst_label,
+                    **{axis_name: vals},
+                    weight=w_cut * sw,
+                )
+
     def process(self, events):
         output = self.make_output()
         metadata = events.metadata
@@ -564,13 +500,10 @@ class WrAnalysis(processor.ProcessorABC):
         resolved_selections = self.resolved_selections(tight_leptons, ak4_jets, triggers=triggers)
         print(f"\n\nresolved_selections: {resolved_selections}\n\n")
 
-        # Boosted basline (event is NOT resolved and leading tight lepton pT > 60 GeV)
-#        boosted_selections,  boosted_mask  = self.boosted_baseline(tight_leptons, resolved_mask, triggers=triggers)
-#        print(f"\n\nboosted_selections: {boosted_selections}\n\n")        
-
         # TO-DO
-#        boosted_dycr_selections, boosted_dycr_mask = self.boosted_dy_cr(resolved_mask, tight_leptons, loose_leptons, ak8_jets)
-#        boosted_sr_selections, boosted_sr_mask = self.boosted_sr(resolved_mask, tight_leptons, loose_leptons, ak8_jets)
+        # Boosted selections
+        boosted_selections = self.boosted_selections(tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
+        print(f"\n\nboosted_selections: {boosted_selections}\n\n")        
 
         weights = self.build_event_weights(events, metadata, is_mc, is_data, mc_campaign, process_name)
 
