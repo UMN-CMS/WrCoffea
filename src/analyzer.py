@@ -57,12 +57,6 @@ class WrAnalysis(processor.ProcessorABC):
             'pt_threeobject_subleadlep':   self.create_hist('pt_threeobject_subleadlep',   (800,   0, 8000), r'$p_{T,\ell jj}$ [GeV]'),
             'mass_fourobject':             self.create_hist('mass_fourobject',             (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':               self.create_hist('pt_fourobject',               (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
-
-            # Cutflow histograms
-        #    'two_tight_leptons':           self.create_hist('two_tight_leptons',           (1,     0, 1),    r'Two tight leptons'),
-        #    'two_tight_electrons':         self.create_hist('two_tight_electrons',         (1,     0, 1),    r'Two tight electrons'),
-        #    'two_tight_muons':             self.create_hist('two_tight_muons',             (1,     0, 1),    r'Two tight muons'),
-
         }
 
     def create_hist(self, name, bins, label):
@@ -482,83 +476,120 @@ class WrAnalysis(processor.ProcessorABC):
                     weight=w_cut * sw,
                 )
 
-    def fill_resolved_cutflows(self, output, selections, weights):
+    def fill_cutflows(self, output, selections, weights):
         """
-        Compute and store weighted & unweighted one-cut and cumulative cutflows.
-
-        Parameters
-        ----------
-        output : dict
-            Analysis output accumulator (mutated in place).
-        selections : PackedSelection
-            The selection object with named cuts already added.
-        cutflow_regions : dict[str, dict]
-            Mapping of region name -> {"cutflow_order": [cut1, cut2, ...]}.
-        weights : Weights
-            Coffea Weights object used for weighted cutflows.
+        Build flat and cumulative cutflows for ee, mumu, and em channels.
         """
-        #TASK
-        #####
-        # Right here I want you to fill the histograms
-#            'two_tight_leptons':           self.create_hist('two_tight_leptons',           (1,     0, 1),    r'Two tight leptons'),
-#            'two_tight_electrons':         self.create_hist('two_tight_electrons',         (1,     0, 1),    r'Two tight electrons'),
-#            'two_tight_muons':             self.create_hist('two_tight_muons',             (1,     0, 1),    r'Two tight muons'),
-        # Fill them in the cutflow folder, but above wr_ee_resolved and wr_mumu_resolved
-
-        # --- Basic cut-count histograms (placed in output['cutflow'] above region entries) ---
         output.setdefault("cutflow", {})
 
-        # Build masks from your selections
-        m_two_e  = selections.all("two_tight_electrons")
-        m_two_mu = selections.all("two_tight_muons")
-        m_two_ll = m_two_e | m_two_mu
+        # --- convenience: get masks by name once
+        def M(name): return selections.all(name)
+
+        m_two_e   = M("two_tight_electrons")
+        m_two_mu  = M("two_tight_muons")
+        m_two_em  = M("two_tight_em")
+        m_e_trig  = M("e_trigger")
+        m_mu_trig = M("mu_trigger")
+        m_em_trig = M("emu_trigger")
+        m_j2      = M("min_two_ak4_jets")
+        m_dr      = M("dr_all_pairs_gt0p4")
+        m_mll200  = M("mll_gt200")
+        m_mlljj8  = M("mlljj_gt800")
+        m_mll400  = M("mll_gt400")
 
         w = weights.weight()
 
-        def _fill_single_bin_hist(name: str, label: str, mask):
-            """Make a 1-bin [0,1) histogram and fill the bin at 0.5 for passing events."""
+        def _onebin_hist(lastcut_name: str, mask, use_weights=True):
+            """1 bin in [0,1), named by the last cut."""
             h = hist.Hist(
-                hist.axis.Regular(1, 0, 1, name=name, label=label),
+                hist.axis.Regular(1, 0, 1, name=lastcut_name, label=lastcut_name),
                 storage=hist.storage.Weight(),
             )
-            w_pass = ak.to_numpy(w[mask])
-            if w_pass.size > 0:
+            if use_weights:
+                w_pass = ak.to_numpy(w[mask])
+            else:
+                # unweighted: count passing events
+                w_pass = np.ones(np.count_nonzero(mask), dtype="f8")
+            if w_pass.size:
                 coords = np.full(w_pass.size, 0.5, dtype=float)
-                h.fill(**{name: coords}, weight=w_pass)
-            output["cutflow"][name] = h
+                h.fill(**{lastcut_name: coords}, weight=w_pass)
+            return h
 
-        _fill_single_bin_hist("two_tight_leptons",   r"Two tight leptons",   m_two_ll)
-        _fill_single_bin_hist("two_tight_electrons", r"Two tight electrons", m_two_e)
-        _fill_single_bin_hist("two_tight_muons",     r"Two tight muons",     m_two_mu)
+        def _store_both_in(container: dict, name: str, mask):
+            """Store weighted and unweighted variants into a given dict container."""
+            container[name] = _onebin_hist(name, mask, use_weights=True)
+            container[f"{name}_unweighted"] = _onebin_hist(name, mask, use_weights=False)
 
-        ####
-        cutflow_regions = {
-            "wr_ee_resolved": {
-                "cutflow_order": ["two_tight_electrons","e_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
-            },
-            "wr_mumu_resolved": {
-                "cutflow_order": ["two_tight_muons", "mu_trigger", "min_two_ak4_jets", "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
-            },
+        # --- Top-level: no_cuts only
+        n_events = len(w)
+        mask_all = np.ones(n_events, dtype=bool)
+        _store_both_in(output["cutflow"], "no_cuts", mask_all)
+
+        # --- Prepare flavor folders
+        output["cutflow"].setdefault("ee", {})
+        output["cutflow"].setdefault("mumu", {})
+        output["cutflow"].setdefault("em", {})
+
+        # --- Base counters inside flavor folders
+        _store_both_in(output["cutflow"]["ee"],   "two_tight_electrons", m_two_e)
+        _store_both_in(output["cutflow"]["mumu"], "two_tight_muons",     m_two_mu)
+        _store_both_in(output["cutflow"]["em"],   "two_tight_em",        m_two_em)
+
+        # --- Define cumulative chains per flavor
+        chains = {
+            "ee":   ["two_tight_electrons", "e_trigger",  "min_two_ak4_jets",
+                     "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
+            "mumu": ["two_tight_muons",     "mu_trigger", "min_two_ak4_jets",
+                     "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
+            "em":   ["two_tight_em",        "emu_trigger","min_two_ak4_jets",
+                     "dr_all_pairs_gt0p4", "mll_gt200", "mlljj_gt800", "mll_gt400"],
+        }
+        name2mask = {
+            "two_tight_electrons": m_two_e,
+            "two_tight_muons":     m_two_mu,
+            "two_tight_em":        m_two_em,
+            "e_trigger":           m_e_trig,
+            "mu_trigger":          m_mu_trig,
+            "emu_trigger":         m_em_trig,
+            "min_two_ak4_jets":    m_j2,
+            "dr_all_pairs_gt0p4":  m_dr,
+            "mll_gt200":           m_mll200,
+            "mlljj_gt800":         m_mlljj8,
+            "mll_gt400":           m_mll400,
         }
 
-        for region, info in cutflow_regions.items():
-            order = info["cutflow_order"]
+        # --- Step-by-step cumulative counters per flavor
+        for flavor, steps in chains.items():
+            cum = name2mask[steps[0]].copy()
+            bucket = output["cutflow"][flavor]
+            for step in steps:
+                if step != steps[0]:
+                    cum = cum & name2mask[step]
+                bucket[step] = _onebin_hist(step, cum, use_weights=True)
+                bucket[f"{step}_unweighted"] = _onebin_hist(step, cum, use_weights=False)
 
-            # Weighted cutflow
+        # --- Region cutflows: onecut + cumulative into flavor folders (ee, mumu, em)
+        flavor_regions = {
+            "ee":   chains["ee"],
+            "mumu": chains["mumu"],
+            "em":   chains["em"],
+        }
+
+        for flavor, order in flavor_regions.items():
             cf = selections.cutflow(*order, weights=weights)
+
+            # weighted
             res = cf.yieldhist(weighted=True)
             h_onecut, h_cum = res[0], res[1]
+            bucket = output["cutflow"][flavor]
+            bucket["onecut"] = h_onecut
+            bucket["cumulative"] = h_cum
 
-            output.setdefault("cutflow", {})
-            output["cutflow"].setdefault(region, {})
-            output["cutflow"][region]["onecut"] = h_onecut
-            output["cutflow"][region]["cumulative"] = h_cum
-
-            # Unweighted cutflow
+            # unweighted
             res_unw = cf.yieldhist(weighted=False)
             h_onecut_unw, h_cum_unw = res_unw[0], res_unw[1]
-            output["cutflow"][region]["onecut_unweighted"] = h_onecut_unw
-            output["cutflow"][region]["cumulative_unweighted"] = h_cum_unw
+            bucket["onecut_unweighted"] = h_onecut_unw
+            bucket["cumulative_unweighted"] = h_cum_unw
 
     def process(self, events):
         output = self.make_output()
@@ -584,7 +615,7 @@ class WrAnalysis(processor.ProcessorABC):
         # Resolved selections
         resolved_selections = self.resolved_selections(tight_leptons, ak4_jets, triggers=triggers)
 
-        # TO-DO
+        # TO-COMPLETE
         boosted_selections = self.boosted_selections(tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
 
         weights = self.build_event_weights(events, metadata, is_mc, is_data, mc_campaign, process_name)
@@ -597,11 +628,11 @@ class WrAnalysis(processor.ProcessorABC):
 
         # Define the resolved regions
         resolved_regions = {
-            'wr_ee_resolved_dy_cr': resolved_selections.all('lead_tight_lepton_pt60', 'sublead_tight_pt53', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', '60_mll_150', 'mlljj_gt800', 'two_tight_electrons'),
-            'wr_mumu_resolved_dy_cr': resolved_selections.all('lead_tight_lepton_pt60', 'sublead_tight_pt53', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', '60_mll_150', 'mlljj_gt800', 'two_tight_muons'),
-            'wr_resolved_flavor_cr': resolved_selections.all('two_tight_em', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
-            'wr_ee_resolved_sr': resolved_selections.all('two_tight_electrons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
-            'wr_mumu_resolved_sr': resolved_selections.all('two_tight_muons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
+            'wr_ee_resolved_dy_cr': resolved_selections.all('two_tight_electrons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'e_trigger', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', '60_mll_150', 'mlljj_gt800'),
+            'wr_mumu_resolved_dy_cr': resolved_selections.all('two_tight_muons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'mu_trigger', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', '60_mll_150', 'mlljj_gt800'),
+            'wr_resolved_flavor_cr': resolved_selections.all('two_tight_em', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'emu_trigger', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
+            'wr_ee_resolved_sr': resolved_selections.all('two_tight_electrons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'e_trigger', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
+            'wr_mumu_resolved_sr': resolved_selections.all('two_tight_muons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'mu_trigger', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
         }
 
         # Fill the resolved histograms
@@ -609,7 +640,7 @@ class WrAnalysis(processor.ProcessorABC):
             self.fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
 
         # Fill the resolved cutflow histograms
-        self.fill_resolved_cutflows(output, resolved_selections, weights)
+        self.fill_cutflows(output, resolved_selections, weights)
 
         nested_output = {dataset: {**output}}
         
