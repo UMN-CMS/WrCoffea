@@ -18,21 +18,6 @@ def _is_simple_cutflow(kinds) -> bool:
     return False
 
 
-def _save_cutflows(root_file, cutflow_summed: Dict[str, dict]):
-    for region, kinds in cutflow_summed.items():
-        # Case 1: simple counter → save flat as cutflow/<region>
-        if _is_simple_cutflow(kinds):
-            h = kinds if isinstance(kinds, Hist) else kinds["cumulative"]
-            root_file[f"/cutflow/{region}"] = h
-            continue
-
-        # Case 2: full region with multiple hists → make a folder
-        base = f"/cutflow/{region}"
-        for name in ("onecut", "cumulative", "onecut_unweighted", "cumulative_unweighted"):
-            h = kinds.get(name)
-            if isinstance(h, Hist):
-                root_file[f"{base}/{name}"] = h
-
 def _normalize_syst_name(syst: str) -> str:
     """
     Turn 'RenFactScaleUp' -> 'renfactscaleup' (root-key friendly, lowercase).
@@ -50,29 +35,66 @@ def _folder_and_hist_names(region: str, syst: str, hist_stem: str):
     return folder, hname
 
 def _sum_cutflow_hists(my_hists):
+    """
+    Sum ALL cutflow histograms across datasets, recursively.
+
+    Supports structures like:
+      cutflow = {
+        "no_cuts": Hist,
+        "no_cuts_unweighted": Hist,
+        "ee":   {"two_tight_electrons": Hist, "e_trigger": Hist, ..., "onecut": Hist, ...},
+        "mumu": {...},
+        "em":   {...},
+      }
+    """
+    def _merge(dst, src):
+        # src can be Hist or dict
+        if isinstance(src, Hist):
+            if dst is None:
+                return src.copy()
+            if isinstance(dst, Hist):
+                dst += src
+                return dst
+            # dst is dict -> inconsistent types; treat as error or ignore
+            raise TypeError("Cutflow key has mixed types (Hist vs dict) across datasets.")
+        elif isinstance(src, dict):
+            if dst is None or isinstance(dst, Hist):
+                dst = {}  # (re)start a dict
+            for k, v in src.items():
+                dst[k] = _merge(dst.get(k), v)
+            return dst
+        else:
+            # unknown type: ignore
+            return dst
+
     out = {}
     for dataset_payload in my_hists.values():
-        cfmap = dataset_payload.get("cutflow") or dataset_payload.get("__cutflow__") or {}
+        cfmap = dataset_payload.get("cutflow") or dataset_payload.get("__cutflow__")
         if not isinstance(cfmap, dict):
             continue
-
-        for region, parts in cfmap.items():
-            if not isinstance(parts, dict):
-                # old/flat style fallback (rare)
-                if isinstance(parts, Hist):
-                    out.setdefault(region, {})
-                    out[region].setdefault("cumulative", parts.copy())
-                continue
-
-            out.setdefault(region, {})
-            for name in ("onecut", "cumulative", "onecut_unweighted", "cumulative_unweighted"):
-                h = parts.get(name)
-                if isinstance(h, Hist):
-                    if name in out[region]:
-                        out[region][name] += h
-                    else:
-                        out[region][name] = h.copy()
+        for k, v in cfmap.items():
+            out[k] = _merge(out.get(k), v)
     return out
+
+
+def _save_cutflows(root_file, cutflow_summed: Dict[str, dict]):
+    """
+    Recursively write all cutflow histograms while avoiding duplicate writes.
+    If a given path is encountered twice, the second write is skipped to prevent ROOT ;2 cycles.
+    """
+    seen = set()
+
+    def _recurse(prefix, obj):
+        if isinstance(obj, Hist):
+            if prefix not in seen:
+                root_file[prefix] = obj
+                seen.add(prefix)
+            return
+        if isinstance(obj, dict):
+            for name, child in obj.items():
+                _recurse(f"{prefix}/{name}", child)
+
+    _recurse("/cutflow", cutflow_summed)
 
 def split_hists_with_syst(summed_hists, *, sum_over_process=True):
     out = {}
