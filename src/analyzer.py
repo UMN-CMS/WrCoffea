@@ -411,7 +411,7 @@ class WrAnalysis(processor.ProcessorABC):
 
             # Your special-case DY scaling (kept as requested)
             if mc_campaign == "RunIISummer20UL18" and process_name == "DYJets":
-                event_weight *= (59.84 * 1000.0)
+                event_weight *= 1.35
 
             event_weight *= norm
             weights.add("event_weight", event_weight)
@@ -429,10 +429,19 @@ class WrAnalysis(processor.ProcessorABC):
                 weightDown= ones * (1.0 - delta),
             )
 
+            syst_weights = {
+                "Nominal":  weights.weight(),
+                "LumiUp":   weights.weight(modifier="lumiUp"),
+                "LumiDown": weights.weight(modifier="lumiDown"),
+            }
+        
         else:  # is_data
             weights.add("data", np.ones(n, dtype=np.float32))
+            syst_weights = { 
+                "Nominal":  weights.weight(),
+            }
 
-        return weights
+        return weights, syst_weights
 
     def fill_resolved_histograms(self, output, region, cut, process_name, jets, leptons, weights, syst_weights):
         leptons_cut = leptons[cut]
@@ -473,7 +482,7 @@ class WrAnalysis(processor.ProcessorABC):
                     region=region,
                     syst=syst_label,
                     **{axis_name: vals},
-                    weight=w_cut * sw,
+                    weight=sw,
                 )
 
     def fill_cutflows(self, output, selections, weights):
@@ -618,13 +627,7 @@ class WrAnalysis(processor.ProcessorABC):
         # TO-COMPLETE
         boosted_selections = self.boosted_selections(tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
 
-        weights = self.build_event_weights(events, metadata, is_mc, is_data, mc_campaign, process_name)
-
-        syst_weights = {
-            "Nominal":  weights.weight(),
-            "LumiUp":   weights.weight(modifier="lumiUp"),  
-            "LumiDown": weights.weight(modifier="lumiDown"),
-        }
+        weights, syst_weights = self.build_event_weights(events, metadata, is_mc, is_data, mc_campaign, process_name)
 
         # Define the resolved regions
         resolved_regions = {
