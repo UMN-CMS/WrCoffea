@@ -151,7 +151,6 @@ class WrAnalysis(processor.ProcessorABC):
         ak4_pteta_mask = (events.Jet.pt > 40) & (np.abs(events.Jet.eta) < 2.4)
         ak4_id_mask    = events.Jet.isTightLeptonVeto  # quality/ID-only
 
-        # Full (unchanged overall selection): pT/eta AND ID
         ak4_mask = ak4_pteta_mask & ak4_id_mask
         ak4_jets = events.Jet[ak4_mask]
 
@@ -161,9 +160,7 @@ class WrAnalysis(processor.ProcessorABC):
         ak8_pteta_mask = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)
         ak8_id_mask    = (events.FatJet.jetId == 2)  # keep ID-only separate from kinematics
 
-        # Keep your original extra selection(s) in the full working mask
         ak8_extra_sel  = (events.FatJet.msoftdrop > 40)
-        # If you later want to include LSF3 in the full selection, just AND it here:
         # ak8_extra_sel = ak8_extra_sel & (events.FatJet.lsf3 > 0.75)
 
         # Full (unchanged overall selection): pT/eta AND ID AND extra selection(s)
@@ -283,14 +280,6 @@ class WrAnalysis(processor.ProcessorABC):
             selections.add("e_trigger",   e_trig)
             selections.add("mu_trigger",  mu_trig)
             selections.add("emu_trigger", emu_trig)
-
-        # ------------------------------------------------------------
-        # NEW: object-level sub-cutflows (pT/eta-only vs ID-only)
-        # Requires masks set in select_leptons/select_jets:
-        #   self._ele_pteta_mask, self._mu_pteta_mask,
-        #   self._ele_id_mask,    self._mu_id_mask,
-        #   self._ak4_pteta_mask, self._ak4_id_mask
-        # ------------------------------------------------------------
 
         # Jet-level counts per event
         n_ak4_pteta = ak.sum(self._ak4_pteta_mask, axis=1)
@@ -449,9 +438,9 @@ class WrAnalysis(processor.ProcessorABC):
             # Base unit weights (no genWeight)
             event_weight = np.ones(n, dtype=np.float32)
 
-            # Your special-case DY scaling (kept as requested)
-            if mc_campaign == "RunIISummer20UL18" and process_name == "DYJets":
-                event_weight *= 59.83 * 1000
+            # Manually scaling lumi for cutflow purposes
+#            if mc_campaign == "RunIISummer20UL18" and process_name == "DYJets":
+#                event_weight *= 59.83 * 1000
 
             event_weight *= norm
             weights.add("event_weight", event_weight)
@@ -547,15 +536,10 @@ class WrAnalysis(processor.ProcessorABC):
         m_two_id_mu = M("two_id_muons")
         m_two_id_em = M("two_id_em")
 
-#        m_two_e   = M("two_tight_electrons")
-#        m_two_mu  = M("two_tight_muons")
-#        m_two_em  = M("two_tight_em")
-
         m_e_trig  = M("e_trigger")
         m_mu_trig = M("mu_trigger")
         m_em_trig = M("emu_trigger")
 
-#        m_j2      = M("min_two_ak4_jets")
         m_dr      = M("dr_all_pairs_gt0p4")
         m_mll200  = M("mll_gt200")
         m_mlljj8  = M("mlljj_gt800")
@@ -620,15 +604,9 @@ class WrAnalysis(processor.ProcessorABC):
             "two_id_muons":        m_two_id_mu,
             "two_id_em":           m_two_id_em,
 
-#            "two_tight_electrons": m_two_e,
-#            "two_tight_muons":     m_two_mu,
-#            "two_tight_em":        m_two_em,
-
             "e_trigger":           m_e_trig,
             "mu_trigger":          m_mu_trig,
             "emu_trigger":         m_em_trig,
-
-#            "min_two_ak4_jets":    m_j2,
 
             "dr_all_pairs_gt0p4":  m_dr,
             "mll_gt200":           m_mll200,
@@ -636,18 +614,18 @@ class WrAnalysis(processor.ProcessorABC):
             "mll_gt400":           m_mll400,
         }
 
-        # --- Step-by-step cumulative counters per flavor (kept as-is)
+        # --- Step-by-step cumulative counters per flavor
         for flavor, steps in chains.items():
 
-            cum = name2mask[steps[0]].copy()
+            cumu = name2mask[steps[0]].copy()
             bucket = output["cutflow"][flavor]
             for step in steps:
                 if step != steps[0]:
-                    cum = cum & name2mask[step]
-                bucket[step] = _onebin_hist(step, cum, use_weights=True)
-                bucket[f"{step}_unweighted"] = _onebin_hist(step, cum, use_weights=False)
+                    cumu = cumu & name2mask[step]
+                bucket[step] = _onebin_hist(step, cumu, use_weights=True)
+                bucket[f"{step}_unweighted"] = _onebin_hist(step, cumu, use_weights=False)
 
-        # --- Region cutflows: onecut + cumulative into flavor folders (kept as-is)
+        # --- Region cutflows: onecut + cumulative into flavor folders
         flavor_regions = {
             "ee":   chains["ee"],
             "mumu": chains["mumu"],
