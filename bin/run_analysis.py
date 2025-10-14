@@ -90,7 +90,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
             log_directory=log_dir,
         )
 
-        NWORKERS = 20  # set what you want (1-4 is a good start)
+        NWORKERS = 20
         cluster.scale(NWORKERS)
 
         client = Client(cluster)
@@ -114,8 +114,8 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 
     run = Runner(
         executor = DaskExecutor(client=client, compression=None),
-        chunksize=250_000,
-        maxchunks = None,
+        chunksize=250_000, #250_000
+        maxchunks = None, #Change to 1 for testing, None for all
         skipbadfiles=False,
         xrootdtimeout = 60,
         align_clusters = False,
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     elif args.sample == "Signal":
         filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_signal_skimmed_fileset.json"
     else:
-        filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_mc_lo_dy_skimmed_fileset.json" 
+        filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_mc_lo_dy_skimmed_fileset.json"
 
     filepath = Path("data/jsons") / run / year / era / subdir / filename
 
@@ -188,3 +188,4 @@ if __name__ == "__main__":
         save_histograms(hists_dict, args)
     exec_time = time.monotonic() - t0
     logging.info(f"Execution took {exec_time/60:.2f} minutes")
+
