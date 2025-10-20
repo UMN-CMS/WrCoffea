@@ -113,7 +113,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         client = Client(cluster)
 
     run = Runner(
-        executor = DaskExecutor(client=client, compression=None),
+        executor = DaskExecutor(client=client, compression=None, retries=0),
         chunksize=250_000, #250_000
         maxchunks = None, #Change to 1 for testing, None for all
         skipbadfiles=False,
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     elif args.sample == "Signal":
         filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_signal_skimmed_fileset.json"
     else:
-        filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_mc_lo_dy_skimmed_fileset.json"
+        filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_mc_skimmed_fileset.json"
 
     filepath = Path("data/jsons") / run / year / era / subdir / filename
 
