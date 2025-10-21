@@ -10,7 +10,8 @@ import re
 import logging
 import warnings
 import json
-
+from coffea.nanoevents.methods import vector
+ak.behavior.update(vector.behavior)
 warnings.filterwarnings("ignore", module="coffea.*")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,6 +58,15 @@ class WrAnalysis(processor.ProcessorABC):
             'pt_threeobject_subleadlep':   self.create_hist('pt_threeobject_subleadlep',   (800,   0, 8000), r'$p_{T,\ell jj}$ [GeV]'),
             'mass_fourobject':             self.create_hist('mass_fourobject',             (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':               self.create_hist('pt_fourobject',               (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
+
+            'pt_leading_AK8Jets':        self.create_hist('pt_leadAK8Jets',         (200,   0, 2000), r'$p_{T}$ of the leading  AK8Jets [GeV]'),
+            'eta_leading_AK8Jets':       self.create_hist('eta_leadAK8Jets',        (60,   -3,    3), r'$\eta$ of theleading  AK8Jets'),
+            'phi_leading_AK8Jets':       self.create_hist('phi_leadAK8Jets',        (80,   -4,    4), r'$\phi$ of theleading  AK8Jets'),
+            'LSF_leading_AK8Jets':        self.create_hist('LSF_leadingAK8Jets',         (200,   0, 1.1), r'LSF of leading AK8Jets'),
+            'mass_twoobject':        self.create_hist('mass_twoobject',         (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
+            'pt_twoobject':          self.create_hist('pt_twoobject',           (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
+            'count' : self.create_hist('count', (100,0,100), r'count'),
+            'dPhi_leading_tightlepton_AK8Jet':       self.create_hist('dPhi_leadTightlep_AK8Jets',        (80,   -4,    4), r'$d\phi$ (leading Tight lepton, AK8 Jet)'),
         }
 
     def create_hist(self, name, bins, label):
@@ -304,120 +314,262 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add("two_id_em",        (n_ele_id == 1) & (n_mu_id == 1))
 
         return selections
-
-    def boosted_selections(self, tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=None):
+    
+    ### ----- Boosted Helper functions ----------- ###
+    def remove_lepton(self,loose, tight):
+        match = (loose.deltaR(tight))
+        keep_mask = match >= 0.01
+        return loose[keep_mask]
+    
+    def ElectronCut(self, cut_bitmap, id_level=1):
+        """                                                                                                                                                                 
+        Awkward-array-safe version of the ElectronCut function.                                                                                                             
+        Ignores isolation bit (flag index 7) and applies ID threshold.                                                                                                      
         """
-        Unified boosted selection builder.
+        nFlags = 10          # total number of bits (cuts)                                                                                                                  
+        cut_size = 3         # 3 bits per cut                                                                                                                               
+        ignore_flag = 7      # ignore the isolation flag                                                                                                                    
+        mask_per_cut = (1 << cut_size) - 1  # 0b111 = 7                                                                                                                     
+        # Define a vectorized helper                                                                                                                                        
+        def passes(bitmap):
+            for cut_nr in range(nFlags):
+                if cut_nr == ignore_flag:
+                    continue
+                value = (bitmap >> (cut_nr * cut_size)) & mask_per_cut
+                if value < id_level : 
+                    return False
+            return True
+        # Apply per-electron check                                                                                                                                          
+        mask = ak.Array([[passes(b) for b in event] for event in cut_bitmap])
+        return mask
+    
+    def selectLooseElectrons(self, events):
+        loose_noIso_mask = self.ElectronCut(events.Electron.vidNestedWPBitmap, id_level=2)
+        loose_electrons = (events.Electron.pt > 53) & (np.abs(events.Electron.eta) < 2.4)  & ((events.Electron.cutBased_HEEP) | loose_noIso_mask)
+        return events.Electron[loose_electrons]
 
-        Always builds:
-          - Baseline:     ~resolved AND lead tight lepton pT > 60 (and triggers if provided)
-          - DY control:   exactly-one-tight, ΔR(loose,AK8)<0.8 (same flavor), and
-                          [ (60<mll<150 AND Δφ(l_tight,AK8)>2.0) OR (no 60–150 AND LSF>0.75 jet with Δφ>2.0) ],
-                          with flavor exclusivity (exactly one flavor passes)
-          - Signal region: exactly-one-tight, ΔR(loose,AK8)<0.8 (same flavor), m_ll>200, m(l_tight,AK8)>800,
-                          and at least one LSF>0.75 AK8 with Δφ(l_tight,AK8)>2.0; flavor exclusive
+    def selectLooseMuons(self, events):
+        loose_muons = (events.Muon.pt > 53) & (np.abs(events.Muon.eta) < 2.4) & (events.Muon.highPtId == 2)
+        return events.Muon[loose_muons]
+    
+    def selectAK8Jets(self,events):
+        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40) & (events.FatJet.isTight)
+        return events.FatJet[ak8_jets]
 
-        """
+    def selectAK8Jets_withLSF(self,events):
+        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40) & (events.FatJet.isTight) & (events.FatJet.lsf3 > 0.75)
+        return events.FatJet[ak8_jets]
+    
+    def boosted_selections(self, events, triggers=None):
+        #tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=None):
         selections = PackedSelection()
+        ####  ---- boosted category of events ----- #####                                                                                                                   
+        #### ---- object selections ---  ###
+        looseElectrons = self.selectLooseElectrons(events)
+        looseMuons = self.selectLooseMuons(events)
+        AK8Jets = self.selectAK8Jets(events)
+        AK8Jets_withLSF = self.selectAK8Jets_withLSF(events)
+        AK4Jets_inc, _ = self.select_jets(events)
+        # define tight by querying loose
+        tight_mask_e = (looseElectrons.cutBased_HEEP)
+        tightElectrons_inc = looseElectrons[tight_mask_e]
+        tightElectrons_inc = tightElectrons_inc[ak.argsort(tightElectrons_inc.pt, axis=1, ascending=False)]
+        ## define loose 
+        cut_bitmap = looseElectrons.vidNestedWPBitmap
+        loose_e_mask = self.ElectronCut(cut_bitmap, id_level=2)
+        looseElectrons = looseElectrons[loose_e_mask]
+        ## -- tight muons --- ##
+        tight_mask_mu = (looseMuons.tkRelIso < 0.1)
+        tightMuons_inc = looseMuons[tight_mask_mu]
+        tightMuons_inc = tightMuons_inc[ak.argsort(tightMuons_inc.pt, axis=1, ascending=False)]
 
-        resolved_mask = resolved_selections.all(
-                "two_tight_leptons", "lead_tight_lepton_pt60", "sublead_tight_pt53", "min_two_ak4_jets", "dr_all_pairs_gt0p4"
+        looseLeptons = ak.with_name(ak.concatenate((looseElectrons, looseMuons), axis=1), 'PtEtaPhiMCandidate')
+        looseLeptons = looseLeptons[ak.argsort(looseLeptons.pt, axis=1, ascending=False)]
+        tightLeptons_inc = ak.with_name(ak.concatenate((tightElectrons_inc, tightMuons_inc), axis=1), 'PtEtaPhiMCandidate')
+        tightLeptons_inc = tightLeptons_inc[ak.argsort(tightLeptons_inc.pt, axis=1, ascending=False)]
+
+        ## ------ not resolved events ----- #
+        has_two_leptons = ak.num(tightLeptons_inc) >= 2
+        muons_padded = ak.pad_none(tightLeptons_inc, 2, axis=1)
+        # compute dr only for events with >=2 muons                                                                                                                         
+        dr_l1l2 = ak.where(
+            ak.num(tightLeptons_inc) >= 2,
+            muons_padded[:,0].deltaR(muons_padded[:,1]),
+            ak.full_like(ak.num(tightLeptons_inc), np.nan)
         )
+        # For jets
+        jpad = ak.pad_none(AK4Jets_inc, 2)
+        j1, j2 = jpad[:, 0], jpad[:, 1] 
+        dr_j1j2   = ak.fill_none(j1.deltaR(j2) > 0.4, False)
 
-        # --- Leading tight lepton & baseline  ---------------------------------------------------------
-        lt = ak.pad_none(tight_leptons, 1)[:, 0]
+        has_two_jets = ak.num(AK4Jets_inc) >= 2
 
-        selections.add("not_resolved", ~resolved_mask)
-        selections.add("lead_tight_lepton_pt60", ak.fill_none(lt.pt > 60, False))
+        # dr_jl_min: compute only if both jets and leptons exist                                                                                                            
+        has_j_and_l = (ak.num(AK4Jets_inc) >= 1) & (ak.num(tightLeptons_inc) >= 1)
+        dr_jl_min = ak.where( has_j_and_l, ak.min(AK4Jets_inc[:, :2].nearest(tightLeptons_inc).deltaR(AK4Jets_inc[:, :2]), axis=1), ak.full_like(has_j_and_l, np.nan))
+        # Build all 2 leptons × 2 jets pairs                                                                                                                                
+        dr_lj = ak.cartesian({"lep": tightLeptons_inc[:,:2], "jet": AK4Jets_inc[:,:2]}, axis=1)
+        dr_lj_vals = dr_lj["lep"].deltaR(dr_lj["jet"])
+        # Condition: all l-j separations > 0.4                                                                                                                              
+        dr_lj_ok = ak.all(dr_lj_vals > 0.4, axis=1)
+        resolved = (((ak.num(tightElectrons_inc)  + (ak.num(tightMuons_inc))) == 2) & (ak.num(AK4Jets_inc) >= 2) & (dr_l1l2 > 0.4) & (dr_j1j2 > 0.4) & (dr_jl_min >0.4)) #(dr_lj_ok))                                                                                                                                                                   
+        boosted  = ~resolved
+        selections.add("boostedtag",boosted)
 
+        # ---------------------- Leading tight lepton pT>60 -------------------- #
+        tightLepton_padded = ak.pad_none(tightLeptons_inc,1,axis=1)
+        tight_lep   = tightLepton_padded[:, 0]
+        lead_pdgid  = ak.fill_none(abs(tight_lep.pdgId), 0)
+        is_lead_mu  = lead_pdgid == 13
+        is_lead_e   = lead_pdgid == 11
+        is_tight_pt = tight_lep.pt > 60
+        selections.add("leadTightwithPt60",is_tight_pt)
+        ## -- remove this tight lepton from loose lepton selection ---
+        looseLeptons = self.remove_lepton(looseLeptons, tight_lep)
+
+        # -- same-flavor and other-flavor loose collections --                                                                                                      
+        sf_loose = looseLeptons[abs(looseLeptons.pdgId) == abs(tight_lep.pdgId)]
+        of_loose = looseLeptons[abs(looseLeptons.pdgId) != abs(tight_lep.pdgId)]
+        sf_loose = sf_loose[ak.argsort(sf_loose.pt, axis=1, ascending=False)]
+        of_loose = of_loose[ak.argsort(of_loose.pt, axis=1, ascending=False)]
+
+        # ---------------- DY pair check ----------------                                                                                                                  
+        mll_pairs  = (tight_lep + sf_loose).mass
+        mask_mll   = (mll_pairs > 60) & (mll_pairs < 150)
+        has_dy_pair = ak.any(mask_mll, axis=1)
+        # -------- picking loose SF lepton --- #
+        DY_loose_lep  = ak.firsts(sf_loose[mask_mll])
+        # ---------------- AK8 jet candidate ----------------                                                                                                               
+        AK8Jets = AK8Jets[ak.argsort(AK8Jets.pt, axis=1, ascending=False)]
+        flag_ak8Jet = ak.num(AK8Jets)>=1
+        AK8Jets = ak.pad_none(AK8Jets, 1, axis=1)
+        dphi       = ak.fill_none(abs(AK8Jets.delta_phi(tight_lep)),0.0)
+        has_ak8_dphi_gt2 = ak.any(dphi > 2, axis=1)
+        ak8_mask   = dphi > 2.0
+        AK8_cand_dy   = ak.firsts(AK8Jets[ak8_mask])
+        # -------------- asking for atleast 1 AK8 jet ---------
+        selections.add("Atleast1AK8Jets & dPhi(J,tightLept)>2", flag_ak8Jet & has_ak8_dphi_gt2 )
+        
+        # ---------------- Case 1: DY CR ----------------                                                                                                                   
+        dr_dy  = AK8_cand_dy.deltaR(DY_loose_lep)
+        mlj_dy = ak.where(dr_dy < 0.8,
+                          (tight_lep + AK8_cand_dy).mass,
+                          (tight_lep + DY_loose_lep + AK8_cand_dy).mass)
+        mll_dy = (tight_lep + DY_loose_lep).mass
+        pt_dilept_dy = (tight_lep + DY_loose_lep).pt
+        pt_lj_dy = ak.where(dr_dy < 0.8,
+                          (tight_lep + AK8_cand_dy).pt,
+                          (tight_lep + DY_loose_lep + AK8_cand_dy).pt)
+        sublead_pdgID = abs(DY_loose_lep.pdgId)
+        is_sublead_mu = sublead_pdgID == 13
+        is_sublead_e = sublead_pdgID ==11
+        DYCR_mask = has_dy_pair & (mlj_dy > 800)
+        selections.add("DYCR_mask", DYCR_mask)
+        # -------- veto extra tight leptons for DY CR --------                                                                                                              
+        # ---- remove tight_lep and selected loose candidate from looseLepton collection                                                                                  
+        extra_tight_mu = ak.sum(
+            (looseMuons.tkRelIso < 0.1) &
+            (ak.fill_none(looseMuons.deltaR(tight_lep) > 0.01, True)) &
+            (ak.fill_none(looseMuons.deltaR(DY_loose_lep) > 0.01, True)),
+            axis=1
+        )
+        extra_tight_el = ak.sum(
+            (looseElectrons.cutBased_HEEP) &
+            (ak.fill_none(looseElectrons.deltaR(tight_lep) > 0.01, True)) &
+            (ak.fill_none(looseElectrons.deltaR(DY_loose_lep) > 0.01, True)),
+            axis=1
+        )
+        no_extra_tight_dyCR = (extra_tight_mu == 0) & (extra_tight_el == 0)
+
+        # # ---------------- Case 2: SR (no DY, SF near AK8, no OF near AK8) ----------------                                                                              
+        flag_ak8Jet_lsf = ak.num(AK8Jets_withLSF)>=1
+        AK8Jets_withLSF = ak.pad_none(AK8Jets_withLSF, 1, axis=1)
+        dphi_lsf       = ak.fill_none(abs(AK8Jets_withLSF.delta_phi(tight_lep)),0.0)
+        has_ak8_dphi_gt2_lsf = ak.any(dphi_lsf > 2, axis=1)
+        ak8_mask_lsf   = dphi_lsf > 2.0
+        AK8_cand   = ak.firsts(AK8Jets_withLSF[ak8_mask_lsf])
+        selections.add("AK8JetswithLSF", flag_ak8Jet_lsf & has_ak8_dphi_gt2_lsf )
+        dr_sf = AK8_cand.deltaR(sf_loose)
+        mask_sf = dr_sf < 0.8
+        sf_candidate = ak.firsts(sf_loose[mask_sf]) # ---- SF lepton candidate passing dR condition                                                                         
+        sf_exist = ak.num(sf_loose[mask_sf])>=1
+        dr_of = AK8_cand.deltaR(of_loose)
+        mask_of = dr_of < 0.8
+        of_candidate = ak.firsts(of_loose[mask_of]) #  -  ----- OF lepton candidate passing dR condition                                                                    
+        of_exist = ak.num(of_loose[mask_of])>=1
+
+        is_sr = (~has_dy_pair) & (~ak.is_none(sf_candidate)) & ak.is_none(of_candidate) #sf_exist & (~of_exist) #(~ak.is_none(sf_candidate)) & ak.is_none(of_candidate)    
+        sublead_pdgID = abs(sf_candidate.pdgId)
+        is_sublead_mu_sr = sublead_pdgID == 13
+        is_sublead_e_sr = sublead_pdgID ==11
+        mlj_sr   = (tight_lep + AK8_cand).mass
+        mll_sr = (tight_lep + sf_candidate).mass
+        pt_dilept_sr  = (tight_lep + AK8_cand).pt
+        pt_lj_sr = (tight_lep + sf_candidate).pt
+
+        SR_mask = is_sr & (mlj_sr > 800) & (mll_sr > 200)
+        selections.add("ee(mumu)SR", SR_mask)
+        # -------- veto extra tight leptons for SR --------                                                                                                                 
+        extra_tight_mu_sr = ak.sum(
+            (looseMuons.tkRelIso < 0.1) &
+            (ak.fill_none(looseMuons.deltaR(tight_lep) > 0.01, True)) &
+            (ak.fill_none(looseMuons.deltaR(sf_candidate) > 0.01, True)),
+            axis=1
+        )
+        extra_tight_el_sr = ak.sum(
+            (looseElectrons.cutBased_HEEP) &
+            (ak.fill_none(looseElectrons.deltaR(tight_lep) > 0.01, True)) &
+            (ak.fill_none(looseElectrons.deltaR(sf_candidate) > 0.01, True)),
+            axis=1
+        )
+        no_extra_tight_sr = (extra_tight_mu_sr == 0) & (extra_tight_el_sr == 0)
+
+        # ---------------- Case 3: Flavor CR (no DY, OF near AK8) ----------------                                                                                          
+        is_cr = (~has_dy_pair) & (~ak.is_none(of_candidate))  & ak.is_none(sf_candidate) #(~sf_exist) & of_exist #(~ak.is_none(of_candidate))  & ak.is_none(sf_candidate)  
+        sublead_pdgID = abs(of_candidate.pdgId)
+        is_sublead_mu_cr = sublead_pdgID == 13
+        is_sublead_e_cr = sublead_pdgID ==11
+
+        mlj_cr  = (tight_lep + AK8_cand).mass
+        mll_cr = (tight_lep + of_candidate).mass
+        pt_dilept_cr  = (tight_lep + AK8_cand).pt
+        pt_lj_cr = (tight_lep + of_candidate).pt
+
+        CR_mask = is_cr & (mlj_cr > 800) & (mll_cr > 200 )
+        selections.add("e(mu) or mu(e)CR", CR_mask)
+        # -------- veto extra tight leptons for flavor CR --------                                                                                                          
+        extra_tight_mu_cr = ak.sum(
+            (looseMuons.tkRelIso < 0.1) &
+            (ak.fill_none(looseMuons.deltaR(tight_lep) > 0.01, True)) &
+            (ak.fill_none(looseMuons.deltaR(of_candidate) > 0.01, True)),
+            axis=1
+        )
+        extra_tight_el_cr = ak.sum(
+            (looseElectrons.cutBased_HEEP) &
+            (ak.fill_none(looseElectrons.deltaR(tight_lep) > 0.01, True)) &
+            (ak.fill_none(looseElectrons.deltaR(of_candidate) > 0.01, True)),
+            axis=1
+        )
+        no_extra_tight_flav_cr = (extra_tight_mu_cr == 0) & (extra_tight_el_cr == 0)
+
+        # ----------------- Triggers ----- #
         if triggers is not None:
-            e_trig, mu_trig, emu_trig = triggers
-            selections.add("e_trigger",   e_trig)
-            selections.add("mu_trigger",  mu_trig)
-            selections.add("emu_trigger", emu_trig)
-
-        boosted_mask = selections.all("not_resolved", "lead_tight_lepton_pt60")
-
-        # --- Common per-event building blocks (used by DY-CR and SR) ---------------------------------
-        # Exactly one tight lepton
-        exactly_one_tight = ak.num(tight_leptons) == 1
-        selections.add("exactly_one_tight", ak.fill_none(exactly_one_tight, False))
-
-        # Split loose leptons by flavor
-        loose_e = loose_leptons[loose_leptons.flavor == "electron"]
-        loose_m = loose_leptons[loose_leptons.flavor == "muon"]
-
-        # ΔR(loose, AK8) < 0.8 (per flavor)
-        pairs_e = ak.cartesian({"l": loose_e, "j": ak8_jets}, axis=1, nested=False)
-        pairs_m = ak.cartesian({"l": loose_m, "j": ak8_jets}, axis=1, nested=False)
-        dr_e = pairs_e["l"].deltaR(pairs_e["j"])
-        dr_m = pairs_m["l"].deltaR(pairs_m["j"])
-        has_e_dr08 = ak.fill_none(ak.any(dr_e < 0.8, axis=-1), False)
-        has_m_dr08 = ak.fill_none(ak.any(dr_m < 0.8, axis=-1), False)
-        selections.add("has_e_dr08", has_e_dr08)
-        selections.add("has_m_dr08", has_m_dr08)
-
-        # m(l_tight, l_loose) per flavor
-        m_ll_e = (lt[:, None] + loose_e).mass
-        m_ll_m = (lt[:, None] + loose_m).mass
-
-        # For DY-CR: 60 < mll < 150
-        has_e_mll_60_150 = ak.fill_none(ak.any((m_ll_e > 60) & (m_ll_e < 150), axis=-1), False)
-        has_m_mll_60_150 = ak.fill_none(ak.any((m_ll_m > 60) & (m_ll_m < 150), axis=-1), False)
-        selections.add("has_e_mll_60_150", has_e_mll_60_150)
-        selections.add("has_m_mll_60_150", has_m_mll_60_150)
-
-        # For SR: mll > 200
-        has_e_mll_gt200 = ak.fill_none(ak.any(m_ll_e > 200, axis=-1), False)
-        has_m_mll_gt200 = ak.fill_none(ak.any(m_ll_m > 200, axis=-1), False)
-        selections.add("has_e_mll_gt200", has_e_mll_gt200)
-        selections.add("has_m_mll_gt200", has_m_mll_gt200)
-
-        # Common m(l_tight, AK8) > 800 (SR)
-        m_ltj = (lt[:, None] + ak8_jets).mass
-        has_m_ltj_gt800 = ak.fill_none(ak.any(m_ltj > 800, axis=-1), False)
-        selections.add("has_m_ltj_gt800", has_m_ltj_gt800)
-
-        # Δφ(l_tight, AK8) conditions
-        dphi_any_ak8 = lt.deltaphi(ak8_jets)
-        any_dphi_gt2 = ak.fill_none(ak.any(dphi_any_ak8 > 2.0, axis=-1), False)  # used in DY-CR branch A
-        selections.add("ak8_dphi_gt2_no_lsf", any_dphi_gt2)
-
-        ak8_with_lsf = ak8_jets[ak8_jets.lsf3 > 0.75]
-        dphi_lsf = lt.deltaphi(ak8_with_lsf)
-        any_dphi_lsf_gt2 = ak.fill_none(ak.any(dphi_lsf > 2.0, axis=-1), False)  # DY-CR branch B and SR req
-        selections.add("ak8_lsf_dphi_gt2", any_dphi_lsf_gt2)
-
-        # --- DY control region (flavor-exclusive) -----------------------------------------------------
-        e_branch_a = has_e_mll_60_150 & any_dphi_gt2
-        e_branch_b = (~has_e_mll_60_150) & any_dphi_lsf_gt2
-        m_branch_a = has_m_mll_60_150 & any_dphi_gt2
-        m_branch_b = (~has_m_mll_60_150) & any_dphi_lsf_gt2
-
-        e_pass_dycr = exactly_one_tight & has_e_dr08 & (e_branch_a | e_branch_b)
-        m_pass_dycr = exactly_one_tight & has_m_dr08 & (m_branch_a | m_branch_b)
-
-        selections.add("electron_pass_dycr", ak.fill_none(e_pass_dycr, False))
-        selections.add("muon_pass_dycr",     ak.fill_none(m_pass_dycr, False))
-
-        exclusive_one_flavor_dycr = e_pass_dycr ^ m_pass_dycr
-        selections.add("exclusive_one_flavor_dycr", ak.fill_none(exclusive_one_flavor_dycr, False))
-
-        dy_cr_mask = boosted_mask & ak.fill_none(exclusive_one_flavor_dycr, False)
-
-        # --- Signal region (flavor-exclusive) ---------------------------------------------------------
-        e_pass_sr = exactly_one_tight & has_e_dr08 & has_e_mll_gt200 & has_m_ltj_gt800
-        m_pass_sr = exactly_one_tight & has_m_dr08 & has_m_mll_gt200 & has_m_ltj_gt800
-
-        selections.add("electron_pass_bsr", ak.fill_none(e_pass_sr, False))
-        selections.add("muon_pass_bsr",     ak.fill_none(m_pass_sr, False))
-
-        exclusive_one_flavor_bsr = e_pass_sr ^ m_pass_sr
-        selections.add("exclusive_one_flavor_bsr", ak.fill_none(exclusive_one_flavor_bsr, False))
-
-        sr_mask = boosted_mask & ak.fill_none(exclusive_one_flavor_bsr, False) & any_dphi_lsf_gt2
-
-        return selections
+            eTrig, muTrig, emu_trig = triggers
+        
+        # ---------------- Region assignments ---------------- #                                                                                                            
+        mumu_dy_cr = muTrig & DYCR_mask & is_lead_mu & no_extra_tight_dyCR
+        ee_dy_cr   = eTrig & DYCR_mask & is_lead_e & no_extra_tight_dyCR
+        emu_cr = eTrig  & CR_mask & is_lead_e & no_extra_tight_flav_cr # lead e, loose mu                                                                        
+        mue_cr = muTrig & CR_mask & is_lead_mu & no_extra_tight_flav_cr # lead mu, loose e                                                                        
+        ee_sr = eTrig & SR_mask & is_lead_e & no_extra_tight_sr
+        mumu_sr = muTrig & SR_mask &  is_lead_mu & no_extra_tight_sr
+        selections.add("mumu-dy_cr", mumu_dy_cr & is_sublead_mu)
+        selections.add("ee-dy_cr",   ee_dy_cr & is_sublead_e)
+        selections.add("mumu_sr", mumu_sr & is_sublead_mu_sr)
+        selections.add("ee_sr",   ee_sr & is_sublead_e_sr)
+        selections.add("emu-cr",     emu_cr & is_sublead_mu_cr)
+        selections.add("mue-cr",     mue_cr & is_sublead_e_cr)        
+        return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate 
 
     def build_event_weights(self, events, metadata, is_mc, is_data, mc_campaign, process_name):
         """
@@ -439,8 +591,8 @@ class WrAnalysis(processor.ProcessorABC):
             event_weight = np.ones(n, dtype=np.float32)
 
             # Manually scaling lumi for cutflow purposes
-#            if mc_campaign == "RunIISummer20UL18" and process_name == "DYJets":
-#                event_weight *= 59.83 * 1000
+            #            if mc_campaign == "RunIISummer20UL18" and process_name == "DYJets":
+            #                event_weight *= 59.83 * 1000
 
             event_weight *= norm
             weights.add("event_weight", event_weight)
@@ -477,7 +629,7 @@ class WrAnalysis(processor.ProcessorABC):
         jets_cut    = jets[cut]
         w_cut       = weights.weight()[cut]
         syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
-
+        
         resolved_specs = [
             ('pt_leading_lepton',           lambda L,J: L[:, 0].pt,                                   'pt_leadlep'),
             ('eta_leading_lepton',          lambda L,J: L[:, 0].eta,                                  'eta_leadlep'),
@@ -502,9 +654,68 @@ class WrAnalysis(processor.ProcessorABC):
             ('mass_fourobject',             lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).mass, 'mass_fourobject'),
             ('pt_fourobject',               lambda L,J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).pt,   'pt_fourobject'),
         ]
-
+        
         for hist_name, expr, axis_name in resolved_specs:
             vals = expr(leptons_cut, jets_cut)
+            for syst_label, sw in syst_weights_cut.items():
+                output[hist_name].fill(
+                    process=process_name,
+                    region=region,
+                    syst=syst_label,
+                    **{axis_name: vals},
+                    weight=sw,
+                )
+
+    def fill_boosted_histograms(self, output, region, cut, process_name, leptons, ak8jets, looseleptons, weights, syst_weights):
+        leptons_cut = leptons[cut]
+        ak8jets_cut    = ak8jets[cut]
+        w_cut       = weights.weight()[cut]
+        syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
+        variables = [
+            ('pt_leading_lepton',         leptons.pt,    'pt_leadlep'),
+	    ('eta_leading_lepton',        leptons.eta,   'eta_leadlep'),
+            ('phi_leading_lepton',        leptons.phi,   'phi_leadlep'),
+            ('pt_subleading_lepton',      looseleptons.pt,    'pt_subleadlep'),
+            ('eta_subleading_lepton',     looseleptons.eta,   'eta_subleadlep'),
+            ('phi_subleading_lepton',     looseleptons.phi,   'phi_subleadlep'),
+            ('pt_leading_AK8Jets',            ak8jets.pt,       'pt_leadAK8Jets'),
+            ('eta_leading_AK8Jets',           ak8jets.eta,      'eta_leadAK8Jets'),
+            ('phi_leading_AK8Jets',           ak8jets.phi,      'phi_leadAK8Jets'),            
+            ('mass_dilepton',          (leptons + looseleptons).mass , 'mass_dilepton'),
+            ('pt_dilepton',             (leptons + looseleptons).pt ,   'pt_dilepton'),
+            ('mass_twoobject',           (leptons + ak8jets).mass , 'mass_twoobject'),
+            ('pt_twoobject',             (leptons + ak8jets).pt ,   'pt_twoobject'),
+            ('LSF_leading_AK8Jets', ak8jets.lsf3,'LSF_leadingAK8Jets'),
+            ('dPhi_leading_tightlepton_AK8Jet',  abs(ak8jets.delta_phi(leptons)),'dPhi_leadTightlep_AK8Jets')            
+	    ]
+        if "boosted_dy_cr" in region:
+            dr_dy  = ak8jets.deltaR(looseleptons)
+            mlj_dy = ak.where(dr_dy < 0.8,
+                          (leptons + ak8jets).mass,
+                          (leptons + ak8jets + looseleptons).mass)
+            pt_lj = ak.where(dr_dy < 0.8,
+                          (leptons + ak8jets).pt,
+                             (leptons + ak8jets + looseleptons).pt)
+            variables = [
+                ('pt_leading_lepton',         leptons.pt,    'pt_leadlep'),
+                ('eta_leading_lepton',        leptons.eta,   'eta_leadlep'),
+                ('phi_leading_lepton',        leptons.phi,   'phi_leadlep'),
+                ('pt_subleading_lepton',      looseleptons.pt,    'pt_subleadlep'),
+                ('eta_subleading_lepton',     looseleptons.eta,   'eta_subleadlep'),
+                ('phi_subleading_lepton',     looseleptons.phi,   'phi_subleadlep'),
+                ('pt_leading_AK8Jets',            ak8jets.pt,       'pt_leadAK8Jets'),
+                ('eta_leading_AK8Jets',           ak8jets.eta,      'eta_leadAK8Jets'),
+                ('phi_leading_AK8Jets',           ak8jets.phi,      'phi_leadAK8Jets'),
+                ('mass_dilepton',          (leptons + looseleptons).mass , 'mass_dilepton'),
+                ('pt_dilepton',             (leptons + looseleptons).pt ,   'pt_dilepton'),
+                ('mass_twoobject',           mlj_dy , 'mass_twoobject'),
+                ('pt_twoobject',             pt_lj ,   'pt_twoobject'),
+                ('LSF_leading_AK8Jets', ak8jets.lsf3,'LSF_leadingAK8Jets'),
+                ('dPhi_leading_tightlepton_AK8Jet',  abs(ak8jets.delta_phi(leptons)),'dPhi_leadTightlep_AK8Jets')
+                ]
+        for hist_name, expr, axis_name in variables:
+            #vals = expr(leptons_cut, jets_cut)
+            vals = expr[cut]
             for syst_label, sw in syst_weights_cut.items():
                 output[hist_name].fill(
                     process=process_name,
@@ -672,8 +883,9 @@ class WrAnalysis(processor.ProcessorABC):
         # Resolved selections
         resolved_selections = self.resolved_selections(tight_leptons, ak4_jets, triggers=triggers)
 
+        
         # TO-COMPLETE
-        boosted_selections = self.boosted_selections(tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
+        boosted_selection_list, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate = self.boosted_selections(events, triggers=triggers) #tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
 
         weights, syst_weights = self.build_event_weights(events, metadata, is_mc, is_data, mc_campaign, process_name)
 
@@ -685,7 +897,6 @@ class WrAnalysis(processor.ProcessorABC):
             'wr_ee_resolved_sr': resolved_selections.all('two_tight_electrons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'e_trigger', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
             'wr_mumu_resolved_sr': resolved_selections.all('two_tight_muons', 'lead_tight_lepton_pt60', 'sublead_tight_pt53', 'mu_trigger', 'min_two_ak4_jets', 'dr_all_pairs_gt0p4', 'mll_gt400', 'mlljj_gt800'),
         }
-
         # Fill the resolved histograms
         for region, cuts in resolved_regions.items():
             self.fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
@@ -693,6 +904,24 @@ class WrAnalysis(processor.ProcessorABC):
         # Fill the resolved cutflow histograms
         self.fill_cutflows(output, resolved_selections, weights)
 
+        boosted_regions = {
+            'wr_mumu_boosted_dy_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','DYCR_mask','Atleast1AK8Jets & dPhi(J,tightLept)>2','mumu-dy_cr'),
+	    'wr_mumu_boosted_sr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','mumu_sr','AK8JetswithLSF'),
+	    'wr_ee_boosted_dy_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','DYCR_mask','Atleast1AK8Jets & dPhi(J,tightLept)>2','ee-dy_cr'),
+            'wr_ee_boosted_sr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','ee_sr','AK8JetswithLSF'),
+	    'wr_emu_boosted_flavor_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','emu-cr','AK8JetswithLSF'),
+            'wr_mue_boosted_flavor_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','mue-cr','AK8JetswithLSF'),
+        }
+        for region, cuts in boosted_regions.items():
+	    #cut = selections.all(*cuts)
+            if "dy_cr" in region:
+                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy,DY_loose_lep, weights,syst_weights)
+
+            elif "flavor_cr" in region :
+                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand,of_candidate, weights,syst_weights)
+            else :
+                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep,AK8_cand, sf_candidate, weights,syst_weights)
+                
         nested_output = {dataset: {**output}}
         
         return nested_output
