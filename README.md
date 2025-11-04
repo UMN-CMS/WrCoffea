@@ -9,6 +9,7 @@ Welcome to the WR analyzer! This repository provides tools for analyzing and pro
 - [Plotting](docs/plotting.md) – Instructions for generating plots from histogram ROOT files.
 - [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
 - [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
+- [Expected limits using Combine framework](docs/run_combine.md) \u2013 Instructions to get expected exclusion limit.
 ---
 
 ## 📂 Repository Structure
