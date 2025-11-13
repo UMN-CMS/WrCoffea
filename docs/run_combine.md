@@ -27,7 +27,12 @@ Get 2D plots
 root -b -q 'getExclusion.C("out_WRcombine.root")'
 ```
 
-Get 1D limit plot -
+Get 1D limit plot as a function of WR mass
 ```
-python3 limitPlotter_mW.py combine_MuMu_Resolved.root WR_cross_sections.txt output_limit_plot_Wrfixed.png 2000
+python3 limitPlotter.py limits_EE.root WR_cross_sections.txt output_limit_plot.png 1200
+```
+
+Get 1D limit plot as a function	of N mass
+```
+python3 limitPlotter_mN.py limits_EE.root WR_cross_sections.txt output_limit_plot_mW.png 1200
 ```
