@@ -11,16 +11,34 @@ import logging
 import warnings
 import json
 from coffea.nanoevents.methods import vector
+import correctionlib
+#from correctionlib import _core
+
 ak.behavior.update(vector.behavior)
 warnings.filterwarnings("ignore", module="coffea.*")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Move this to a file that gets imported.
+
+LUMIS = {
+    "RunIISummer20UL18": 59.83,
+    "Run3Summer22":      7.9804,
+    "Run3Summer22EE":    26.6717,
+    "Run3Summer23":      18.063,
+    "Run3Summer23BPix":  9.693,
+    "RunIII2024Summer24": 109.08,
+}
+
 LUMI_JSONS = {
-    "RunIISummer20UL18": "data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
-    "Run3Summer22":      "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
-    "Run3Summer22EE":    "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
+    "RunIISummer20UL18":  "data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
+    "Run3Summer22":       "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
+    "Run3Summer22EE":     "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
+    "RunIII2024Summer24": "data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.txt",
+}
+
+JME_JSONS = {
+    "RunIII2024Summer24":    "data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz",
 }
 
 # Systematic Uncertainties: Integrated Luminosity
@@ -28,12 +46,12 @@ LUMI_UNC = {
     "RunIISummer20UL18": 0.025,  # 2.5% (UL2018) https://cds.cern.ch/record/2676164/files/LUM-18-002-pas.pdf
     "Run3Summer22":      0.014,  # 1.4% (2022) https://cds.cern.ch/record/2890833/files/LUM-22-001-pas.pdf
     "Run3Summer22EE":    0.014,  # 1.4% (2022EE) https://cds.cern.ch/record/2890833/files/LUM-22-001-pas.pdf
+    "RunIII2024Summer24":    0.014,  # 1.4% (2022EE) https://cds.cern.ch/record/2890833/files/LUM-22-001-pas.pdf
 }
 
 class WrAnalysis(processor.ProcessorABC):
     def __init__(self, mass_point, sf_file=None):
         self._signal_sample = mass_point
-
         self.make_output = lambda: {
             # Kinematic histograms
             'pt_leading_lepton':           self.create_hist('pt_leadlep',                  (200,   0, 2000), r'$p_{T}$ of the leading lepton [GeV]'),
@@ -154,37 +172,101 @@ class WrAnalysis(processor.ProcessorABC):
 
         return tight_leps, loose_leps
 
-    def select_jets(self, events):
-        # ---------------------------
-        # AK4 jets
-        # ---------------------------
+    def select_jets(self, events, era):
+        # era-specific JetID provider
+#        jid = self._jetid_mgr.for_era(era)
+
+        # ---------- AK4 ----------
         ak4_pteta_mask = (events.Jet.pt > 40) & (np.abs(events.Jet.eta) < 2.4)
-        ak4_id_mask    = events.Jet.isTightLeptonVeto  # quality/ID-only
+        if era == "RunIII2024Summer24":
+            ak4_id_mask = self.jetid_mask_ak4puppi_tlv(events.Jet, era)
+        else:
+            ak4_id_mask = events.Jet.isTightLeptonVeto
 
         ak4_mask = ak4_pteta_mask & ak4_id_mask
+
+        # Pick first few events (and their first few jets)
+#        n_events = 1
+#        n_jets = 5
+
+#        print("\n=== JetID Debug (first few jets) ===")
+#        for i in range(min(n_events, len(events.Jet))):
+#            eta_vals   = np.array(events.Jet.eta[i][:n_jets])
+#            chHEF_vals = np.array(events.Jet.chHEF[i][:n_jets])
+#            neHEF_vals = np.array(events.Jet.neHEF[i][:n_jets])
+#            chEmEF_vals= np.array(events.Jet.chEmEF[i][:n_jets])
+#            neEmEF_vals= np.array(events.Jet.neEmEF[i][:n_jets])
+#            muEF_vals  = np.array(events.Jet.muEF[i][:n_jets])
+#            chM_vals   = np.array(events.Jet.chMultiplicity[i][:n_jets])
+#            neM_vals   = np.array(events.Jet.neMultiplicity[i][:n_jets])
+#            mult_vals  = np.array(chM_vals + neM_vals)
+#            mask_vals  = np.array(ak4_id_mask[i][:n_jets])
+#
+#            print(f"\nEvent {i}:")
+#            for j in range(len(eta_vals)):
+#                print(f"  Jet {j}:")
+#                print(f"    η                             = {eta_vals[j]: .3f}")
+#                print(f"    Charged Hadron Fraction       = {chHEF_vals[j]: .3f}")
+#                print(f"    Neutral Hadron Fraction       = {neHEF_vals[j]: .3f}")
+#                print(f"    Charged EM Fraction           = {chEmEF_vals[j]: .3f}")
+#                print(f"    Neutral EM Fraction           = {neEmEF_vals[j]: .3f}")
+#                print(f"    Muon Fraction                 = {muEF_vals[j]: .3f}")
+#                print(f"    Charged Multiplicity          = {chM_vals[j]}")
+#                print(f"    Neutral Multiplicity          = {neM_vals[j]}")
+#                print(f"    Multiplicity                  = {mult_vals[j]}")
+#                print(f"    nConsitituents                = {events.Jet.nConstituents[i][:n_jets][j]}")
+#                print(f"    JetID TightLeptonVeto         = {bool(mask_vals[j])}")
+#        print()
+#
         ak4_jets = events.Jet[ak4_mask]
 
-        # ---------------------------
-        # AK8 jets
-        # ---------------------------
+        # ---------- AK8 ----------
         ak8_pteta_mask = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)
-        ak8_id_mask    = (events.FatJet.jetId == 2)  # keep ID-only separate from kinematics
 
-        ak8_extra_sel  = (events.FatJet.msoftdrop > 40)
-        # ak8_extra_sel = ak8_extra_sel & (events.FatJet.lsf3 > 0.75)
+#        if hasattr(events.FatJet, "jetId"):
+#            ak8_id_mask = (events.FatJet.jetId & 2) != 0     # Tight
+#        else:
+#            ak8_id_mask = jid.ak8_tight(events.FatJet)
 
-        # Full (unchanged overall selection): pT/eta AND ID AND extra selection(s)
-        ak8_mask = ak8_pteta_mask & ak8_id_mask & ak8_extra_sel
+        ak8_extra_sel = (events.FatJet.msoftdrop > 40)
+        ak8_mask = ak8_pteta_mask & ak8_extra_sel
+#        ak8_mask = ak8_pteta_mask & ak8_id_mask & ak8_extra_sel
         ak8_jets = events.FatJet[ak8_mask]
 
-        # Expose split masks for cutflow bookkeeping (does not change returns)
+        # bookkeeping for cutflows
         self._ak4_pteta_mask = ak4_pteta_mask
         self._ak4_id_mask    = ak4_id_mask
-
         self._ak8_pteta_mask = ak8_pteta_mask
-        self._ak8_id_mask    = ak8_id_mask
+#        self._ak8_id_mask    = ak8_id_mask
 
         return ak4_jets, ak8_jets
+
+    def jetid_mask_ak4puppi_tlv(self, jets, era):
+        """
+        Returns a jagged boolean mask aligned with `jets` for AK4 PUPPI TightLeptonVeto.
+        """
+        import rich
+        import correctionlib
+        ceval = correctionlib.CorrectionSet.from_file(JME_JSONS[era])
+#        print(list(ceval.keys()))
+#        for corr in ceval.values():
+#            if corr.name == "AK4PUPPI_TightLeptonVeto":
+#                print(f"Correction {corr.name} has {len(corr.inputs)} inputs")
+#                for ix in corr.inputs:
+#                    print(f"   Input {ix.name} ({ix.type}): {ix.description}")
+
+        out = ceval["AK4PUPPI_TightLeptonVeto"].evaluate(
+                jets.eta,
+                jets.chHEF,
+                jets.neHEF,
+                jets.chEmEF,
+                jets.neEmEF,
+                jets.muEF,
+                jets.chMultiplicity,
+                jets.neMultiplicity,
+                jets.chMultiplicity + jets.neMultiplicity
+        )
+        return ak.values_astype(out, np.bool_)
 
     def build_trigger_masks(self, events, mc_campaign):
         """
@@ -208,12 +290,13 @@ class WrAnalysis(processor.ProcessorABC):
         # Muons by era
         if mc_campaign in ("RunIISummer20UL18", "Run2Autumn18"):
             mu_trig = hlt("Mu50") | hlt("OldMu100") | hlt("TkMu100")
-        elif mc_campaign in ("Run3Summer22", "Run3Summer23BPix", "Run3Summer22EE", "Run3Summer23"):
+        elif mc_campaign in ("Run3Summer22", "Run3Summer23BPix", "Run3Summer22EE", "Run3Summer23", "RunIII2024Summer24"):
             mu_trig = hlt("Mu50") | hlt("HighPtTkMu100")
         else:
             mu_trig = hlt("Mu50") | hlt("OldMu100") | hlt("TkMu100") | hlt("HighPtTkMu100")
 
-        emu_trig = e_trig | mu_trig
+        emu_trig = mu_trig
+
         return e_trig, mu_trig, emu_trig
 
     def resolved_selections(self, tight_leptons, ak4_jets, triggers=None):
@@ -264,7 +347,7 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add("sublead_tight_pt53",     ak.fill_none(l2.pt > 53, False))
         selections.add("min_two_ak4_jets",       n_ak4 >= 2)
 
-        # Invariant masses
+        # Invariant masses built from the cleaned leading pair
         mll   = (l1 + l2).mass
         mlljj = (l1 + l2 + j1 + j2).mass
 
@@ -274,7 +357,8 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add("mll_gt400",    ak.fill_none(mll > 400, False))
         selections.add("mlljj_gt800",  ak.fill_none(mlljj > 800, False))
 
-        # ΔR > 0.4 between all pairs
+        # ΔR > 0.4 requirements among {l1, l2, j1, j2}
+        # Note: l–j separations are already enforced by construction; we still compute all for clarity.
         dr_ll   = ak.fill_none(l1.deltaR(l2) > 0.4, False)
         dr_l1j1 = ak.fill_none(l1.deltaR(j1) > 0.4, False)
         dr_l1j2 = ak.fill_none(l1.deltaR(j2) > 0.4, False)
@@ -353,11 +437,13 @@ class WrAnalysis(processor.ProcessorABC):
         return events.Muon[loose_muons]
     
     def selectAK8Jets(self,events):
-        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40) & (events.FatJet.isTight)
+#        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40) & (events.FatJet.isTight)
+        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40)
         return events.FatJet[ak8_jets]
 
     def selectAK8Jets_withLSF(self,events):
-        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40) & (events.FatJet.isTight) & (events.FatJet.lsf3 > 0.75)
+#        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40) & (events.FatJet.isTight) & (events.FatJet.lsf3 > 0.75)
+        ak8_jets = (events.FatJet.pt > 200) & (np.abs(events.FatJet.eta) < 2.4)  & (events.FatJet.msoftdrop > 40) & (events.FatJet.lsf3 > 0.75)
         return events.FatJet[ak8_jets]
     
     def boosted_selections(self, events, triggers=None):
@@ -571,7 +657,7 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add("mue-cr",     mue_cr & is_sublead_e_cr)        
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate 
 
-    def build_event_weights(self, events, metadata, is_mc, is_data, mc_campaign, process_name):
+    def build_event_weights(self, events, metadata, is_mc):
         """
         Minimal weights:
           - MC: xsec/nevts normalization (+ optional DY UL18 scale) + lumi Up/Down
@@ -583,37 +669,36 @@ class WrAnalysis(processor.ProcessorABC):
 
         if is_mc:
             # Cross-section normalization
-            xsec     = float(metadata.get("xsec", 1.0))
-            n_evts   = float(metadata.get("nevts", 1.0))
-            norm     = (xsec / n_evts) if n_evts > 0 else 0.0
+            lumi     = float(LUMIS[metadata.get("era")])
+            xsec     = float(metadata.get("xsec"))
+            sumw     = abs(float(metadata.get("genEventSumw")))
+            sample = metadata.get("sample")
+            
+            event_weight = events.genWeight * xsec * lumi * 1000 / sumw
 
-            # Base unit weights (no genWeight)
-            event_weight = np.ones(n, dtype=np.float32)
-
-            # Manually scaling lumi for cutflow purposes
-            #            if mc_campaign == "RunIISummer20UL18" and process_name == "DYJets":
-            #                event_weight *= 59.83 * 1000
-
-            event_weight *= norm
             weights.add("event_weight", event_weight)
 
             # Lumi uncertainty (weight-only)
-            if mc_campaign not in LUMI_UNC:
-                raise KeyError(f"No luminosity uncertainty defined for era '{mc_campaign}'. Add it to LUMI_UNC.")
-            delta = float(LUMI_UNC[mc_campaign])
+#            if mc_campaign not in LUMI_UNC:
+#                raise KeyError(f"No luminosity uncertainty defined for era '{mc_campaign}'. Add it to LUMI_UNC.")
+#            delta = float(LUMI_UNC[mc_campaign])
 
-            ones = np.ones(n, dtype=np.float32)
-            weights.add(
-                "lumi",
-                ones,
-                weightUp  = ones * (1.0 + delta),
-                weightDown= ones * (1.0 - delta),
-            )
+#            ones = np.ones(n, dtype=np.float32)
+#            weights.add(
+#                "lumi",
+#                ones,
+#                weightUp  = ones * (1.0 + delta),
+#                weightDown= ones * (1.0 - delta),
+#            )
+#
 
+#            syst_weights = {
+#                "Nominal":  weights.weight(),
+#                "LumiUp":   weights.weight(modifier="lumiUp"),
+#                "LumiDown": weights.weight(modifier="lumiDown"),
+#}
             syst_weights = {
                 "Nominal":  weights.weight(),
-                "LumiUp":   weights.weight(modifier="lumiUp"),
-                "LumiDown": weights.weight(modifier="lumiDown"),
             }
         
         else:  # is_data
@@ -793,14 +878,14 @@ class WrAnalysis(processor.ProcessorABC):
         # --- Define cumulative chains per flavor (kept as-is)
         chains = {
             "ee":   ["min_two_ak4_jets_pteta", "min_two_ak4_jets_id", 
-                      "e_trigger", "two_pteta_electrons", "two_id_electrons",  
-                     "dr_all_pairs_gt0p4", "mlljj_gt800","mll_gt200", "mll_gt400"],
-            "mumu": ["min_two_ak4_jets_pteta", "min_two_ak4_jets_id",
-                     "mu_trigger", "two_pteta_muons", "two_id_muons", 
-                     "dr_all_pairs_gt0p4",  "mlljj_gt800", "mll_gt200", "mll_gt400"],
+                     "two_pteta_electrons", "two_id_electrons", "e_trigger",
+                     "dr_all_pairs_gt0p4", "mlljj_gt800","mll_gt200", "mll_gt400"], #"min_two_ak4_jets_id"
+            "mumu": ["min_two_ak4_jets_pteta", "min_two_ak4_jets_id", 
+                     "two_pteta_muons", "two_id_muons", "mu_trigger",
+                     "dr_all_pairs_gt0p4",  "mlljj_gt800", "mll_gt200", "mll_gt400"], #"min_two_ak4_jets_id"
             "em":   ["min_two_ak4_jets_pteta", "min_two_ak4_jets_id",
-                     "emu_trigger", "two_pteta_em", "two_id_em", 
-                     "dr_all_pairs_gt0p4", "mlljj_gt800", "mll_gt200",  "mll_gt400"],
+                     "two_pteta_em", "two_id_em",  "emu_trigger",
+                     "dr_all_pairs_gt0p4", "mlljj_gt800", "mll_gt200",  "mll_gt400"], #"min_two_ak4_jets_id"
         }
 
         name2mask = {
@@ -859,24 +944,24 @@ class WrAnalysis(processor.ProcessorABC):
             bucket["onecut_unweighted"] = h_onecut_unw
             bucket["cumulative_unweighted"] = h_cum_unw
 
+
     def process(self, events):
         output = self.make_output()
         metadata = events.metadata
 
-        mc_campaign = metadata.get("era", "")
-        process_name = metadata.get("physics_group", "")
-        dataset = metadata.get("sample", "")
-
+        mc_campaign = metadata.get("era")
+        process_name = metadata.get("physics_group")
+        dataset = metadata.get("sample")
+    
         is_mc   = hasattr(events, "genWeight")
         is_data = not is_mc
 
         # Apply lumi mask via helper
         events = self.apply_lumi_mask(events, mc_campaign, is_data)
-
+        
         # Get leptons and jets
         tight_leptons, loose_leptons = self.select_leptons(events)
-        ak4_jets, ak8_jets = self.select_jets(events)
-
+        ak4_jets, ak8_jets = self.select_jets(events, mc_campaign)
         # Construct the electron and muon triggers
         triggers = self.build_trigger_masks(events, mc_campaign)
 
@@ -885,9 +970,9 @@ class WrAnalysis(processor.ProcessorABC):
 
         
         # TO-COMPLETE
-        boosted_selection_list, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate = self.boosted_selections(events, triggers=triggers) #tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
+#        boosted_selection_list, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate = self.boosted_selections(events, triggers=triggers) #tight_leptons, resolved_selections, loose_leptons, ak8_jets, triggers=triggers)
 
-        weights, syst_weights = self.build_event_weights(events, metadata, is_mc, is_data, mc_campaign, process_name)
+        weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
 
         # Define the resolved regions
         resolved_regions = {
@@ -904,27 +989,30 @@ class WrAnalysis(processor.ProcessorABC):
         # Fill the resolved cutflow histograms
         self.fill_cutflows(output, resolved_selections, weights)
 
-        boosted_regions = {
-            'wr_mumu_boosted_dy_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','DYCR_mask','Atleast1AK8Jets & dPhi(J,tightLept)>2','mumu-dy_cr'),
-	    'wr_mumu_boosted_sr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','mumu_sr','AK8JetswithLSF'),
-	    'wr_ee_boosted_dy_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','DYCR_mask','Atleast1AK8Jets & dPhi(J,tightLept)>2','ee-dy_cr'),
-            'wr_ee_boosted_sr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','ee_sr','AK8JetswithLSF'),
-	    'wr_emu_boosted_flavor_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','emu-cr','AK8JetswithLSF'),
-            'wr_mue_boosted_flavor_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','mue-cr','AK8JetswithLSF'),
-        }
-        for region, cuts in boosted_regions.items():
+#        boosted_regions = {
+#            'wr_mumu_boosted_dy_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','DYCR_mask','Atleast1AK8Jets & dPhi(J,tightLept)>2','mumu-dy_cr'),
+#	    'wr_mumu_boosted_sr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','mumu_sr','AK8JetswithLSF'),
+#	    'wr_ee_boosted_dy_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','DYCR_mask','Atleast1AK8Jets & dPhi(J,tightLept)>2','ee-dy_cr'),
+#            'wr_ee_boosted_sr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','ee_sr','AK8JetswithLSF'),
+#	    'wr_emu_boosted_flavor_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','emu-cr','AK8JetswithLSF'),
+#            'wr_mue_boosted_flavor_cr': boosted_selection_list.all('boostedtag', 'leadTightwithPt60','mue-cr','AK8JetswithLSF'),
+#        }
+#        for region, cuts in boosted_regions.items():
 	    #cut = selections.all(*cuts)
-            if "dy_cr" in region:
-                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy,DY_loose_lep, weights,syst_weights)
+#            if "dy_cr" in region:
+#                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy,DY_loose_lep, weights,syst_weights)
 
-            elif "flavor_cr" in region :
-                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand,of_candidate, weights,syst_weights)
-            else :
-                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep,AK8_cand, sf_candidate, weights,syst_weights)
+#            elif "flavor_cr" in region :
+#                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand,of_candidate, weights,syst_weights)
+#            else :
+#                self.fill_boosted_histograms(output, region, cuts, process_name, tight_lep,AK8_cand, sf_candidate, weights,syst_weights)
                 
         nested_output = {dataset: {**output}}
         
         return nested_output
+
+    def postprocess(self, accumulator):
+        return accumulator
 
     def postprocess(self, accumulator):
         return accumulator

@@ -41,7 +41,7 @@ def load_masses_from_csv(file_path):
                 if len(row) >= 2:
                     wr_mass = row[0].strip()
                     n_mass = row[1].strip()
-                    mass_choice = f"WR{wr_mass}_N{n_mass}"
+                    mass_choice = f"MWR{wr_mass}_MN{n_mass}"
                     mass_choices.append(mass_choice)
     except FileNotFoundError:
         logging.error(f"Mass CSV file not found at: {file_path}")
@@ -114,7 +114,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 
     run = Runner(
         executor = DaskExecutor(client=client, compression=None, retries=0),
-        chunksize=250_000, #250_000
+        chunksize = 250_000, #250_000
         maxchunks = None, #Change to 1 for testing, None for all
         skipbadfiles=False,
         xrootdtimeout = 60,
@@ -144,8 +144,8 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Processing script for WR analysis.")
-    parser.add_argument("era", type=str, choices=["RunIISummer20UL18", "Run3Summer22", "Run3Summer22EE"], help="Campaign to analyze.")
-    parser.add_argument("sample", type=str, choices=["DYJets", "TTbar", "TW", "WJets", "SingleTop", "TTbarSemileptonic", "TTV", "Diboson", "Triboson", "EGamma", "Muon", "Signal"], help="MC sample to analyze (e.g., Signal, DYJets).")
+    parser.add_argument("era", type=str, choices=["RunIISummer20UL18", "Run3Summer22", "Run3Summer22EE", "RunIII2024Summer24"], help="Campaign to analyze.")
+    parser.add_argument("sample", type=str, choices=["DYJets", "tt_tW", "Nonprompt", "Other",  "EGamma", "Muon", "Signal"], help="MC sample to analyze (e.g., Signal, DYJets).")
     optional = parser.add_argument_group("Optional arguments")
     optional.add_argument("--mass", type=str, default=None, help="Signal mass point to analyze.")
     optional.add_argument("--dir", type=str, default=None, help="Create a new output directory.")
@@ -181,6 +181,7 @@ if __name__ == "__main__":
     preprocessed_fileset = load_json(str(filepath))
     filtered_fileset = filter_by_process(preprocessed_fileset, args.sample, args.mass)
 
+    print(filtered_fileset)
     t0 = time.monotonic()
     hists_dict = run_analysis(args, filtered_fileset, args.condor)
 
