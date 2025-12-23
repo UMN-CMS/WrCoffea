@@ -27,6 +27,7 @@ __pycache__
 *.out
 *.err
 *.log
+*.root
 .env/
 .local/
 .bashrc
@@ -37,3 +38,5 @@ WR_Plotter/
 venv/
 wr-env/
 coffea_env
+Datacards/
+combine_framework/

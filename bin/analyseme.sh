@@ -60,11 +60,11 @@ case "${SELECTED_ERA}" in
     # keep your existing UL18 list
     MASS_OPTIONS=(
       WR1200_N200 WR1200_N400 WR1200_N600 WR1200_N800 WR1200_N1100
-      WR1600_N400 WR1600_N600 WR1600_N800 WR1600_N1200 WR1600_N1500
-      WR2000_N400 WR2000_N800 WR2000_N1000 WR2000_N1400 WR2000_N1900
-      WR2400_N600 WR2400_N800 WR2400_N1200 WR2400_N1800 WR2400_N2300
-      WR2800_N600 WR2800_N1000 WR2800_N1400 WR2800_N2000 WR2800_N2700
-      WR3200_N800 WR3200_N1200 WR3200_N1600 WR3200_N2400 WR3200_N3000
+      WR1600_N1200 WR1600_N1500
+      WR2000_N1000 WR2000_N1400 WR2000_N1900
+      WR2400_N1800 WR2400_N2300
+      WR2800_N2000 WR2800_N2700
+      WR3200_N1600 WR3200_N2400 WR3200_N3000
     )
     ;;
   Run3Summer22|Run3Summer22EE)
@@ -112,7 +112,7 @@ run_signal_analysis() {
   local era="$1"
   local mass="$2"
 #  echo "Running analysis for era ${era} and signal with --mass ${mass}"
-  python3.11 bin/run_analysis.py "${era}" "Signal" --mass "${mass}" "${EXTRA_ARGS[@]}" || {
+  python3.11 bin/run_analysis.py "${era}" "DYJets" --mass "${mass}" --name "${mass:7}" "${EXTRA_ARGS[@]}" || {
     echo "Error running signal analysis for mass ${mass} with era ${era}. Skipping..."
     return 1
   }

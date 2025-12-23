@@ -57,22 +57,22 @@ class WrAnalysis(processor.ProcessorABC):
             'mass_fourobject':        self.create_hist('mass_fourobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':          self.create_hist('pt_fourobject',          'process', 'region', (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
 
-            #'best_fiveobject':        self.create_hist('best_fiveobject',        'process', 'region', (160,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
+            'best_fiveobject':        self.create_hist('best_fiveobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             
-            'WRMass4_DeltaR':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_DeltaR':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
-                hist.storage.Weight(),
-            ),
+            # 'WRMass4_DeltaR':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_DeltaR':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
+            #     hist.storage.Weight(),
+            # ),
             'WRMass4_pT':dah.hist.Hist(
                 hist.axis.StrCategory([], name="process", label="Process", growth=True),
                 hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
@@ -87,160 +87,160 @@ class WrAnalysis(processor.ProcessorABC):
                 hist.axis.Regular(50, 0, 600, name='pTrel', label=r'pT_{min}^{rel} [GeV]'),
                 hist.storage.Weight(),
             ),
-            'WRMass4_sin':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(20, 0, 1, name='sin', label=r'sin(\theta)_{min}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_sin':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(20, 0, 1, name='sin', label=r'sin(\theta)_{min}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_pTnorm':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(30, 0, 5, name='pTnorm', label=r'pT_rel/pT'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_pTnorm':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(30, 0, 5, name='pTnorm', label=r'pT_rel/pT'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_magic3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_magic3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_magic':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_magic':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_pseudomagic3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jjj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_pseudomagic3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jjj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_pseudomagic':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_pseudomagic':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_neutrino3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_neutrino3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_neutrino':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_neutrino':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjl_x}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_pseudo3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jjj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_pseudo3':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jjj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_pseudo':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_pseudo':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jj}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass4_restDeltaR':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
-                hist.storage.Weight(),
-            ),
-            'WRMass5_restDeltaR':dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
-                hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
-                hist.storage.Weight(),
-            ),
+            # 'WRMass4_sin':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(20, 0, 1, name='sin', label=r'sin(\theta)_{min}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_sin':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(20, 0, 1, name='sin', label=r'sin(\theta)_{min}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_pTnorm':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(30, 0, 5, name='pTnorm', label=r'pT_rel/pT'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_pTnorm':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(30, 0, 5, name='pTnorm', label=r'pT_rel/pT'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_magic3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_magic3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_magic':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_magic':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='magic', label=r'pT_rel/m_{jjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_pseudomagic3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jjj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_pseudomagic3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jjj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_pseudomagic':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_pseudomagic':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(50, 0, 1, name='pseudomagic', label=r'pT_rel/m_{jj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_neutrino3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_neutrino3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_neutrino':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_neutrino':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_neutrino', label=r'm_{jjl_x}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_pseudo3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jjj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_pseudo3':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jjj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_pseudo':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_pseudo':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(100, 0, 8000, name='pseudomass', label=r'm_{jj}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass4_restDeltaR':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+            #     hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
+            #     hist.storage.Weight(),
+            # ),
+            # 'WRMass5_restDeltaR':dah.hist.Hist(
+            #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
+            #     hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+            #     hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+            #     hist.axis.Regular(20, 0, 6, name='del_r', label=r'\Delta R_{min}'),
+            #     hist.storage.Weight(),
+            # ),
         }
 
         # ——— Load SF lookup if provided ———
@@ -497,13 +497,13 @@ class WrAnalysis(processor.ProcessorABC):
             self.fill_basic_histograms(output, region, cut, process, AK4Jets, tightLeptons, weights)
             mlljj1= (tightLeptons[cut][:, 0] + tightLeptons[cut][:, 1] + AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).mass
             mlljjj= (tightLeptons[cut][:, 0] + tightLeptons[cut][:, 1] + AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + AK4Jets[cut][:, 2]).mass
-            mjjjl1= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + AK4Jets[cut][:, 2] + tightLeptons[cut][:, 0]).mass
-            mjjjl2= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + AK4Jets[cut][:, 2] + tightLeptons[cut][:, 1]).mass
-            mjjl1= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + tightLeptons[cut][:, 0]).mass
-            mjjl2= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + tightLeptons[cut][:, 1]).mass
-            mjjj= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + AK4Jets[cut][:, 2]).mass
-            mjj= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).mass
-            dr_j3_min = ak.min(AK4Jets[cut][:,2].delta_r(AK4Jets[cut][:,:2]),axis=1)
+            # mjjjl1= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + AK4Jets[cut][:, 2] + tightLeptons[cut][:, 0]).mass
+            # mjjjl2= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + AK4Jets[cut][:, 2] + tightLeptons[cut][:, 1]).mass
+            # mjjl1= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + tightLeptons[cut][:, 0]).mass
+            # mjjl2= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + tightLeptons[cut][:, 1]).mass
+            # mjjj= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1] + AK4Jets[cut][:, 2]).mass
+            # mjj= (AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).mass
+            # dr_j3_min = ak.min(AK4Jets[cut][:,2].delta_r(AK4Jets[cut][:,:2]),axis=1)
             
             x0,y0,z0=AK4Jets[cut][:,0].x,AK4Jets[cut][:,0].y,AK4Jets[cut][:,0].z
             x1,y1,z1=AK4Jets[cut][:,1].x,AK4Jets[cut][:,1].y,AK4Jets[cut][:,1].z
@@ -516,62 +516,64 @@ class WrAnalysis(processor.ProcessorABC):
             sine21=ak.where(cosine21>0,np.sqrt(1-cosine21**2),1)
             
             sine_min=ak.min(ak.concatenate([sine20[:,np.newaxis],sine21[:,np.newaxis]],axis=1),axis=1)
-            mjjjl=ak.min(ak.concatenate([mjjjl1[:,np.newaxis],mjjjl2[:,np.newaxis]],axis=1),axis=1)
-            mjjl=ak.min(ak.concatenate([mjjl1[:,np.newaxis],mjjl2[:,np.newaxis]],axis=1),axis=1)
+            # mjjjl=ak.min(ak.concatenate([mjjjl1[:,np.newaxis],mjjjl2[:,np.newaxis]],axis=1),axis=1)
+            # mjjl=ak.min(ak.concatenate([mjjl1[:,np.newaxis],mjjl2[:,np.newaxis]],axis=1),axis=1)
 
             pt_min=jet3mag*sine_min
-            pt_norm=pt_min/AK4Jets[cut][:, 0].pt
-            magicparameter3=pt_min/mjjjl
-            magicparameter=pt_min/mjjl
-            pseudomagic3=pt_min/mjjj
-            pseudomagic=pt_min/mjj
+            # pt_norm=pt_min/AK4Jets[cut][:, 0].pt
+            # magicparameter3=pt_min/mjjjl
+            # magicparameter=pt_min/mjjl
+            # pseudomagic3=pt_min/mjjj
+            # pseudomagic=pt_min/mjj
             
-            #best_mlljjj=ak.where(mjjl>1500,mlljj1,mlljjj)
+            cutoff=0.2*int(self._signal_sample[8:])-100
             
-            """ count= ak.num(mlljj1, axis=0).compute()
-            j1tb=ak.where(AK4Jets[cut][:, 0].partonFlavour==5,1,0)
-            j2tb=ak.where(AK4Jets[cut][:, 1].partonFlavour==5,1,0)
-            j3tb=ak.where(AK4Jets[cut][:, 2].partonFlavour==5,1,0)
-            tbcount = ak.sum(ak.where((j1tb + j2tb + j3tb)>0,1,0)).compute()
+            best_mlljjj=ak.where(pt_min>cutoff,mlljj1,mlljjj)
             
-            if region.endswith("SR"):
-                if region.startswith("WR_EE"):
-                    writestring.append(self._signal_sample)
-                writestring.append(tbcount)
-                writestring.append(count) """
+            # count= ak.num(mlljj1, axis=0).compute()
+            # j1tb=ak.where(AK4Jets[cut][:, 0].partonFlavour==5,1,0)
+            # j2tb=ak.where(AK4Jets[cut][:, 1].partonFlavour==5,1,0)
+            # j3tb=ak.where(AK4Jets[cut][:, 2].partonFlavour==5,1,0)
+            # tbcount = ak.sum(ak.where((j1tb + j2tb + j3tb)>0,1,0)).compute()
+            
+            # if region.endswith("SR"):
+            #     if region.startswith("WR_EE"):
+            #         writestring.append(self._signal_sample)
+            #     writestring.append(tbcount)
+            #     writestring.append(count)
 
 
-            output['WRMass4_DeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=dr_j3_min,weight=weights.weight()[cut])
-            output['WRMass5_DeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=dr_j3_min,weight=weights.weight()[cut])
+            # output['WRMass4_DeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=dr_j3_min,weight=weights.weight()[cut])
+            # output['WRMass5_DeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=dr_j3_min,weight=weights.weight()[cut])
             output['WRMass4_pT'].fill(process=process,region=region,mass_fourobject=mlljj1,pTrel=pt_min,weight=weights.weight()[cut])
             output['WRMass5_pT'].fill(process=process,region=region,mass_fiveobject=mlljjj,pTrel=pt_min,weight=weights.weight()[cut])
-            output['WRMass4_sin'].fill(process=process,region=region,mass_fourobject=mlljj1,sin=sine_min,weight=weights.weight()[cut])
-            output['WRMass5_sin'].fill(process=process,region=region,mass_fiveobject=mlljjj,sin=sine_min,weight=weights.weight()[cut])
-            output['WRMass4_pTnorm'].fill(process=process,region=region,mass_fourobject=mlljj1,pTnorm=pt_norm,weight=weights.weight()[cut])
-            output['WRMass5_pTnorm'].fill(process=process,region=region,mass_fiveobject=mlljjj,pTnorm=pt_norm,weight=weights.weight()[cut])
-            output['WRMass4_magic3'].fill(process=process,region=region,mass_fourobject=mlljj1,magic=magicparameter3,weight=weights.weight()[cut])
-            output['WRMass5_magic3'].fill(process=process,region=region,mass_fiveobject=mlljjj,magic=magicparameter3,weight=weights.weight()[cut])
-            output['WRMass4_magic'].fill(process=process,region=region,mass_fourobject=mlljj1,magic=magicparameter,weight=weights.weight()[cut])
-            output['WRMass5_magic'].fill(process=process,region=region,mass_fiveobject=mlljjj,magic=magicparameter,weight=weights.weight()[cut])
-            output['WRMass4_pseudomagic3'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomagic=pseudomagic3,weight=weights.weight()[cut])
-            output['WRMass5_pseudomagic3'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomagic=pseudomagic3,weight=weights.weight()[cut])
-            output['WRMass4_pseudomagic'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomagic=pseudomagic,weight=weights.weight()[cut])
-            output['WRMass5_pseudomagic'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomagic=pseudomagic,weight=weights.weight()[cut])
-            output['WRMass4_neutrino3'].fill(process=process,region=region,mass_fourobject=mlljj1,mass_neutrino=mjjjl,weight=weights.weight()[cut])
-            output['WRMass5_neutrino3'].fill(process=process,region=region,mass_fiveobject=mlljjj,mass_neutrino=mjjjl,weight=weights.weight()[cut])
-            output['WRMass4_neutrino'].fill(process=process,region=region,mass_fourobject=mlljj1,mass_neutrino=mjjl,weight=weights.weight()[cut])
-            output['WRMass5_neutrino'].fill(process=process,region=region,mass_fiveobject=mlljjj,mass_neutrino=mjjl,weight=weights.weight()[cut])
-            output['WRMass4_pseudo3'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomass=mjjj,weight=weights.weight()[cut])
-            output['WRMass5_pseudo3'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjjj,weight=weights.weight()[cut])
-            output['WRMass4_pseudo'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomass=mjj,weight=weights.weight()[cut])
-            output['WRMass5_pseudo'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjj,weight=weights.weight()[cut])
+            # output['WRMass4_sin'].fill(process=process,region=region,mass_fourobject=mlljj1,sin=sine_min,weight=weights.weight()[cut])
+            # output['WRMass5_sin'].fill(process=process,region=region,mass_fiveobject=mlljjj,sin=sine_min,weight=weights.weight()[cut])
+            # output['WRMass4_pTnorm'].fill(process=process,region=region,mass_fourobject=mlljj1,pTnorm=pt_norm,weight=weights.weight()[cut])
+            # output['WRMass5_pTnorm'].fill(process=process,region=region,mass_fiveobject=mlljjj,pTnorm=pt_norm,weight=weights.weight()[cut])
+            # output['WRMass4_magic3'].fill(process=process,region=region,mass_fourobject=mlljj1,magic=magicparameter3,weight=weights.weight()[cut])
+            # output['WRMass5_magic3'].fill(process=process,region=region,mass_fiveobject=mlljjj,magic=magicparameter3,weight=weights.weight()[cut])
+            # output['WRMass4_magic'].fill(process=process,region=region,mass_fourobject=mlljj1,magic=magicparameter,weight=weights.weight()[cut])
+            # output['WRMass5_magic'].fill(process=process,region=region,mass_fiveobject=mlljjj,magic=magicparameter,weight=weights.weight()[cut])
+            # output['WRMass4_pseudomagic3'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomagic=pseudomagic3,weight=weights.weight()[cut])
+            # output['WRMass5_pseudomagic3'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomagic=pseudomagic3,weight=weights.weight()[cut])
+            # output['WRMass4_pseudomagic'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomagic=pseudomagic,weight=weights.weight()[cut])
+            # output['WRMass5_pseudomagic'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomagic=pseudomagic,weight=weights.weight()[cut])
+            # output['WRMass4_neutrino3'].fill(process=process,region=region,mass_fourobject=mlljj1,mass_neutrino=mjjjl,weight=weights.weight()[cut])
+            # output['WRMass5_neutrino3'].fill(process=process,region=region,mass_fiveobject=mlljjj,mass_neutrino=mjjjl,weight=weights.weight()[cut])
+            # output['WRMass4_neutrino'].fill(process=process,region=region,mass_fourobject=mlljj1,mass_neutrino=mjjl,weight=weights.weight()[cut])
+            # output['WRMass5_neutrino'].fill(process=process,region=region,mass_fiveobject=mlljjj,mass_neutrino=mjjl,weight=weights.weight()[cut])
+            # output['WRMass4_pseudo3'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomass=mjjj,weight=weights.weight()[cut])
+            # output['WRMass5_pseudo3'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjjj,weight=weights.weight()[cut])
+            # output['WRMass4_pseudo'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomass=mjj,weight=weights.weight()[cut])
+            # output['WRMass5_pseudo'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjj,weight=weights.weight()[cut])
 
-            #output['best_fiveobject'].fill(process=process,region=region,best_fiveobject=best_mlljjj,weight=weights.weight()[cut])
+            output['best_fiveobject'].fill(process=process,region=region,best_fiveobject=best_mlljjj,weight=weights.weight()[cut])
             
-            wrcand=(tightLeptons[cut][:, 0] + tightLeptons[cut][:, 1] + AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).boostvec
-            restdr_j3_min = ak.min(AK4Jets[cut][:,2].boost(-wrcand).delta_r(AK4Jets[cut][:,:2].boost(-wrcand)),axis=1)
-            output['WRMass4_restDeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=restdr_j3_min,weight=weights.weight()[cut])
-            output['WRMass5_restDeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=restdr_j3_min,weight=weights.weight()[cut])
+            # wrcand=(tightLeptons[cut][:, 0] + tightLeptons[cut][:, 1] + AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).boostvec
+            # restdr_j3_min = ak.min(AK4Jets[cut][:,2].boost(-wrcand).delta_r(AK4Jets[cut][:,:2].boost(-wrcand)),axis=1)
+            # output['WRMass4_restDeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=restdr_j3_min,weight=weights.weight()[cut])
+            # output['WRMass5_restDeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=restdr_j3_min,weight=weights.weight()[cut])
 
 
             # if region == 'wr_ee_resolved_sr':

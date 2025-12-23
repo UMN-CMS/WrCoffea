@@ -61,13 +61,13 @@ def filter_by_process(fileset, desired_process, mass=None):
         return {ds: data for ds, data in fileset.items() if data['metadata']['physics_group'] == desired_process}
 
 def validate_arguments(args, sig_points):
-    if args.sample == "Signal" and not args.mass:
+    if (args.sample == "Signal" or args.dir == "3jets") and not args.mass:
         logging.error("For 'Signal', you must provide a --mass argument (e.g. --mass WR2000_N1900).")
         raise ValueError("Missing mass argument for Signal sample.")
-    if args.sample == "Signal" and args.mass not in sig_points:
+    if (args.sample == "Signal" or args.dir == "3jets") and args.mass not in sig_points:
         logging.error(f"The provided signal point {args.mass} is not valid. Choose from {sig_points}.")
         raise ValueError("Invalid mass argument for Signal sample.")
-    if args.sample != "Signal" and args.mass:
+    if args.sample != "Signal" and args.mass and args.dir != "3jets":
         logging.error("The --mass option is only valid for 'Signal' samples.")
         raise ValueError("Mass argument provided for non-signal sample.")
     if args.reweight and args.sample != "DYJets":

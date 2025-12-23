@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "StackPlots_multifile.C": "cpp",
+        "string": "cpp"
+    },
+    "editor.tokenColorCustomizations": {
+        "comments": "",
+        "textMateRules": []
+    }
+}
