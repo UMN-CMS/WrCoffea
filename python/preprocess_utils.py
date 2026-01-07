@@ -58,10 +58,19 @@ def save_json(output_file, data, data_all):
 
         diff_output = '\n'.join(diff)
 
-        logging.error("Error: The contents of 'data' and 'data_all' are different. Differences:")
-        logging.error(f"\n{diff_output}")
+        diff_path = output_path.with_suffix(output_path.suffix + ".diff")
+        with open(diff_path, "w", encoding="utf-8") as f:
+            f.write(diff_output)
 
-        raise ValueError("Aborting save due to differences between 'data' and 'data_all'.")
+        logging.error(
+            "Aborting save: 'data' and 'data_all' differ. Wrote unified diff to %s",
+            diff_path,
+        )
+
+        raise ValueError(
+            "Aborting save due to differences between 'data' and 'data_all'. "
+            f"See diff: {diff_path}"
+        )
 
     if output_path.exists():
         logging.warning(f"{output_file} already exists, overwriting.")
