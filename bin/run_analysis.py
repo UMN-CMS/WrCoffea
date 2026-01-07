@@ -26,6 +26,8 @@ from python.save_hists import save_histograms
 from python.preprocess_utils import get_era_details
 from python.run_utils import (
     build_fileset_path,
+    list_eras,
+    list_samples,
     load_and_select_fileset,
     load_masses_from_csv,
     normalize_mass_point,
@@ -123,8 +125,8 @@ def run_analysis(args, filtered_fileset, run_on_condor):
             cluster.close()
 
 if __name__ == "__main__":
-    ERA_CHOICES = ["RunIISummer20UL18", "Run3Summer22", "Run3Summer22EE", "RunIII2024Summer24"]
-    SAMPLE_CHOICES = ["DYJets", "tt_tW", "Nonprompt", "Other", "EGamma", "Muon", "Signal"]
+    ERA_CHOICES = list_eras()
+    SAMPLE_CHOICES = list_samples()
 
     parser = argparse.ArgumentParser(description="Processing script for WR analysis.")
     parser.add_argument("era", nargs="?", default=None, type=str, choices=ERA_CHOICES, help="Campaign to analyze.")

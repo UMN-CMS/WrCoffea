@@ -7,12 +7,25 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from python.fileset_validation import validate_fileset_schema, validate_selection
-from python.preprocess_utils import get_era_details, load_json
+from python.preprocess_utils import ERA_MAPPING, get_era_details, load_json
 
 logger = logging.getLogger(__name__)
 
 _MASS_RE_WR_N = re.compile(r"^WR(?P<wr>\d+)_N(?P<n>\d+)$")
 _MASS_RE_MWR_MN = re.compile(r"^MWR(?P<wr>\d+)_MN(?P<n>\d+)$")
+
+
+def list_eras() -> list[str]:
+    """Return supported era strings in the repo's preferred order."""
+
+    # Dict insertion order is intentional here (curated in preprocess_utils).
+    return list(ERA_MAPPING.keys())
+
+
+def list_samples() -> list[str]:
+    """Return supported top-level sample choices for the CLI."""
+
+    return ["DYJets", "tt_tW", "Nonprompt", "Other", "EGamma", "Muon", "Signal"]
 
 
 def normalize_mass_point(mass: str | None) -> str | None:
