@@ -15,6 +15,7 @@ ERA_MAPPING = {
     "Run3Summer22EE": {"run": "Run3", "year": "2022"},
     "Run3Summer23": {"run": "Run3", "year": "2023"},
     "Run3Summer23BPix": {"run": "Run3", "year": "2023"},
+    "RunIII2024Summer24": {"run": "Run3", "year": "2024"},
 }
 
 def get_era_details(era):
