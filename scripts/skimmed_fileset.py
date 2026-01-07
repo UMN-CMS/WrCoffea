@@ -37,7 +37,7 @@ logging.basicConfig(level=logging.INFO,
 def replace_files_in_json(data: dict, run: str, year: str, era: str, umn: bool, sample: str) -> dict:
     metadata_keys = (["das_name", "run", "year", "era", "dataset", "physics_group", "datatype"]
                      if sample == "data"
-                     else ["das_name", "run", "year", "era", "dataset", "physics_group", "xsec", "datatype", "nevts"])
+                     else ["das_name", "run", "year", "era", "dataset", "physics_group", "xsec", "total_uncertainty", "genEventSumw" ,"datatype", "nevts"])
 
     for key, entry in data.items():
         metadata = {k: entry.pop(k) for k in metadata_keys if k in entry}
@@ -61,8 +61,15 @@ def replace_files_in_json(data: dict, run: str, year: str, era: str, umn: bool, 
             logging.warning(f"Dataset not found in metadata for {ds_name}")
             continue
 
-        root_files = (get_root_files_from_umn(dataset, era) if umn
-                      else get_root_files_from_eos(dataset, run, year, era))
+        if umn:
+            root_files = get_root_files_from_umn(dataset, era)
+        elif year == "2024" or sample == "signal": # Temp because 2018 sample on wisc
+            root_files = get_root_files_from_wisc(dataset, run, year, era)
+        else:
+            root_files = get_root_files_from_eos(dataset, run, year, era)
+#
+#        root_files = (get_root_files_from_umn(dataset, era) if umn
+#                      else get_root_files_from_eos(dataset, run, year, era))
 
         if root_files:
             for fp in root_files:
@@ -86,6 +93,118 @@ def get_root_files_from_umn(dataset: str, mc_campaign: str) -> list[str]:
         logging.error(f"UMN base path '{base}' not found")
     return files
 
+def xrdfs_list_root_files(host: str, base_path: str) -> list[str]:
+    """
+    List .root files under base_path on an xrootd host.
+
+    This is intentionally non-recursive (plus at most one level of descent)
+    because recursive `xrdfs ls -R` over user areas can be extremely slow
+    and spam `[!] Some of the requests failed` when any sub-paths are flaky.
+
+    Returns fully qualified root:// URLs.
+    """
+    def _run(cmd):
+        # Silence stderr to avoid noisy xrootd warnings unless we actually error.
+        return subprocess.check_output(
+            cmd,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).splitlines()
+
+    root_urls: list[str] = []
+
+    # Top-level listing: /store/.../<era>/<dataset>/
+    try:
+        top = _run(["xrdfs", host, "ls", base_path])
+    except subprocess.CalledProcessError as e:
+        logging.error(f"xrootd listing failed for {host}:{base_path}: {e}")
+        return []
+
+    subdirs: list[str] = []
+    for line in top:
+        line = line.strip()
+        if not line:
+            continue
+
+        if line.endswith(".root"):
+            # Direct ROOT files under base_path
+            root_urls.append(f"root://{host}/{line}")
+        else:
+            # Treat everything else as a possible directory
+            subdirs.append(line)
+
+    # One-level descent: /store/.../<era>/<dataset>/<subdir>/*.root
+    for d in subdirs:
+        try:
+            children = _run(["xrdfs", host, "ls", d])
+        except subprocess.CalledProcessError:
+            # If a subdir is flaky / gone, just skip it
+            logging.warning(f"xrootd listing failed for subdir {host}:{d}")
+            continue
+
+        for c in children:
+            c = c.strip()
+            if c.endswith(".root"):
+                root_urls.append(f"root://{host}/{c}")
+
+    return root_urls
+
+def get_root_files_from_wisc(dataset: str, run: str, year: str, era: str) -> list[str]:
+    """
+    Wisconsin storage for 2024, using gfal-ls over davs for *listing*,
+    but still returning root:// URLs for Coffea / uproot.
+
+    Example listing command:
+      gfal-ls -l davs://cmsxrootd.hep.wisc.edu:1094/store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8
+    """
+    host = "cmsxrootd.hep.wisc.edu"
+
+    # POSIX-style path under /store
+    if "WR" in dataset:
+        rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/signals/{dataset}/"
+    else:
+        rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/{dataset}/"
+
+    # davs URL for gfal
+    davs_url = f"davs://{host}:1094{rel_dir}"
+
+    cmd = ["gfal-ls", "-l", davs_url]
+
+    try:
+        out = subprocess.check_output(cmd, text=True)
+    except subprocess.CalledProcessError as e:
+        logging.error(f"gfal-ls failed for {davs_url}: {e}")
+        return []
+
+    files: list[str] = []
+
+    for line in out.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        # Skip summary lines like "total 12345" if present
+        if line.lower().startswith("total"):
+            continue
+
+        parts = line.split()
+        # gfal-ls -l output is usually like: "-rw-r--r-- ... filename.root"
+        # so the last column is the filename or full path
+        name = parts[-1] if parts else ""
+        if not name.endswith(".root"):
+            continue
+
+        # If gfal prints just the filename, prepend rel_dir.
+        # If it prints a full /store/... path, keep that.
+        if name.startswith("/"):
+            rel_path = name
+        else:
+            rel_path = rel_dir + name
+
+        # Return root:// URLs for analysis
+        files.append(f"root://{host}/{rel_path}")
+
+    logging.info(f"Found {len(files)} ROOT files for {dataset} on WISC via gfal-ls")
+    return files
 
 def get_root_files_from_eos(dataset: str, run: str, year: str, era: str) -> list[str]:
     base_path = f"/store/user/wijackso/WRAnalyzer/skims/2025/{run}/{year}/{era}/{dataset}/"
@@ -146,6 +265,9 @@ def main():
     if not stem.startswith(prefix):
         logging.warning(f"Filename '{stem}' doesn't start with '{prefix}'")
     sample = stem[len(prefix):]
+
+    sample = "mc" if "mc" in sample else sample
+
 
     fileset = load_json(str(input_path))
     fileset = replace_files_in_json(fileset, run, year, era, args.umn, sample)
