@@ -1,0 +1,20 @@
+# Large local outputs
+logs/
+signals/
+WRsplits_local/
+mwr_500_3500/
+mwr_3500_5000/
+mwr_5000_6000/
+mwr_mn_files/
+
+# Local environments
+venv_wr/
+venv_wr.tgz
+
+# Local scratch / generated
+split_by_mass_local.log
+single_file_list.txt
+
+# User-specific filelists
+local_wr_files.txt
+wr_signals_eos.txt
