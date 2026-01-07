@@ -19,7 +19,7 @@ from coffea.processor import ProcessorABC
 # Add the src/, data/, and python/ directories to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../python`')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../python')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from analyzer_test import WrAnalysis
