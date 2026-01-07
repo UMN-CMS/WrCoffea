@@ -11,7 +11,8 @@ PROCESS=$2
 DATASET_FILTER=${3:-""}  # Optional third argument
 
 # Determine RUN based on CAMPAIGN content
-if [[ "$CAMPAIGN" == *"RunII"* ]] || [[ "$CAMPAIGN" == "Run2018A" ]] || [[ "$CAMPAIGN" == "Run2018B" ]] || [[ "$CAMPAIGN" == "Run2018C" ]] || [[ "$CAMPAIGN" == "Run2018D" ]]; then
+#if [[ "$CAMPAIGN" == *"RunII"* ]] || [[ "$CAMPAIGN" == "Run2018A" ]] || [[ "$CAMPAIGN" == "Run2018B" ]] || [[ "$CAMPAIGN" == "Run2018C" ]] || [[ "$CAMPAIGN" == "Run2018D" ]]; then
+if [[ "$CAMPAIGN" == "Run2018A" ]] || [[ "$CAMPAIGN" == "Run2018B" ]] || [[ "$CAMPAIGN" == "Run2018C" ]] || [[ "$CAMPAIGN" == "Run2018D" ]]; then
     RUN="RunII"
     YEAR="2018"
 elif [[ "$CAMPAIGN" == "Run3Summer22" ]]; then
@@ -26,6 +27,9 @@ elif [[ "$CAMPAIGN" == "Run3Summer23" ]]; then
 elif [[ "$CAMPAIGN" == "Run3Summer23BPix" ]]; then
     RUN="Run3"
     YEAR="2023"
+elif [[ "$CAMPAIGN" == "RunIII2024Summer24" ]]; then
+    RUN="Run3"
+    YEAR="2024"
 else
     echo "Error: Could not determine RUN from CAMPAIGN ($CAMPAIGN)"
     exit 1
@@ -33,8 +37,8 @@ fi
 
 # Define base directory paths
 BASE_PATH="/uscms_data/d1/bjackson/WrCoffea/scripts/setup/skims/tmp/${RUN}/${YEAR}/$CAMPAIGN"
-JSON_DIR="/uscms_data/d1/bjackson/WrCoffea/data/jsons/${RUN}/${YEAR}/$CAMPAIGN"
-JSON_FILE="${JSON_DIR}/${CAMPAIGN}_${PROCESS}_preprocessed.json"
+JSON_DIR="/uscms_data/d1/bjackson/WrCoffea/data/jsons/${RUN}/${YEAR}/$CAMPAIGN/unskimmed"
+JSON_FILE="${JSON_DIR}/${CAMPAIGN}_${PROCESS}_fileset.json"
 
 # Check if JSON file exists
 if [ ! -f "$JSON_FILE" ]; then
@@ -45,7 +49,7 @@ fi
 echo "Successfully loaded JSON file $JSON_FILE."
 
 # Extract dataset names from JSON file
-DATASETS=($(jq -r 'to_entries[] | select(.value.metadata.dataset) | .value.metadata.dataset' "$JSON_FILE"))
+DATASETS=($(jq -r 'to_entries[] | select(.value.metadata.sample) | .value.metadata.sample' "$JSON_FILE"))
 
 if [ "${#DATASETS[@]}" -eq 0 ]; then
     echo "Error: No datasets found in $JSON_FILE"
@@ -65,8 +69,8 @@ mkdir -p $BASE_PATH
 
 # Copy the tarball
 cd /uscms/home/bjackson/nobackup
-echo "Creating tarball of working directory. Wait approx 30 seconds..."
-tar  --exclude=WrCoffea/.git --exclude=WrCoffea/.env --exclude=WrCoffea/WR_Plotter --exclude=WrCoffea/data/skims --exclude=WrCoffea/data/xsec --exclude=WrCoffea/scripts/setup/skims/tmp --exclude=WrCoffea/test -czf WrCoffea.tar.gz WrCoffea
+echo "Creating tarball of working directory. Wait approx 1 minute..."
+tar  --exclude=WrCoffea/signal_22ee --exclude=WrCoffea/other --exclude=WrCoffea/.git --exclude=WrCoffea/.env --exclude=WrCoffea/WR_Plotter --exclude=WrCoffea/data/skims --exclude=WrCoffea/data/xsec --exclude=WrCoffea/scripts/setup/skims/tmp --exclude=WrCoffea/test -cvzf WrCoffea.tar.gz WrCoffea
 echo "Tarball created. Submitting scripts."
 
 for DATASET in "${DATASETS[@]}"
