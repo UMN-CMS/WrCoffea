@@ -7,6 +7,8 @@
     "dataset": "DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 317.0,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 61392443009.938354,
     "datatype": "mc",
     "nevts": 40420484
   },
@@ -18,6 +20,8 @@
     "dataset": "DYto2L-4Jets_MLL-50to120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 140.3,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 26181566460.55121,
     "datatype": "mc",
     "nevts": 29650452
   },
@@ -29,6 +33,8 @@
     "dataset": "DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 179.4,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 53273563180.53345,
     "datatype": "mc",
     "nevts": 35470534
   },
@@ -40,6 +46,8 @@
     "dataset": "DYto2L-4Jets_MLL-50to120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 6.739,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 77988351.2321167,
     "datatype": "mc",
     "nevts": 1089838
   },
@@ -51,6 +59,8 @@
     "dataset": "DYto2L-4Jets_MLL-50to120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 0.6983,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 15345404.053287983,
     "datatype": "mc",
     "nevts": 1947266
   },
@@ -62,6 +72,8 @@
     "dataset": "DYto2L-4Jets_MLL-50to120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 0.05043,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 1135585.7122789025,
     "datatype": "mc",
     "nevts": 1976573
   },
@@ -73,6 +85,8 @@
     "dataset": "DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 0.003464,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 84177.87722618133,
     "datatype": "mc",
     "nevts": 2222123
   },
@@ -84,6 +98,8 @@
     "dataset": "DYto2L-4Jets_MLL-120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 4.58,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 66166881.31393051,
     "datatype": "mc",
     "nevts": 2855457
   },
@@ -95,6 +111,8 @@
     "dataset": "DYto2L-4Jets_MLL-120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 2.209,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 30184452.199371338,
     "datatype": "mc",
     "nevts": 2070119
   },
@@ -106,6 +124,8 @@
     "dataset": "DYto2L-4Jets_MLL-120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 3.356,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 61512318.71552658,
     "datatype": "mc",
     "nevts": 1988591
   },
@@ -117,6 +137,8 @@
     "dataset": "DYto2L-4Jets_MLL-120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 0.1755,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 4306900.30371213,
     "datatype": "mc",
     "nevts": 2045277
   },
@@ -128,6 +150,8 @@
     "dataset": "DYto2L-4Jets_MLL-120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 0.02088,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 473377.1526450515,
     "datatype": "mc",
     "nevts": 1857247
   },
@@ -139,6 +163,8 @@
     "dataset": "DYto2L-4Jets_MLL-120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 0.001684,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 39710.28736999445,
     "datatype": "mc",
     "nevts": 1989817
   },
@@ -150,6 +176,8 @@
     "dataset": "DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 0.000124,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 2535.9907980678836,
     "datatype": "mc",
     "nevts": 1812478
   },
@@ -161,6 +189,8 @@
     "dataset": "TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
     "physics_group": "TTbar",
     "xsec": 98.0963,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 0.0,
     "datatype": "mc",
     "nevts": 23778148
   },
@@ -172,6 +202,8 @@
     "dataset": "TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
     "physics_group": "TW",
     "xsec": 4.66797,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 0.0,
     "datatype": "mc",
     "nevts": 2327688
   },
@@ -183,6 +215,8 @@
     "dataset": "TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
     "physics_group": "TW",
     "xsec": 4.66797,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 0.0,
     "datatype": "mc",
     "nevts": 2369680
   },
@@ -194,6 +228,8 @@
     "dataset": "WtoLNu-4Jets_MLNu-0to120_HT-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "WJets",
     "xsec": 4264.0,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 0.0,
     "datatype": "mc",
     "nevts": 146630714
   },
@@ -205,6 +241,8 @@
     "dataset": "WtoLNu-4Jets_MLNu-0to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "WJets",
     "xsec": 1637.0,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 0.0,
     "datatype": "mc",
     "nevts": 100572216
   },
@@ -236,7 +274,7 @@
     "year": "2022",
     "era": "Run3Summer22",
     "dataset": "WtoLNu-4Jets_MLNu-0to120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
-    "physics_group": "WJets",
+    "physics_group": "Nonprompt",
     "xsec": 0.4498,
     "datatype": "mc",
     "nevts": 477881
