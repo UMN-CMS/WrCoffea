@@ -24,8 +24,7 @@ def get_era_details(era):
     """
     mapping = ERA_MAPPING.get(era)
     if mapping is None:
-        logging.error(f"Unsupported era: {era}")
-        exit(1)
+        raise ValueError(f"Unsupported era: {era}. Valid eras: {sorted(ERA_MAPPING)}")
     
     return mapping["run"], mapping["year"], era
 
