@@ -16,7 +16,6 @@
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="coffea.*")
 
-import json
 import argparse
 import subprocess
 import logging
@@ -29,6 +28,14 @@ repo_root = os.path.abspath(os.path.join(current_dir, "../"))
 sys.path.insert(0, repo_root)
 
 from python.preprocess_utils import get_era_details, load_json
+from python.fileset_utils import (
+    normalize_skimmed_sample,
+    output_dir,
+    parse_config_path,
+    rename_dataset_key_to_sample,
+    sample_from_config_filename,
+    write_fileset_json,
+)
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -221,13 +228,6 @@ def get_root_files_from_eos(dataset: str, run: str, year: str, era: str) -> list
         logging.error(f"EOS listing failed for {dataset}: {e}")
         return []
 
-def rename_dataset_key_to_sample(data: dict) -> dict:
-    for entry in data.values():
-        md = entry.get("metadata", {})
-        if "dataset" in md:
-            md["sample"] = md.pop("dataset")
-    return data
-
 def main():
     parser = argparse.ArgumentParser(
         description="Replace file lists in a JSON config and run Coffea preprocessing."
@@ -250,35 +250,19 @@ def main():
         logging.error(f"Input file not found: {input_path}")
         sys.exit(1)
 
-    # derive run/year/era from the input path under data/configs
-    cfg_dir = input_path.parent  # e.g. data/configs/Run3/2022/Run3Summer22
-    cur = cfg_dir
-    while cur.name != "configs":
-        cur = cur.parent
-    data_root = cur.parent  # data/
-    rel = cfg_dir.relative_to(data_root / "configs")  # Run3/2022/Run3Summer22
-    run, year, era = rel.parts
+    data_root, run, year, era = parse_config_path(input_path)
 
-    # derive sample from filename: should be era_sample.json
-    stem = input_path.stem  # e.g. "Run3Summer22_mc"
-    prefix = f"{era}_"
-    if not stem.startswith(prefix):
-        logging.warning(f"Filename '{stem}' doesn't start with '{prefix}'")
-    sample = stem[len(prefix):]
-
-    sample = "mc" if "mc" in sample else sample
+    sample = sample_from_config_filename(input_path, era=era)
+    sample = normalize_skimmed_sample(sample)
 
 
     fileset = load_json(str(input_path))
     fileset = replace_files_in_json(fileset, run, year, era, args.umn, sample)
     fileset = rename_dataset_key_to_sample(fileset)
 
-    out_dir = data_root / "jsons" / run / year / era / "skimmed"
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    out_file = out_dir / f"{era}_{sample}_skimmed_fileset.json"
-    with out_file.open("w") as f:
-        json.dump(fileset, f, indent=2, sort_keys=True)
+    out_dir_path = output_dir(data_root=data_root, run=run, year=year, era=era, skimmed=True)
+    out_file = out_dir_path / f"{era}_{sample}_skimmed_fileset.json"
+    write_fileset_json(out_file, fileset, indent=2, sort_keys=True)
     logging.info(f"Saved JSON to {out_file}")
 
 
