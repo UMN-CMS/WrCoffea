@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 import json
 import logging
@@ -38,8 +37,7 @@ def load_json(filepath):
 #            logging.info(f"Successfully loaded JSON file: {filepath}")
             return data
     except Exception as e:
-        logging.error(f"Failed to read JSON file {filepath}: {e}")
-        sys.exit(1)
+        raise RuntimeError(f"Failed to read JSON file {filepath}: {e}") from e
 
 def save_json(output_file, data, data_all):
     """

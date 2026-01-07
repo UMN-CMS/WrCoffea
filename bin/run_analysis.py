@@ -211,8 +211,13 @@ if __name__ == "__main__":
     if args.preflight_only:
         logging.info("Preflight-only requested; exiting before processing.")
         raise SystemExit(0)
+
     t0 = time.monotonic()
-    hists_dict = run_analysis(args, filtered_fileset, args.condor)
+    try:
+        hists_dict = run_analysis(args, filtered_fileset, args.condor)
+    except Exception as e:
+        logging.error("Run failed: %s", e)
+        raise
 
     if not args.debug:
         save_histograms(hists_dict, args)
