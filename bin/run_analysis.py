@@ -5,9 +5,7 @@ import argparse
 import time
 import json
 import logging
-import csv
 from pathlib import Path
-import re
 from coffea.nanoevents import NanoAODSchema
 import sys
 import os
@@ -25,99 +23,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from analyzer import WrAnalysis
 import uproot
 from python.save_hists import save_histograms
-from python.preprocess_utils import get_era_details, load_json
-from python.fileset_validation import validate_fileset_schema, validate_selection
+from python.preprocess_utils import get_era_details
+from python.run_utils import (
+    build_fileset_path,
+    load_and_select_fileset,
+    load_masses_from_csv,
+    normalize_mass_point,
+)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 NanoAODSchema.warn_missing_crossrefs = False
 NanoAODSchema.error_missing_event_ids = False
 
-_MASS_RE_WR_N = re.compile(r"^WR(?P<wr>\d+)_N(?P<n>\d+)$")
-_MASS_RE_MWR_MN = re.compile(r"^MWR(?P<wr>\d+)_MN(?P<n>\d+)$")
-
-
-def normalize_mass_point(mass: str | None) -> str | None:
-    """Normalize user-provided mass points to the repo's canonical format.
-
-    Canonical: WR<wr>_N<n>
-    Legacy accepted: MWR<wr>_MN<n> (auto-converted)
-    """
-    if mass is None:
-        return None
-
-    mass = mass.strip()
-    m = _MASS_RE_WR_N.match(mass)
-    if m:
-        return mass
-
-    m = _MASS_RE_MWR_MN.match(mass)
-    if m:
-        converted = f"WR{m.group('wr')}_N{m.group('n')}"
-        logging.warning(
-            "Interpreting legacy mass '%s' as '%s' (canonical WR/N format).",
-            mass,
-            converted,
-        )
-        return converted
-
-    return mass
-
-
-def _signal_sample_matches_mass(sample_name: str, mass_wr_n: str) -> bool:
-    """Return True if a signal dataset/sample string corresponds to the mass point.
-
-    We keep matching flexible because dataset names vary across campaigns.
-    Examples observed in this repo:
-      - ..._MWR2000_N1100_...
-      - ..._MWR600_MN100_...
-    """
-    if not sample_name:
-        return False
-
-    m = _MASS_RE_WR_N.match(mass_wr_n)
-    if not m:
-        return mass_wr_n in sample_name
-
-    wr = m.group("wr")
-    n = m.group("n")
-    needles = (
-        mass_wr_n,
-        f"MWR{wr}_N{n}",
-        f"MWR{wr}_MN{n}",
-    )
-    return any(x in sample_name for x in needles)
-
-def load_masses_from_csv(file_path):
-    mass_choices = []
-    try:
-        with open(file_path, mode='r') as file:
-            csv_reader = csv.reader(file)
-            next(csv_reader)  
-            for row in csv_reader:
-                if len(row) >= 2:
-                    wr_mass = row[0].strip()
-                    n_mass = row[1].strip()
-                    # Canonical: WR<wr>_N<n>
-                    mass_choice = f"WR{wr_mass}_N{n_mass}"
-                    mass_choices.append(mass_choice)
-    except FileNotFoundError:
-        logging.error(f"Mass CSV file not found at: {file_path}")
-        raise
-    except Exception as e:
-        logging.error(f"Error loading CSV file: {e}")
-        raise
-    return mass_choices
-
-def filter_by_process(fileset, desired_process, mass=None):
-    if desired_process == "Signal":
-        return {
-            ds: data
-            for ds, data in fileset.items()
-            if _signal_sample_matches_mass(data.get('metadata', {}).get('sample', ''), mass)
-        }
-    else:
-        return {ds: data for ds, data in fileset.items() if data['metadata']['physics_group'] == desired_process}
 
 def validate_arguments(args, sig_points):
     if args.sample == "Signal" and not args.mass:
@@ -269,16 +187,7 @@ if __name__ == "__main__":
     validate_arguments(args, MASS_CHOICES)
     run, year, era = get_era_details(args.era)
 
-    subdir = "unskimmed" if args.unskimmed else "skimmed"
-
-    if args.sample in ["EGamma", "Muon"]:
-        filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_data_skimmed_fileset.json"
-    elif args.sample == "Signal":
-        filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_signal_skimmed_fileset.json"
-    else:
-        filename = f"{era}_{args.sample}_fileset.json" if args.unskimmed else f"{era}_mc_skimmed_fileset.json"
-
-    filepath = Path("data/jsons") / run / year / era / subdir / filename
+    filepath = build_fileset_path(era=era, sample=args.sample, unskimmed=args.unskimmed)
 
     logging.info(f"Reading files from {filepath}")
 
@@ -288,16 +197,10 @@ if __name__ == "__main__":
             "Create filesets first (see docs/filesets.md), or check --unskimmed and era/sample names."
         )
 
-    preprocessed_fileset = load_json(str(filepath))
-    validate_fileset_schema(preprocessed_fileset, filepath=str(filepath))
-
-    filtered_fileset = filter_by_process(preprocessed_fileset, args.sample, args.mass)
-
-    validate_selection(
-        filtered_fileset,
+    filtered_fileset = load_and_select_fileset(
+        filepath=filepath,
         desired_process=args.sample,
         mass=args.mass,
-        preprocessed_fileset=preprocessed_fileset,
     )
 
     logging.info(
