@@ -7,7 +7,9 @@ data/xsec/miniaod/Run3/2023/Run3Summer23
 data/xsec/miniaod/Run3/2023/Run3Summer23BPix
 data/xsec/RunII
 data/xsec/Run3
-data/jsons
+data/jsons/Run3/2022
+data/jsons/Run3/2023
+data/jsons/RunII/2018
 data/skims
 data/reweights
 data/filepaths

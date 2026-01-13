@@ -52,6 +52,10 @@ def validate_arguments(args, sig_points):
     if args.reweight and args.sample != "DYJets":
         logging.error("Reweighting can only be applied to DY")
         raise ValueError("Invalid sample for reweighting.")
+    if args.sample == "DYJets" and args.dy is None:
+        raise ValueError(
+            f"Missing DY argument for DY sample. Choose from {', '.join(DY_CHOICES)}"
+        )
 
 def run_analysis(args, filtered_fileset, run_on_condor):
 
@@ -127,11 +131,13 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 if __name__ == "__main__":
     ERA_CHOICES = list_eras()
     SAMPLE_CHOICES = list_samples()
+    DY_CHOICES = ["LO_inclusive", "NLO_mll_binned"]
 
     parser = argparse.ArgumentParser(description="Processing script for WR analysis.")
     parser.add_argument("era", nargs="?", default=None, type=str, choices=ERA_CHOICES, help="Campaign to analyze.")
     parser.add_argument("sample", nargs="?", default=None, type=str, choices=SAMPLE_CHOICES, help="Sample to analyze (e.g., Signal, DYJets).")
     optional = parser.add_argument_group("Optional arguments")
+    optional.add_argument("--dy", type=str, default=None, choices=DY_CHOICES, help="Specific DY sample to analyze (LO, NLO, etc)")
     optional.add_argument("--mass", type=str, default=None, help="Signal mass point to analyze.")
     optional.add_argument("--dir", type=str, default=None, help="Create a new output directory.")
     optional.add_argument("--name", type=str, default=None, help="Append the filenames of the output ROOT files.")
@@ -141,16 +147,8 @@ if __name__ == "__main__":
     optional.add_argument("--condor", action='store_true', help="Run on condor.")
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")
-    optional.add_argument(
-        "--list-masses",
-        action="store_true",
-        help="Print available signal mass points for the given era (or all eras if none provided) and exit.",
-    )
-    optional.add_argument(
-        "--preflight-only",
-        action="store_true",
-        help="Validate fileset path/schema and selection, then exit without processing.",
-    )
+    optional.add_argument("--list-masses", action="store_true", help="Print available signal mass points for the given era (or all eras if none provided) and exit.")
+    optional.add_argument("--preflight-only", action="store_true", help="Validate fileset path/schema and selection, then exit without processing.")
     args = parser.parse_args()
 
     # Listing helpers should work without positional args.
@@ -189,7 +187,7 @@ if __name__ == "__main__":
     validate_arguments(args, MASS_CHOICES)
     run, year, era = get_era_details(args.era)
 
-    filepath = build_fileset_path(era=era, sample=args.sample, unskimmed=args.unskimmed)
+    filepath = build_fileset_path(era=era, sample=args.sample, unskimmed=args.unskimmed, dy=args.dy)
 
     logging.info(f"Reading files from {filepath}")
 

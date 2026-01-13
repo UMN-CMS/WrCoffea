@@ -122,11 +122,15 @@ def filter_by_process(fileset: Mapping, desired_process: str, *, mass: str | Non
     }
 
 
-def build_fileset_path(*, era: str, sample: str, unskimmed: bool) -> Path:
+def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Path:
     run, year, era_name = get_era_details(era)
     subdir = "unskimmed" if unskimmed else "skimmed"
 
-    if sample in ["EGamma", "Muon"]:
+    if dy == "LO_inclusive" and not unskimmed:
+        filename = f"{era_name}_skimmed_lo_inc_dy.json"
+    elif dy == "NLO_mll_binned":
+        filename = f"{era_name}_skimmed_nlo_mll_dy.json"
+    elif sample in ["EGamma", "Muon"]:
         filename = f"{era_name}_{sample}_fileset.json" if unskimmed else f"{era_name}_data_skimmed_fileset.json"
     elif sample == "Signal":
         filename = f"{era_name}_{sample}_fileset.json" if unskimmed else f"{era_name}_signal_skimmed_fileset.json"
