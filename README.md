@@ -27,6 +27,26 @@ test/       # Holds test and development scripts.
 
 ---
 
+## Quick Start
+To run over 2024 samples,
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --dy NLO_mll_binned --dir output_dir
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --dy LO_inclusive --dir output_dir
+python3 bin/run_analysis.py RunIII2024Summer24 tt_tW --dir output_dir
+python3 bin/run_analysis.py RunIII2024Summer24 Nonprompt --dir output_dir
+python3 bin/run_analysis.py RunIII2024Summer24 Other --dir output_dir
+python3 bin/run_analysis.py RunIII2024Summer24 EGamma --dir output_dir
+python3 bin/run_analysis.py RunIII2024Summer24 Muon --dir output_dir
+```
+To view 2024 skims
+```bash
+gfal-ls -l davs://cmsxrootd.hep.wisc.edu:1094/store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24
+```
+To add skims to Wisconsin storage area
+```bash
+xrdcp -r some_dataset root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18
+```
+
 ## Getting Started
 Begin by cloning the repository:
 ```bash
