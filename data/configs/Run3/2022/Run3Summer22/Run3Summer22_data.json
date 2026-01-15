@@ -1,0 +1,52 @@
+{
+  "/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD": {
+    "das_name": "/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22",
+    "dataset": "SingleMuon_Run2022C",
+    "physics_group": "Muon",
+    "datatype": "data",
+    "nevts": 20162441
+  },
+  "/Muon/Run2022C-22Sep2023-v1/NANOAOD": {
+    "das_name": "/Muon/Run2022C-22Sep2023-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22",
+    "dataset": "Muon_Run2022C",
+    "physics_group": "Muon",
+    "datatype": "data",
+    "nevts": 138427345
+  },
+  "/Muon/Run2022D-22Sep2023-v1/NANOAOD": {
+    "das_name": "/Muon/Run2022D-22Sep2023-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22",
+    "dataset": "Muon_Run2022D",
+    "physics_group": "Muon",
+    "datatype": "data",
+    "nevts": 75468381
+  },
+  "/EGamma/Run2022C-22Sep2023-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2022C-22Sep2023-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22",
+    "dataset": "EGamma_Run2022C",
+    "physics_group": "EGamma",
+    "datatype": "data",
+    "nevts": 263689151
+  },
+  "/EGamma/Run2022D-22Sep2023-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2022D-22Sep2023-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22",
+    "dataset": "EGamma_Run2022D",
+    "physics_group": "EGamma",
+    "datatype": "data",
+    "nevts": 89134996
+  }
+}
