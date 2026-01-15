@@ -56,6 +56,10 @@ def validate_arguments(args, sig_points):
         raise ValueError(
             f"Missing DY argument for DY sample. Choose from {', '.join(DY_CHOICES)}"
         )
+    if args.dy is not None and args.sample != "DYJets":
+        raise ValueError(
+            f"Trying to specify a DY sample for a non-DY background"
+        )
 
 def run_analysis(args, filtered_fileset, run_on_condor):
 
@@ -100,8 +104,8 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 
     run = Runner(
         executor = DaskExecutor(client=client, compression=None, retries=0),
-        chunksize = 250_000, #250_000
-        maxchunks = None, #Change to 1 for testing, None for all
+        chunksize = 250_000, 
+        maxchunks = None, # Change to 1 for testing, None for all
         skipbadfiles=False,
         xrootdtimeout = 60,
         align_clusters = False,
