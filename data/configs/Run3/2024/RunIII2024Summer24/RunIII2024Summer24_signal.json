@@ -7,7 +7,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1668,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00005587,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -19,7 +19,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.09102,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00003133,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -31,7 +31,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.06591,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00002638,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -43,7 +43,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.04033,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00001418,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -55,7 +55,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.01762,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.000006973,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -67,7 +67,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.003042,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.000001049,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -79,7 +79,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1592,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00006204,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -91,7 +91,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1477,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00007366,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -103,7 +103,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1326,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00004393,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -115,7 +115,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1136,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00003963,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -127,7 +127,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.002389,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 6.776e-7,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -139,7 +139,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00166,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 7.249e-7,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -151,7 +151,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001546,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 5.22e-7,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -163,7 +163,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00143,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 4.625e-7,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
@@ -175,7 +175,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001307,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 4.273e-7,
     "genEventSumw": 35000.0,
     "datatype": "mc"
   },
