@@ -7,7 +7,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1668,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00005587,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -17,8 +18,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.1668,
-    "total_uncertainty": 0.0,
+    "xsec": 0.1674,
+    "total_uncertainty": 0.00005686,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -29,7 +31,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1592,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00006204,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -40,7 +43,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1592,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00006404,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -51,7 +55,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1477,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00007366,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -61,8 +66,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.1477,
-    "total_uncertainty": 0.0,
+    "xsec": 0.1476,
+    "total_uncertainty": 0.00007462,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -73,7 +79,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1326,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00004393,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -83,8 +90,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.1326,
-    "total_uncertainty": 0.0,
+    "xsec": 0.1325,
+    "total_uncertainty": 0.00004457,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -95,7 +103,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1136,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00003963,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -106,7 +115,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.1136,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00004825,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -117,7 +127,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.09102,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00003133,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -127,8 +138,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.09102,
-    "total_uncertainty": 0.0,
+    "xsec": 0.091,
+    "total_uncertainty": 0.00003128,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -139,7 +151,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.06591,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00002638,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -149,8 +162,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.06591,
-    "total_uncertainty": 0.0,
+    "xsec": 0.06598,
+    "total_uncertainty": 0.0000259,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -161,7 +175,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.04033,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.00001418,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -171,8 +186,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.04033,
-    "total_uncertainty": 0.0,
+    "xsec": 0.04032,
+    "total_uncertainty": 0.00001386,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -183,7 +199,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.01762,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.000006973,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -193,8 +210,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.01762,
-    "total_uncertainty": 0.0,
+    "xsec": 0.01766,
+    "total_uncertainty": 0.00000699,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -205,7 +223,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.003042,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0.000001049,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -215,8 +234,9 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 0.003042,
-    "total_uncertainty": 0.0,
+    "xsec": 0.003045,
+    "total_uncertainty": 0.000001074,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -227,7 +247,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.002389,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -238,7 +259,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.002389,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -249,7 +271,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.002183,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -260,7 +283,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.002183,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -271,7 +295,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.002024,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -282,7 +307,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.002024,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -293,7 +319,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001894,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -304,7 +331,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001894,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -315,7 +343,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001779,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -326,7 +355,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001779,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -337,7 +367,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00166,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -348,7 +379,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00166,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -359,7 +391,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001546,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -370,7 +403,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001546,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -381,7 +415,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00143,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -392,7 +427,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00143,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -403,7 +439,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001307,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -414,7 +451,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001307,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -425,7 +463,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001181,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -436,7 +475,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001181,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -447,7 +487,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001048,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -458,7 +499,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.001048,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -469,7 +511,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0009103,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -480,7 +523,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0009103,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -491,7 +535,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0007731,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -502,7 +547,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0007731,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -513,7 +559,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.000628,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -524,7 +571,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.000628,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -535,7 +583,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0004911,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -546,7 +595,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0004911,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -557,7 +607,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0003566,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -568,7 +619,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0003566,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -579,7 +631,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0002355,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -590,7 +643,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0002355,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -601,7 +655,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001309,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -612,7 +667,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001309,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM": {
@@ -623,7 +679,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.464e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM": {
@@ -634,7 +691,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.464e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -645,7 +703,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.207e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -656,7 +715,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.207e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -667,7 +727,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001936,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -678,7 +739,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001936,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -689,7 +751,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001553,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -700,7 +763,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001553,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -711,7 +775,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001307,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -722,7 +787,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001307,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -733,7 +799,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001132,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -744,7 +811,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001132,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -755,7 +823,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001006,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -766,7 +835,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0001006,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -777,7 +847,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 9.075e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -788,7 +859,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 9.075e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -799,7 +871,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 8.329e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -810,7 +883,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 8.329e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -821,7 +895,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.697e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -832,7 +907,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.697e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -843,7 +919,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.163e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -854,7 +931,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.163e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -865,7 +943,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.701e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -876,7 +955,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.701e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -887,7 +967,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.269e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -898,7 +979,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.269e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -909,7 +991,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.862e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -920,7 +1003,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.862e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -931,7 +1015,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.465e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -942,7 +1027,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.465e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -953,7 +1039,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.101e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -964,7 +1051,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.101e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -975,7 +1063,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.738e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -986,7 +1075,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.738e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -997,7 +1087,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.354e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1008,7 +1099,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.354e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1019,7 +1111,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.983e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1030,7 +1123,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.983e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1041,7 +1135,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.598e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1052,7 +1147,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.598e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1063,7 +1159,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.222e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1074,7 +1171,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.222e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1085,7 +1183,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.833e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1096,7 +1195,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.833e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1107,7 +1207,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.452e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1118,7 +1219,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.452e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1129,7 +1231,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.074e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1140,7 +1243,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.074e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1151,7 +1255,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.704e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1162,7 +1267,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.704e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1173,7 +1279,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.351e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1184,7 +1291,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.351e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1195,7 +1303,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.025e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1206,7 +1315,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.025e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1217,7 +1327,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.277e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1228,7 +1339,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.277e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1239,7 +1351,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.684e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1250,7 +1363,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.684e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM": {
@@ -1261,7 +1375,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.621e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM": {
@@ -1272,7 +1387,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.621e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1283,7 +1399,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.134e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1294,7 +1411,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.134e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1305,7 +1423,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.262e-07,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1316,7 +1435,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.262e-07,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1327,7 +1447,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.23e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1338,7 +1459,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.23e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1349,7 +1471,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.043e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1360,7 +1483,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.043e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1371,7 +1495,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.282e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1382,7 +1507,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.282e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1393,7 +1519,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.771e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1404,7 +1531,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.771e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1415,7 +1543,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.414e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1426,7 +1555,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.414e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1437,7 +1567,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.163e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1448,7 +1579,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.163e-05,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1459,7 +1591,8 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 9.758e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1470,7 +1603,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 9.758e-06,
-    "total_uncertainty": 0.0,
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
     "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -1481,8 +1615,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 8.367e-06,
-    "datatype": "mc",
-    "nevts": 68134
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1492,8 +1627,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 8.367e-06,
-    "datatype": "mc",
-    "nevts": 66505
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1503,8 +1639,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.355e-06,
-    "datatype": "mc",
-    "nevts": 69394
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1514,8 +1651,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 7.355e-06,
-    "datatype": "mc",
-    "nevts": 69297
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1525,8 +1663,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.541e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1536,8 +1675,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.541e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1547,8 +1687,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.934e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1558,8 +1699,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.934e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1569,8 +1711,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.443e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1580,8 +1723,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.443e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1591,8 +1735,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.036e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1602,8 +1747,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.036e-06,
-    "datatype": "mc",
-    "nevts": 67248
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1613,8 +1759,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.689e-06,
-    "datatype": "mc",
-    "nevts": 69428
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1624,8 +1771,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.689e-06,
-    "datatype": "mc",
-    "nevts": 69309
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1635,8 +1783,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.391e-06,
-    "datatype": "mc",
-    "nevts": 69424
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1646,8 +1795,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.391e-06,
-    "datatype": "mc",
-    "nevts": 67268
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v4/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v4/NANOAODSIM",
@@ -1657,8 +1807,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.125e-06,
-    "datatype": "mc",
-    "nevts": 69422
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v4/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v4/NANOAODSIM",
@@ -1668,8 +1819,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.125e-06,
-    "datatype": "mc",
-    "nevts": 69422
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1679,8 +1831,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.874e-06,
-    "datatype": "mc",
-    "nevts": 69412
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1690,8 +1843,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.874e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1701,8 +1855,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.649e-06,
-    "datatype": "mc",
-    "nevts": 69428
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1712,8 +1867,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.649e-06,
-    "datatype": "mc",
-    "nevts": 66570
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1723,8 +1879,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.433e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1734,8 +1891,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.433e-06,
-    "datatype": "mc",
-    "nevts": 69312
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1745,8 +1903,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.22e-06,
-    "datatype": "mc",
-    "nevts": 67640
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1756,8 +1915,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.22e-06,
-    "datatype": "mc",
-    "nevts": 68626
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1767,8 +1927,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.016e-06,
-    "datatype": "mc",
-    "nevts": 42304
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1778,8 +1939,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.016e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1789,8 +1951,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.806e-06,
-    "datatype": "mc",
-    "nevts": 69425
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1800,8 +1963,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.806e-06,
-    "datatype": "mc",
-    "nevts": 66595
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM",
@@ -1811,8 +1975,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.604e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM",
@@ -1822,8 +1987,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.604e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1833,8 +1999,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.398e-06,
-    "datatype": "mc",
-    "nevts": 66532
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1844,8 +2011,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.398e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1855,8 +2023,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.189e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1866,8 +2035,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.189e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1877,8 +2047,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.987e-06,
-    "datatype": "mc",
-    "nevts": 69389
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1888,8 +2059,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.987e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1899,8 +2071,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.788e-06,
-    "datatype": "mc",
-    "nevts": 69418
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1910,8 +2083,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.788e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1921,8 +2095,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.59e-06,
-    "datatype": "mc",
-    "nevts": 69418
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1932,8 +2107,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.59e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1943,8 +2119,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.395e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1954,8 +2131,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.395e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1965,8 +2143,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.206e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1976,8 +2155,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.206e-06,
-    "datatype": "mc",
-    "nevts": 68662
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1987,8 +2167,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.023e-06,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -1998,8 +2179,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.023e-06,
-    "datatype": "mc",
-    "nevts": 68038
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2009,8 +2191,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 8.486e-07,
-    "datatype": "mc",
-    "nevts": 69417
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2020,8 +2203,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 8.486e-07,
-    "datatype": "mc",
-    "nevts": 69341
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2031,8 +2215,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.853e-07,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2042,8 +2227,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 6.853e-07,
-    "datatype": "mc",
-    "nevts": 69339
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2053,8 +2239,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.323e-07,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2064,8 +2251,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 5.323e-07,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2075,8 +2263,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.957e-07,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2086,8 +2275,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.957e-07,
-    "datatype": "mc",
-    "nevts": 68734
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2097,8 +2287,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.743e-07,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2108,8 +2299,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.743e-07,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2119,8 +2311,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.747e-07,
-    "datatype": "mc",
-    "nevts": 68818
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2130,8 +2323,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.747e-07,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2141,8 +2335,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 9.523e-08,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2152,8 +2347,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 9.523e-08,
-    "datatype": "mc",
-    "nevts": 68047
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2163,8 +2359,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.186e-08,
-    "datatype": "mc",
-    "nevts": 67648
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2174,8 +2371,9 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.186e-08,
-    "datatype": "mc",
-    "nevts": 69552
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2185,8 +2383,9 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.244e-08,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   },
   "/WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
@@ -2196,7 +2395,8 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.244e-08,
-    "datatype": "mc",
-    "nevts": 70000
+    "total_uncertainty": 0,
+    "genEventSumw": 0,
+    "datatype": "mc"
   }
 }
