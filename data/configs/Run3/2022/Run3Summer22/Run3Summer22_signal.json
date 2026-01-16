@@ -1207,7 +1207,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.452e-05,
-    "total_uncertainty": 0,
+    "total_uncertainty": 8.616e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1218,8 +1218,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 2.452e-05,
-    "total_uncertainty": 0,
+    "xsec": 0.00002449,
+    "total_uncertainty": 8.552e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1230,8 +1230,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 2.074e-05,
-    "total_uncertainty": 0,
+    "xsec": 0.00002074,
+    "total_uncertainty": 6.191e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1242,8 +1242,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 2.074e-05,
-    "total_uncertainty": 0,
+    "xsec": 0.00002066,
+    "total_uncertainty": 6.208e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1255,7 +1255,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.704e-05,
-    "total_uncertainty": 0,
+    "total_uncertainty": 5.31e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1266,8 +1266,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 1.704e-05,
-    "total_uncertainty": 0,
+    "xsec": 0.00001703,
+    "total_uncertainty": 5.391e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1279,7 +1279,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.351e-05,
-    "total_uncertainty": 0,
+    "total_uncertainty": 4.489e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1290,8 +1290,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 1.351e-05,
-    "total_uncertainty": 0,
+    "xsec": 0.00001352,
+    "total_uncertainty": 4.627e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1303,7 +1303,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.025e-05,
-    "total_uncertainty": 0,
+    "total_uncertainty": 4.006e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1314,8 +1314,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 1.025e-05,
-    "total_uncertainty": 0,
+    "xsec": 0.00001026,
+    "total_uncertainty": 3.411e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1326,8 +1326,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 7.277e-06,
-    "total_uncertainty": 0,
+    "xsec": 0.000007277,
+    "total_uncertainty": 2.473e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1338,8 +1338,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 7.277e-06,
-    "total_uncertainty": 0,
+    "xsec": 0.000007283,
+    "total_uncertainty": 2.531e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1351,7 +1351,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 4.684e-06,
-    "total_uncertainty": 0,
+    "total_uncertainty": 1.422e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1362,8 +1362,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 4.684e-06,
-    "total_uncertainty": 0,
+    "xsec": 0.000004685,
+    "total_uncertainty": 1.416e-9,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1375,7 +1375,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 2.621e-06,
-    "total_uncertainty": 0,
+    "total_uncertainty": 8.818e-10,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1386,8 +1386,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 2.621e-06,
-    "total_uncertainty": 0,
+    "xsec": 2.618e-06,
+    "total_uncertainty": 8.976e-10,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1399,7 +1399,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.134e-06,
-    "total_uncertainty": 0,
+    "total_uncertainty": 3.381e-10,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1410,8 +1410,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 1.134e-06,
-    "total_uncertainty": 0,
+    "xsec": 0.000001137,
+    "total_uncertainty": 3.381e-10,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1423,7 +1423,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.262e-07,
-    "total_uncertainty": 0,
+    "total_uncertainty": 9.18e-11,
     "genEventSumw": 0,
     "datatype": "mc"
   },
@@ -1434,8 +1434,8 @@
     "era": "Run3Summer22",
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": 3.262e-07,
-    "total_uncertainty": 0,
+    "xsec": 3.269e-7,
+    "total_uncertainty": 9.383e-11,
     "genEventSumw": 0,
     "datatype": "mc"
   },
