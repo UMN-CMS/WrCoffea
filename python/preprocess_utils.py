@@ -5,15 +5,9 @@ import difflib
 
 # Mapping of eras to dataset paths
 ERA_MAPPING = {
-    "RunIISpring16": {"run": "RunII", "year": "2016"},
-    "RunIIAutumn18": {"run": "RunII", "year": "2018"},
-    "RunIISummer20UL16": {"run": "RunII", "year": "2016"},
-    "RunIISummer20UL17": {"run": "RunII", "year": "2017"},
     "RunIISummer20UL18": {"run": "RunII", "year": "2018"},
     "Run3Summer22": {"run": "Run3", "year": "2022"},
     "Run3Summer22EE": {"run": "Run3", "year": "2022"},
-    "Run3Summer23": {"run": "Run3", "year": "2023"},
-    "Run3Summer23BPix": {"run": "Run3", "year": "2023"},
     "RunIII2024Summer24": {"run": "Run3", "year": "2024"},
 }
 
@@ -34,7 +28,7 @@ def load_json(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as file:
             data = json.load(file)
-#            logging.info(f"Successfully loaded JSON file: {filepath}")
+            logging.info(f"Successfully loaded JSON file: {filepath}")
             return data
     except Exception as e:
         raise RuntimeError(f"Failed to read JSON file {filepath}: {e}") from e
