@@ -2,6 +2,26 @@
 
 Welcome to the WR analyzer! This repository provides tools for analyzing and processing WR background, data, and signal events. Below, you’ll find instructions on setting up the environment, running the analysis, and extending the framework.
 
+
+## Quick Start
+To run over 2024 backgrounds,
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets
+python3 bin/run_analysis.py RunIII2024Summer24 tt_tW 
+python3 bin/run_analysis.py RunIII2024Summer24 Nonprompt
+python3 bin/run_analysis.py RunIII2024Summer24 Other
+python3 bin/run_analysis.py RunIII2024Summer24 EGamma
+python3 bin/run_analysis.py RunIII2024Summer24 Muon
+```
+To run over 2024 signals,
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 33322?
+```
+To see avaliable mass options, choose 
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 33322?
+```
+Note that 
 ## Table of Contents
 - [Creating Filesets](docs/filesets.md) – Instructions for creating both skimmed and unskimmed filesets.
 - [Running the Analyzer](docs/run_analysis.md) – How to execute `run_analysis.py` to perform a basic analysis.
