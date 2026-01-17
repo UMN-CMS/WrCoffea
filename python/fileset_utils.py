@@ -65,9 +65,8 @@ def normalize_skimmed_sample(sample: str) -> str:
     return "mc" if "mc" in sample else sample
 
 
-def output_dir(*, data_root: Path, run: str, year: str, era: str, skimmed: bool) -> Path:
-    subdir = "skimmed" if skimmed else "unskimmed"
-    return data_root / "jsons" / run / year / era / subdir
+def output_dir(*, data_root: Path, run: str, year: str, era: str) -> Path:
+    return data_root / "filesets" / run / year / era 
 
 
 def write_fileset_json(path: Path, fileset: Mapping, *, indent: int = 2, sort_keys: bool = True) -> None:

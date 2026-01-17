@@ -167,7 +167,7 @@ if __name__ == "__main__":
     if args.list_masses:
         eras = [args.era] if args.era else ERA_CHOICES
         for e in eras:
-            csv_path = Path(f"data/{e}_mass_points.csv")
+            csv_path = Path(f"data/signal_points/{e}_mass_points.csv")
             masses = load_masses_from_csv(csv_path)
             if args.era is None:
                 print(f"[{e}]")

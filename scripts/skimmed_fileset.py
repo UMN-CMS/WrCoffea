@@ -70,13 +70,8 @@ def replace_files_in_json(data: dict, run: str, year: str, era: str, umn: bool, 
 
         if umn:
             root_files = get_root_files_from_umn(dataset, era)
-        elif year == "2024" or sample == "signal": # Temp because 2018 sample on wisc
-            root_files = get_root_files_from_wisc(dataset, run, year, era)
         else:
-            root_files = get_root_files_from_eos(dataset, run, year, era)
-#
-#        root_files = (get_root_files_from_umn(dataset, era) if umn
-#                      else get_root_files_from_eos(dataset, run, year, era))
+            root_files = get_root_files_from_wisc(dataset, run, year, era)
 
         if root_files:
             for fp in root_files:
@@ -169,8 +164,10 @@ def get_root_files_from_wisc(dataset: str, run: str, year: str, era: str) -> lis
     # POSIX-style path under /store
     if "WR" in dataset:
         rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/signals/{dataset}/"
+    elif dataset in {"EGamma", "Muon"}:
+        rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/data/{dataset}/"
     else:
-        rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/{dataset}/"
+        rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/backgrounds/{dataset}/"
 
     # davs URL for gfal
     davs_url = f"davs://{host}:1094{rel_dir}"
@@ -213,21 +210,6 @@ def get_root_files_from_wisc(dataset: str, run: str, year: str, era: str) -> lis
     logging.info(f"Found {len(files)} ROOT files for {dataset} on WISC via gfal-ls")
     return files
 
-def get_root_files_from_eos(dataset: str, run: str, year: str, era: str) -> list[str]:
-    base_path = f"/store/user/wijackso/WRAnalyzer/skims/2025/{run}/{year}/{era}/{dataset}/"
-    cmd = ["xrdfs", "root://cmseos.fnal.gov", "ls", base_path]
-    try:
-        out = subprocess.check_output(cmd, text=True)
-        files = [
-            f"root://cmseos.fnal.gov/{line.strip()}"
-            for line in out.splitlines() if line.endswith(".root")
-        ]
-        logging.info(f"Found {len(files)} ROOT files for {dataset} on EOS")
-        return files
-    except subprocess.CalledProcessError as e:
-        logging.error(f"EOS listing failed for {dataset}: {e}")
-        return []
-
 def main():
     parser = argparse.ArgumentParser(
         description="Replace file lists in a JSON config and run Coffea preprocessing."
@@ -252,16 +234,17 @@ def main():
 
     data_root, run, year, era = parse_config_path(input_path)
 
+    print(data_root)
     sample = sample_from_config_filename(input_path, era=era)
-    sample = normalize_skimmed_sample(sample)
+#    sample = normalize_skimmed_sample(sample)
 
 
     fileset = load_json(str(input_path))
     fileset = replace_files_in_json(fileset, run, year, era, args.umn, sample)
     fileset = rename_dataset_key_to_sample(fileset)
 
-    out_dir_path = output_dir(data_root=data_root, run=run, year=year, era=era, skimmed=True)
-    out_file = out_dir_path / f"{era}_{sample}_skimmed_fileset.json"
+    out_dir_path = output_dir(data_root=data_root, run=run, year=year, era=era)
+    out_file = out_dir_path / f"{era}_{sample}_fileset.json"
     write_fileset_json(out_file, fileset, indent=2, sort_keys=True)
     logging.info(f"Saved JSON to {out_file}")
 
