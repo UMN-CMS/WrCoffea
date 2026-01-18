@@ -4,12 +4,30 @@ Welcome to the WR analyzer! This repository provides tools for analyzing and pro
 
 ---
 
+## Table of Contents
+- [Quickstart](README.md#quick-start) – Basic commands for running the analyzer.
+- [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
+- [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
+- [Plotting](docs/plotting.md) – Make stack plots from the analyzer's output `ROOT` files.
+- [Running the Analyzer](docs/run_analysis.md) – Useful options to include when running the analyzer.
+- [Creating Filesets](docs/filesets.md) – Instructions for creating filesets.
+- [Condor](docs/condor.md) – How to run the analyzer on Condor at the LPC. [IN PROGRESS]
+
+---
+
 ## Quick Start
-To make a standard set of histograms, run the analyzer like
+To make a standard set of histograms, run the analyzer with a command of the form
 ```bash
 python3 bin/run_analysis.py era sample
 ```
-where `era` is either `RunIISummer20UL18` or `RunIII2024Summer24` and `sample` is one of [`DYJets`, `tt_tW`, `Nonprompt`, `Other`] for backgrounds, [`EGamma`, `Muon`] for data or `Signal` for signal.
+To see the list of eras, run
+```bash
+python3 bin/run_analysis.py --list-eras
+```
+To see the list of samples, run
+```bash
+python3 bin/run_analysis.py --list-samples
+```
 
 ---
 ### Backgrounds
@@ -18,19 +36,19 @@ Examples:
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets
 python3 bin/run_analysis.py RunIISummer20UL18 Nonprompt
 ```
-To run over all backgrounds, one can use
+To run over all backgrounds for a given era,
 ```bash
 bash bin/analyze_all.sh bkg RunIII2024Summer24
 ```
 
 ---
 ### Data
-Similarly to run over data,
+Analyzing data is similar,
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 EGamma
 python3 bin/run_analysis.py RunIISummer20UL18 Muon
 ```
-Or to run over both `EGamma` and `Muon` in one command
+Or to run over both `EGamma` and `Muon` in one command,
 ```bash
 bash bin/analyze_all.sh data RunIII2024Summer24
 ```
@@ -42,36 +60,11 @@ To analyze signal files, include the `--mass` flag
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 
 python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass 
 ```
-To see the possible signal points for a given era, run
+To see the possible signal points, run either
 ```bash
+python3 bin/run_analysis.py --list-masses
 python3 bin/run_analysis.py RunIII2024Summer24 --list-masses
 ```
-
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets
-python3 bin/run_analysis.py RunIII2024Summer24 tt_tW 
-python3 bin/run_analysis.py RunIII2024Summer24 Nonprompt
-python3 bin/run_analysis.py RunIII2024Summer24 Other
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma
-python3 bin/run_analysis.py RunIII2024Summer24 Muon
-```
-To run over 2024 signals,
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 33322?
-```
-To see avaliable mass options, choose 
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 33322?
-```
-Note that 
-## Table of Contents
-- [Creating Filesets](docs/filesets.md) – Instructions for creating both skimmed and unskimmed filesets.
-- [Running the Analyzer](docs/run_analysis.md) – How to execute `run_analysis.py` to perform a basic analysis.
-- [Condor](docs/condor.md) – How to run the analyzer on Condor at the LPC.
-- [Plotting](docs/plotting.md) – Instructions for generating plots from histogram ROOT files.
-- [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
-- [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
----
 
 ## 📂 Repository Structure
 This repository is structured to separate executable scripts, core analysis logic, and documentation.
@@ -88,26 +81,6 @@ test/       # Holds test and development scripts.
 ```
 
 ---
-
-## Quick Start
-To run over 2024 samples,
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --dy NLO_mll_binned --dir output_dir
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --dy LO_inclusive --dir output_dir
-python3 bin/run_analysis.py RunIII2024Summer24 tt_tW --dir output_dir
-python3 bin/run_analysis.py RunIII2024Summer24 Nonprompt --dir output_dir
-python3 bin/run_analysis.py RunIII2024Summer24 Other --dir output_dir
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma --dir output_dir
-python3 bin/run_analysis.py RunIII2024Summer24 Muon --dir output_dir
-```
-To view 2024 skims
-```bash
-gfal-ls -l davs://cmsxrootd.hep.wisc.edu:1094/store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24
-```
-To add skims to Wisconsin storage area
-```bash
-xrdcp -r some_dataset root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18
-```
 
 ## Getting Started
 Begin by cloning the repository:
