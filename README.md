@@ -6,12 +6,13 @@ Welcome to the WR analyzer! This repository provides tools for analyzing and pro
 
 ## Table of Contents
 - [Quickstart](README.md#quick-start) – Basic commands for running the analyzer.
+- [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
+- [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
 - [Plotting](docs/plotting.md) – Make stack plots from the analyzer's output `ROOT` files.
 - [Running the Analyzer](docs/run_analysis.md) – Useful options to include when running the analyzer.
 - [Creating Filesets](docs/filesets.md) – Instructions for creating filesets.
 - [Condor](docs/condor.md) – How to run the analyzer on Condor at the LPC. [IN PROGRESS]
-- [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
-- [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
+
 ---
 
 ## Quick Start
