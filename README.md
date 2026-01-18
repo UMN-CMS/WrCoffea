@@ -64,8 +64,8 @@ To see the possible signal points, run either
 python3 bin/run_analysis.py --list-masses
 python3 bin/run_analysis.py RunIII2024Summer24 --list-masses
 ```
-
-## 📂 Repository Structure
+---
+## Repository Structure
 This repository is structured to separate executable scripts, core analysis logic, and documentation.
 
 ```
@@ -112,6 +112,8 @@ If using UMN’s setup, use:
 ```bash
 source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
 ```
+
+---
 
 ## Update Plotter Submodule
 To update the commit of the WR_Plotter submodule, use the following commands
