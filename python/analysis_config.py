@@ -14,8 +14,8 @@ LUMIS = {
 # Golden JSON paths for data lumi masking
 LUMI_JSONS = {
     "RunIISummer20UL18": "data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
-    "Run3Summer22": "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
-    "Run3Summer22EE": "data/lumis/Run3/2022/Run3Summer22/Cert_Collisions2022_355100_362760_Golden.txt",
+    "Run3Summer22": "data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt",
+    "Run3Summer22EE": "data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt",
     "RunIII2024Summer24": "data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.txt",
 }
 

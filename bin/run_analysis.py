@@ -45,6 +45,10 @@ def validate_arguments(args, sig_points):
         raise ValueError(
             f"Trying to specify a DY sample for a non-DY background"
         )
+    if args.max_workers is not None and args.max_workers < 1:
+        raise ValueError("--max-workers must be a positive integer")
+    if args.threads_per_worker is not None and args.threads_per_worker < 1:
+        raise ValueError("--threads-per-worker must be a positive integer")
 
 def run_analysis(args, filtered_fileset, run_on_condor):
 
@@ -76,7 +80,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
             log_directory=log_dir,
         )
 
-        NWORKERS = 20
+        NWORKERS = args.max_workers or 20
         cluster.scale(NWORKERS)
 
         client = Client(cluster)
@@ -94,8 +98,8 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         client.run(_add_paths)
 
     else:
-        cluster = LocalCluster(n_workers=1, threads_per_worker=1)
-        cluster.adapt(minimum=1, maximum=10)
+        cluster = LocalCluster(n_workers=1, threads_per_worker=(args.threads_per_worker or 1))
+        cluster.adapt(minimum=1, maximum=(args.max_workers or 10))
         client = Client(cluster)
 
     run = Runner(
@@ -145,6 +149,18 @@ if __name__ == "__main__":
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
     optional.add_argument("--condor", action='store_true', help="Run on condor.")
+    optional.add_argument(
+        "--max-workers",
+        type=int,
+        default=None,
+        help="Cap the number of Dask workers (local adaptive maximum; condor scale count).",
+    )
+    optional.add_argument(
+        "--threads-per-worker",
+        type=int,
+        default=None,
+        help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).",
+    )
     optional.add_argument(
         "--systs",
         nargs="*",
