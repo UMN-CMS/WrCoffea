@@ -4,7 +4,27 @@ Welcome to the WR analyzer! This repository provides tools for analyzing and pro
 
 
 ## Quick Start
-To run over 2024 backgrounds,
+To make a standard set of histograms, run the analyzer like
+```bash
+python3 bin/run_analysis.py era sample
+```
+where `era` is either `RunIISummer20UL18` or `RunIII2024Summer24` and `sample` is one of [`DYJets`, `tt_tW`, `Nonprompt`, `Other`] for backgrounds, [`EGamma`, `Muon`] for data or `Signal` for signal.
+
+Examples:
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets
+python3 bin/run_analysis.py RunIISummer20UL18 EGamma 
+```
+To analyze signal files, include the `--mass` flag
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 
+python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass 
+```
+To see the possible signal points for a given era, run
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 --list-masses
+```
+
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets
 python3 bin/run_analysis.py RunIII2024Summer24 tt_tW 
