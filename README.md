@@ -2,6 +2,7 @@
 
 Welcome to the WR analyzer! This repository provides tools for analyzing and processing WR background, data, and signal events. Below, you’ll find instructions on setting up the environment, running the analysis, and extending the framework.
 
+---
 
 ## Quick Start
 To make a standard set of histograms, run the analyzer like
@@ -10,11 +11,32 @@ python3 bin/run_analysis.py era sample
 ```
 where `era` is either `RunIISummer20UL18` or `RunIII2024Summer24` and `sample` is one of [`DYJets`, `tt_tW`, `Nonprompt`, `Other`] for backgrounds, [`EGamma`, `Muon`] for data or `Signal` for signal.
 
+---
+### Backgrounds
 Examples:
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets
-python3 bin/run_analysis.py RunIISummer20UL18 EGamma 
+python3 bin/run_analysis.py RunIISummer20UL18 Nonprompt
 ```
+To run over all backgrounds, one can use
+```bash
+bash bin/analyze_all.sh bkg RunIII2024Summer24
+```
+
+---
+### Data
+Similarly to run over data,
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 EGamma
+python3 bin/run_analysis.py RunIISummer20UL18 Muon
+```
+Or to run over both `EGamma` and `Muon` in one command
+```bash
+bash bin/analyze_all.sh data RunIII2024Summer24
+```
+
+---
+### Signal
 To analyze signal files, include the `--mass` flag
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 
