@@ -5,8 +5,6 @@ set -o pipefail
 # ERA options available in the script
 ERA_OPTIONS=(
   RunIISummer20UL18
-  Run3Summer22
-  Run3Summer22EE
   RunIII2024Summer24
 )
 

@@ -99,11 +99,11 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         client = Client(cluster)
 
     run = Runner(
-        executor = DaskExecutor(client=client, compression=None, retries=0),
+        executor = DaskExecutor(client=client, compression=None, retries=10),
         chunksize = 250_000, 
         maxchunks = None, # Change to 1 for testing, None for all
         skipbadfiles=False,
-        xrootdtimeout = 60,
+        xrootdtimeout = 5,
         align_clusters = False,
         savemetrics=True,
         schema=NanoAODSchema,
