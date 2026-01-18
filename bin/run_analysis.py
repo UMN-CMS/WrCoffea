@@ -29,6 +29,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 def validate_arguments(args, sig_points):
+    if args.condor:
+        raise NotImplementedError("TO-DO. Condor is not implemented.")
     if args.sample == "Signal" and not args.mass:
         logging.error("For 'Signal', you must provide a --mass argument (e.g. --mass WR2000_N1900).")
         raise ValueError("Missing mass argument for Signal sample.")
