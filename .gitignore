@@ -4,23 +4,13 @@
 # Under development
 data/configs/Run3/2023
 
-data/xsec
 
-data/xsec/miniaod/RunII/2016/RunIISummer20UL16
-data/xsec/miniaod/RunII/2017/RunIISummer20UL17
-data/xsec/miniaod/RunII/2018/RunIISummer20UL18
-data/xsec/miniaod/Run3/2022/Run3Summer22
-data/xsec/miniaod/Run3/2022/Run3Summer22EE
-data/xsec/miniaod/Run3/2023/Run3Summer23
-data/xsec/miniaod/Run3/2023/Run3Summer23BPix
-data/xsec/RunII
-data/xsec/Run3
-data/jsons/Run3/2022
-data/jsons/Run3/2023
-data/jsons/RunII/2018
+data/xsec
 data/skims
 data/reweights
-data/filepaths
+
+
+
 scripts/setup/signal
 scripts/setup/skims/tmp/
 scripts/copy_skims.sh
