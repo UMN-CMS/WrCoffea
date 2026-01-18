@@ -52,10 +52,6 @@ def validate_arguments(args, sig_points):
     if args.reweight and args.sample != "DYJets":
         logging.error("Reweighting can only be applied to DY")
         raise ValueError("Invalid sample for reweighting.")
-    if args.sample == "DYJets" and args.dy is None:
-        raise ValueError(
-            f"Missing DY argument for DY sample. Choose from {', '.join(DY_CHOICES)}"
-        )
     if args.dy is not None and args.sample != "DYJets":
         raise ValueError(
             f"Trying to specify a DY sample for a non-DY background"
@@ -135,7 +131,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 if __name__ == "__main__":
     ERA_CHOICES = list_eras()
     SAMPLE_CHOICES = list_samples()
-    DY_CHOICES = ["LO_inclusive", "NLO_mll_binned"]
+    DY_CHOICES = ["LO_inclusive", "NLO_mll_binned", "LO_HT"]
 
     parser = argparse.ArgumentParser(description="Processing script for WR analysis.")
     parser.add_argument("era", nargs="?", default=None, type=str, choices=ERA_CHOICES, help="Campaign to analyze.")
@@ -182,7 +178,7 @@ if __name__ == "__main__":
     # Normalize any legacy naming to canonical WR/N format before validation.
     args.mass = normalize_mass_point(args.mass)
 
-    signal_points = Path(f"data/{args.era}_mass_points.csv")
+    signal_points = Path(f"data/signal_points/{args.era}_mass_points.csv")
     MASS_CHOICES = load_masses_from_csv(signal_points)
 
     print()

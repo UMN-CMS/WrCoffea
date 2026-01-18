@@ -126,18 +126,20 @@ def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Pa
     run, year, era_name = get_era_details(era)
     subdir = "unskimmed" if unskimmed else "skimmed"
 
-    if dy == "LO_inclusive" and not unskimmed:
-        filename = f"{era_name}_skimmed_lo_inc_dy.json"
+    if dy == "LO_inclusive":
+        filename = f"{era_name}_mc_dy_lo_inc_fileset.json"
     elif dy == "NLO_mll_binned":
-        filename = f"{era_name}_skimmed_nlo_mll_dy.json"
+        filename = f"{era_name}_mc_dy_nlo_mll.json"
+    elif dy == "LO_HT":
+        filename = f"{era_name}_mc_dy_lo_ht.json"
     elif sample in ["EGamma", "Muon"]:
-        filename = f"{era_name}_{sample}_fileset.json" if unskimmed else f"{era_name}_data_skimmed_fileset.json"
+        filename = f"{era_name}_data_fileset.json"
     elif sample == "Signal":
-        filename = f"{era_name}_{sample}_fileset.json" if unskimmed else f"{era_name}_signal_skimmed_fileset.json"
+        filename = f"{era_name}_signal_fileset.json"
     else:
-        filename = f"{era_name}_{sample}_fileset.json" if unskimmed else f"{era_name}_mc_skimmed_fileset.json"
+        filename = f"{era_name}_mc_fileset.json"
 
-    return Path("data/jsons") / run / year / era_name / subdir / filename
+    return Path("data/filesets") / run / year / era_name / filename
 
 
 def load_and_select_fileset(
