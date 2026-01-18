@@ -294,7 +294,7 @@
     "era": "Run3Summer22EE",
     "dataset": "WtoLNu-4Jets_MLNu-120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 0.005067",
+    "xsec": 0.005067,
     "total_uncertainty": 0.0,
     "genEventSumw": 101608.71919631996,
     "datatype": "mc"

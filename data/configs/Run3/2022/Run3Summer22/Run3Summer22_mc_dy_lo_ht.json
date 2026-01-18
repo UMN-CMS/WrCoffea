@@ -80,7 +80,7 @@
     "physics_group": "DYJets",
     "xsec": 0.02088,
     "total_uncertainty": 0.0,
-    "genEventSumw": 0.0,
+    "genEventSumw": 521274.7702085901,
     "datatype": "mc"
   },
   "/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v1/NANOAODSIM": {
@@ -284,7 +284,7 @@
     "physics_group": "Nonprompt",
     "xsec": 10.19,
     "total_uncertainty": 0.0,
-    "genEventSumw": 196779184.773654,
+    "genEventSumw": 196893630.852526,
     "datatype": "mc"
   },
   "/WtoLNu-4Jets_MLNu-120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
@@ -490,7 +490,7 @@
     "total_uncertainty": 0.0,
     "genEventSumw": 7479528.0,
     "datatype": "mc"
-  },  
+  },
   "/ZZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/ZZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",
     "run": "Run3",

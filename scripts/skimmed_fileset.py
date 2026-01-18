@@ -164,7 +164,7 @@ def get_root_files_from_wisc(dataset: str, run: str, year: str, era: str) -> lis
     # POSIX-style path under /store
     if "WR" in dataset:
         rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/signals/{dataset}/"
-    elif dataset in {"EGamma", "Muon"}:
+    elif "EGamma" in dataset or "Muon" in dataset:
         rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/data/{dataset}/"
     else:
         rel_dir = f"/store/user/wijackso/WRAnalyzer/skims/{run}/{year}/{era}/backgrounds/{dataset}/"
