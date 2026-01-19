@@ -121,6 +121,82 @@ elif [ "${MODE}" == "bkg" ]; then
     run_analysis "${SELECTED_ERA}" "${process}"
   done
 elif [ "${MODE}" == "signal" ]; then
+  # Default signal behavior: pick ~9 points: WR=2000/4000/6000, and for each WR take
+  # N = (min, median, max) from the era's mass-point CSV. If those WR values don't exist
+  # for the era, fall back to 9 evenly spaced points from the full list.
+  mapfile -t MASS_OPTIONS < <("${PYTHON}" - <<PY
+import csv
+from pathlib import Path
+
+csv_path = Path(r"${MASS_CSV}")
+rows = []
+with csv_path.open() as f:
+  reader = csv.reader(f)
+  header = next(reader, None)
+  for r in reader:
+    if not r or len(r) < 2:
+      continue
+    try:
+      wr = int(str(r[0]).strip())
+      n = int(str(r[1]).strip())
+    except Exception:
+      continue
+    rows.append((wr, n))
+
+by_wr = {}
+for wr, n in rows:
+  by_wr.setdefault(wr, set()).add(n)
+
+target_wrs = [2000, 4000, 6000]
+selected = []
+for wr in target_wrs:
+  if wr not in by_wr:
+    continue
+  ns = sorted(by_wr[wr])
+  if not ns:
+    continue
+  picks = [ns[0]]
+  if len(ns) > 2:
+    picks.append(ns[len(ns)//2])
+  if len(ns) > 1:
+    picks.append(ns[-1])
+  # unique, preserve order
+  seen = set()
+  for n in picks:
+    if n in seen:
+      continue
+    seen.add(n)
+    selected.append(f"WR{wr}_N{n}")
+
+if not selected:
+  # Fallback: choose 9 evenly-spaced points from the full CSV list.
+  all_masses = sorted({f"WR{wr}_N{n}" for wr, n in rows})
+  if not all_masses:
+    raise SystemExit(0)
+  k = min(9, len(all_masses))
+  if k == 1:
+    chosen = [all_masses[0]]
+  else:
+    idxs = [round(i * (len(all_masses) - 1) / (k - 1)) for i in range(k)]
+    chosen = []
+    seen = set()
+    for ix in idxs:
+      m = all_masses[int(ix)]
+      if m in seen:
+        continue
+      seen.add(m)
+      chosen.append(m)
+  selected = chosen
+
+for m in selected:
+  print(m)
+PY
+)
+  echo "Selected ${#MASS_OPTIONS[@]} signal mass points (default grid):"
+  for m in "${MASS_OPTIONS[@]}"; do
+    echo "  ${m}"
+  done
+
   for mass in "${MASS_OPTIONS[@]}"; do
     run_signal_analysis "${SELECTED_ERA}" "${mass}"
   done

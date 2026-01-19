@@ -213,7 +213,10 @@ class WrAnalysis(processor.ProcessorABC):
                 mask = LumiMask(json_path)
                 events = events[mask(events.run, events.luminosityBlock)]
                 if len(events) == 0:
-                    logger.warning(f"All events removed by lumi mask for era '{mc_campaign}'.")
+                    key = f"lumi_mask_empty::{mc_campaign}"
+                    if key not in _WARN_ONCE:
+                        _WARN_ONCE.add(key)
+                        logger.warning(f"All events removed by lumi mask for era '{mc_campaign}'.")
             except OSError as e:
                 logger.warning(f"Failed to load lumi JSON '{json_path}': {e}")
         else:
@@ -523,7 +526,17 @@ class WrAnalysis(processor.ProcessorABC):
     
     def selectLooseElectrons(self, events):
         loose_noIso_mask = self.ElectronCut(events.Electron.vidNestedWPBitmap, id_level=2)
-        loose_electrons = (events.Electron.pt > 53) & (np.abs(events.Electron.eta) < 2.4)  & ((events.Electron.cutBased_HEEP) | loose_noIso_mask)
+        loose_noIso_mask = ak.fill_none(loose_noIso_mask, False)
+
+        # Ensure the HEEP flag is a true boolean array before bitwise ops.
+        heep_flag = ak.fill_none(events.Electron.cutBased_HEEP, 0)
+        heep_flag = heep_flag != 0
+
+        loose_electrons = (
+            (events.Electron.pt > 53)
+            & (np.abs(events.Electron.eta) < 2.4)
+            & (heep_flag | loose_noIso_mask)
+        )
         return events.Electron[loose_electrons]
 
     def selectLooseMuons(self, events):
