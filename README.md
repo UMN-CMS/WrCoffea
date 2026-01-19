@@ -55,14 +55,21 @@ bash bin/analyze_all.sh data RunIII2024Summer24
 ### Signal
 To analyze signal files, include the `--mass` flag
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass 
-python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass 
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
+python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR4000_N2000
 ```
 To see the possible signal points, run either
 ```bash
 python3 bin/run_analysis.py --list-masses
 python3 bin/run_analysis.py RunIII2024Summer24 --list-masses
 ```
+The command
+```bash
+bash bin/analyze_all.sh signal RunIII2024Summer24
+bash bin/analyze_all.sh signal RunIISummer20UL18
+```
+runs over nine evenly spaced mass points.
+
 ---
 ## Repository Structure
 This repository is structured to separate executable scripts, core analysis logic, and documentation.
