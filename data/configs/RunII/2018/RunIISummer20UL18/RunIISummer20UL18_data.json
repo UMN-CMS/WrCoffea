@@ -6,8 +6,7 @@
     "era": "RunIISummer20UL18",
     "dataset": "SingleMuon_Run2018A",
     "physics_group": "Muon",
-    "datatype": "data",
-    "nevts": 241608232
+    "datatype": "data"
   },
   "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
     "das_name": "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
@@ -16,8 +15,7 @@
     "era": "RunIISummer20UL18",
     "dataset": "EGamma_Run2018A",
     "physics_group": "EGamma",
-    "datatype": "data",
-    "nevts": 339013231
+    "datatype": "data"
   },
   "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
     "das_name": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
@@ -26,8 +24,7 @@
     "era": "RunIISummer20UL18",
     "dataset": "SingleMuon_Run2018B",
     "physics_group": "Muon",
-    "datatype": "data",
-    "nevts": 119918017
+    "datatype": "data"
   },
   "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
     "das_name": "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
@@ -36,8 +33,7 @@
     "era": "RunIISummer20UL18",
     "dataset": "EGamma_Run2018B",
     "physics_group": "EGamma",
-    "datatype": "data",
-    "nevts": 153792795
+    "datatype": "data"
   },
   "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
     "das_name": "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
@@ -46,8 +42,7 @@
     "era": "RunIISummer20UL18",
     "dataset": "SingleMuon_Run2018C",
     "physics_group": "Muon",
-    "datatype": "data",
-    "nevts": 109986009
+    "datatype": "data"
   },
   "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
     "das_name": "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
@@ -56,8 +51,7 @@
     "era": "RunIISummer20UL18",
     "dataset": "EGamma_Run2018C",
     "physics_group": "EGamma",
-    "datatype": "data",
-    "nevts": 147827904
+    "datatype": "data"
   },
   "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
     "das_name": "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
@@ -66,8 +60,7 @@
     "era": "RunIISummer20UL18",
     "dataset": "SingleMuon_Run2018D",
     "physics_group": "Muon",
-    "datatype": "data",
-    "nevts": 513909894
+    "datatype": "data"
   },
   "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD": {
     "das_name": "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD",
@@ -76,7 +69,6 @@
     "era": "RunIISummer20UL18",
     "dataset": "EGamma_Run2018D",
     "physics_group": "EGamma",
-    "datatype": "data",
-    "nevts": 752524583
+    "datatype": "data"
   }
 }

@@ -154,11 +154,9 @@ def save_histograms(histograms, args):
 
     with uproot.recreate(output_file) as root_file:
         for (region, syst, hist_name), hist_obj in split_histograms_dict.items():
-            try:
-                var_axes = [ax for ax in hist_obj.axes if ax.__class__.__name__ != "StrCategory"]
-                var_stem = var_axes[0].name if var_axes else hist_name
-            except Exception:
-                var_stem = hist_name
+            # Use the canonical histogram key for stable ROOT naming.
+            # This intentionally decouples output naming from the internal axis name.
+            var_stem = hist_name
             folder, hname = _folder_and_hist_names(region, syst, var_stem)
             root_file[f"/{folder}/{hname}"] = hist_obj
 

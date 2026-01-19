@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 import json
 import logging
@@ -6,15 +5,10 @@ import difflib
 
 # Mapping of eras to dataset paths
 ERA_MAPPING = {
-    "RunIISpring16": {"run": "RunII", "year": "2016"},
-    "RunIIAutumn18": {"run": "RunII", "year": "2018"},
-    "RunIISummer20UL16": {"run": "RunII", "year": "2016"},
-    "RunIISummer20UL17": {"run": "RunII", "year": "2017"},
     "RunIISummer20UL18": {"run": "RunII", "year": "2018"},
     "Run3Summer22": {"run": "Run3", "year": "2022"},
     "Run3Summer22EE": {"run": "Run3", "year": "2022"},
-    "Run3Summer23": {"run": "Run3", "year": "2023"},
-    "Run3Summer23BPix": {"run": "Run3", "year": "2023"},
+    "RunIII2024Summer24": {"run": "Run3", "year": "2024"},
 }
 
 def get_era_details(era):
@@ -23,8 +17,7 @@ def get_era_details(era):
     """
     mapping = ERA_MAPPING.get(era)
     if mapping is None:
-        logging.error(f"Unsupported era: {era}")
-        exit(1)
+        raise ValueError(f"Unsupported era: {era}. Valid eras: {sorted(ERA_MAPPING)}")
     
     return mapping["run"], mapping["year"], era
 
@@ -35,11 +28,10 @@ def load_json(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as file:
             data = json.load(file)
-#            logging.info(f"Successfully loaded JSON file: {filepath}")
+            logging.info(f"Successfully loaded JSON file: {filepath}")
             return data
     except Exception as e:
-        logging.error(f"Failed to read JSON file {filepath}: {e}")
-        sys.exit(1)
+        raise RuntimeError(f"Failed to read JSON file {filepath}: {e}") from e
 
 def save_json(output_file, data, data_all):
     """
@@ -60,10 +52,19 @@ def save_json(output_file, data, data_all):
 
         diff_output = '\n'.join(diff)
 
-        logging.error("Error: The contents of 'data' and 'data_all' are different. Differences:")
-        logging.error(f"\n{diff_output}")
+        diff_path = output_path.with_suffix(output_path.suffix + ".diff")
+        with open(diff_path, "w", encoding="utf-8") as f:
+            f.write(diff_output)
 
-        raise ValueError("Aborting save due to differences between 'data' and 'data_all'.")
+        logging.error(
+            "Aborting save: 'data' and 'data_all' differ. Wrote unified diff to %s",
+            diff_path,
+        )
+
+        raise ValueError(
+            "Aborting save due to differences between 'data' and 'data_all'. "
+            f"See diff: {diff_path}"
+        )
 
     if output_path.exists():
         logging.warning(f"{output_file} already exists, overwriting.")

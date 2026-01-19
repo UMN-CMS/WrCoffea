@@ -2,14 +2,28 @@
 set -o nounset
 set -o pipefail
 
+# Always run from repo root so relative paths work no matter where the script is invoked from.
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${REPO_ROOT}"
+
+# Prefer the active virtualenv, otherwise fall back to the repo-local .venv.
+if [ -n "${VIRTUAL_ENV:-}" ] && [ -x "${VIRTUAL_ENV}/bin/python" ]; then
+  PYTHON="${VIRTUAL_ENV}/bin/python"
+elif [ -x "${REPO_ROOT}/.venv/bin/python" ]; then
+  PYTHON="${REPO_ROOT}/.venv/bin/python"
+elif command -v python3 >/dev/null 2>&1; then
+  PYTHON="$(command -v python3)"
+else
+  PYTHON="$(command -v python)"
+fi
+
 # ERA options available in the script
 ERA_OPTIONS=(
   RunIISummer20UL18
-  Run3Summer22
-  Run3Summer22EE
+  RunIII2024Summer24
 )
 
-# Data options for Run3Summer22
+# Data options
 DATA_OPTIONS=(
   Muon
   EGamma
@@ -18,14 +32,9 @@ DATA_OPTIONS=(
 # MC options (for all eras)
 MC_OPTIONS=(
   DYJets
-  TTbar
-  TW
-  WJets
-  TTbarSemileptonic
-  SingleTop
-  TTV
-  Diboson
-  Triboson
+  tt_tW
+  Nonprompt
+  Other
 )
 
 # Validate mandatory arguments: mode and era
@@ -54,35 +63,19 @@ if [ "${valid}" != "true" ]; then
   exit 1
 fi
 
-# Build MASS_OPTIONS dynamically based on era
-case "${SELECTED_ERA}" in
-  RunIISummer20UL18)
-    # keep your existing UL18 list
-    MASS_OPTIONS=(
-      WR1200_N200 WR1200_N400 WR1200_N600 WR1200_N800 WR1200_N1100
-      WR1600_N400 WR1600_N600 WR1600_N800 WR1600_N1200 WR1600_N1500
-      WR2000_N400 WR2000_N800 WR2000_N1000 WR2000_N1400 WR2000_N1900
-      WR2400_N600 WR2400_N800 WR2400_N1200 WR2400_N1800 WR2400_N2300
-      WR2800_N600 WR2800_N1000 WR2800_N1400 WR2800_N2000 WR2800_N2700
-      WR3200_N800 WR3200_N1200 WR3200_N1600 WR3200_N2400 WR3200_N3000
-    )
-    ;;
-  Run3Summer22|Run3Summer22EE)
-    # for Run3 you want WR = 2000,4000,6000,8000
-    MASS_OPTIONS=()
-    for wr in 2000 4000 6000 8000; do
-      # highest N is wr - 100 (e.g. 2000→1900, 6000→5900)
-      max_n=$((wr - 100))
-      for ((n=100; n<=max_n; n+=200)); do
-        MASS_OPTIONS+=( "WR${wr}_N${n}" )
-      done
-    done
-    ;;
-  *)
-    echo "Error: No signal mass list defined for era '${SELECTED_ERA}'"
-    exit 1
-    ;;
-esac
+# Build MASS_OPTIONS dynamically from the repo's canonical CSV file for the era.
+MASS_OPTIONS=()
+MASS_CSV="${REPO_ROOT}/data/signal_points/${SELECTED_ERA}_mass_points.csv"
+if [ -f "${MASS_CSV}" ]; then
+  while IFS= read -r mass; do
+    if [ -n "${mass}" ]; then
+      MASS_OPTIONS+=( "${mass}" )
+    fi
+  done < <(awk -F, 'NR>1{gsub(/^[ \t]+|[ \t]+$/,"",$1); gsub(/^[ \t]+|[ \t]+$/,"",$2); if($1!="" && $2!="") print "WR"$1"_N"$2}' "${MASS_CSV}")
+else
+  echo "Error: Signal mass CSV not found: ${MASS_CSV}"
+  exit 1
+fi
 
 # Now shift off mode & era, EXTRA_ARGS will remain the same
 shift 2
@@ -101,7 +94,7 @@ run_analysis() {
   local era="$1"
   local process="$2"
 #  echo "Running analysis for era ${era} and --process ${process}"
-  python3 bin/run_analysis.py "${era}" "${process}" "${EXTRA_ARGS[@]}" || {
+  "${PYTHON}" bin/run_analysis.py "${era}" "${process}" "${EXTRA_ARGS[@]}" || {
     echo "Error running analysis for process ${process} with era ${era}. Skipping..."
     return 1
   }
@@ -112,7 +105,7 @@ run_signal_analysis() {
   local era="$1"
   local mass="$2"
 #  echo "Running analysis for era ${era} and signal with --mass ${mass}"
-  python3 bin/run_analysis.py "${era}" "Signal" --mass "${mass}" "${EXTRA_ARGS[@]}" || {
+  "${PYTHON}" bin/run_analysis.py "${era}" "Signal" --mass "${mass}" "${EXTRA_ARGS[@]}" || {
     echo "Error running signal analysis for mass ${mass} with era ${era}. Skipping..."
     return 1
   }
@@ -128,6 +121,82 @@ elif [ "${MODE}" == "bkg" ]; then
     run_analysis "${SELECTED_ERA}" "${process}"
   done
 elif [ "${MODE}" == "signal" ]; then
+  # Default signal behavior: pick ~9 points: WR=2000/4000/6000, and for each WR take
+  # N = (min, median, max) from the era's mass-point CSV. If those WR values don't exist
+  # for the era, fall back to 9 evenly spaced points from the full list.
+  mapfile -t MASS_OPTIONS < <("${PYTHON}" - <<PY
+import csv
+from pathlib import Path
+
+csv_path = Path(r"${MASS_CSV}")
+rows = []
+with csv_path.open() as f:
+  reader = csv.reader(f)
+  header = next(reader, None)
+  for r in reader:
+    if not r or len(r) < 2:
+      continue
+    try:
+      wr = int(str(r[0]).strip())
+      n = int(str(r[1]).strip())
+    except Exception:
+      continue
+    rows.append((wr, n))
+
+by_wr = {}
+for wr, n in rows:
+  by_wr.setdefault(wr, set()).add(n)
+
+target_wrs = [2000, 4000, 6000]
+selected = []
+for wr in target_wrs:
+  if wr not in by_wr:
+    continue
+  ns = sorted(by_wr[wr])
+  if not ns:
+    continue
+  picks = [ns[0]]
+  if len(ns) > 2:
+    picks.append(ns[len(ns)//2])
+  if len(ns) > 1:
+    picks.append(ns[-1])
+  # unique, preserve order
+  seen = set()
+  for n in picks:
+    if n in seen:
+      continue
+    seen.add(n)
+    selected.append(f"WR{wr}_N{n}")
+
+if not selected:
+  # Fallback: choose 9 evenly-spaced points from the full CSV list.
+  all_masses = sorted({f"WR{wr}_N{n}" for wr, n in rows})
+  if not all_masses:
+    raise SystemExit(0)
+  k = min(9, len(all_masses))
+  if k == 1:
+    chosen = [all_masses[0]]
+  else:
+    idxs = [round(i * (len(all_masses) - 1) / (k - 1)) for i in range(k)]
+    chosen = []
+    seen = set()
+    for ix in idxs:
+      m = all_masses[int(ix)]
+      if m in seen:
+        continue
+      seen.add(m)
+      chosen.append(m)
+  selected = chosen
+
+for m in selected:
+  print(m)
+PY
+)
+  echo "Selected ${#MASS_OPTIONS[@]} signal mass points (default grid):"
+  for m in "${MASS_OPTIONS[@]}"; do
+    echo "  ${m}"
+  done
+
   for mass in "${MASS_OPTIONS[@]}"; do
     run_signal_analysis "${SELECTED_ERA}" "${mass}"
   done

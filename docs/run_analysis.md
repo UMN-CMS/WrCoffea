@@ -8,7 +8,7 @@ python3 bin/run_analysis.py RunIISummer20UL18 DYJets
 python3 bin/run_analysis.py Run3Summer22 DYJets
 python3 bin/run_analysis.py Run3Summer22EE DYJets
 ```
-other backgrounds that can be analyzed are `TTbar`, `tW`, `WJets`, `SingleTop`, `TTbarSemileptonic`, `TTX`, `Diboson`, and `Triboson`.
+Other backgrounds depend on the campaign and grouping; trust the argparse `choices` in `bin/run_analysis.py` for the canonical sample names.
 
 By default the analyzer looks for the skimmed filesets, and the output histograms will be saved to
 ```
@@ -20,7 +20,7 @@ WR_Plotter/rootfiles/Run3/2022/Run3Summer22/WRAnalyzer_DYJets.root.
 To analyze signal files, use the `--mass` flag with the desired signal point. For example,
 ```
 python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3200_N3000
-python3 bin/run_analysis.py Run2Summer22 Signal --mass WR8000_N7900
+python3 bin/run_analysis.py Run3Summer22 Signal --mass WR4000_N1900
 ```
 Possible signal points can be found in the `data/` folder.
 
@@ -34,6 +34,20 @@ where `EGamma` can also be replaced with `Muon`.
 
 
 ## Optional Arguments
+
+#### Discovery helpers
+To avoid drift with documentation, you can query the canonical CLI choices directly:
+```
+python3 bin/run_analysis.py --list-eras
+python3 bin/run_analysis.py --list-samples
+python3 bin/run_analysis.py Run3Summer22 --list-masses
+```
+
+To validate fileset paths and selection (including signal mass matching) without running processing:
+```
+python3 bin/run_analysis.py Run3Summer22 DYJets --preflight-only
+python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3200_N3000 --preflight-only
+```
 
 #### `--dir`
 One can further specify a directory to save to with the  `--dir` flag. For example, 

@@ -30,6 +30,12 @@ repo_root = os.path.abspath(os.path.join(current_dir, "../"))
 sys.path.insert(0, repo_root)
 
 from python.preprocess_utils import load_json
+from python.fileset_utils import (
+    output_dir,
+    parse_config_path,
+    rename_dataset_key_to_sample,
+    write_fileset_json,
+)
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -52,13 +58,6 @@ def query_datasets(data, sample):
         query_results_strategy="all",
         replicas_strategy=strat
     )
-
-def rename_dataset_key_to_sample(data: dict) -> dict:
-    for entry in data.values():
-        md = entry.get("metadata", {})
-        if "dataset" in md:
-            md["sample"] = md.pop("dataset")
-    return data
 
 def main():
     parser = argparse.ArgumentParser(
@@ -83,21 +82,7 @@ def main():
         logging.error(f"Input file not found: {input_path}")
         sys.exit(1)
 
-    # derive run/year/era from the input path under data/configs
-    cfg_dir = input_path.parent
-    cur = cfg_dir
-    while cur.name != "configs":
-        cur = cur.parent
-    data_root = cur.parent  # data/
-    rel = cfg_dir.relative_to(data_root / "configs")
-    run, year, era = rel.parts
-
-    # derive sample from filename: should be era_sample.json
-    stem = input_path.stem  # e.g. "Run3Summer22_mc"
-    prefix = f"{era}_"
-    if not stem.startswith(prefix):
-        logging.warning(f"Filename '{stem}' doesn't start with '{prefix}'")
-    sample = stem[len(prefix):]
+    data_root, run, year, era = parse_config_path(input_path)
 
     # load, replace file lists, preprocess, and save
     config_file = load_json(str(input_path))
@@ -108,18 +93,10 @@ def main():
 
     fileset = rename_dataset_key_to_sample(dataset)
 
-    # construct & create output directory
-    out_dir = data_root / "jsons" / run / year / era / "unskimmed"
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    # save the final JSON
-    out_file = out_dir / f"{era}_{args.dataset}_fileset.json"
-    out_path = Path(out_file)               # out_file can already be a Path
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with out_path.open("w") as f:
-        json.dump(fileset, f, indent=4, ensure_ascii=False, default=str)
-        logging.info(f"Saved JSON to {out_file}")
+    out_dir_path = output_dir(data_root=data_root, run=run, year=year, era=era, skimmed=False)
+    out_file = out_dir_path / f"{era}_{args.dataset}_fileset.json"
+    write_fileset_json(out_file, fileset, indent=2, sort_keys=True)
+    logging.info(f"Saved JSON to {out_file}")
 
 if __name__ == "__main__":
     main()

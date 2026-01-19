@@ -2,17 +2,77 @@
 
 Welcome to the WR analyzer! This repository provides tools for analyzing and processing WR background, data, and signal events. Below, you’ll find instructions on setting up the environment, running the analysis, and extending the framework.
 
-## Table of Contents
-- [Creating Filesets](docs/filesets.md) – Instructions for creating both skimmed and unskimmed filesets.
-- [Running the Analyzer](docs/run_analysis.md) – How to execute `run_analysis.py` to perform a basic analysis.
-- [Condor](docs/condor.md) – How to run the analyzer on Condor at the LPC.
-- [Plotting](docs/plotting.md) – Instructions for generating plots from histogram ROOT files.
-- [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
-- [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
-- [Expected limits using Combine framework](docs/run_combine.md) \u2013 Instructions to get expected exclusion limit.
 ---
 
-## 📂 Repository Structure
+## Table of Contents
+- [Quickstart](README.md#quick-start) – Basic commands for running the analyzer.
+- [Repository Structure](README.md#repository-structure) – Overview of how the repository is organized.
+- [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
+- [Running the Analyzer](docs/run_analysis.md) – Useful options to include when running the analyzer.
+- [Creating Filesets](docs/filesets.md) – Instructions for creating filesets.
+- [Expected limits using Combine framework](docs/run_combine.md) \u2013 Instructions to get expected exclusion limit.
+
+---
+
+## Quick Start
+To make a standard set of histograms, run the analyzer with a command of the form
+```bash
+python3 bin/run_analysis.py era sample
+```
+To see the list of eras, run
+```bash
+python3 bin/run_analysis.py --list-eras
+```
+To see the list of samples, run
+```bash
+python3 bin/run_analysis.py --list-samples
+```
+
+---
+### Backgrounds
+Examples:
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets
+python3 bin/run_analysis.py RunIISummer20UL18 Nonprompt
+```
+To run over all backgrounds for a given era,
+```bash
+bash bin/analyze_all.sh bkg RunIII2024Summer24
+```
+
+---
+### Data
+Analyzing data is similar,
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 EGamma
+python3 bin/run_analysis.py RunIISummer20UL18 Muon
+```
+Or to run over both `EGamma` and `Muon` in one command,
+```bash
+bash bin/analyze_all.sh data RunIII2024Summer24
+```
+
+---
+### Signal
+To analyze signal files, include the `--mass` flag
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
+python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR4000_N2000
+```
+To see the possible signal points, run either
+```bash
+python3 bin/run_analysis.py --list-masses
+python3 bin/run_analysis.py RunIII2024Summer24 --list-masses
+```
+The command
+```bash
+bash bin/analyze_all.sh signal RunIII2024Summer24
+bash bin/analyze_all.sh signal RunIISummer20UL18
+```
+runs over nine evenly spaced mass points.
+
+---
+## Repository Structure
 This repository is structured to separate executable scripts, core analysis logic, and documentation.
 
 ```
@@ -59,6 +119,8 @@ If using UMN’s setup, use:
 ```bash
 source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
 ```
+
+---
 
 ## Update Plotter Submodule
 To update the commit of the WR_Plotter submodule, use the following commands
