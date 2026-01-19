@@ -10,6 +10,7 @@ Welcome to the WR analyzer! This repository provides tools for analyzing and pro
 - [Getting Started](README.md#getting-started) – Instructions for installing and setting up the analyzer.
 - [Running the Analyzer](docs/run_analysis.md) – Useful options to include when running the analyzer.
 - [Creating Filesets](docs/filesets.md) – Instructions for creating filesets.
+- [Expected limits using Combine framework](docs/run_combine.md) \u2013 Instructions to get expected exclusion limit.
 
 ---
 
