@@ -124,7 +124,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         histograms, metrics = run(
             preproc,
             treename="Events",
-            processor_instance=WrAnalysis(mass_point=args.mass, enabled_systs=args.systs),
+            processor_instance=WrAnalysis(mass_point=args.mass, enabled_systs=args.systs, region=args.region),
         )
         logging.info("Processing completed")
         return histograms
@@ -169,6 +169,13 @@ if __name__ == "__main__":
         default=[],
         choices=["lumi"],
         help="Enable systematic histogram variations. Currently supported: lumi.",
+    )
+    optional.add_argument(
+        "--region",
+        type=str,
+        default="both",
+        choices=["resolved", "boosted", "both"],
+        help="Analysis region to run: resolved, boosted, or both (default: both).",
     )
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")

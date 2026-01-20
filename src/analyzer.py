@@ -176,11 +176,15 @@ class WrAnalysis(processor.ProcessorABC):
     - `mass_point`: optional signal mass label (carried through for naming).
     - `enabled_systs`: list of enabled systematic families. Currently supported:
       - `lumi`: add `LumiUp`/`LumiDown` variations as histogram `syst` axis values.
+    - `region`: which analysis region to run ("resolved", "boosted", or "both").
     """
-    def __init__(self, mass_point, sf_file=None, enabled_systs=None):
+    def __init__(self, mass_point, sf_file=None, enabled_systs=None, region="both"):
         self._signal_sample = mass_point
         enabled = enabled_systs or []
         self._enabled_systs = {str(s).strip().lower() for s in enabled if str(s).strip()}
+        self._region = region.lower() if region else "both"
+        if self._region not in ("resolved", "boosted", "both"):
+            raise ValueError(f"Invalid region '{region}'. Must be 'resolved', 'boosted', or 'both'.")
         booking = _booking_specs()
         self.make_output = lambda: {
             name: self.create_hist(name, bins, label)
@@ -1100,63 +1104,67 @@ class WrAnalysis(processor.ProcessorABC):
         # Construct trigger masks.
         triggers = self.build_trigger_masks(events, mc_campaign)
 
-        # Resolved selections.
-        resolved_selections = self.resolved_selections(
-            tight_leptons,
-            ak4_jets,
-            lepton_masks=lepton_masks,
-            jet_masks=jet_masks,
-            triggers=triggers,
-        )
+        # Resolved selections (only if requested).
+        resolved_selections = None
+        if self._region in ("resolved", "both"):
+            resolved_selections = self.resolved_selections(
+                tight_leptons,
+                ak4_jets,
+                lepton_masks=lepton_masks,
+                jet_masks=jet_masks,
+                triggers=triggers,
+            )
 
         boosted_payload = None
         # Boosted path needs FatJet (+ lsf3) branches; skip gracefully if absent.
-        try:
-            has_fatjet = hasattr(events, "FatJet")
-            has_lsf3 = has_fatjet and ("lsf3" in getattr(events.FatJet, "fields", []))
-            if has_fatjet and has_lsf3:
-                boosted_payload = self.boosted_selections(events, mc_campaign, triggers=triggers)
-            else:
-                logger.info("Skipping boosted selections: missing FatJet/lsf3 branches")
-        except Exception as e:
-            logger.warning(f"Boosted selections failed; skipping boosted histograms: {e}")
+        if self._region in ("boosted", "both"):
+            try:
+                has_fatjet = hasattr(events, "FatJet")
+                has_lsf3 = has_fatjet and ("lsf3" in getattr(events.FatJet, "fields", []))
+                if has_fatjet and has_lsf3:
+                    boosted_payload = self.boosted_selections(events, mc_campaign, triggers=triggers)
+                else:
+                    logger.info("Skipping boosted selections: missing FatJet/lsf3 branches")
+            except Exception as e:
+                logger.warning(f"Boosted selections failed; skipping boosted histograms: {e}")
 
         weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
 
-        # Define the resolved regions.
-        resolved_regions = {
-            'wr_ee_resolved_dy_cr': resolved_selections.all(
-                SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_60_MLL_150, SEL_MLLJJ_GT800,
-            ),
-            'wr_mumu_resolved_dy_cr': resolved_selections.all(
-                SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_60_MLL_150, SEL_MLLJJ_GT800,
-            ),
-            'wr_resolved_flavor_cr': resolved_selections.all(
-                SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800,
-            ),
-            'wr_ee_resolved_sr': resolved_selections.all(
-                SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800,
-            ),
-            'wr_mumu_resolved_sr': resolved_selections.all(
-                SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800,
-            ),
-        }
-        # Fill resolved histograms.
-        for region, cuts in resolved_regions.items():
-            self.fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
+        # Define and fill resolved regions (only if requested).
+        if resolved_selections is not None:
+            resolved_regions = {
+                'wr_ee_resolved_dy_cr': resolved_selections.all(
+                    SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                    SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                    SEL_60_MLL_150, SEL_MLLJJ_GT800,
+                ),
+                'wr_mumu_resolved_dy_cr': resolved_selections.all(
+                    SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                    SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                    SEL_60_MLL_150, SEL_MLLJJ_GT800,
+                ),
+                'wr_resolved_flavor_cr': resolved_selections.all(
+                    SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                    SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                    SEL_MLL_GT400, SEL_MLLJJ_GT800,
+                ),
+                'wr_ee_resolved_sr': resolved_selections.all(
+                    SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                    SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                    SEL_MLL_GT400, SEL_MLLJJ_GT800,
+                ),
+                'wr_mumu_resolved_sr': resolved_selections.all(
+                    SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                    SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                    SEL_MLL_GT400, SEL_MLLJJ_GT800,
+                ),
+            }
+            # Fill resolved histograms.
+            for region, cuts in resolved_regions.items():
+                self.fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
 
-        # Fill resolved cutflows.
-        self.fill_cutflows(output, resolved_selections, weights)
+            # Fill resolved cutflows.
+            self.fill_cutflows(output, resolved_selections, weights)
 
         if boosted_payload is not None:
             boosted_selection_list, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
