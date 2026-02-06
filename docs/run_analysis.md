@@ -91,7 +91,12 @@ python3 bin/run_analysis.py Run3Summer22EE DYJets --reweight reweight_file.json
 where `reweight_file.json` is the output file of scripts/derive_reweights.py
 
 #### `--unskimmed`
-**Not yet implemented.** This flag is reserved for future use to run over unskimmed filesets. Currently raises `NotImplementedError`.
+Run over unskimmed filesets (created by `scripts/full_fileset.py`) instead of the default skimmed filesets. Unskimmed filesets use the FNAL XRootD redirector for automatic site failover.
+```
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy LO_inclusive
+python3 bin/run_analysis.py RunIII2024Summer24 Muon --unskimmed
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --unskimmed --mass WR2000_N1900
+```
 
 More information can be found in the `README.md` file in other folders.
 

@@ -148,6 +148,26 @@ class TestBuildFilesetPath:
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="LO_HT")
         assert "dy_lo_ht" in path.name
 
-    def test_unskimmed_raises(self):
-        with pytest.raises(NotImplementedError, match="not yet supported"):
-            build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy=None)
+    def test_unskimmed_mc_path(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy=None)
+        assert path.name == "RunIII2024Summer24_mc_fileset.json"
+        assert "unskimmed" in path.parts
+
+    def test_unskimmed_data_path(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="Muon", unskimmed=True, dy=None)
+        assert path.name == "RunIII2024Summer24_data_fileset.json"
+        assert "unskimmed" in path.parts
+
+    def test_unskimmed_signal_path(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="Signal", unskimmed=True, dy=None)
+        assert path.name == "RunIII2024Summer24_signal_fileset.json"
+        assert "unskimmed" in path.parts
+
+    def test_unskimmed_dy_lo_path(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy="LO_inclusive")
+        assert "dy_lo_inc" in path.name
+        assert "unskimmed" in path.parts
+
+    def test_skimmed_path_no_unskimmed_dir(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy=None)
+        assert "unskimmed" not in path.parts

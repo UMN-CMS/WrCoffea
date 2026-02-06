@@ -45,6 +45,30 @@ def validate_arguments(args, sig_points):
         raise ValueError("--max-workers must be a positive integer")
     if args.threads_per_worker is not None and args.threads_per_worker < 1:
         raise ValueError("--threads-per-worker must be a positive integer")
+    if args.chunksize < 1:
+        raise ValueError("--chunksize must be a positive integer")
+
+def normalize_by_sumw(hists_dict):
+    """Normalize histograms by the on-the-fly accumulated sum of genWeights.
+
+    When ``compute_sumw=True``, the processor fills histograms with
+    ``genWeight * xsec * lumi * 1000`` (no ``/sumw``).  This function
+    divides each dataset's histograms by the accumulated ``_sumw`` to
+    complete the normalization.
+    """
+    import hist as hist_mod
+
+    for dataset, data in hists_dict.items():
+        sumw = data.pop("_sumw", None)
+        if sumw is None or sumw == 0.0:
+            continue
+        logging.info("Normalizing %s by computed sumw = %.6g", dataset, sumw)
+        for key, obj in data.items():
+            if isinstance(obj, hist_mod.Hist):
+                obj.view(flow=True).value /= sumw
+                obj.view(flow=True).variance /= sumw * sumw
+    return hists_dict
+
 
 def run_analysis(args, filtered_fileset, run_on_condor):
 
@@ -93,7 +117,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
             log_directory=log_dir,
         )
 
-        NWORKERS = args.max_workers or 100
+        NWORKERS = args.max_workers or 50
         cluster.scale(NWORKERS)
 
         client = Client(cluster)
@@ -109,7 +133,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 
     run = Runner(
         executor = DaskExecutor(client=client, compression=None, retries=10),
-        chunksize = 250_000,
+        chunksize = args.chunksize,
         maxchunks = None, # Change to 1 for testing, None for all
         skipbadfiles=False,
         xrootdtimeout = 60 if run_on_condor else 10,
@@ -127,9 +151,18 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         histograms, metrics = run(
             preproc,
             treename="Events",
-            processor_instance=WrAnalysis(mass_point=args.mass, enabled_systs=args.systs, region=args.region),
+            processor_instance=WrAnalysis(
+                mass_point=args.mass,
+                enabled_systs=args.systs,
+                region=args.region,
+                compute_sumw=args.unskimmed,
+            ),
         )
         logging.info("Processing completed")
+
+        if args.unskimmed:
+            histograms = normalize_by_sumw(histograms)
+
         return histograms
     finally:
         try:
@@ -158,13 +191,19 @@ if __name__ == "__main__":
         "--max-workers",
         type=int,
         default=None,
-        help="Number of Dask workers (local default: 6, condor default: 100).",
+        help="Number of Dask workers (local default: 6, condor default: 50).",
     )
     optional.add_argument(
         "--threads-per-worker",
         type=int,
         default=None,
         help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).",
+    )
+    optional.add_argument(
+        "--chunksize",
+        type=int,
+        default=250_000,
+        help="Number of events per processing chunk (default: 250000).",
     )
     optional.add_argument(
         "--systs",

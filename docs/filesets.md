@@ -1,18 +1,27 @@
 # Create Filesets
-The first step is to find the files that will be fed into the analyzer. This can either be skimmed files that are located at UMN and Wisconsin, or unskimmed files that we will query with rucio and DAS.
+The first step is to find the files that will be fed into the analyzer. This can either be skimmed files that are located at UMN and Wisconsin, or unskimmed files that we will query from DAS.
 
 ## Unskimmed filesets
-To create a fileset of unskimmed files, use a command of the form
+To create a fileset of unskimmed files, use `scripts/full_fileset.py`. This queries DAS via `dasgoclient` for the logical file names of each dataset in the config, and builds fileset JSONs using the FNAL XRootD redirector (`root://cmsxrootd.fnal.gov/`) which automatically routes to the nearest available replica.
+
 ```
-python3 scripts/full_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_inc.json --dataset tt_tW
-python3 scripts/full_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json --dataset Signal
-python3 scripts/full_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_data.json --dataset EGamma
+python3 scripts/full_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_data.json
+python3 scripts/full_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_signal.json
+python3 scripts/full_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_mc_dy_lo_inc.json
 ```
-where `--dataset` filters by the `physics_group` field in the config JSON: `DYJets`, `tt_tW`, `Nonprompt`, `Other` (for backgrounds), `Signal` (for signal files), or `EGamma` or `Muon` (for data). Note that this does not work if running at UMN, use the script below instead.
+You can optionally filter to a single `physics_group` with `--dataset`:
+```
+python3 scripts/full_fileset.py --config data/configs/.../RunIII2024Summer24_data.json --dataset Muon
+```
 
 The output file will be of the form
 ```
-data/filesets/Run3/2022/Run3Summer22/Run3Summer22_tt_tW_fileset.json
+data/filesets/Run3/2024/RunIII2024Summer24/unskimmed/RunIII2024Summer24_data_fileset.json
+```
+
+To run the analysis on unskimmed files, pass `--unskimmed`:
+```
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy LO_inclusive
 ```
 
 ## Skimmed filesets

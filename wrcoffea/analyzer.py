@@ -31,7 +31,7 @@ import logging
 from coffea.nanoevents.methods import vector
 
 from wrcoffea.analysis_config import (
-    CUTS, ELECTRON_JSONS, JME_JSONS, LUMI_JSONS, LUMI_UNC, LUMIS, MUON_JSONS,
+    CUTS, ELECTRON_JSONS, JME_JSONS, LUMI_JSONS, LUMI_UNC, LUMIS, MUON_JSONS, PILEUP_JSONS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
@@ -43,9 +43,9 @@ from wrcoffea.analysis_config import (
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR,
-    SEL_EMU_CR, SEL_MUE_CR,
+    SEL_EMU_CR, SEL_MUE_CR, SEL_JET_VETO_MAP,
 )
-from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf
+from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS,
     _booking_specs, create_hist,
@@ -77,9 +77,14 @@ class WrAnalysis(processor.ProcessorABC):
     - `enabled_systs`: list of enabled systematic families. Currently supported:
       - `lumi`: add `LumiUp`/`LumiDown` variations as histogram `syst` axis values.
     - `region`: which analysis region to run ("resolved", "boosted", or "both").
+    - `compute_sumw`: if True, compute sum-of-genWeights on-the-fly instead of
+      using the pre-computed ``genEventSumw`` from metadata. Histograms are filled
+      without the ``/sumw`` normalization; the caller must divide by the accumulated
+      ``_sumw`` per dataset after processing.
     """
-    def __init__(self, mass_point, enabled_systs=None, region="both"):
+    def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False):
         self._signal_sample = mass_point
+        self._compute_sumw = compute_sumw
         enabled = enabled_systs or []
         self._enabled_systs = {str(s).strip().lower() for s in enabled if str(s).strip()}
         self._region = region.lower() if region else "both"
@@ -687,19 +692,27 @@ class WrAnalysis(processor.ProcessorABC):
             lumi = float(LUMIS[metadata.get("era")])
             xsec = float(metadata.get("xsec"))
 
-            # IMPORTANT: use signed genEventSumw (do NOT abs) for NLO samples.
-            sumw = float(metadata.get("genEventSumw"))
-            if sumw == 0.0:
-                raise ZeroDivisionError(
-                    f"genEventSumw is zero for dataset '{metadata.get('sample')}'."
-                )
-
-            event_weight = events.genWeight * xsec * lumi * 1000.0 / sumw
+            if self._compute_sumw:
+                # Defer /sumw normalization — caller will divide by accumulated _sumw.
+                event_weight = events.genWeight * xsec * lumi * 1000.0
+            else:
+                # IMPORTANT: use signed genEventSumw (do NOT abs) for NLO samples.
+                sumw = float(metadata.get("genEventSumw"))
+                if sumw == 0.0:
+                    raise ZeroDivisionError(
+                        f"genEventSumw is zero for dataset '{metadata.get('sample')}'."
+                    )
+                event_weight = events.genWeight * xsec * lumi * 1000.0 / sumw
 
             weights.add("event_weight", event_weight)
 
-            # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
+            # Pileup reweighting.
             era = metadata.get("era")
+            if era in PILEUP_JSONS:
+                pu_nom, pu_up, pu_down = pileup_weight(events, era)
+                weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
+
+            # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
             if tight_muons is not None and era in MUON_JSONS:
                 muon_sfs = muon_sf(tight_muons, era)
                 for component, (sf_nom, sf_up, sf_down) in muon_sfs.items():
@@ -708,10 +721,13 @@ class WrAnalysis(processor.ProcessorABC):
                 trig_nom, trig_up, trig_down = muon_trigger_sf(tight_muons, era)
                 weights.add("muon_trig_sf", trig_nom, weightUp=trig_up, weightDown=trig_down)
 
-            # Electron scale factors (Reco + trigger).
+            # Electron scale factors (Reco + ID + trigger).
             if tight_electrons is not None and era in ELECTRON_JSONS:
                 ele_nom, ele_up, ele_down = electron_reco_sf(tight_electrons, era)
                 weights.add("electron_reco_sf", ele_nom, weightUp=ele_up, weightDown=ele_down)
+
+                ele_id_nom, ele_id_up, ele_id_down = electron_id_sf(tight_electrons, era)
+                weights.add("electron_id_sf", ele_id_nom, weightUp=ele_id_up, weightDown=ele_id_down)
 
                 ele_trig_nom, ele_trig_up, ele_trig_down = electron_trigger_sf(tight_electrons, era)
                 weights.add("electron_trig_sf", ele_trig_nom, weightUp=ele_trig_up, weightDown=ele_trig_down)
@@ -771,6 +787,9 @@ class WrAnalysis(processor.ProcessorABC):
         # Construct trigger masks.
         triggers = self.build_trigger_masks(events, mc_campaign)
 
+        # Jet veto map (event-level veto for jets in hot/cold detector regions).
+        jet_veto_pass = jet_veto_event_mask(events, mc_campaign)
+
         # Resolved selections (only if requested).
         resolved_selections = None
         if self._region in ("resolved", "both"):
@@ -781,6 +800,7 @@ class WrAnalysis(processor.ProcessorABC):
                 jet_masks=jet_masks,
                 triggers=triggers,
             )
+            resolved_selections.add(SEL_JET_VETO_MAP, jet_veto_pass)
 
         boosted_payload = None
         # Boosted path needs FatJet (+ lsf3) branches; skip gracefully if absent.
@@ -809,27 +829,27 @@ class WrAnalysis(processor.ProcessorABC):
                 'wr_ee_resolved_dy_cr': resolved_selections.all(
                     SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                     SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                    SEL_60_MLL_150, SEL_MLLJJ_GT800,
+                    SEL_60_MLL_150, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
                 ),
                 'wr_mumu_resolved_dy_cr': resolved_selections.all(
                     SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                     SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                    SEL_60_MLL_150, SEL_MLLJJ_GT800,
+                    SEL_60_MLL_150, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
                 ),
                 'wr_resolved_flavor_cr': resolved_selections.all(
                     SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                     SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                    SEL_MLL_GT400, SEL_MLLJJ_GT800,
+                    SEL_MLL_GT400, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
                 ),
                 'wr_ee_resolved_sr': resolved_selections.all(
                     SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                     SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                    SEL_MLL_GT400, SEL_MLLJJ_GT800,
+                    SEL_MLL_GT400, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
                 ),
                 'wr_mumu_resolved_sr': resolved_selections.all(
                     SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                     SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                    SEL_MLL_GT400, SEL_MLLJJ_GT800,
+                    SEL_MLL_GT400, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
                 ),
             }
             # Fill resolved histograms.
@@ -841,27 +861,32 @@ class WrAnalysis(processor.ProcessorABC):
 
         if boosted_payload is not None:
             boosted_selection_list, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
+            boosted_selection_list.add(SEL_JET_VETO_MAP, jet_veto_pass)
 
             boosted_regions = {
                 'wr_mumu_boosted_dy_cr': boosted_selection_list.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
-                    SEL_ATLEAST1AK8_DPHI_GT2, SEL_MUMU_DYCR,
+                    SEL_ATLEAST1AK8_DPHI_GT2, SEL_MUMU_DYCR, SEL_JET_VETO_MAP,
                 ),
                 'wr_mumu_boosted_sr': boosted_selection_list.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUMU_SR, SEL_AK8JETS_WITH_LSF,
+                    SEL_JET_VETO_MAP,
                 ),
                 'wr_ee_boosted_dy_cr': boosted_selection_list.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
-                    SEL_ATLEAST1AK8_DPHI_GT2, SEL_EE_DYCR,
+                    SEL_ATLEAST1AK8_DPHI_GT2, SEL_EE_DYCR, SEL_JET_VETO_MAP,
                 ),
                 'wr_ee_boosted_sr': boosted_selection_list.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EE_SR, SEL_AK8JETS_WITH_LSF,
+                    SEL_JET_VETO_MAP,
                 ),
                 'wr_emu_boosted_flavor_cr': boosted_selection_list.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EMU_CR, SEL_AK8JETS_WITH_LSF,
+                    SEL_JET_VETO_MAP,
                 ),
                 'wr_mue_boosted_flavor_cr': boosted_selection_list.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUE_CR, SEL_AK8JETS_WITH_LSF,
+                    SEL_JET_VETO_MAP,
                 ),
             }
             for region, cuts in boosted_regions.items():
@@ -873,7 +898,12 @@ class WrAnalysis(processor.ProcessorABC):
                     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, syst_weights)
                 
         nested_output = {dataset: {**output}}
-        
+
+        # When computing sumw on-the-fly, accumulate sum(genWeight) per dataset
+        # so the caller can normalize after all chunks are processed.
+        if self._compute_sumw and is_mc:
+            nested_output[dataset]["_sumw"] = float(ak.sum(events.genWeight))
+
         return nested_output
 
     def postprocess(self, accumulator):

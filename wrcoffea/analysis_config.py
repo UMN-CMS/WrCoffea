@@ -26,20 +26,62 @@ JME_JSONS = {
     "RunIII2024Summer24": "data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz",
 }
 
+JETVETO_JSONS = {
+    "RunIISummer20UL18": "data/jsonpog/JME/RunII/RunIISummer20UL18/jetvetomaps.json.gz",
+    "RunIII2024Summer24": "data/jsonpog/JME/Run3/RunIII2024Summer24/jetvetomaps.json.gz",
+}
+
+JETVETO_CORRECTION_NAMES = {
+    "RunIISummer20UL18": "Summer19UL18_V1",
+    "RunIII2024Summer24": "Summer24Prompt24_RunBCDEFGHI_V1",
+}
+
 MUON_JSONS = {
-    "RunIII2024Summer24": "data/jsonpog/MUO/muon_HighPt.json",
+    "RunIISummer20UL18": "data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz",
+    "RunIII2024Summer24": "data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json",
+}
+
+PILEUP_JSONS = {
+    "RunIISummer20UL18": "data/jsonpog/LUM/RunII/RunIISummer20UL18/puWeights.json.gz",
+    "RunIII2024Summer24": "data/jsonpog/LUM/Run3/RunIII2024Summer24/puWeights_BCDEFGHI.json.gz",
+}
+
+# Correction name inside each pileup JSON (differs per era)
+PILEUP_CORRECTION_NAMES = {
+    "RunIISummer20UL18": "Collisions18_UltraLegacy_goldenJSON",
+    "RunIII2024Summer24": "Collisions24_BCDEFGHI_goldenJSON",
 }
 
 ELECTRON_JSONS = {
+    "RunIISummer20UL18": {
+        "RECO": "data/jsonpog/EGM/RunII/RunIISummer20UL18/electron.json.gz",
+    },
     "RunIII2024Summer24": {
-        "RECO": "data/jsonpog/EGM/electron.json.gz",
-        "TRIGGER": "data/jsonpog/EGM/electronHlt.json.gz",
+        "RECO": "data/jsonpog/EGM/Run3/RunIII2024Summer24/electron.json.gz",
+        "TRIGGER": "data/jsonpog/EGM/Run3/RunIII2024Summer24/electronHlt.json.gz",
     },
 }
 
 # correctionlib era key used inside EGM JSON payloads (differs from analysis era name)
 ELECTRON_SF_ERA_KEYS = {
+    "RunIISummer20UL18": "2018",
     "RunIII2024Summer24": "2024Prompt",
+}
+
+# Per-era electron Reco SF configuration (correction name and WP names differ between eras)
+ELECTRON_RECO_CONFIG = {
+    "RunIISummer20UL18": {
+        "correction": "UL-Electron-ID-SF",
+        "wp_low": "RecoBelow20",
+        "wp_high": "RecoAbove20",
+        "pt_split": 20.0,
+    },
+    "RunIII2024Summer24": {
+        "correction": "Electron-ID-SF",
+        "wp_low": "Reco20to75",
+        "wp_high": "RecoAbove75",
+        "pt_split": 75.0,
+    },
 }
 
 # Systematic uncertainties: integrated luminosity fractional uncertainty
@@ -96,6 +138,7 @@ SEL_MUMU_SR = "mumu_sr"
 SEL_EE_SR = "ee_sr"
 SEL_EMU_CR = "emu_cr"
 SEL_MUE_CR = "mue_cr"
+SEL_JET_VETO_MAP = "jet_veto_map"
 
 # --- Physics thresholds (single source of truth for analysis cuts) -------------
 CUTS = {
@@ -120,4 +163,5 @@ CUTS = {
     "dphi_boosted_min": 2.0,
     "dr_loose_veto": 0.01,
     "dr_ak8_loose": 0.8,
+    "jet_veto_pt_min": 15,
 }

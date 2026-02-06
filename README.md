@@ -165,9 +165,9 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor
 python bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --condor
 ```
 
-By default, 100 Condor workers are launched. Use `--max-workers` to change this:
+By default, 50 Condor workers are launched. Use `--max-workers` to change this:
 ```bash
-python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 50
+python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 ```
 
 To run all backgrounds or signal points on Condor:
@@ -195,7 +195,8 @@ bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
 | `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
 | `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
-| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 40) |
+| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 50) |
+| `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000) |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
 | `--systs` | `lumi` | Enable systematic variations (currently: lumi) |
 | `--list-eras` | | Print available eras and exit |

@@ -9,7 +9,11 @@ import logging
 import awkward as ak
 import numpy as np
 
-from wrcoffea.analysis_config import ELECTRON_JSONS, ELECTRON_SF_ERA_KEYS, MUON_JSONS
+from wrcoffea.analysis_config import (
+    CUTS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS,
+    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, MUON_JSONS,
+    PILEUP_CORRECTION_NAMES, PILEUP_JSONS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +22,82 @@ _CORRECTIONSET_CACHE = {}
 
 # Warn-once cache (per worker process) to avoid log spam.
 _WARN_ONCE: set[str] = set()
+
+
+def pileup_weight(events, era):
+    """Compute per-event pileup reweighting using correctionlib.
+
+    Evaluates the pileup weight correction on ``Pileup.nTrueInt``.
+    Returns (nominal, up, down) arrays of shape (n_events,).
+    """
+    n_events = len(events)
+    ones = np.ones(n_events, dtype=np.float64)
+
+    if era not in PILEUP_JSONS:
+        return ones, ones.copy(), ones.copy()
+
+    import correctionlib
+
+    json_path = PILEUP_JSONS[era]
+    ceval = _CORRECTIONSET_CACHE.get(json_path)
+    if ceval is None:
+        ceval = correctionlib.CorrectionSet.from_file(json_path)
+        _CORRECTIONSET_CACHE[json_path] = ceval
+
+    corr_name = PILEUP_CORRECTION_NAMES[era]
+    corr = ceval[corr_name]
+
+    nTrueInt = np.asarray(events.Pileup.nTrueInt, dtype=np.float64)
+
+    nom = corr.evaluate(nTrueInt, "nominal")
+    up = corr.evaluate(nTrueInt, "up")
+    down = corr.evaluate(nTrueInt, "down")
+
+    return nom, up, down
+
+
+def jet_veto_event_mask(events, era):
+    """Return a per-event boolean mask (True = pass) using JME jet veto maps.
+
+    Evaluates the ``jetvetomap`` correction on all jets with pT > 15 GeV.
+    Events containing at least one jet in a vetoed (eta, phi) region are
+    flagged False.  Applies to both data and MC.
+    """
+    n_events = len(events)
+
+    if era not in JETVETO_JSONS:
+        return np.ones(n_events, dtype=bool)
+
+    import correctionlib
+
+    json_path = JETVETO_JSONS[era]
+    ceval = _CORRECTIONSET_CACHE.get(json_path)
+    if ceval is None:
+        ceval = correctionlib.CorrectionSet.from_file(json_path)
+        _CORRECTIONSET_CACHE[json_path] = ceval
+
+    corr = ceval[JETVETO_CORRECTION_NAMES[era]]
+
+    # Select all jets above the veto map pT threshold.
+    jets = events.Jet
+    pt_mask = jets.pt > CUTS["jet_veto_pt_min"]
+    sel_jets = jets[pt_mask]
+
+    counts = ak.num(sel_jets)
+    flat_eta = np.asarray(ak.flatten(sel_jets.eta), dtype=np.float64)
+    flat_phi = np.asarray(ak.flatten(sel_jets.phi), dtype=np.float64)
+
+    if len(flat_eta) == 0:
+        return np.ones(n_events, dtype=bool)
+
+    # Evaluate: non-zero → vetoed region.
+    veto_vals = corr.evaluate("jetvetomap", flat_eta, flat_phi)
+
+    # Unflatten and check if any jet per event is vetoed.
+    vetoed_per_jet = ak.unflatten(veto_vals != 0.0, counts)
+    any_vetoed = ak.any(vetoed_per_jet, axis=1)
+
+    return np.asarray(~ak.fill_none(any_vetoed, False), dtype=bool)
 
 
 def _get_muon_ceval(era):
@@ -236,12 +316,77 @@ def electron_trigger_sf(tight_electrons, era):
     return trig_sf_nom, trig_sf_up, trig_sf_down
 
 
+def electron_id_sf(tight_electrons, era):
+    """Compute per-event HEEP electron ID scale factor.
+
+    Uses flat barrel/endcap SFs from the Run2 UL2018 HEEP V7.0 measurement
+    as a proxy for Run3, per EGamma POG recommendation (Run3 HEEP SFs not
+    yet available).
+
+    Source: EGamma POG twiki – "HEEP ID Scale Factor for UL"
+      Barrel (|eta_SC| < 1.4442): 0.973 +/- 0.001 (stat) +/- 0.004 (syst)
+      Endcap (1.566 < |eta_SC| < 2.5): 0.980 +/- 0.002 (stat) +/- 0.011 (syst)
+
+    Returns (nominal, up, down) arrays of shape (n_events,).
+    Events with no tight electrons get SF = 1.0.
+    """
+    n_events = len(tight_electrons)
+    ones = np.ones(n_events, dtype=np.float64)
+
+    if era not in ELECTRON_JSONS:
+        return ones, ones.copy(), ones.copy()
+
+    counts = ak.num(tight_electrons)
+
+    if ak.sum(counts) == 0:
+        return ones, ones.copy(), ones.copy()
+
+    # Supercluster eta = eta + deltaEtaSC.
+    try:
+        delta_eta_sc = tight_electrons.deltaEtaSC
+    except AttributeError:
+        key = f"missing_deltaEtaSC_id::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.warning(
+                "Electron `deltaEtaSC` branch missing; using eta as fallback for HEEP ID SF."
+            )
+        delta_eta_sc = ak.zeros_like(tight_electrons.eta)
+
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_electrons.eta, 0.0)), dtype=np.float64)
+    flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(delta_eta_sc, 0.0)), dtype=np.float64)
+    flat_sc_eta = np.abs(flat_eta + flat_deltaEtaSC)
+
+    # UL2018 HEEP V7.0 SFs (stat + syst added in quadrature).
+    barrel_sf, barrel_unc = 0.973, np.sqrt(0.001**2 + 0.004**2)  # 0.00412
+    endcap_sf, endcap_unc = 0.980, np.sqrt(0.002**2 + 0.011**2)  # 0.01118
+
+    is_barrel = flat_sc_eta < 1.4442
+
+    sf_nom = np.where(is_barrel, barrel_sf, endcap_sf)
+    sf_unc = np.where(is_barrel, barrel_unc, endcap_unc)
+
+    sf_up = sf_nom + sf_unc
+    sf_down = sf_nom - sf_unc
+
+    # Unflatten and take product over electrons per event.
+    sf_nom_jagged = ak.unflatten(sf_nom, counts)
+    sf_up_jagged = ak.unflatten(sf_up, counts)
+    sf_down_jagged = ak.unflatten(sf_down, counts)
+
+    event_sf_nom = np.asarray(ak.fill_none(ak.prod(sf_nom_jagged, axis=1), 1.0), dtype=np.float64)
+    event_sf_up = np.asarray(ak.fill_none(ak.prod(sf_up_jagged, axis=1), 1.0), dtype=np.float64)
+    event_sf_down = np.asarray(ak.fill_none(ak.prod(sf_down_jagged, axis=1), 1.0), dtype=np.float64)
+
+    return event_sf_nom, event_sf_up, event_sf_down
+
+
 def electron_reco_sf(tight_electrons, era):
     """Compute per-event electron Reco scale factor for tight electrons.
 
-    Uses two working points depending on pT:
-      - "Reco20to75" for electrons with 20 < pT < 75 GeV
-      - "RecoAbove75" for electrons with pT >= 75 GeV
+    Uses two working points depending on pT, with era-specific configuration
+    from ELECTRON_RECO_CONFIG (correction name, WP names, and pT split point
+    differ between UL and Run3 JSONs).
 
     The correction uses supercluster eta (eta + deltaEtaSC) and pT.
     Returns (nominal, up, down) arrays of shape (n_events,).
@@ -258,8 +403,13 @@ def electron_reco_sf(tight_electrons, era):
         logger.warning("No electron reco SF era key for '%s'; returning SF=1.", era)
         return ones, ones.copy(), ones.copy()
 
+    reco_cfg = ELECTRON_RECO_CONFIG.get(era)
+    if reco_cfg is None:
+        logger.warning("No ELECTRON_RECO_CONFIG for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
     ceval = _get_electron_ceval(era, "RECO")
-    corr = ceval["Electron-ID-SF"]
+    corr = ceval[reco_cfg["correction"]]
 
     counts = ak.num(tight_electrons)
     flat_pt = np.asarray(ak.flatten(tight_electrons.pt), dtype=np.float64)
@@ -284,28 +434,27 @@ def electron_reco_sf(tight_electrons, era):
     flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(delta_eta_sc, 0.0)), dtype=np.float64)
     flat_sc_eta = flat_eta + flat_deltaEtaSC
 
-    # Clip sc_eta to valid bin edges: (-inf, inf) handled by correctionlib,
-    # but we clip to avoid float edge issues at +/-2.5.
+    # Clip sc_eta to valid bin edges.
     flat_sc_eta = np.clip(flat_sc_eta, -2.499, 2.499)
 
-    # Evaluate per-electron SF using the appropriate working point.
-    # Split into low-pT (20-75) and high-pT (>=75) groups.
-    is_low_pt = flat_pt < 75.0
+    # Split into low-pT and high-pT groups at the era-specific threshold.
+    pt_split = reco_cfg["pt_split"]
+    wp_low = reco_cfg["wp_low"]
+    wp_high = reco_cfg["wp_high"]
+    is_low_pt = flat_pt < pt_split
 
     # Clip pT to valid bin ranges for each WP.
-    # Reco20to75: pt [20, 75, inf) -- clip to [20.001, ...)
-    # RecoAbove75: pt [75, 100, 500, inf) -- clip to [75.001, ...)
-    pt_low = np.clip(flat_pt, 20.001, 74.999)
-    pt_high = np.clip(flat_pt, 75.001, 1e6)
+    pt_low = np.clip(flat_pt, 10.001, pt_split - 0.001)
+    pt_high = np.clip(flat_pt, pt_split + 0.001, 1e6)
 
     # Evaluate both WPs on all electrons, then select per-electron.
-    sf_low_nom = corr.evaluate(sf_era_key, "sf", "Reco20to75", flat_sc_eta, pt_low)
-    sf_low_up = corr.evaluate(sf_era_key, "sfup", "Reco20to75", flat_sc_eta, pt_low)
-    sf_low_down = corr.evaluate(sf_era_key, "sfdown", "Reco20to75", flat_sc_eta, pt_low)
+    sf_low_nom = corr.evaluate(sf_era_key, "sf", wp_low, flat_sc_eta, pt_low)
+    sf_low_up = corr.evaluate(sf_era_key, "sfup", wp_low, flat_sc_eta, pt_low)
+    sf_low_down = corr.evaluate(sf_era_key, "sfdown", wp_low, flat_sc_eta, pt_low)
 
-    sf_high_nom = corr.evaluate(sf_era_key, "sf", "RecoAbove75", flat_sc_eta, pt_high)
-    sf_high_up = corr.evaluate(sf_era_key, "sfup", "RecoAbove75", flat_sc_eta, pt_high)
-    sf_high_down = corr.evaluate(sf_era_key, "sfdown", "RecoAbove75", flat_sc_eta, pt_high)
+    sf_high_nom = corr.evaluate(sf_era_key, "sf", wp_high, flat_sc_eta, pt_high)
+    sf_high_up = corr.evaluate(sf_era_key, "sfup", wp_high, flat_sc_eta, pt_high)
+    sf_high_down = corr.evaluate(sf_era_key, "sfdown", wp_high, flat_sc_eta, pt_high)
 
     sf_nom = np.where(is_low_pt, sf_low_nom, sf_high_nom)
     sf_up = np.where(is_low_pt, sf_low_up, sf_high_up)

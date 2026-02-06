@@ -22,6 +22,7 @@ from wrcoffea.analysis_config import (
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
+    SEL_JET_VETO_MAP,
 )
 
 logger = logging.getLogger(__name__)
@@ -160,116 +161,54 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
 
 
 def fill_cutflows(output, selections, weights):
-    """Build flat and cumulative cutflows for ee, mumu, and em channels.
-
-    Also store one-bin histograms for pT/eta-only vs ID-only (jets & leptons).
+    """Build cumulative cutflows for ee, mumu, and em channels.
 
     Output layout (keys under ``output["cutflow"]``):
-        - top-level: ``no_cuts``, plus a few global one-bin counters
+        - top-level: ``no_cuts`` (weighted + unweighted)
         - per-flavor: ``ee``, ``mumu``, ``em``
-            - one-bin counters for each step (weighted + ``_unweighted``)
+            - one-bin counters for each cumulative step (weighted + ``_unweighted``)
             - ``onecut`` / ``cumulative`` (and unweighted variants) from PackedSelection.cutflow
     """
     output.setdefault("cutflow", {})
 
-    required = [
-        SEL_MIN_TWO_AK4_JETS_ID,
-        SEL_MIN_TWO_AK4_JETS_PTETA,
-        SEL_TWO_PTETA_ELECTRONS,
-        SEL_TWO_PTETA_MUONS,
-        SEL_TWO_PTETA_EM,
-        SEL_TWO_ID_ELECTRONS,
-        SEL_TWO_ID_MUONS,
-        SEL_TWO_ID_EM,
-        SEL_E_TRIGGER,
-        SEL_MU_TRIGGER,
-        SEL_EMU_TRIGGER,
-        SEL_DR_ALL_PAIRS_GT0P4,
-        SEL_MLL_GT200,
-        SEL_MLLJJ_GT800,
-        SEL_MLL_GT400,
-    ]
-
-    # Fail fast with a helpful message if resolved_selections does not define expected keys.
-    missing = []
-    for name in required:
-        try:
-            selections.all(name)
-        except Exception:
-            missing.append(name)
-    if missing:
-        available = getattr(selections, "names", None)
-        raise KeyError(
-            "fill_cutflows: missing selection keys: "
-            f"{missing}. Available keys: {sorted(available) if available else 'unknown'}"
-        )
-
-    mask = selections.all
-
-    m_j2_id = mask(SEL_MIN_TWO_AK4_JETS_ID)
-    m_j2_pteta = mask(SEL_MIN_TWO_AK4_JETS_PTETA)
-
-    m_two_pteta_e = mask(SEL_TWO_PTETA_ELECTRONS)
-    m_two_pteta_mu = mask(SEL_TWO_PTETA_MUONS)
-    m_two_pteta_em = mask(SEL_TWO_PTETA_EM)
-
-    m_two_id_e = mask(SEL_TWO_ID_ELECTRONS)
-    m_two_id_mu = mask(SEL_TWO_ID_MUONS)
-    m_two_id_em = mask(SEL_TWO_ID_EM)
-
-    m_e_trig = mask(SEL_E_TRIGGER)
-    m_mu_trig = mask(SEL_MU_TRIGGER)
-    m_em_trig = mask(SEL_EMU_TRIGGER)
-
-    m_dr = mask(SEL_DR_ALL_PAIRS_GT0P4)
-    m_mll200 = mask(SEL_MLL_GT200)
-    m_mlljj8 = mask(SEL_MLLJJ_GT800)
-    m_mll400 = mask(SEL_MLL_GT400)
-
     w = weights.weight()  # nominal weight
 
-    def _onebin_hist(lastcut_name: str, mask, use_weights=True):
+    def _onebin_hist(name: str, mask, use_weights=True):
         """1 bin in [0,1), named by the last cut."""
         h = hist.Hist(
-            hist.axis.Regular(1, 0, 1, name=lastcut_name, label=lastcut_name),
+            hist.axis.Regular(1, 0, 1, name=name, label=name),
             storage=hist.storage.Weight(),
         )
         n_pass = int(ak.count_nonzero(mask))
         if use_weights:
             w_pass = ak.to_numpy(w[mask])
         else:
-            # unweighted: count passing events
             w_pass = np.ones(n_pass, dtype="f8")
         if n_pass:
             coords = np.full(w_pass.size, 0.5, dtype=float)
-            h.fill(**{lastcut_name: coords}, weight=w_pass)
+            h.fill(**{name: coords}, weight=w_pass)
         return h
 
-    def _store_both_in(container: dict, name: str, mask):
+    def _store_both(container: dict, name: str, mask):
         """Store weighted and unweighted variants into a given dict container."""
         container[name] = _onebin_hist(name, mask, use_weights=True)
         container[f"{name}_unweighted"] = _onebin_hist(name, mask, use_weights=False)
 
-    # --- Top-level: no_cuts only
+    # --- Top-level: no_cuts
     n_events = len(w)
     mask_all = np.ones(n_events, dtype=bool)
-    _store_both_in(output["cutflow"], "no_cuts", mask_all)
-    _store_both_in(output["cutflow"], SEL_MIN_TWO_AK4_JETS_PTETA, m_j2_pteta)
+    _store_both(output["cutflow"], "no_cuts", mask_all)
 
-    # --- Prepare flavor folders (+ jets folder for pt/eta vs ID)
-    output["cutflow"].setdefault("ee", {})
-    output["cutflow"].setdefault("mumu", {})
-    output["cutflow"].setdefault("em", {})
-
-    # --- Define cumulative chains per flavor (kept as-is)
+    # --- Define cumulative chains per flavor
     chains = {
-        "ee":   [
+        "ee": [
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_ELECTRONS,
             SEL_TWO_ID_ELECTRONS,
             SEL_E_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
+            SEL_JET_VETO_MAP,
             SEL_MLLJJ_GT800,
             SEL_MLL_GT200,
             SEL_MLL_GT400,
@@ -281,67 +220,41 @@ def fill_cutflows(output, selections, weights):
             SEL_TWO_ID_MUONS,
             SEL_MU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
+            SEL_JET_VETO_MAP,
             SEL_MLLJJ_GT800,
             SEL_MLL_GT200,
             SEL_MLL_GT400,
         ],
-        "em":   [
+        "em": [
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_EM,
             SEL_TWO_ID_EM,
             SEL_EMU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
+            SEL_JET_VETO_MAP,
             SEL_MLLJJ_GT800,
             SEL_MLL_GT200,
             SEL_MLL_GT400,
         ],
     }
 
-    name2mask = {
-        SEL_MIN_TWO_AK4_JETS_ID: m_j2_id,
-        SEL_MIN_TWO_AK4_JETS_PTETA: m_j2_pteta,
-
-        SEL_TWO_PTETA_ELECTRONS: m_two_pteta_e,
-        SEL_TWO_PTETA_MUONS: m_two_pteta_mu,
-        SEL_TWO_PTETA_EM: m_two_pteta_em,
-
-        SEL_TWO_ID_ELECTRONS: m_two_id_e,
-        SEL_TWO_ID_MUONS: m_two_id_mu,
-        SEL_TWO_ID_EM: m_two_id_em,
-
-        SEL_E_TRIGGER: m_e_trig,
-        SEL_MU_TRIGGER: m_mu_trig,
-        SEL_EMU_TRIGGER: m_em_trig,
-
-        SEL_DR_ALL_PAIRS_GT0P4: m_dr,
-        SEL_MLL_GT200: m_mll200,
-        SEL_MLLJJ_GT800: m_mlljj8,
-        SEL_MLL_GT400: m_mll400,
-    }
-
-    # --- Step-by-step cumulative counters per flavor
+    # --- Per-flavor: cumulative 1-bin counters + PackedSelection.cutflow histograms
     for flavor, steps in chains.items():
-        cumu = name2mask[steps[0]].copy()
+        output["cutflow"].setdefault(flavor, {})
         bucket = output["cutflow"][flavor]
-        for step in steps:
-            if step != steps[0]:
-                cumu = cumu & name2mask[step]
-            _store_both_in(bucket, step, cumu)
 
-    # --- Region cutflows: onecut + cumulative into flavor folders
-    for flavor, order in chains.items():
-        cf = selections.cutflow(*order, weights=weights)
+        # Step-by-step cumulative 1-bin histograms (for make_cutflow_table.py).
+        for i in range(len(steps)):
+            cumu = selections.all(*steps[: i + 1])
+            _store_both(bucket, steps[i], cumu)
 
-        # weighted
-        res = cf.yieldhist(weighted=True)
-        h_onecut, h_cum = res[0], res[1]
-        bucket = output["cutflow"][flavor]
+        # Multi-bin onecut / cumulative histograms (for closure studies).
+        cf = selections.cutflow(*steps, weights=weights)
+        h_onecut, h_cum = cf.yieldhist(weighted=True)
         bucket["onecut"] = h_onecut
         bucket["cumulative"] = h_cum
 
-        # unweighted
-        res_unw = cf.yieldhist(weighted=False)
-        h_onecut_unw, h_cum_unw = res_unw[0], res_unw[1]
+        h_onecut_unw, h_cum_unw = cf.yieldhist(weighted=False)
         bucket["onecut_unweighted"] = h_onecut_unw
         bucket["cumulative_unweighted"] = h_cum_unw
