@@ -172,6 +172,7 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 
 To run all backgrounds, signal points, or everything on Condor:
 ```bash
+bash bin/analyze_all.sh data RunIII2024Summer24 --condor
 bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor
 bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
 bash bin/analyze_all.sh all RunIII2024Summer24 --condor
