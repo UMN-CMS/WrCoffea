@@ -176,6 +176,29 @@ bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor
 bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
 ```
 
+**Tip: Free your shell with tmux**
+
+Condor jobs can run for a long time. Use `tmux` to keep your session alive after disconnecting from the LPC node:
+
+```bash
+# Start a new named session
+tmux new -s analysis
+
+# Enter the Apptainer shell and run your jobs as usual
+./shell coffeateam/coffea-dask-almalinux8:latest
+bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor --unskimmed
+```
+
+You can then detach from the session with `Ctrl-b d` and safely log out. To reattach later:
+```bash
+tmux attach -t analysis
+```
+
+Other useful tmux commands:
+- `tmux ls` — list active sessions
+- `Ctrl-b d` — detach from current session
+- `tmux kill-session -t analysis` — kill a session
+
 ---
 
 ## Command Reference
