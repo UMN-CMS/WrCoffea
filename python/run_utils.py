@@ -129,9 +129,9 @@ def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Pa
     if dy == "LO_inclusive":
         filename = f"{era_name}_mc_dy_lo_inc_fileset.json"
     elif dy == "NLO_mll_binned":
-        filename = f"{era_name}_mc_dy_nlo_mll.json"
+        filename = f"{era_name}_mc_dy_nlo_mll_fileset.json"
     elif dy == "LO_HT":
-        filename = f"{era_name}_mc_dy_lo_ht.json"
+        filename = f"{era_name}_mc_dy_lo_ht_fileset.json"
     elif sample in ["EGamma", "Muon"]:
         filename = f"{era_name}_data_fileset.json"
     elif sample == "Signal":

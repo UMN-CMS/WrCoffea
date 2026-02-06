@@ -9,7 +9,7 @@ docs/condor.md
 data/xsec
 data/skims
 data/reweights
-
+test/
 scripts/setup/skims/tmp/
 
 *~

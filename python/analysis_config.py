@@ -24,6 +24,17 @@ JME_JSONS = {
     "RunIII2024Summer24": "data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz",
 }
 
+MUON_JSONS = {
+    "RunIII2024Summer24": "data/jsonpog/MUO/muon_HighPt.json",
+}
+
+ELECTRON_JSONS = {
+    "RunIII2024Summer24": {
+        "RECO": "data/jsonpog/EGM/electron.json.gz",
+        "TRIGGER": "data/jsonpog/EGM/electronHlt.json.gz",
+    },
+}
+
 # Systematic uncertainties: integrated luminosity fractional uncertainty
 LUMI_UNC = {
     "RunIISummer20UL18": 0.025,  # 2.5% (UL2018)
