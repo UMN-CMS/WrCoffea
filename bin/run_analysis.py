@@ -181,6 +181,7 @@ if __name__ == "__main__":
     optional = parser.add_argument_group("Optional arguments")
     optional.add_argument("--dy", type=str, default=None, choices=DY_CHOICES, help="Specific DY sample to analyze (LO, NLO, etc)")
     optional.add_argument("--mass", type=str, default=None, help="Signal mass point to analyze.")
+    optional.add_argument("--fileset", type=Path, default=None, help="Override automatic fileset path with a custom fileset JSON.")
     optional.add_argument("--dir", type=str, default=None, help="Create a new output directory.")
     optional.add_argument("--name", type=str, default=None, help="Append the filenames of the output ROOT files.")
     optional.add_argument("--debug", action='store_true', help="Debug mode (don't compute histograms)")
@@ -261,7 +262,21 @@ if __name__ == "__main__":
     validate_arguments(args, MASS_CHOICES)
     run, year, era = get_era_details(args.era)
 
-    filepath = build_fileset_path(era=era, sample=args.sample, unskimmed=args.unskimmed, dy=args.dy)
+    if args.fileset:
+        filepath = args.fileset
+    else:
+        filepath = build_fileset_path(era=era, sample=args.sample, unskimmed=args.unskimmed, dy=args.dy)
+
+    # If the path fell back to skimmed (e.g. UL18 signal has no unskimmed),
+    # disable on-the-fly sumw normalization so the analyzer doesn't try to
+    # compute sumw for files that are already properly normalized.
+    if args.unskimmed and "unskimmed" not in filepath.parts:
+        logging.warning(
+            "Falling back to skimmed fileset for %s %s; "
+            "disabling on-the-fly sumw normalization.",
+            args.era, args.sample,
+        )
+        args.unskimmed = False
 
     logging.info(f"Reading files from {filepath}")
 

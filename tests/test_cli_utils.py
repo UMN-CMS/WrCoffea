@@ -125,8 +125,9 @@ class TestListHelpers:
 class TestBuildFilesetPath:
     def test_mc_path(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy=None)
-        assert path.name == "RunIII2024Summer24_mc_fileset.json"
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
         assert "Run3/2024/RunIII2024Summer24" in str(path)
+        assert "skimmed" in path.parts
 
     def test_data_path(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="EGamma", unskimmed=False, dy=None)
@@ -150,7 +151,7 @@ class TestBuildFilesetPath:
 
     def test_unskimmed_mc_path(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy=None)
-        assert path.name == "RunIII2024Summer24_mc_fileset.json"
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
         assert "unskimmed" in path.parts
 
     def test_unskimmed_data_path(self):
@@ -168,6 +169,31 @@ class TestBuildFilesetPath:
         assert "dy_lo_inc" in path.name
         assert "unskimmed" in path.parts
 
-    def test_skimmed_path_no_unskimmed_dir(self):
+    def test_skimmed_path_has_skimmed_dir(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy=None)
+        assert "skimmed" in path.parts
         assert "unskimmed" not in path.parts
+
+    def test_non_dy_mc_uses_era_default(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="tt_tW", unskimmed=False, dy=None)
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+
+    def test_ul18_default_mc_tag(self):
+        path = build_fileset_path(era="RunIISummer20UL18", sample="DYJets", unskimmed=False, dy=None)
+        assert path.name == "RunIISummer20UL18_mc_dy_lo_ht_fileset.json"
+
+    def test_ul18_unskimmed_signal_falls_back_to_skimmed(self):
+        path = build_fileset_path(era="RunIISummer20UL18", sample="Signal", unskimmed=True, dy=None)
+        assert path.name == "RunIISummer20UL18_signal_fileset.json"
+        assert "skimmed" in path.parts
+        assert "unskimmed" not in path.parts
+
+    def test_2024_unskimmed_signal_stays_unskimmed(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="Signal", unskimmed=True, dy=None)
+        assert path.name == "RunIII2024Summer24_signal_fileset.json"
+        assert "unskimmed" in path.parts
+
+    def test_ul18_unskimmed_mc_stays_unskimmed(self):
+        path = build_fileset_path(era="RunIISummer20UL18", sample="DYJets", unskimmed=True, dy=None)
+        assert path.name == "RunIISummer20UL18_mc_dy_lo_ht_fileset.json"
+        assert "unskimmed" in path.parts

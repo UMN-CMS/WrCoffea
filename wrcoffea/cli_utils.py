@@ -8,6 +8,7 @@ from pathlib import Path
 
 from wrcoffea.fileset_validation import validate_fileset_schema, validate_selection
 from wrcoffea.era_utils import ERA_MAPPING, get_era_details, load_json
+from wrcoffea.analysis_config import DEFAULT_MC_TAG, SKIMMED_ONLY_SIGNAL
 
 logger = logging.getLogger(__name__)
 
@@ -136,11 +137,26 @@ def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Pa
     elif sample == "Signal":
         filename = f"{era_name}_signal_fileset.json"
     else:
-        filename = f"{era_name}_mc_fileset.json"
+        tag = DEFAULT_MC_TAG.get(era_name)
+        if tag is None:
+            raise ValueError(
+                f"No default MC fileset tag for era '{era_name}'. "
+                "Add it to DEFAULT_MC_TAG in analysis_config.py."
+            )
+        filename = f"{era_name}_mc_{tag}_fileset.json"
 
     base = Path("data/filesets") / run / year / era_name
-    if unskimmed:
+    if unskimmed and sample == "Signal" and era_name in SKIMMED_ONLY_SIGNAL:
+        logger.warning(
+            "Unskimmed signal filesets are not available for %s; "
+            "falling back to skimmed.",
+            era_name,
+        )
+        base = base / "skimmed"
+    elif unskimmed:
         base = base / "unskimmed"
+    else:
+        base = base / "skimmed"
     return base / filename
 
 

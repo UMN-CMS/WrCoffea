@@ -13,6 +13,22 @@ LUMIS = {
     "RunIII2024Summer24": 109.08,
 }
 
+# Default MC fileset tag per era.  All MC DY filesets contain every
+# physics_group (tt_tW, Nonprompt, Other, …), so this tag only controls
+# which DY variant is used when --dy is not explicitly given.
+DEFAULT_MC_TAG = {
+    "RunIISummer20UL18": "dy_lo_ht",
+    "Run3Summer22": "dy_lo_inc",
+    "Run3Summer22EE": "dy_lo_inc",
+    "Run3Summer23": "dy_lo_inc",
+    "Run3Summer23BPix": "dy_lo_inc",
+    "RunIII2024Summer24": "dy_lo_inc",
+}
+
+# Eras where unskimmed signal filesets are not available (no DAS entries).
+# For these eras, --unskimmed signal falls back to skimmed filesets.
+SKIMMED_ONLY_SIGNAL = {"RunIISummer20UL18"}
+
 # Golden JSON paths for data lumi masking
 LUMI_JSONS = {
     "RunIISummer20UL18": "data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
