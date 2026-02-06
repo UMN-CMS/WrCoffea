@@ -187,7 +187,7 @@ tmux new -s analysis
 
 # Enter the Apptainer shell and run your jobs as usual
 ./shell coffeateam/coffea-dask-almalinux8:latest
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor --unskimmed
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor --unskimmed --chunksize 1000000 --max-workers 200 --dir unskimmed_hists
 ```
 
 You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later:
