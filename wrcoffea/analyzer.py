@@ -45,8 +45,8 @@ from wrcoffea.analysis_config import (
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR,
     SEL_EMU_CR, SEL_MUE_CR,
 )
-from src.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf
-from src.histograms import (
+from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf
+from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS,
     _booking_specs, create_hist,
     fill_resolved_histograms, fill_boosted_histograms, fill_cutflows,
@@ -78,7 +78,7 @@ class WrAnalysis(processor.ProcessorABC):
       - `lumi`: add `LumiUp`/`LumiDown` variations as histogram `syst` axis values.
     - `region`: which analysis region to run ("resolved", "boosted", or "both").
     """
-    def __init__(self, mass_point, sf_file=None, enabled_systs=None, region="both"):
+    def __init__(self, mass_point, enabled_systs=None, region="both"):
         self._signal_sample = mass_point
         enabled = enabled_systs or []
         self._enabled_systs = {str(s).strip().lower() for s in enabled if str(s).strip()}
@@ -400,26 +400,23 @@ class WrAnalysis(processor.ProcessorABC):
     def ElectronCut(self, cut_bitmap, id_level=1):
         """Evaluate NanoAOD electron vid bitmap with an ID threshold.
 
-        Awkward-array-safe version that:
+        Fully vectorized version that:
           - ignores the isolation flag (cut index 7)
           - requires each considered cut to be >= `id_level`
         """
-        nFlags = 10          # total number of bits (cuts)
+        n_flags = 10         # total number of bits (cuts)
         cut_size = 3         # 3 bits per cut
         ignore_flag = 7      # ignore the isolation flag
         mask_per_cut = (1 << cut_size) - 1  # 0b111 = 7
-        # Define a helper applied per-electron.
-        def passes(bitmap):
-            for cut_nr in range(nFlags):
-                if cut_nr == ignore_flag:
-                    continue
-                value = (bitmap >> (cut_nr * cut_size)) & mask_per_cut
-                if value < id_level : 
-                    return False
-            return True
-        # Apply per-electron check.
-        mask = ak.Array([[passes(b) for b in event] for event in cut_bitmap])
-        return mask
+
+        passes = True
+        for cut_nr in range(n_flags):
+            if cut_nr == ignore_flag:
+                continue
+            value = (cut_bitmap >> (cut_nr * cut_size)) & mask_per_cut
+            passes = passes & (value >= id_level)
+
+        return passes
     
     def selectLooseElectrons(self, events):
         loose_noIso_mask = self.ElectronCut(events.Electron.vidNestedWPBitmap, id_level=2)
@@ -517,7 +514,7 @@ class WrAnalysis(processor.ProcessorABC):
         dr_lj_ok = ak.all(dr_lj_vals > CUTS["dr_min"], axis=1)
         resolved = (((ak.num(tightElectrons_inc)  + (ak.num(tightMuons_inc))) == 2) & (ak.num(AK4Jets_inc) >= 2) & (dr_l1l2 > CUTS["dr_min"]) & (dr_j1j2 > CUTS["dr_min"]) & (dr_jl_min > CUTS["dr_min"])) #(dr_lj_ok))                                                                                                                                                                   
         boosted  = ~resolved
-        selections.add("boostedtag",boosted)
+        selections.add(SEL_BOOSTEDTAG, boosted)
 
         # Leading tight lepton pT > 60.
         tightLepton_padded = ak.pad_none(tightLeptons_inc,1,axis=1)
@@ -526,7 +523,7 @@ class WrAnalysis(processor.ProcessorABC):
         is_lead_mu  = lead_pdgid == 13
         is_lead_e   = lead_pdgid == 11
         is_tight_pt = tight_lep.pt > CUTS["lead_lepton_pt_min"]
-        selections.add("leadTightwithPt60",is_tight_pt)
+        selections.add(SEL_LEAD_TIGHT_PT60_BOOSTED, is_tight_pt)
         # Remove this tight lepton from loose lepton selection.
         looseLeptons = self.remove_lepton(looseLeptons, tight_lep)
 
@@ -551,7 +548,7 @@ class WrAnalysis(processor.ProcessorABC):
         ak8_mask   = dphi > CUTS["dphi_boosted_min"]
         AK8_cand_dy   = ak.firsts(AK8Jets[ak8_mask])
         # Require at least one AK8 jet with Δφ(jet, tight lepton) > 2.
-        selections.add("Atleast1AK8Jets & dPhi(J,tightLept)>2", flag_ak8Jet & has_ak8_dphi_gt2 )
+        selections.add(SEL_ATLEAST1AK8_DPHI_GT2, flag_ak8Jet & has_ak8_dphi_gt2)
         
         # Case 1: DY CR.
         dr_dy  = AK8_cand_dy.deltaR(DY_loose_lep)
@@ -567,7 +564,7 @@ class WrAnalysis(processor.ProcessorABC):
         is_sublead_mu = sublead_pdgID == 13
         is_sublead_e = sublead_pdgID ==11
         DYCR_mask = has_dy_pair & (mlj_dy > CUTS["mlljj_min"])
-        selections.add("DYCR_mask", DYCR_mask)
+        selections.add(SEL_DYCR_MASK, DYCR_mask)
         # Veto extra tight leptons for DY CR.
         extra_tight_mu = ak.sum(
             (looseMuons.tkRelIso < CUTS["muon_iso_max"]) &
@@ -590,7 +587,7 @@ class WrAnalysis(processor.ProcessorABC):
         has_ak8_dphi_gt2_lsf = ak.any(dphi_lsf > CUTS["dphi_boosted_min"], axis=1)
         ak8_mask_lsf   = dphi_lsf > CUTS["dphi_boosted_min"]
         AK8_cand   = ak.firsts(AK8Jets_withLSF[ak8_mask_lsf])
-        selections.add("AK8JetswithLSF", flag_ak8Jet_lsf & has_ak8_dphi_gt2_lsf )
+        selections.add(SEL_AK8JETS_WITH_LSF, flag_ak8Jet_lsf & has_ak8_dphi_gt2_lsf)
         dr_sf = AK8_cand.deltaR(sf_loose)
         mask_sf = dr_sf < CUTS["dr_ak8_loose"]
         # SF lepton candidate passing dR condition.
@@ -612,7 +609,6 @@ class WrAnalysis(processor.ProcessorABC):
         pt_lj_sr = (tight_lep + sf_candidate).pt
 
         SR_mask = is_sr & (mlj_sr > CUTS["mlljj_min"]) & (mll_sr > CUTS["mll_sr_min"])
-        selections.add("ee(mumu)SR", SR_mask)
         # -------- veto extra tight leptons for SR --------                                                                                                                 
         extra_tight_mu_sr = ak.sum(
             (looseMuons.tkRelIso < CUTS["muon_iso_max"]) &
@@ -640,7 +636,6 @@ class WrAnalysis(processor.ProcessorABC):
         pt_lj_cr = (tight_lep + of_candidate).pt
 
         CR_mask = is_cr & (mlj_cr > CUTS["mlljj_min"]) & (mll_cr > CUTS["mll_sr_min"])
-        selections.add("e(mu) or mu(e)CR", CR_mask)
         # -------- veto extra tight leptons for flavor CR --------                                                                                                          
         extra_tight_mu_cr = ak.sum(
             (looseMuons.tkRelIso < CUTS["muon_iso_max"]) &
@@ -667,12 +662,12 @@ class WrAnalysis(processor.ProcessorABC):
         mue_cr = muTrig & CR_mask & is_lead_mu & no_extra_tight_flav_cr # lead mu, loose e                                                                        
         ee_sr = eTrig & SR_mask & is_lead_e & no_extra_tight_sr
         mumu_sr = muTrig & SR_mask &  is_lead_mu & no_extra_tight_sr
-        selections.add("mumu-dy_cr", mumu_dy_cr & is_sublead_mu)
-        selections.add("ee-dy_cr",   ee_dy_cr & is_sublead_e)
-        selections.add("mumu_sr", mumu_sr & is_sublead_mu_sr)
-        selections.add("ee_sr",   ee_sr & is_sublead_e_sr)
-        selections.add("emu-cr",     emu_cr & is_sublead_mu_cr)
-        selections.add("mue-cr",     mue_cr & is_sublead_e_cr)        
+        selections.add(SEL_MUMU_DYCR, mumu_dy_cr & is_sublead_mu)
+        selections.add(SEL_EE_DYCR,  ee_dy_cr & is_sublead_e)
+        selections.add(SEL_MUMU_SR,  mumu_sr & is_sublead_mu_sr)
+        selections.add(SEL_EE_SR,    ee_sr & is_sublead_e_sr)
+        selections.add(SEL_EMU_CR,   emu_cr & is_sublead_mu_cr)
+        selections.add(SEL_MUE_CR,   mue_cr & is_sublead_e_cr)
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate 
 
     def build_event_weights(self, events, metadata, is_mc, tight_muons=None, tight_electrons=None):
@@ -703,11 +698,12 @@ class WrAnalysis(processor.ProcessorABC):
 
             weights.add("event_weight", event_weight)
 
-            # Muon scale factors (RECO × ID × ISO + trigger).
+            # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
             era = metadata.get("era")
             if tight_muons is not None and era in MUON_JSONS:
-                sf_nom, sf_up, sf_down = muon_sf(tight_muons, era)
-                weights.add("muon_sf", sf_nom, weightUp=sf_up, weightDown=sf_down)
+                muon_sfs = muon_sf(tight_muons, era)
+                for component, (sf_nom, sf_up, sf_down) in muon_sfs.items():
+                    weights.add(f"muon_{component}_sf", sf_nom, weightUp=sf_up, weightDown=sf_down)
 
                 trig_nom, trig_up, trig_down = muon_trigger_sf(tight_muons, era)
                 weights.add("muon_trig_sf", trig_nom, weightUp=trig_up, weightDown=trig_down)
@@ -799,19 +795,9 @@ class WrAnalysis(processor.ProcessorABC):
             except Exception as e:
                 logger.warning(f"Boosted selections failed; skipping boosted histograms: {e}")
 
-        # Extract tight muons for SF evaluation (same cuts as select_leptons).
-        tight_muons = events.Muon[
-            (events.Muon.pt > CUTS["lepton_pt_min"])
-            & (np.abs(events.Muon.eta) < CUTS["lepton_eta_max"])
-            & (events.Muon.highPtId == CUTS["muon_highPtId"])
-            & (events.Muon.tkRelIso < CUTS["muon_iso_max"])
-        ]
-        # Extract tight electrons for SF evaluation (same cuts as select_leptons).
-        tight_electrons = events.Electron[
-            (events.Electron.pt > CUTS["lepton_pt_min"])
-            & (np.abs(events.Electron.eta) < CUTS["lepton_eta_max"])
-            & (events.Electron.cutBased_HEEP)
-        ]
+        # Split tight leptons by flavor for SF evaluation (reuse select_leptons output).
+        tight_muons = tight_leptons[tight_leptons.flavor == "muon"]
+        tight_electrons = tight_leptons[tight_leptons.flavor == "electron"]
         weights, syst_weights = self.build_event_weights(
             events, metadata, is_mc,
             tight_muons=tight_muons, tight_electrons=tight_electrons,

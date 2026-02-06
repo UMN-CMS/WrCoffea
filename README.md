@@ -14,6 +14,7 @@ This repository provides the main analysis framework for processing WR→Nℓ→
 - [Command Reference](#command-reference) – Complete flag reference and examples
 - [📂 Repository Structure](#-repository-structure) – Overview of how the codebase is organized
 - [Getting Started](#getting-started) – Installation and environment setup
+- [Testing](#testing) – Running the automated test suite
 - [Additional Documentation](#additional-documentation) – Links to detailed guides
 
 ---
@@ -164,7 +165,7 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor
 python bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --condor
 ```
 
-By default, 40 Condor workers are launched. Use `--max-workers` to change this:
+By default, 100 Condor workers are launched. Use `--max-workers` to change this:
 ```bash
 python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 50
 ```
@@ -254,11 +255,11 @@ The repository follows a clean architecture separating executable scripts, core 
 ```
 WR_Plotter/  # Submodule for plotting ROOT histograms
 bin/         # User-facing CLI scripts (production workflows)
-src/         # Core analysis code (Coffea processor)
-wrcoffea/    # Installable Python package (utilities, config, helpers)
+wrcoffea/    # Installable Python package (analysis code, utilities, config)
 data/        # Configuration files (JSON, CSV) and metadata
 docs/        # Documentation (markdown guides)
 scripts/     # Helper scripts for setup and post-processing
+tests/       # Automated test suite (pytest)
 test/        # Development and validation scripts
 ```
 
@@ -269,14 +270,10 @@ test/        # Development and validation scripts
 - [`analyze_all.sh`](bin/analyze_all.sh) - Batch processing wrapper for multiple samples
 - Thin wrappers around the core analysis processor
 
-**`src/`** - Core Analysis Code
-- [`analyzer.py`](src/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis
-  - Object selection (electrons, muons, AK4/AK8 jets)
-  - Resolved and boosted region definitions
-  - Histogram filling with systematic variations
-  - Cutflow bookkeeping
-
 **`wrcoffea/`** - Installable Python Package
+- [`analyzer.py`](wrcoffea/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis (object selection, resolved/boosted regions, histogram filling, cutflows)
+- [`histograms.py`](wrcoffea/histograms.py) - Histogram specification, creation, and filling
+- [`scale_factors.py`](wrcoffea/scale_factors.py) - Lepton scale factor evaluation (correctionlib)
 - [`analysis_config.py`](wrcoffea/analysis_config.py) - Centralized configuration (luminosities, correction paths, selection names, cuts)
 - [`cli_utils.py`](wrcoffea/cli_utils.py) - CLI plumbing: fileset loading, sample validation, mass point handling
 - [`era_utils.py`](wrcoffea/era_utils.py) - Era/year/run mapping and JSON I/O
@@ -304,6 +301,10 @@ test/        # Development and validation scripts
 - [`run_analysis.md`](docs/run_analysis.md) - Detailed analysis options and workflows
 - [`filesets.md`](docs/filesets.md) - Fileset creation instructions
 - [`run_combine.md`](docs/run_combine.md) - Limit-setting with Combine framework
+
+**`tests/`** - Automated Test Suite
+- Unit tests for utilities, config consistency, and validation logic
+- Run with pytest (see [Testing](#testing))
 
 **`test/`** - Development Scripts
 - Analysis validation and optimization studies
@@ -380,6 +381,22 @@ source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
 **For UMN (centos8 nodes):**
 ```bash
 source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
+```
+
+---
+
+## Testing
+
+Run the automated test suite with pytest:
+```bash
+python -m pytest tests/ -v
+```
+
+The tests cover utility functions, configuration consistency, fileset validation, and ROOT histogram naming. They run quickly (no data or correctionlib files needed) and are useful for catching regressions when modifying analysis configuration or utility code.
+
+To install the test dependency:
+```bash
+pip install -e ".[test]"
 ```
 
 ---

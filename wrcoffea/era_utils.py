@@ -6,6 +6,8 @@ ERA_MAPPING = {
     "RunIISummer20UL18": {"run": "RunII", "year": "2018"},
     "Run3Summer22": {"run": "Run3", "year": "2022"},
     "Run3Summer22EE": {"run": "Run3", "year": "2022"},
+    "Run3Summer23": {"run": "Run3", "year": "2023"},
+    "Run3Summer23BPix": {"run": "Run3", "year": "2023"},
     "RunIII2024Summer24": {"run": "Run3", "year": "2024"},
 }
 

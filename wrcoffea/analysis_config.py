@@ -8,6 +8,8 @@ LUMIS = {
     "RunIISummer20UL18": 59.83,
     "Run3Summer22": 7.9804,
     "Run3Summer22EE": 26.6717,
+    "Run3Summer23": 17.794,       # placeholder — update when 2023 lumi is finalized
+    "Run3Summer23BPix": 9.451,    # placeholder — update when 2023 lumi is finalized
     "RunIII2024Summer24": 109.08,
 }
 
@@ -35,11 +37,18 @@ ELECTRON_JSONS = {
     },
 }
 
+# correctionlib era key used inside EGM JSON payloads (differs from analysis era name)
+ELECTRON_SF_ERA_KEYS = {
+    "RunIII2024Summer24": "2024Prompt",
+}
+
 # Systematic uncertainties: integrated luminosity fractional uncertainty
 LUMI_UNC = {
     "RunIISummer20UL18": 0.025,  # 2.5% (UL2018)
     "Run3Summer22": 0.014,  # 1.4% (2022)
     "Run3Summer22EE": 0.014,  # 1.4% (2022EE)
+    "Run3Summer23": 0.014,  # placeholder — update when 2023 lumi is finalized
+    "Run3Summer23BPix": 0.014,  # placeholder — update when 2023 lumi is finalized
     "RunIII2024Summer24": 0.014,  # placeholder until 2024 lumi is finalized
 }
 
@@ -76,17 +85,17 @@ SEL_MIN_TWO_AK4_JETS = "min_two_ak4_jets"
 SEL_60_MLL_150 = "60_mll_150"
 
 # Boosted region selection keys
-SEL_BOOSTEDTAG = "boostedtag"
-SEL_LEAD_TIGHT_PT60_BOOSTED = "leadTightwithPt60"
-SEL_DYCR_MASK = "DYCR_mask"
-SEL_ATLEAST1AK8_DPHI_GT2 = "Atleast1AK8Jets & dPhi(J,tightLept)>2"
-SEL_AK8JETS_WITH_LSF = "AK8JetswithLSF"
-SEL_MUMU_DYCR = "mumu-dy_cr"
-SEL_EE_DYCR = "ee-dy_cr"
+SEL_BOOSTEDTAG = "boosted_tag"
+SEL_LEAD_TIGHT_PT60_BOOSTED = "lead_tight_lepton_pt60_boosted"
+SEL_DYCR_MASK = "dy_cr_mask"
+SEL_ATLEAST1AK8_DPHI_GT2 = "atleast_1ak8_dphi_gt2"
+SEL_AK8JETS_WITH_LSF = "ak8_jets_with_lsf"
+SEL_MUMU_DYCR = "mumu_dy_cr"
+SEL_EE_DYCR = "ee_dy_cr"
 SEL_MUMU_SR = "mumu_sr"
 SEL_EE_SR = "ee_sr"
-SEL_EMU_CR = "emu-cr"
-SEL_MUE_CR = "mue-cr"
+SEL_EMU_CR = "emu_cr"
+SEL_MUE_CR = "mue_cr"
 
 # --- Physics thresholds (single source of truth for analysis cuts) -------------
 CUTS = {

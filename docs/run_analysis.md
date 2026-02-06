@@ -91,11 +91,7 @@ python3 bin/run_analysis.py Run3Summer22EE DYJets --reweight reweight_file.json
 where `reweight_file.json` is the output file of scripts/derive_reweights.py
 
 #### `--unskimmed`
-If one wishes to run over the entire unskimmed files, use  
-```
-python3 bin/run_analysis.py Run3Summer22EE DYJets --unskimmed
-```
-This will tell the analyzer to find the unskimmed filesets instead.
+**Not yet implemented.** This flag is reserved for future use to run over unskimmed filesets. Currently raises `NotImplementedError`.
 
 More information can be found in the `README.md` file in other folders.
 

@@ -7,7 +7,7 @@ from hist import Hist
 from wrcoffea.era_utils import get_era_details
 from typing import Dict
 
-logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def _normalize_syst_name(syst: str) -> str:
     """
@@ -94,7 +94,7 @@ def split_hists_with_syst(summed_hists, *, sum_over_process=True):
             region_ax = h.axes["region"]
             syst_ax   = h.axes["syst"]
         except KeyError as e:
-            logging.error("Missing expected axis in histogram '%s': %s", hist_name, e)
+            logger.error("Missing expected axis in histogram '%s': %s", hist_name, e)
             continue
 
         has_proc = any(ax.name == "process" for ax in h.axes)
@@ -153,7 +153,7 @@ def save_histograms(histograms, args):
 
         _save_cutflows(root_file, cutflow_summed)
 
-    logging.info(f"Histograms saved to {output_file}.")
+    logger.info(f"Histograms saved to {output_file}.")
 
 
 def sum_hists(my_hists):

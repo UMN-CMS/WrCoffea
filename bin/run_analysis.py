@@ -54,7 +54,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
     from coffea.nanoevents import NanoAODSchema
     from coffea.processor import Runner, DaskExecutor
 
-    from src.analyzer import WrAnalysis
+    from wrcoffea.analyzer import WrAnalysis
 
     NanoAODSchema.warn_missing_crossrefs = False
     NanoAODSchema.error_missing_event_ids = False
@@ -66,7 +66,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
             """Runs on every worker (including late arrivals) to fix paths."""
             def setup(self, worker):
                 import sys, os
-                for p in (".", "src", "wrcoffea"):
+                for p in (".", "wrcoffea"):
                     if os.path.isdir(p) and p not in sys.path:
                         sys.path.insert(0, p)
                 # Condor transfers "data/lumis" and "data/jsonpog" as flat
@@ -85,7 +85,6 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         cluster = LPCCondorCluster(
             ship_env=True,
             transfer_input_files=[
-                str(repo_root / "src"),
                 str(repo_root / "wrcoffea"),
                 str(repo_root / "bin"),
                 str(repo_root / "data" / "lumis"),
@@ -94,7 +93,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
             log_directory=log_dir,
         )
 
-        NWORKERS = args.max_workers or 40
+        NWORKERS = args.max_workers or 100
         cluster.scale(NWORKERS)
 
         client = Client(cluster)
@@ -159,7 +158,7 @@ if __name__ == "__main__":
         "--max-workers",
         type=int,
         default=None,
-        help="Cap the number of Dask workers (local adaptive maximum; condor scale count).",
+        help="Number of Dask workers (local default: 6, condor default: 100).",
     )
     optional.add_argument(
         "--threads-per-worker",

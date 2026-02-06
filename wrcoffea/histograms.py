@@ -26,33 +26,34 @@ from wrcoffea.analysis_config import (
 
 logger = logging.getLogger(__name__)
 
-ResolvedGetter = Callable[[ak.Array, ak.Array], ak.Array]
+ResolvedGetter = Callable[[ak.Array, ak.Array, ak.Array, ak.Array], ak.Array]
 BoostedGetter = Callable[[ak.Array, ak.Array, ak.Array], ak.Array]
 
-
+# Resolved getters receive (L, J, LL, JJ) where LL = dilepton 4-vec, JJ = dijet 4-vec
+# (pre-computed once per chunk in fill_resolved_histograms to avoid redundant additions).
 RESOLVED_HIST_SPECS: list[tuple[str, tuple[int, float, float], str, ResolvedGetter]] = [
-    ("pt_leading_lepton",           (200,   0, 2000), r"$p_{T}$ of the leading lepton [GeV]",           lambda L, J: L[:, 0].pt),
-    ("eta_leading_lepton",          (60,   -3,    3), r"$\\eta$ of the leading lepton",                lambda L, J: L[:, 0].eta),
-    ("phi_leading_lepton",          (80,   -4,    4), r"$\\phi$ of the leading lepton",                lambda L, J: L[:, 0].phi),
-    ("pt_subleading_lepton",        (200,   0, 2000), r"$p_{T}$ of the subleading lepton [GeV]",        lambda L, J: L[:, 1].pt),
-    ("eta_subleading_lepton",       (60,   -3,    3), r"$\\eta$ of the subleading lepton",             lambda L, J: L[:, 1].eta),
-    ("phi_subleading_lepton",       (80,   -4,    4), r"$\\phi$ of the subleading lepton",             lambda L, J: L[:, 1].phi),
-    ("pt_leading_jet",              (200,   0, 2000), r"$p_{T}$ of the leading jet [GeV]",              lambda L, J: J[:, 0].pt),
-    ("eta_leading_jet",             (60,   -3,    3), r"$\\eta$ of the leading jet",                   lambda L, J: J[:, 0].eta),
-    ("phi_leading_jet",             (80,   -4,    4), r"$\\phi$ of the leading jet",                   lambda L, J: J[:, 0].phi),
-    ("pt_subleading_jet",           (200,   0, 2000), r"$p_{T}$ of the subleading jet [GeV]",           lambda L, J: J[:, 1].pt),
-    ("eta_subleading_jet",          (60,   -3,    3), r"$\\eta$ of the subleading jet",                lambda L, J: J[:, 1].eta),
-    ("phi_subleading_jet",          (80,   -4,    4), r"$\\phi$ of the subleading jet",                lambda L, J: J[:, 1].phi),
-    ("mass_dilepton",               (5000,  0, 5000), r"$m_{\\ell\\ell}$ [GeV]",                     lambda L, J: (L[:, 0] + L[:, 1]).mass),
-    ("pt_dilepton",                 (200,   0, 2000), r"$p_{T,\\ell\\ell}$ [GeV]",                   lambda L, J: (L[:, 0] + L[:, 1]).pt),
-    ("mass_dijet",                  (500,   0, 5000), r"$m_{jj}$ [GeV]",                               lambda L, J: (J[:, 0] + J[:, 1]).mass),
-    ("pt_dijet",                    (500,   0, 5000), r"$p_{T,jj}$ [GeV]",                             lambda L, J: (J[:, 0] + J[:, 1]).pt),
-    ("mass_threeobject_leadlep",    (800,   0, 8000), r"$m_{\\ell jj}$ [GeV]",                        lambda L, J: (L[:, 0] + J[:, 0] + J[:, 1]).mass),
-    ("pt_threeobject_leadlep",      (800,   0, 8000), r"$p_{T,\\ell jj}$ [GeV]",                      lambda L, J: (L[:, 0] + J[:, 0] + J[:, 1]).pt),
-    ("mass_threeobject_subleadlep", (800,   0, 8000), r"$m_{\\ell jj}$ [GeV]",                        lambda L, J: (L[:, 1] + J[:, 0] + J[:, 1]).mass),
-    ("pt_threeobject_subleadlep",   (800,   0, 8000), r"$p_{T,\\ell jj}$ [GeV]",                      lambda L, J: (L[:, 1] + J[:, 0] + J[:, 1]).pt),
-    ("mass_fourobject",             (800,   0, 8000), r"$m_{\\ell\\ell jj}$ [GeV]",                 lambda L, J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).mass),
-    ("pt_fourobject",               (800,   0, 8000), r"$p_{T,\\ell\\ell jj}$ [GeV]",               lambda L, J: (L[:, 0] + L[:, 1] + J[:, 0] + J[:, 1]).pt),
+    ("pt_leading_lepton",           (200,   0, 2000), r"$p_{T}$ of the leading lepton [GeV]",           lambda L, J, LL, JJ: L[:, 0].pt),
+    ("eta_leading_lepton",          (60,   -3,    3), r"$\\eta$ of the leading lepton",                lambda L, J, LL, JJ: L[:, 0].eta),
+    ("phi_leading_lepton",          (80,   -4,    4), r"$\\phi$ of the leading lepton",                lambda L, J, LL, JJ: L[:, 0].phi),
+    ("pt_subleading_lepton",        (200,   0, 2000), r"$p_{T}$ of the subleading lepton [GeV]",        lambda L, J, LL, JJ: L[:, 1].pt),
+    ("eta_subleading_lepton",       (60,   -3,    3), r"$\\eta$ of the subleading lepton",             lambda L, J, LL, JJ: L[:, 1].eta),
+    ("phi_subleading_lepton",       (80,   -4,    4), r"$\\phi$ of the subleading lepton",             lambda L, J, LL, JJ: L[:, 1].phi),
+    ("pt_leading_jet",              (200,   0, 2000), r"$p_{T}$ of the leading jet [GeV]",              lambda L, J, LL, JJ: J[:, 0].pt),
+    ("eta_leading_jet",             (60,   -3,    3), r"$\\eta$ of the leading jet",                   lambda L, J, LL, JJ: J[:, 0].eta),
+    ("phi_leading_jet",             (80,   -4,    4), r"$\\phi$ of the leading jet",                   lambda L, J, LL, JJ: J[:, 0].phi),
+    ("pt_subleading_jet",           (200,   0, 2000), r"$p_{T}$ of the subleading jet [GeV]",           lambda L, J, LL, JJ: J[:, 1].pt),
+    ("eta_subleading_jet",          (60,   -3,    3), r"$\\eta$ of the subleading jet",                lambda L, J, LL, JJ: J[:, 1].eta),
+    ("phi_subleading_jet",          (80,   -4,    4), r"$\\phi$ of the subleading jet",                lambda L, J, LL, JJ: J[:, 1].phi),
+    ("mass_dilepton",               (5000,  0, 5000), r"$m_{\\ell\\ell}$ [GeV]",                     lambda L, J, LL, JJ: LL.mass),
+    ("pt_dilepton",                 (200,   0, 2000), r"$p_{T,\\ell\\ell}$ [GeV]",                   lambda L, J, LL, JJ: LL.pt),
+    ("mass_dijet",                  (500,   0, 5000), r"$m_{jj}$ [GeV]",                               lambda L, J, LL, JJ: JJ.mass),
+    ("pt_dijet",                    (500,   0, 5000), r"$p_{T,jj}$ [GeV]",                             lambda L, J, LL, JJ: JJ.pt),
+    ("mass_threeobject_leadlep",    (800,   0, 8000), r"$m_{\\ell jj}$ [GeV]",                        lambda L, J, LL, JJ: (L[:, 0] + JJ).mass),
+    ("pt_threeobject_leadlep",      (800,   0, 8000), r"$p_{T,\\ell jj}$ [GeV]",                      lambda L, J, LL, JJ: (L[:, 0] + JJ).pt),
+    ("mass_threeobject_subleadlep", (800,   0, 8000), r"$m_{\\ell jj}$ [GeV]",                        lambda L, J, LL, JJ: (L[:, 1] + JJ).mass),
+    ("pt_threeobject_subleadlep",   (800,   0, 8000), r"$p_{T,\\ell jj}$ [GeV]",                      lambda L, J, LL, JJ: (L[:, 1] + JJ).pt),
+    ("mass_fourobject",             (800,   0, 8000), r"$m_{\\ell\\ell jj}$ [GeV]",                 lambda L, J, LL, JJ: (LL + JJ).mass),
+    ("pt_fourobject",               (800,   0, 8000), r"$p_{T,\\ell\\ell jj}$ [GeV]",               lambda L, J, LL, JJ: (LL + JJ).pt),
 ]
 
 
@@ -105,8 +106,12 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
     jets_cut    = jets[cut]
     syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
 
+    # Pre-compute common 4-vectors once per region instead of per histogram.
+    dilepton = leptons_cut[:, 0] + leptons_cut[:, 1]
+    dijet    = jets_cut[:, 0] + jets_cut[:, 1]
+
     for hist_name, _bins, _label, expr in RESOLVED_HIST_SPECS:
-        vals = expr(leptons_cut, jets_cut)
+        vals = expr(leptons_cut, jets_cut, dilepton, dijet)
         for syst_label, sw in syst_weights_cut.items():
             output[hist_name].fill(
                 process=process_name,

@@ -9,7 +9,7 @@ import logging
 import awkward as ak
 import numpy as np
 
-from wrcoffea.analysis_config import ELECTRON_JSONS, MUON_JSONS
+from wrcoffea.analysis_config import ELECTRON_JSONS, ELECTRON_SF_ERA_KEYS, MUON_JSONS
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +33,20 @@ def _get_muon_ceval(era):
 
 
 def muon_sf(tight_muons, era):
-    """Compute per-event RECO x ID x ISO scale factor for tight muons.
+    """Compute per-event muon RECO, ID, and ISO scale factors independently.
 
-    Returns (nominal, up, down) arrays of shape (n_events,).
-    Events with no tight muons get SF = 1.0.
+    Returns a dict of three independent components, each a (nominal, up, down) tuple
+    of arrays with shape (n_events,). Register each component as a separate weight
+    in the Coffea Weights object so that variations are handled independently.
+
+    Events with no tight muons get SF = 1.0 for all components.
     """
+    n_events = len(tight_muons)
+    ones = np.ones(n_events, dtype=np.float64)
+    identity = (ones, ones.copy(), ones.copy())
+
     if era not in MUON_JSONS:
-        ones = np.ones(len(tight_muons), dtype=np.float64)
-        return ones, ones.copy(), ones.copy()
+        return {"reco": identity, "id": identity, "iso": identity}
 
     ceval = _get_muon_ceval(era)
 
@@ -50,8 +56,7 @@ def muon_sf(tight_muons, era):
     flat_pt = np.asarray(ak.flatten(ak.fill_none(tight_muons.pt, 0.0)), dtype=np.float64)
 
     if len(flat_pt) == 0:
-        ones = np.ones(len(tight_muons), dtype=np.float64)
-        return ones, ones.copy(), ones.copy()
+        return {"reco": identity, "id": identity, "iso": identity}
 
     # Compute momentum p = pt * cosh(eta) for RECO.
     flat_p = flat_pt * np.cosh(flat_eta)
@@ -62,39 +67,24 @@ def muon_sf(tight_muons, era):
     idiso_eta = np.clip(flat_eta, -2.399, 2.399)
     idiso_pt = np.clip(flat_pt, 50.001, 1e9)
 
+    def _eval_and_unflatten(corr, eta, pt_or_p):
+        nom = corr.evaluate(eta, pt_or_p, "nominal")
+        up = corr.evaluate(eta, pt_or_p, "systup")
+        down = corr.evaluate(eta, pt_or_p, "systdown")
+        # Unflatten per-muon SFs and take product over muons per event.
+        ev_nom = np.asarray(ak.fill_none(ak.prod(ak.unflatten(nom, counts), axis=1), 1.0), dtype=np.float64)
+        ev_up = np.asarray(ak.fill_none(ak.prod(ak.unflatten(up, counts), axis=1), 1.0), dtype=np.float64)
+        ev_down = np.asarray(ak.fill_none(ak.prod(ak.unflatten(down, counts), axis=1), 1.0), dtype=np.float64)
+        return ev_nom, ev_up, ev_down
+
     # RECO SF (uses momentum p, not pT)
-    reco_corr = ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"]
-    reco_nom = reco_corr.evaluate(reco_eta, reco_p, "nominal")
-    reco_up = reco_corr.evaluate(reco_eta, reco_p, "systup")
-    reco_down = reco_corr.evaluate(reco_eta, reco_p, "systdown")
-
+    reco = _eval_and_unflatten(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_eta, reco_p)
     # ID SF
-    id_corr = ceval["NUM_HighPtID_DEN_GlobalMuonProbes"]
-    id_nom = id_corr.evaluate(idiso_eta, idiso_pt, "nominal")
-    id_up = id_corr.evaluate(idiso_eta, idiso_pt, "systup")
-    id_down = id_corr.evaluate(idiso_eta, idiso_pt, "systdown")
-
+    id_sf = _eval_and_unflatten(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
     # ISO SF
-    iso_corr = ceval["NUM_probe_TightRelTkIso_DEN_HighPtProbes"]
-    iso_nom = iso_corr.evaluate(idiso_eta, idiso_pt, "nominal")
-    iso_up = iso_corr.evaluate(idiso_eta, idiso_pt, "systup")
-    iso_down = iso_corr.evaluate(idiso_eta, idiso_pt, "systdown")
+    iso = _eval_and_unflatten(ceval["NUM_probe_TightRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
 
-    # Per-muon combined SF = RECO x ID x ISO
-    sf_nom = reco_nom * id_nom * iso_nom
-    sf_up = reco_up * id_up * iso_up
-    sf_down = reco_down * id_down * iso_down
-
-    # Unflatten and take product over muons per event.
-    sf_nom_jagged = ak.unflatten(sf_nom, counts)
-    sf_up_jagged = ak.unflatten(sf_up, counts)
-    sf_down_jagged = ak.unflatten(sf_down, counts)
-
-    event_sf_nom = np.asarray(ak.fill_none(ak.prod(sf_nom_jagged, axis=1), 1.0), dtype=np.float64)
-    event_sf_up = np.asarray(ak.fill_none(ak.prod(sf_up_jagged, axis=1), 1.0), dtype=np.float64)
-    event_sf_down = np.asarray(ak.fill_none(ak.prod(sf_down_jagged, axis=1), 1.0), dtype=np.float64)
-
-    return event_sf_nom, event_sf_up, event_sf_down
+    return {"reco": reco, "id": id_sf, "iso": iso}
 
 
 def muon_trigger_sf(tight_muons, era):
@@ -178,6 +168,11 @@ def electron_trigger_sf(tight_electrons, era):
     if era not in ELECTRON_JSONS or "TRIGGER" not in ELECTRON_JSONS[era]:
         return ones, ones.copy(), ones.copy()
 
+    sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
+    if sf_era_key is None:
+        logger.warning("No electron trigger SF era key for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
     ceval = _get_electron_ceval(era, "TRIGGER")
     data_eff_corr = ceval["Electron-HLT-DataEff"]
     mc_eff_corr = ceval["Electron-HLT-McEff"]
@@ -197,13 +192,13 @@ def electron_trigger_sf(tight_electrons, era):
     trigger_path = "HLT_SF_Ele30_TightID"
 
     # Get per-electron efficiencies in data and MC.
-    eff_data_nom = data_eff_corr.evaluate("2024Prompt", "nom", trigger_path, hlt_eta, hlt_pt)
-    eff_data_up = data_eff_corr.evaluate("2024Prompt", "up", trigger_path, hlt_eta, hlt_pt)
-    eff_data_down = data_eff_corr.evaluate("2024Prompt", "down", trigger_path, hlt_eta, hlt_pt)
+    eff_data_nom = data_eff_corr.evaluate(sf_era_key, "nom", trigger_path, hlt_eta, hlt_pt)
+    eff_data_up = data_eff_corr.evaluate(sf_era_key, "up", trigger_path, hlt_eta, hlt_pt)
+    eff_data_down = data_eff_corr.evaluate(sf_era_key, "down", trigger_path, hlt_eta, hlt_pt)
 
-    eff_mc_nom = mc_eff_corr.evaluate("2024Prompt", "nom", trigger_path, hlt_eta, hlt_pt)
-    eff_mc_up = mc_eff_corr.evaluate("2024Prompt", "up", trigger_path, hlt_eta, hlt_pt)
-    eff_mc_down = mc_eff_corr.evaluate("2024Prompt", "down", trigger_path, hlt_eta, hlt_pt)
+    eff_mc_nom = mc_eff_corr.evaluate(sf_era_key, "nom", trigger_path, hlt_eta, hlt_pt)
+    eff_mc_up = mc_eff_corr.evaluate(sf_era_key, "up", trigger_path, hlt_eta, hlt_pt)
+    eff_mc_down = mc_eff_corr.evaluate(sf_era_key, "down", trigger_path, hlt_eta, hlt_pt)
 
     # Unflatten per-electron efficiencies.
     eff_data_nom_jagged = ak.unflatten(eff_data_nom, counts)
@@ -258,6 +253,11 @@ def electron_reco_sf(tight_electrons, era):
     if era not in ELECTRON_JSONS:
         return ones, ones.copy(), ones.copy()
 
+    sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
+    if sf_era_key is None:
+        logger.warning("No electron reco SF era key for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
     ceval = _get_electron_ceval(era, "RECO")
     corr = ceval["Electron-ID-SF"]
 
@@ -299,13 +299,13 @@ def electron_reco_sf(tight_electrons, era):
     pt_high = np.clip(flat_pt, 75.001, 1e6)
 
     # Evaluate both WPs on all electrons, then select per-electron.
-    sf_low_nom = corr.evaluate("2024Prompt", "sf", "Reco20to75", flat_sc_eta, pt_low)
-    sf_low_up = corr.evaluate("2024Prompt", "sfup", "Reco20to75", flat_sc_eta, pt_low)
-    sf_low_down = corr.evaluate("2024Prompt", "sfdown", "Reco20to75", flat_sc_eta, pt_low)
+    sf_low_nom = corr.evaluate(sf_era_key, "sf", "Reco20to75", flat_sc_eta, pt_low)
+    sf_low_up = corr.evaluate(sf_era_key, "sfup", "Reco20to75", flat_sc_eta, pt_low)
+    sf_low_down = corr.evaluate(sf_era_key, "sfdown", "Reco20to75", flat_sc_eta, pt_low)
 
-    sf_high_nom = corr.evaluate("2024Prompt", "sf", "RecoAbove75", flat_sc_eta, pt_high)
-    sf_high_up = corr.evaluate("2024Prompt", "sfup", "RecoAbove75", flat_sc_eta, pt_high)
-    sf_high_down = corr.evaluate("2024Prompt", "sfdown", "RecoAbove75", flat_sc_eta, pt_high)
+    sf_high_nom = corr.evaluate(sf_era_key, "sf", "RecoAbove75", flat_sc_eta, pt_high)
+    sf_high_up = corr.evaluate(sf_era_key, "sfup", "RecoAbove75", flat_sc_eta, pt_high)
+    sf_high_down = corr.evaluate(sf_era_key, "sfdown", "RecoAbove75", flat_sc_eta, pt_high)
 
     sf_nom = np.where(is_low_pt, sf_low_nom, sf_high_nom)
     sf_up = np.where(is_low_pt, sf_low_up, sf_high_up)

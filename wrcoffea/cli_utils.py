@@ -123,8 +123,13 @@ def filter_by_process(fileset: Mapping, desired_process: str, *, mass: str | Non
 
 
 def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Path:
+    if unskimmed:
+        raise NotImplementedError(
+            "--unskimmed is not yet supported. Unskimmed fileset paths need to be "
+            "configured before this flag can be used."
+        )
+
     run, year, era_name = get_era_details(era)
-    subdir = "unskimmed" if unskimmed else "skimmed"
 
     if dy == "LO_inclusive":
         filename = f"{era_name}_mc_dy_lo_inc_fileset.json"
