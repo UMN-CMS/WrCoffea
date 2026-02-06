@@ -12,7 +12,7 @@ This repository provides the main analysis framework for processing WR→Nℓ→
   - [Region Selection](#region-selection) – Run resolved/boosted separately
 - [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
 - [Command Reference](#command-reference) – Complete flag reference and examples
-- [📂 Repository Structure](#-repository-structure) – Overview of how the codebase is organized
+- [Repository Structure](#-repository-structure) – Overview of how the codebase is organized
 - [Getting Started](#getting-started) – Installation and environment setup
 - [Testing](#testing) – Running the automated test suite
 - [Additional Documentation](#additional-documentation) – Links to detailed guides
@@ -170,10 +170,11 @@ By default, 50 Condor workers are launched. Use `--max-workers` to change this:
 python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 ```
 
-To run all backgrounds or signal points on Condor:
+To run all backgrounds, signal points, or everything on Condor:
 ```bash
 bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor
 bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor
 ```
 
 **Tip: Free your shell with tmux**
@@ -186,17 +187,17 @@ tmux new -s analysis
 
 # Enter the Apptainer shell and run your jobs as usual
 ./shell coffeateam/coffea-dask-almalinux8:latest
-bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor --unskimmed
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor --unskimmed
 ```
 
-You can then detach from the session with `Ctrl-b d` and safely log out. To reattach later:
+You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later:
 ```bash
 tmux attach -t analysis
 ```
 
 Other useful tmux commands:
 - `tmux ls` — list active sessions
-- `Ctrl-b d` — detach from current session
+- `Ctrl-b` then `d` — detach from current session
 - `tmux kill-session -t analysis` — kill a session
 
 ---

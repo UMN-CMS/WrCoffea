@@ -39,13 +39,13 @@ MC_OPTIONS=(
 
 # Validate mandatory arguments: mode and era
 if [ "$#" -lt 2 ]; then
-  echo "Usage: $0 {data|bkg|signal} era [additional options]"
+  echo "Usage: $0 {data|bkg|signal|all} era [additional options]"
   exit 1
 fi
 
 MODE="$1"
-if [ "${MODE}" != "data" ] && [ "${MODE}" != "bkg" ] && [ "${MODE}" != "signal" ]; then
-  echo "Error: First argument must be 'data', 'bkg', or 'signal'"
+if [ "${MODE}" != "data" ] && [ "${MODE}" != "bkg" ] && [ "${MODE}" != "signal" ] && [ "${MODE}" != "all" ]; then
+  echo "Error: First argument must be 'data', 'bkg', 'signal', or 'all'"
   exit 1
 fi
 
@@ -120,7 +120,20 @@ elif [ "${MODE}" == "bkg" ]; then
   for process in "${MC_OPTIONS[@]}"; do
     run_analysis "${SELECTED_ERA}" "${process}"
   done
-elif [ "${MODE}" == "signal" ]; then
+elif [ "${MODE}" == "all" ]; then
+  echo "=== Running data ==="
+  for process in "${DATA_OPTIONS[@]}"; do
+    run_analysis "${SELECTED_ERA}" "${process}"
+  done
+  echo "=== Running backgrounds ==="
+  for process in "${MC_OPTIONS[@]}"; do
+    run_analysis "${SELECTED_ERA}" "${process}"
+  done
+  echo "=== Running signal ==="
+  MODE="signal"  # fall through to signal mass-point selection below
+fi
+
+if [ "${MODE}" == "signal" ]; then
   # Default signal behavior: pick ~9 points: WR=2000/4000/6000, and for each WR take
   # N = (min, median, max) from the era's mass-point CSV. If those WR values don't exist
   # for the era, fall back to 9 evenly spaced points from the full list.
