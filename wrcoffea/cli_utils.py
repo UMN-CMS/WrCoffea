@@ -6,8 +6,8 @@ import re
 from collections.abc import Mapping
 from pathlib import Path
 
-from python.fileset_validation import validate_fileset_schema, validate_selection
-from python.preprocess_utils import ERA_MAPPING, get_era_details, load_json
+from wrcoffea.fileset_validation import validate_fileset_schema, validate_selection
+from wrcoffea.era_utils import ERA_MAPPING, get_era_details, load_json
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ _MASS_RE_MWR_MN = re.compile(r"^MWR(?P<wr>\d+)_MN(?P<n>\d+)$")
 def list_eras() -> list[str]:
     """Return supported era strings in the repo's preferred order."""
 
-    # Dict insertion order is intentional here (curated in preprocess_utils).
+    # Dict insertion order is intentional here (curated in era_utils).
     return list(ERA_MAPPING.keys())
 
 

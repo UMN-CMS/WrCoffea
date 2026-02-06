@@ -10,6 +10,7 @@ This repository provides the main analysis framework for processing WR→Nℓ→
   - [Signal](#signal) – Process signal samples
   - [Output Locations](#output-locations) – Where histograms are saved
   - [Region Selection](#region-selection) – Run resolved/boosted separately
+- [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
 - [Command Reference](#command-reference) – Complete flag reference and examples
 - [📂 Repository Structure](#-repository-structure) – Overview of how the codebase is organized
 - [Getting Started](#getting-started) – Installation and environment setup
@@ -137,6 +138,45 @@ This is useful for:
 
 ---
 
+### Running on Condor
+
+To scale out processing across many workers at FNAL LPC, use the `--condor` flag. This requires the [lpcjobqueue](https://github.com/CoffeaTeam/lpcjobqueue) Apptainer environment.
+
+**First-time setup** (run once from the repo root):
+```bash
+curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh
+bash bootstrap.sh
+```
+
+**Enter the Apptainer shell** (required before each Condor session):
+```bash
+./shell coffeateam/coffea-dask-almalinux8:latest
+```
+
+On first launch, the `.env` virtual environment is created automatically. Then install the analysis package:
+```bash
+pip install -e .
+```
+
+**Run with Condor:**
+```bash
+python bin/run_analysis.py RunIII2024Summer24 DYJets --condor
+python bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --condor
+```
+
+By default, 40 Condor workers are launched. Use `--max-workers` to change this:
+```bash
+python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 50
+```
+
+To run all backgrounds or signal points on Condor:
+```bash
+bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor
+bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
+```
+
+---
+
 ## Command Reference
 
 ### run_analysis.py Flags
@@ -153,8 +193,8 @@ This is useful for:
 | `--debug` | | Run without saving histograms (for testing) |
 | `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
-| `--condor` | | Submit jobs to HTCondor (not yet implemented) |
-| `--max-workers` | `<int>` | Cap number of Dask workers (local: adaptive max, condor: scale count) |
+| `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
+| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 40) |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
 | `--systs` | `lumi` | Enable systematic variations (currently: lumi) |
 | `--list-eras` | | Print available eras and exit |
@@ -197,6 +237,10 @@ bash bin/analyze_all.sh signal RunIII2024Summer24
 
 # analyze_all.sh with custom directory
 bash bin/analyze_all.sh bkg RunIII2024Summer24 --dir my_study --name test
+
+# Run on Condor (must be inside Apptainer shell)
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 50
 ```
 
 ---
@@ -211,7 +255,7 @@ The repository follows a clean architecture separating executable scripts, core 
 WR_Plotter/  # Submodule for plotting ROOT histograms
 bin/         # User-facing CLI scripts (production workflows)
 src/         # Core analysis code (Coffea processor)
-python/      # Reusable analysis utilities and helpers
+wrcoffea/    # Installable Python package (utilities, config, helpers)
 data/        # Configuration files (JSON, CSV) and metadata
 docs/        # Documentation (markdown guides)
 scripts/     # Helper scripts for setup and post-processing
@@ -232,19 +276,20 @@ test/        # Development and validation scripts
   - Histogram filling with systematic variations
   - Cutflow bookkeeping
 
-**`python/`** - Analysis Utilities
-- [`run_utils.py`](python/run_utils.py) - Fileset loading, sample validation, mass point handling
-- [`preprocess_utils.py`](python/preprocess_utils.py) - Era/year/run parsing utilities
-- [`save_hists.py`](python/save_hists.py) - ROOT histogram serialization
-- [`analysis_config.py`](python/analysis_config.py) - Centralized configuration (lumi, JME JSONs, etc.)
+**`wrcoffea/`** - Installable Python Package
+- [`analysis_config.py`](wrcoffea/analysis_config.py) - Centralized configuration (luminosities, correction paths, selection names, cuts)
+- [`cli_utils.py`](wrcoffea/cli_utils.py) - CLI plumbing: fileset loading, sample validation, mass point handling
+- [`era_utils.py`](wrcoffea/era_utils.py) - Era/year/run mapping and JSON I/O
+- [`fileset_utils.py`](wrcoffea/fileset_utils.py) - Fileset path construction, config parsing, JSON writing
+- [`fileset_validation.py`](wrcoffea/fileset_validation.py) - Schema and selection validation for filesets
+- [`save_hists.py`](wrcoffea/save_hists.py) - ROOT histogram serialization
 
 **`data/`** - Configuration and Metadata
-- `filesets/` - Per-era NanoAOD file lists (JSON format)
-  - Organized by era (e.g., `RunIII2024Summer24/`, `RunIISummer20UL18/`)
-  - Background, data, and signal filesets
+- `configs/` - Per-era dataset configurations (JSON format, input to fileset scripts)
+- `filesets/` - Per-era NanoAOD file lists (JSON format, output of fileset scripts)
 - `signal_points/` - Available signal mass points per era (CSV format)
 - `lumis/` - Golden JSON lumi masks for data
-- `analysis_config.py` - Luminosity values, JME correction paths, uncertainties
+- `jsonpog/` - Correction payloads for scale factors (correctionlib)
 
 **`WR_Plotter/`** - Plotting Submodule
 - Separate repository for ROOT histogram plotting
@@ -283,27 +328,49 @@ git submodule update --init --recursive
 
 ### Environment Setup
 
-Create and activate a Python virtual environment:
+There are two ways to set up your environment depending on whether you need Condor submission.
+
+#### Option A: Local runs (no Condor)
+
+Create and activate a Python virtual environment, then install the package:
 ```bash
-python3 -m venv wr-env
-source wr-env/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
 ```
 
-Install required packages:
+> **Note:** The venv must be named `.venv` so that `analyze_all.sh` can auto-detect it. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
+
+#### Option B: Condor runs at FNAL LPC (recommended for production)
+
+Set up the lpcjobqueue Apptainer environment (one-time):
 ```bash
-python3 -m pip install -r requirements.txt
+curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh
+bash bootstrap.sh
 ```
 
-### Grid UI
+Enter the container (required before each Condor session):
+```bash
+./shell coffeateam/coffea-dask-almalinux8:latest
+```
 
-Authenticate for accessing grid resources:
+On first launch, the `.env` virtual environment is created automatically. Then install the analysis package:
+```bash
+pip install -e .
+```
+
+To leave the container, type `exit`.
+
+### Grid Proxy
+
+Authenticate for accessing grid resources (required for both local and Condor runs):
 ```bash
 voms-proxy-init --rfc --voms cms -valid 192:00
 ```
 
 ### ROOT
 
-Source the appropriate LCG release for ROOT functionality:
+Source the appropriate LCG release for ROOT functionality (only needed outside the Apptainer container):
 
 **For FNAL LPC (el9 nodes):**
 ```bash

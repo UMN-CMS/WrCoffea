@@ -8,7 +8,6 @@ import csv
 from pathlib import Path
 from coffea.nanoevents import NanoAODSchema
 from coffea.dataset_tools import apply_to_fileset, max_chunks, max_files
-import sys
 import os
 
 from dask.distributed import Client, LocalCluster
@@ -16,19 +15,13 @@ from coffea.processor import Runner, DaskExecutor
 from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.processor import ProcessorABC
 
-# Add the src/, data/, and python/ directories to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../python')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from analyzer_test import WrAnalysis
+from test.analyzer_test import WrAnalysis
 #from dask.distributed import Client
 #from dask.diagnostics import ProgressBar
 #import dask
 import uproot
-from python.save_hists import save_histograms
-from python.preprocess_utils import get_era_details, load_json
+from wrcoffea.save_hists import save_histograms
+from wrcoffea.era_utils import get_era_details, load_json
 
 # Set up logging configuration
 logging.basicConfig(level=logging.INFO,

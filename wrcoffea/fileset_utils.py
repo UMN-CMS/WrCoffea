@@ -55,16 +55,6 @@ def sample_from_config_filename(config_path: Path, *, era: str) -> str:
     return stem[len(prefix) :]
 
 
-def normalize_skimmed_sample(sample: str) -> str:
-    """Keep historical behavior for skimmed fileset naming.
-
-    The skimmed fileset script collapses any 'mc_*' config to a single 'mc'
-    output name (e.g. mc_lo_dy -> mc).
-    """
-
-    return "mc" if "mc" in sample else sample
-
-
 def output_dir(*, data_root: Path, run: str, year: str, era: str) -> Path:
     return data_root / "filesets" / run / year / era 
 

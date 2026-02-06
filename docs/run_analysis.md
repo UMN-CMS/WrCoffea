@@ -2,13 +2,13 @@
 First, create the filesets (see the `filesets.md` README).
 
 ### Analyzing background samples
-To run a basic analysis on a background sample, specify the era (either `RunIISummer20UL18`, `Run3Summer22`, or `Run3Summer22EE`) and the sample. For example,
+To run a basic analysis on a background sample, specify the era and the sample. For example,
 ```
-python3 bin/run_analysis.py RunIISummer20UL18 DYJets
-python3 bin/run_analysis.py Run3Summer22 DYJets
-python3 bin/run_analysis.py Run3Summer22EE DYJets
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets
+python3 bin/run_analysis.py RunIISummer20UL18 tt_tW
+python3 bin/run_analysis.py Run3Summer22EE Nonprompt
 ```
-Other backgrounds depend on the campaign and grouping; trust the argparse `choices` in `bin/run_analysis.py` for the canonical sample names.
+Available eras and samples can be queried with `--list-eras` and `--list-samples` (see [Discovery helpers](#discovery-helpers) below). Background samples: `DYJets`, `tt_tW`, `Nonprompt`, `Other`.
 
 By default the analyzer looks for the skimmed filesets, and the output histograms will be saved to
 ```
@@ -22,7 +22,7 @@ To analyze signal files, use the `--mass` flag with the desired signal point. Fo
 python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3200_N3000
 python3 bin/run_analysis.py Run3Summer22 Signal --mass WR4000_N1900
 ```
-Possible signal points can be found in the `data/` folder.
+Possible signal points can be listed with `python3 bin/run_analysis.py --list-masses`.
 
 ### Analyzing data samples
 To analyze data, use a similar format

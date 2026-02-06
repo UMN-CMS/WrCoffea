@@ -1,0 +1,114 @@
+"""Lightweight configuration for the Coffea WR analysis.
+
+Keep this module dependency-free so it can be shipped to Dask workers cheaply.
+"""
+
+# Integrated luminosities (fb^-1)
+LUMIS = {
+    "RunIISummer20UL18": 59.83,
+    "Run3Summer22": 7.9804,
+    "Run3Summer22EE": 26.6717,
+    "RunIII2024Summer24": 109.08,
+}
+
+# Golden JSON paths for data lumi masking
+LUMI_JSONS = {
+    "RunIISummer20UL18": "data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
+    "Run3Summer22": "data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt",
+    "Run3Summer22EE": "data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt",
+    "RunIII2024Summer24": "data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.txt",
+}
+
+# JSON POG payloads
+JME_JSONS = {
+    "RunIII2024Summer24": "data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz",
+}
+
+MUON_JSONS = {
+    "RunIII2024Summer24": "data/jsonpog/MUO/muon_HighPt.json",
+}
+
+ELECTRON_JSONS = {
+    "RunIII2024Summer24": {
+        "RECO": "data/jsonpog/EGM/electron.json.gz",
+        "TRIGGER": "data/jsonpog/EGM/electronHlt.json.gz",
+    },
+}
+
+# Systematic uncertainties: integrated luminosity fractional uncertainty
+LUMI_UNC = {
+    "RunIISummer20UL18": 0.025,  # 2.5% (UL2018)
+    "Run3Summer22": 0.014,  # 1.4% (2022)
+    "Run3Summer22EE": 0.014,  # 1.4% (2022EE)
+    "RunIII2024Summer24": 0.014,  # placeholder until 2024 lumi is finalized
+}
+
+# --- Selection name constants (single source of truth for string keys) ---------
+#
+# Used for PackedSelection.add() names, region definitions, and cutflow bookkeeping.
+SEL_MIN_TWO_AK4_JETS_PTETA = "min_two_ak4_jets_pteta"
+SEL_MIN_TWO_AK4_JETS_ID = "min_two_ak4_jets_id"
+
+SEL_TWO_PTETA_ELECTRONS = "two_pteta_electrons"
+SEL_TWO_PTETA_MUONS = "two_pteta_muons"
+SEL_TWO_PTETA_EM = "two_pteta_em"
+
+SEL_TWO_ID_ELECTRONS = "two_id_electrons"
+SEL_TWO_ID_MUONS = "two_id_muons"
+SEL_TWO_ID_EM = "two_id_em"
+
+SEL_E_TRIGGER = "e_trigger"
+SEL_MU_TRIGGER = "mu_trigger"
+SEL_EMU_TRIGGER = "emu_trigger"
+
+SEL_DR_ALL_PAIRS_GT0P4 = "dr_all_pairs_gt0p4"
+SEL_MLL_GT200 = "mll_gt200"
+SEL_MLLJJ_GT800 = "mlljj_gt800"
+SEL_MLL_GT400 = "mll_gt400"
+
+# Resolved region selection keys
+SEL_TWO_TIGHT_ELECTRONS = "two_tight_electrons"
+SEL_TWO_TIGHT_MUONS = "two_tight_muons"
+SEL_TWO_TIGHT_EM = "two_tight_em"
+SEL_LEAD_TIGHT_PT60 = "lead_tight_lepton_pt60"
+SEL_SUBLEAD_TIGHT_PT53 = "sublead_tight_pt53"
+SEL_MIN_TWO_AK4_JETS = "min_two_ak4_jets"
+SEL_60_MLL_150 = "60_mll_150"
+
+# Boosted region selection keys
+SEL_BOOSTEDTAG = "boostedtag"
+SEL_LEAD_TIGHT_PT60_BOOSTED = "leadTightwithPt60"
+SEL_DYCR_MASK = "DYCR_mask"
+SEL_ATLEAST1AK8_DPHI_GT2 = "Atleast1AK8Jets & dPhi(J,tightLept)>2"
+SEL_AK8JETS_WITH_LSF = "AK8JetswithLSF"
+SEL_MUMU_DYCR = "mumu-dy_cr"
+SEL_EE_DYCR = "ee-dy_cr"
+SEL_MUMU_SR = "mumu_sr"
+SEL_EE_SR = "ee_sr"
+SEL_EMU_CR = "emu-cr"
+SEL_MUE_CR = "mue-cr"
+
+# --- Physics thresholds (single source of truth for analysis cuts) -------------
+CUTS = {
+    "lepton_pt_min": 53,
+    "lepton_eta_max": 2.4,
+    "muon_highPtId": 2,
+    "muon_iso_max": 0.1,
+    "ak4_pt_min": 40,
+    "ak4_eta_max": 2.4,
+    "ak8_pt_min": 200,
+    "ak8_eta_max": 2.4,
+    "ak8_msoftdrop_min": 40,
+    "ak8_lsf3_min": 0.75,
+    "lead_lepton_pt_min": 60,
+    "sublead_lepton_pt_min": 53,
+    "mll_dy_low": 60,
+    "mll_dy_high": 150,
+    "mll_sr_min": 200,
+    "mll_sr_high_min": 400,
+    "mlljj_min": 800,
+    "dr_min": 0.4,
+    "dphi_boosted_min": 2.0,
+    "dr_loose_veto": 0.01,
+    "dr_ak8_loose": 0.8,
+}

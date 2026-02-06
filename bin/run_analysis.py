@@ -1,22 +1,18 @@
+import os
+os.environ.setdefault("NUMEXPR_MAX_THREADS", "1")
+
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="coffea.*")
 warnings.filterwarnings("ignore", category=FutureWarning, module="htcondor.*")
+warnings.filterwarnings("ignore", category=RuntimeWarning, message="Missing cross-reference", module="coffea.*")
 import argparse
 import time
 import json
 import logging
 from pathlib import Path
-import sys
-import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../python')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-
-from python.preprocess_utils import get_era_details
-from python.run_utils import (
+from wrcoffea.era_utils import get_era_details
+from wrcoffea.cli_utils import (
     build_fileset_path,
     list_eras,
     list_samples,
@@ -29,8 +25,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 def validate_arguments(args, sig_points):
-    if args.condor:
-        raise NotImplementedError("TO-DO. Condor is not implemented.")
     if args.sample == "Signal" and not args.mass:
         logging.error("For 'Signal', you must provide a --mass argument (e.g. --mass WR2000_N1900).")
         raise ValueError("Missing mass argument for Signal sample.")
@@ -56,11 +50,11 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 
     # Heavy imports (coffea/dask/analyzer + transitive deps like pandas/scipy)
     # are intentionally delayed so `--preflight-only` is fast.
-    from dask.distributed import Client, LocalCluster
+    from dask.distributed import Client, LocalCluster, WorkerPlugin
     from coffea.nanoevents import NanoAODSchema
     from coffea.processor import Runner, DaskExecutor
 
-    from analyzer import WrAnalysis
+    from src.analyzer import WrAnalysis
 
     NanoAODSchema.warn_missing_crossrefs = False
     NanoAODSchema.error_missing_event_ids = False
@@ -68,48 +62,58 @@ def run_analysis(args, filtered_fileset, run_on_condor):
     if run_on_condor:
         from lpcjobqueue import LPCCondorCluster
 
+        class _CondorWorkerSetup(WorkerPlugin):
+            """Runs on every worker (including late arrivals) to fix paths."""
+            def setup(self, worker):
+                import sys, os
+                for p in (".", "src", "wrcoffea"):
+                    if os.path.isdir(p) and p not in sys.path:
+                        sys.path.insert(0, p)
+                # Condor transfers "data/lumis" and "data/jsonpog" as flat
+                # dirs ("lumis/", "jsonpog/") but config references them
+                # under "data/...".  Recreate the expected structure.
+                os.makedirs("data", exist_ok=True)
+                for subdir in ("lumis", "jsonpog"):
+                    src = os.path.abspath(subdir)
+                    dst = os.path.join("data", subdir)
+                    if os.path.isdir(src) and not os.path.exists(dst):
+                        os.symlink(src, dst)
+
         repo_root = Path(__file__).resolve().parent.parent
         log_dir = f"/uscmst1b_scratch/lpc1/3DayLifetime/{os.environ['USER']}/dask-logs"
 
         cluster = LPCCondorCluster(
-            ship_env=False,
+            ship_env=True,
             transfer_input_files=[
                 str(repo_root / "src"),
-                str(repo_root / "python"),
+                str(repo_root / "wrcoffea"),
                 str(repo_root / "bin"),
                 str(repo_root / "data" / "lumis"),
+                str(repo_root / "data" / "jsonpog"),
             ],
             log_directory=log_dir,
         )
 
-        NWORKERS = args.max_workers or 20
+        NWORKERS = args.max_workers or 40
         cluster.scale(NWORKERS)
 
         client = Client(cluster)
-        client.wait_for_workers(NWORKERS, timeout="180s")
-
-    #    cluster.adapt(minimum=1, maximum=200)
-
-        def _add_paths():
-            import sys, os
-            for p in ("src", "python"):
-                if os.path.isdir(p) and p not in sys.path:
-                    sys.path.insert(0, p)
-            return sys.path
-
-        client.run(_add_paths)
+        client.register_worker_plugin(_CondorWorkerSetup())
+        logging.info("Waiting for Condor workers (requested %d)...", NWORKERS)
+        client.wait_for_workers(1, timeout="180s")
+        logging.info("Started with %d/%d workers; remaining will join dynamically.", len(client.scheduler_info()["workers"]), NWORKERS)
 
     else:
-        cluster = LocalCluster(n_workers=1, threads_per_worker=(args.threads_per_worker or 1))
-        cluster.adapt(minimum=1, maximum=(args.max_workers or 10))
+        n_workers = args.max_workers or 6
+        cluster = LocalCluster(n_workers=n_workers, threads_per_worker=(args.threads_per_worker or 1))
         client = Client(cluster)
 
     run = Runner(
         executor = DaskExecutor(client=client, compression=None, retries=10),
-        chunksize = 250_000, 
+        chunksize = 250_000,
         maxchunks = None, # Change to 1 for testing, None for all
         skipbadfiles=False,
-        xrootdtimeout = 5,
+        xrootdtimeout = 60 if run_on_condor else 10,
         align_clusters = False,
         savemetrics=True,
         schema=NanoAODSchema,
@@ -252,7 +256,7 @@ if __name__ == "__main__":
         raise
 
     if not args.debug:
-        from python.save_hists import save_histograms
+        from wrcoffea.save_hists import save_histograms
 
         save_histograms(hists_dict, args)
     exec_time = time.monotonic() - t0

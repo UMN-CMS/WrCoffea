@@ -27,9 +27,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 repo_root = os.path.abspath(os.path.join(current_dir, "../"))
 sys.path.insert(0, repo_root)
 
-from python.preprocess_utils import get_era_details, load_json
-from python.fileset_utils import (
-    normalize_skimmed_sample,
+from wrcoffea.era_utils import get_era_details, load_json
+from wrcoffea.fileset_utils import (
     output_dir,
     parse_config_path,
     rename_dataset_key_to_sample,

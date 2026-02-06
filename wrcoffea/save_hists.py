@@ -4,19 +4,10 @@ import logging
 from pathlib import Path
 import hist
 from hist import Hist
-from python.preprocess_utils import get_era_details
+from wrcoffea.era_utils import get_era_details
 from typing import Dict
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
-
-def _is_simple_cutflow(kinds) -> bool:
-    if isinstance(kinds, Hist):
-        return True
-    if isinstance(kinds, dict):
-        keys = set(kinds.keys())
-        return keys <= {"cumulative"} and isinstance(kinds.get("cumulative"), Hist)
-    return False
-
 
 def _normalize_syst_name(syst: str) -> str:
     """
@@ -165,17 +156,6 @@ def save_histograms(histograms, args):
     logging.info(f"Histograms saved to {output_file}.")
 
 
-def scale_hists(data):
-    for dataset_key, dataset_info in data.items():
-        if 'x_sec' in dataset_info and 'sumw' in dataset_info:
-            sf = dataset_info['x_sec']/dataset_info['nevts']
-            for key, value in dataset_info.items():
-                if isinstance(value, Hist):
-                    value *= sf
-        else:
-            logging.warning(f"Dataset {dataset_key} missing 'x_sec' or 'sumw'. Skipping scaling.")
-    return data
-
 def sum_hists(my_hists):
     if not my_hists:
         raise ValueError("No histogram data provided.")
@@ -200,24 +180,3 @@ def sum_hists(my_hists):
 
     return sum_histograms
 
-def split_hists(summed_hists):
-    split_histograms = {}
-
-    for hist_name, sum_hist in summed_hists.items():
-        try:
-            process_axis = sum_hist.axes['process']
-            regions_axis = sum_hist.axes['region']
-        except KeyError as e:
-            logging.error(f"Missing expected axis in histogram '{hist_name}': {e}")
-            continue
-
-        unique_processes = [process_axis.value(i) for i in range(process_axis.size)]
-        unique_regions = [regions_axis.value(i) for i in range(regions_axis.size)]
-
-        for process in unique_processes:
-            for region in unique_regions:
-                sub_hist = sum_hist[{process_axis.name: process, regions_axis.name: region}]
-                key = (region, hist_name)
-                split_histograms[key] = sub_hist
-
-    return split_histograms
