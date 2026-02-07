@@ -7,7 +7,6 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="htcondor.*")
 warnings.filterwarnings("ignore", category=RuntimeWarning, message="Missing cross-reference", module="coffea.*")
 import argparse
 import time
-import json
 import logging
 from pathlib import Path
 
@@ -25,6 +24,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 def validate_arguments(args, sig_points):
+    """Check CLI argument combinations are valid before running."""
     if args.sample == "Signal" and not args.mass:
         logging.error("For 'Signal', you must provide a --mass argument (e.g. --mass WR2000_N1900).")
         raise ValueError("Missing mass argument for Signal sample.")
@@ -71,9 +71,8 @@ def normalize_by_sumw(hists_dict):
 
 
 def run_analysis(args, filtered_fileset, run_on_condor):
-
-    # Heavy imports (coffea/dask/analyzer + transitive deps like pandas/scipy)
-    # are intentionally delayed so `--preflight-only` is fast.
+    """Set up a Dask cluster, preprocess, run the WrAnalysis processor, and return histograms."""
+    # Heavy imports delayed so `--preflight-only` is fast.
     from dask.distributed import Client, LocalCluster, WorkerPlugin
     from coffea.nanoevents import NanoAODSchema
     from coffea.processor import Runner, DaskExecutor
@@ -132,12 +131,12 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         client = Client(cluster)
 
     run = Runner(
-        executor = DaskExecutor(client=client, compression=None, retries=10),
-        chunksize = args.chunksize,
-        maxchunks = None, # Change to 1 for testing, None for all
+        executor=DaskExecutor(client=client, compression=None, retries=10),
+        chunksize=args.chunksize,
+        maxchunks=args.maxchunks,
         skipbadfiles=False,
-        xrootdtimeout = 60 if run_on_condor else 10,
-        align_clusters = False,
+        xrootdtimeout=60 if run_on_condor else 10,
+        align_clusters=False,
         savemetrics=True,
         schema=NanoAODSchema,
     )
@@ -188,38 +187,13 @@ if __name__ == "__main__":
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
     optional.add_argument("--condor", action='store_true', help="Run on condor.")
-    optional.add_argument(
-        "--max-workers",
-        type=int,
-        default=None,
-        help="Number of Dask workers (local default: 6, condor default: 50).",
-    )
-    optional.add_argument(
-        "--threads-per-worker",
-        type=int,
-        default=None,
-        help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).",
-    )
-    optional.add_argument(
-        "--chunksize",
-        type=int,
-        default=250_000,
-        help="Number of events per processing chunk (default: 250000).",
-    )
-    optional.add_argument(
-        "--systs",
-        nargs="*",
-        default=[],
-        choices=["lumi"],
-        help="Enable systematic histogram variations. Currently supported: lumi.",
-    )
-    optional.add_argument(
-        "--region",
-        type=str,
-        default="both",
-        choices=["resolved", "boosted", "both"],
-        help="Analysis region to run: resolved, boosted, or both (default: both).",
-    )
+    optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 6, condor default: 50).")
+    optional.add_argument("--threads-per-worker", type=int, default=None, help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).")
+    optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
+    optional.add_argument("--maxchunks", type=int, default=None, help="Max chunks per dataset file (default: all). Use 1 for quick testing.")
+    optional.add_argument("--maxfiles", type=int, default=None, help="Max files per dataset (default: all). Use 1 for quick testing.")
+    optional.add_argument("--systs", nargs="*", default=[], choices=["lumi"], help="Enable systematic histogram variations. Currently supported: lumi.")
+    optional.add_argument("--region", type=str, default="both", choices=["resolved", "boosted", "both"], help="Analysis region to run: resolved, boosted, or both (default: both).")
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")
     optional.add_argument("--list-masses", action="store_true", help="Print available signal mass points for the given era (or all eras if none provided) and exit.")
@@ -256,9 +230,7 @@ if __name__ == "__main__":
     signal_points = Path(f"data/signal_points/{args.era}_mass_points.csv")
     MASS_CHOICES = load_masses_from_csv(signal_points)
 
-    print()
     logging.info(f"Analyzing {args.era} - {args.sample} events")
-    
     validate_arguments(args, MASS_CHOICES)
     run, year, era = get_era_details(args.era)
 
@@ -290,6 +262,7 @@ if __name__ == "__main__":
         filepath=filepath,
         desired_process=args.sample,
         mass=args.mass,
+        maxfiles=args.maxfiles,
     )
 
     logging.info(

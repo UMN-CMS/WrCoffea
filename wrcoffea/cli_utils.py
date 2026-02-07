@@ -165,6 +165,7 @@ def load_and_select_fileset(
     filepath: Path,
     desired_process: str,
     mass: str | None,
+    maxfiles: int | None = None,
 ) -> dict:
     if not filepath.exists():
         raise FileNotFoundError(
@@ -182,5 +183,9 @@ def load_and_select_fileset(
         mass=mass,
         preprocessed_fileset=preprocessed_fileset,
     )
+
+    if maxfiles is not None:
+        from coffea.dataset_tools import max_files
+        filtered_fileset = max_files(filtered_fileset, maxfiles)
 
     return filtered_fileset

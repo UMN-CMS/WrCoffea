@@ -251,10 +251,10 @@ def fill_cutflows(output, selections, weights):
 
         # Multi-bin onecut / cumulative histograms (for closure studies).
         cf = selections.cutflow(*steps, weights=weights)
-        h_onecut, h_cum = cf.yieldhist(weighted=True)
+        h_onecut, h_cum, _labels = cf.yieldhist(weighted=True)
         bucket["onecut"] = h_onecut
         bucket["cumulative"] = h_cum
 
-        h_onecut_unw, h_cum_unw = cf.yieldhist(weighted=False)
+        h_onecut_unw, h_cum_unw, _labels = cf.yieldhist(weighted=False)
         bucket["onecut_unweighted"] = h_onecut_unw
         bucket["cumulative_unweighted"] = h_cum_unw
