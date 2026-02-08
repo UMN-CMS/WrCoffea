@@ -81,6 +81,21 @@ fi
 shift 2
 EXTRA_ARGS=( "$@" )
 
+# Set worker counts based on whether we're running on unskimmed files
+UNSKIMMED=false
+for arg in "$@"; do
+  if [ "${arg}" = "--unskimmed" ]; then
+    UNSKIMMED=true
+    break
+  fi
+done
+
+if [ "${UNSKIMMED}" = true ]; then
+  WORKERS=400
+else
+  WORKERS=50
+fi
+
 # Filter out --systs for data mode (data doesn't use systematics)
 DATA_ARGS=()
 skip_systs=false
@@ -129,11 +144,11 @@ if [ "${MODE}" == "data" ]; then
   # Use DATA_ARGS (filtered to exclude --systs) for data
   EXTRA_ARGS=("${DATA_ARGS[@]}")
   for process in "${DATA_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers 400
+    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers ${WORKERS}
   done
 elif [ "${MODE}" == "bkg" ]; then
   for process in "${MC_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}" --max-workers 400
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
   done
 elif [ "${MODE}" == "all" ]; then
   echo "=== Running data ==="
@@ -141,13 +156,13 @@ elif [ "${MODE}" == "all" ]; then
   SAVED_EXTRA_ARGS=("${EXTRA_ARGS[@]}")
   EXTRA_ARGS=("${DATA_ARGS[@]}")
   for process in "${DATA_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers 400
+    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers ${WORKERS}
   done
   # Restore EXTRA_ARGS (with --systs) for MC
   EXTRA_ARGS=("${SAVED_EXTRA_ARGS[@]}")
   echo "=== Running backgrounds ==="
   for process in "${MC_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}" --max-workers 400
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
   done
   echo "=== Running signal ==="
   MODE="signal"  # fall through to signal mass-point selection below

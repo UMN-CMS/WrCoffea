@@ -217,8 +217,8 @@ bash bin/analyze_all.sh all RunIII2024Summer24 --condor
 ```
 
 **Default `analyze_all.sh` Condor configuration:**
-- **Data**: 400 workers, 50k events/chunk (optimized for memory)
-- **Background**: 400 workers, 250k events/chunk (default)
+- **Data**: 50 workers, 50k events/chunk (skimmed); 400 workers with `--unskimmed`
+- **Background**: 50 workers, 250k events/chunk (skimmed); 400 workers with `--unskimmed`
 - **Signal**: 10 workers/mass point, 50k events/chunk (conservative)
 
 These defaults can be overridden by passing `--max-workers` and `--chunksize` as extra arguments.
@@ -291,7 +291,7 @@ A small percentage of workers failing with "Nanny failed to start" is normal —
 | `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
 | `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
-| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 50, analyze_all.sh: 400 for data/bkg, 10 for signal) |
+| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 50, analyze_all.sh: 50 skimmed / 400 unskimmed for data/bkg, 10 for signal) |
 | `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000, analyze_all.sh: 50000 for data/signal) |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
 | `--systs` | `lumi` `pileup` `sf` | Enable systematic variations (see [Systematics](#systematics)) |
@@ -498,7 +498,16 @@ Run the automated test suite with pytest:
 python -m pytest tests/ -v
 ```
 
-The tests cover utility functions, configuration consistency, fileset validation, and ROOT histogram naming. They run quickly (no data or correctionlib files needed) and are useful for catching regressions when modifying analysis configuration or utility code.
+The tests cover utility functions, configuration consistency, fileset validation, histogram creation/filling, and processor selection logic. They run quickly (no data or correctionlib files needed) and are useful for catching regressions when modifying analysis configuration or utility code.
+
+### Quick Local Validation
+
+To quickly test the full analysis chain on a small slice of data:
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --maxchunks 1 --maxfiles 1 --chunksize 1000
+```
+
+This processes a single file with one small chunk, which is useful for verifying that code changes don't break the processing pipeline before submitting large Condor jobs.
 
 To install the test dependency:
 ```bash
