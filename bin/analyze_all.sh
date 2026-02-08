@@ -81,20 +81,33 @@ fi
 shift 2
 EXTRA_ARGS=( "$@" )
 
-# Shift off the mode and era arguments, leaving additional options (if any)
-#if [ "$#" -ge 3 ]; then
-#  shift 2
-#  EXTRA_ARGS=("$@")
-#else
-#  EXTRA_ARGS=()
-#fi
+# Filter out --systs for data mode (data doesn't use systematics)
+DATA_ARGS=()
+skip_systs=false
+for arg in "${EXTRA_ARGS[@]}"; do
+  if [ "${skip_systs}" = true ]; then
+    # Skip arguments after --systs until we hit another flag
+    if [[ "${arg}" =~ ^-- ]]; then
+      skip_systs=false
+      DATA_ARGS+=("${arg}")
+    fi
+    # Otherwise skip this syst value (e.g., "lumi", "pileup", "sf")
+  elif [ "${arg}" = "--systs" ]; then
+    # Start skipping --systs and its values
+    skip_systs=true
+  else
+    DATA_ARGS+=("${arg}")
+  fi
+done
 
 # Function for data and bkg modes
 run_analysis() {
   local era="$1"
   local process="$2"
+  shift 2
+  local mode_args=("$@")
 #  echo "Running analysis for era ${era} and --process ${process}"
-  "${PYTHON}" bin/run_analysis.py "${era}" "${process}" "${EXTRA_ARGS[@]}" || {
+  "${PYTHON}" bin/run_analysis.py "${era}" "${process}" "${mode_args[@]}" "${EXTRA_ARGS[@]}" || {
     echo "Error running analysis for process ${process} with era ${era}. Skipping..."
     return 1
   }
@@ -105,7 +118,7 @@ run_signal_analysis() {
   local era="$1"
   local mass="$2"
 #  echo "Running analysis for era ${era} and signal with --mass ${mass}"
-  "${PYTHON}" bin/run_analysis.py "${era}" "Signal" --mass "${mass}" "${EXTRA_ARGS[@]}" || {
+  "${PYTHON}" bin/run_analysis.py "${era}" "Signal" --mass "${mass}" --max-workers 10 --chunksize 50000 "${EXTRA_ARGS[@]}" || {
     echo "Error running signal analysis for mass ${mass} with era ${era}. Skipping..."
     return 1
   }
@@ -113,21 +126,28 @@ run_signal_analysis() {
 
 # Run analysis based on mode
 if [ "${MODE}" == "data" ]; then
+  # Use DATA_ARGS (filtered to exclude --systs) for data
+  EXTRA_ARGS=("${DATA_ARGS[@]}")
   for process in "${DATA_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}"
+    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers 400
   done
 elif [ "${MODE}" == "bkg" ]; then
   for process in "${MC_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}"
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers 400
   done
 elif [ "${MODE}" == "all" ]; then
   echo "=== Running data ==="
+  # Temporarily use DATA_ARGS (no --systs) for data
+  SAVED_EXTRA_ARGS=("${EXTRA_ARGS[@]}")
+  EXTRA_ARGS=("${DATA_ARGS[@]}")
   for process in "${DATA_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}"
+    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers 400
   done
+  # Restore EXTRA_ARGS (with --systs) for MC
+  EXTRA_ARGS=("${SAVED_EXTRA_ARGS[@]}")
   echo "=== Running backgrounds ==="
   for process in "${MC_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}"
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers 400
   done
   echo "=== Running signal ==="
   MODE="signal"  # fall through to signal mass-point selection below

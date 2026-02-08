@@ -31,9 +31,7 @@ def _sum_cutflow_hists(my_hists):
 
     Supports structures like:
       cutflow = {
-        "no_cuts": Hist,
-        "no_cuts_unweighted": Hist,
-        "ee":   {"two_tight_electrons": Hist, "e_trigger": Hist, ..., "onecut": Hist, ...},
+        "ee":   {"onecut": Hist, "cumulative": Hist, ...},
         "mumu": {...},
         "em":   {...},
       }

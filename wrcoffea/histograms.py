@@ -160,44 +160,30 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
             )
 
 
+def _relabel_cutflow(h_raw, cut_names):
+    """Convert an Integer-axis cutflow histogram to one with StrCategory axis.
+
+    This embeds the cut names as bin labels in the ROOT file, making it
+    self-documenting and robust against ordering changes.
+    """
+    h = hist.Hist(
+        hist.axis.StrCategory(cut_names, name="cut"),
+        storage=h_raw.storage_type(),
+    )
+    h.view(flow=False)[...] = h_raw.view(flow=False)
+    return h
+
+
 def fill_cutflows(output, selections, weights):
     """Build cumulative cutflows for ee, mumu, and em channels.
 
     Output layout (keys under ``output["cutflow"]``):
-        - top-level: ``no_cuts`` (weighted + unweighted)
         - per-flavor: ``ee``, ``mumu``, ``em``
-            - one-bin counters for each cumulative step (weighted + ``_unweighted``)
-            - ``onecut`` / ``cumulative`` (and unweighted variants) from PackedSelection.cutflow
+            - ``onecut`` / ``cumulative`` (and unweighted variants)
+              Multi-bin histograms with StrCategory axis (bin labels are
+              the cut names, e.g. "no_cuts", "min_two_ak4_jets_pteta", ...).
     """
     output.setdefault("cutflow", {})
-
-    w = weights.weight()  # nominal weight
-
-    def _onebin_hist(name: str, mask, use_weights=True):
-        """1 bin in [0,1), named by the last cut."""
-        h = hist.Hist(
-            hist.axis.Regular(1, 0, 1, name=name, label=name),
-            storage=hist.storage.Weight(),
-        )
-        n_pass = int(ak.count_nonzero(mask))
-        if use_weights:
-            w_pass = ak.to_numpy(w[mask])
-        else:
-            w_pass = np.ones(n_pass, dtype="f8")
-        if n_pass:
-            coords = np.full(w_pass.size, 0.5, dtype=float)
-            h.fill(**{name: coords}, weight=w_pass)
-        return h
-
-    def _store_both(container: dict, name: str, mask):
-        """Store weighted and unweighted variants into a given dict container."""
-        container[name] = _onebin_hist(name, mask, use_weights=True)
-        container[f"{name}_unweighted"] = _onebin_hist(name, mask, use_weights=False)
-
-    # --- Top-level: no_cuts
-    n_events = len(w)
-    mask_all = np.ones(n_events, dtype=bool)
-    _store_both(output["cutflow"], "no_cuts", mask_all)
 
     # --- Define cumulative chains per flavor
     chains = {
@@ -239,22 +225,19 @@ def fill_cutflows(output, selections, weights):
         ],
     }
 
-    # --- Per-flavor: cumulative 1-bin counters + PackedSelection.cutflow histograms
+    # --- Per-flavor: multi-bin onecut / cumulative histograms
     for flavor, steps in chains.items():
         output["cutflow"].setdefault(flavor, {})
         bucket = output["cutflow"][flavor]
 
-        # Step-by-step cumulative 1-bin histograms (for make_cutflow_table.py).
-        for i in range(len(steps)):
-            cumu = selections.all(*steps[: i + 1])
-            _store_both(bucket, steps[i], cumu)
+        # Cut names for axis labels: "no_cuts" + the selection step names
+        cut_names = ["no_cuts"] + list(steps)
 
-        # Multi-bin onecut / cumulative histograms (for closure studies).
         cf = selections.cutflow(*steps, weights=weights)
-        h_onecut, h_cum, _labels = cf.yieldhist(weighted=True)
-        bucket["onecut"] = h_onecut
-        bucket["cumulative"] = h_cum
+        h_onecut_raw, h_cum_raw, _labels = cf.yieldhist(weighted=True)
+        bucket["onecut"] = _relabel_cutflow(h_onecut_raw, cut_names)
+        bucket["cumulative"] = _relabel_cutflow(h_cum_raw, cut_names)
 
         h_onecut_unw, h_cum_unw, _labels = cf.yieldhist(weighted=False)
-        bucket["onecut_unweighted"] = h_onecut_unw
-        bucket["cumulative_unweighted"] = h_cum_unw
+        bucket["onecut_unweighted"] = _relabel_cutflow(h_onecut_unw, cut_names)
+        bucket["cumulative_unweighted"] = _relabel_cutflow(h_cum_unw, cut_names)

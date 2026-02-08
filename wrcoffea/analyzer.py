@@ -751,11 +751,32 @@ class WrAnalysis(processor.ProcessorABC):
                         weightUp=ones * (1.0 + float(delta)),
                         weightDown=ones * (1.0 - float(delta)),
                     )
-                    syst_weights = {
-                        "Nominal": weights.weight(),
-                        "LumiUp": weights.weight(modifier="lumiUp"),
-                        "LumiDown": weights.weight(modifier="lumiDown"),
-                    }
+                    syst_weights["Nominal"] = weights.weight()
+                    syst_weights["LumiUp"] = weights.weight(modifier="lumiUp")
+                    syst_weights["LumiDown"] = weights.weight(modifier="lumiDown")
+
+            # Optional pileup uncertainty.
+            if "pileup" in self._enabled_systs:
+                era_key = metadata.get("era")
+                if era_key in PILEUP_JSONS:
+                    syst_weights["PileupUp"] = weights.weight(modifier="pileupUp")
+                    syst_weights["PileupDown"] = weights.weight(modifier="pileupDown")
+
+            # Optional scale-factor uncertainties (muon + electron SFs).
+            if "sf" in self._enabled_systs:
+                era_key = metadata.get("era")
+                if tight_muons is not None and era_key in MUON_JSONS:
+                    for comp in ["reco", "id", "iso"]:
+                        camel = f"Muon{comp.capitalize()}Sf"
+                        syst_weights[f"{camel}Up"] = weights.weight(modifier=f"muon_{comp}_sfUp")
+                        syst_weights[f"{camel}Down"] = weights.weight(modifier=f"muon_{comp}_sfDown")
+                    syst_weights["MuonTrigSfUp"] = weights.weight(modifier="muon_trig_sfUp")
+                    syst_weights["MuonTrigSfDown"] = weights.weight(modifier="muon_trig_sfDown")
+                if tight_electrons is not None and era_key in ELECTRON_JSONS:
+                    for comp in ["reco", "id", "trig"]:
+                        camel = f"Electron{comp.capitalize()}Sf"
+                        syst_weights[f"{camel}Up"] = weights.weight(modifier=f"electron_{comp}_sfUp")
+                        syst_weights[f"{camel}Down"] = weights.weight(modifier=f"electron_{comp}_sfDown")
         
         else:  # is_data
             weights.add("data", np.ones(n, dtype=np.float32))

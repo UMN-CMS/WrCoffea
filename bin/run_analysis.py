@@ -192,7 +192,7 @@ if __name__ == "__main__":
     optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
     optional.add_argument("--maxchunks", type=int, default=None, help="Max chunks per dataset file (default: all). Use 1 for quick testing.")
     optional.add_argument("--maxfiles", type=int, default=None, help="Max files per dataset (default: all). Use 1 for quick testing.")
-    optional.add_argument("--systs", nargs="*", default=[], choices=["lumi"], help="Enable systematic histogram variations. Currently supported: lumi.")
+    optional.add_argument("--systs", nargs="*", default=[], choices=["lumi", "pileup", "sf"], help="Enable systematic histogram variations. Supported: lumi, pileup, sf (muon+electron scale factors).")
     optional.add_argument("--region", type=str, default="both", choices=["resolved", "boosted", "both"], help="Analysis region to run: resolved, boosted, or both (default: both).")
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")

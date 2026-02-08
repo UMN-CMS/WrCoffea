@@ -10,6 +10,7 @@ This repository provides the main analysis framework for processing WR→Nℓ→
   - [Signal](#signal) – Process signal samples
   - [Output Locations](#output-locations) – Where histograms are saved
   - [Region Selection](#region-selection) – Run resolved/boosted separately
+  - [Systematics](#systematics) – Produce systematic-varied histograms
 - [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
 - [Command Reference](#command-reference) – Complete flag reference and examples
 - [Repository Structure](#-repository-structure) – Overview of how the codebase is organized
@@ -139,6 +140,43 @@ This is useful for:
 
 ---
 
+### Systematics
+
+Use `--systs` to produce systematic-varied histograms alongside the nominal. **Systematics are only applied to MC samples** (backgrounds and signal); data samples always produce nominal-only histograms. Multiple options can be combined:
+
+```bash
+# MC samples: systematics are applied
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --systs lumi pileup sf
+
+# Data samples: --systs is ignored (data has no systematics)
+python3 bin/run_analysis.py RunIII2024Summer24 EGamma --systs lumi pileup sf  # no effect
+```
+
+| Option | Variations produced | Description |
+|--------|-------------------|-------------|
+| `lumi` | LumiUp, LumiDown | Luminosity uncertainty (flat ±1.4% for Run3, ±2.5% for UL18) |
+| `pileup` | PileupUp, PileupDown | Pileup reweighting up/down from correctionlib |
+| `sf` | MuonRecoSfUp/Down, MuonIdSfUp/Down, MuonIsoSfUp/Down, MuonTrigSfUp/Down, ElectronRecoSfUp/Down, ElectronIdSfUp/Down, ElectronTrigSfUp/Down | Lepton scale factor uncertainties (7 independent sources) |
+
+Each enabled variation produces a separate histogram in the output ROOT file under `syst_<name>_<region>/` directories. The plotter reads these automatically to build the systematic uncertainty band.
+
+Without `--systs`, only nominal histograms are produced and the plots show MC statistical uncertainty only.
+
+**Using analyze_all.sh with systematics:**
+When passing `--systs` to `analyze_all.sh`, systematics are automatically filtered:
+- Data mode: `--systs` is removed (data doesn't need systematics)
+- Background mode: `--systs` is applied to MC backgrounds
+- Signal mode: `--systs` is applied to signal MC
+- All mode: `--systs` filtered for data, applied to backgrounds and signal
+
+```bash
+# Systematics applied only to backgrounds and signal, not data
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
+```
+
+---
+
 ### Running on Condor
 
 To scale out processing across many workers at FNAL LPC, use the `--condor` flag. This requires the [lpcjobqueue](https://github.com/CoffeaTeam/lpcjobqueue) Apptainer environment.
@@ -178,6 +216,13 @@ bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
 bash bin/analyze_all.sh all RunIII2024Summer24 --condor
 ```
 
+**Default `analyze_all.sh` Condor configuration:**
+- **Data**: 400 workers, 50k events/chunk (optimized for memory)
+- **Background**: 400 workers, 250k events/chunk (default)
+- **Signal**: 10 workers/mass point, 50k events/chunk (conservative)
+
+These defaults can be overridden by passing `--max-workers` and `--chunksize` as extra arguments.
+
 **Tip: Free your shell with tmux**
 
 Condor jobs can run for a long time. Use `tmux` to keep your session alive after disconnecting from the LPC node. Note which node you are on (`hostname`), since tmux sessions are local to that node — you must SSH back to the same node to reattach.
@@ -191,7 +236,7 @@ tmux new -s analysis
 
 # Enter the Apptainer shell and run your jobs as usual
 ./shell coffeateam/coffea-dask-almalinux8:latest
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor --unskimmed --chunksize 250000 --max-workers 400 --dir unskimmed_hists
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor
 ```
 
 You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later, SSH to the **same node**:
@@ -246,10 +291,10 @@ A small percentage of workers failing with "Nanny failed to start" is normal —
 | `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
 | `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
-| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 50) |
-| `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000) |
+| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 50, analyze_all.sh: 400 for data/bkg, 10 for signal) |
+| `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000, analyze_all.sh: 50000 for data/signal) |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
-| `--systs` | `lumi` | Enable systematic variations (currently: lumi) |
+| `--systs` | `lumi` `pileup` `sf` | Enable systematic variations (see [Systematics](#systematics)) |
 | `--list-eras` | | Print available eras and exit |
 | `--list-samples` | | Print available samples and exit |
 | `--list-masses` | | Print available signal mass points and exit |
@@ -273,8 +318,11 @@ python3 bin/run_analysis.py Run3Summer22EE DYJets --dir my_study --name test
 # Debug mode (no histogram output)
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --debug
 
-# Process with systematics
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi
+# Process with systematics (all supported)
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
+
+# Only pileup uncertainty
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs pileup
 
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only
@@ -293,7 +341,13 @@ bash bin/analyze_all.sh bkg RunIII2024Summer24 --dir my_study --name test
 
 # Run on Condor (must be inside Apptainer shell)
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 50
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 400
+
+# Run all samples on Condor (uses optimized worker/chunksize defaults)
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor
+
+# Run with systematics (applied to MC only, filtered for data)
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
 ```
 
 ---
