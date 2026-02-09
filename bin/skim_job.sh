@@ -25,7 +25,7 @@ export PATH="$(pwd)/.env/bin:$PATH"
 export PYTHONPATH="$(pwd):$PYTHONPATH"
 
 # Run the skimmer for this single file
-python3 bin/skim.py run "$DAS_PATH" --start "$FILE_NUM" --local
+python3 bin/skim.py run "$DAS_PATH" --start "$FILE_NUM" --end "$FILE_NUM" --local
 
 # Tar the output for Condor transfer
 cd data/skims
