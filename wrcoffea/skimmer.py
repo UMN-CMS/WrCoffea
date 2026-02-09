@@ -146,6 +146,8 @@ def read_runs_tree(src_path: str) -> dict | None:
             runs = fin["Runs"].arrays(library="np")
             collapsed: dict = {}
             for branch, arr in runs.items():
+                if arr.dtype.kind == "O":
+                    continue  # skip object-dtype branches (strings, ragged) — not writable
                 if any(s in branch for s in SUMMED_RUNS_BRANCHES):
                     collapsed[branch] = np.array([arr.sum()])
                 else:

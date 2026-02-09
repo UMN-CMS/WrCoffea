@@ -1,0 +1,181 @@
+# Skimming
+
+The skimmer applies a loose event preselection (looser than the analysis cuts) to NanoAOD files, reducing file sizes for faster analysis iteration. The core logic lives in `wrcoffea/skimmer.py` (importable/testable), with a single CLI entry point at `bin/skim.py` using subcommands. Files are resolved directly from DAS via `dasgoclient` — no pre-built filesets required.
+
+## Skim Selection
+
+The skim keeps events passing a loose lepton + jet preselection. These cuts are intentionally wider than the analysis cuts so the skims remain usable if analysis thresholds change.
+
+| Cut | Value |
+|-----|-------|
+| Lepton pT min | 45 GeV |
+| Lepton eta max | 2.5 |
+| Lead lepton pT min | 52 GeV |
+| Sublead lepton pT min | 45 GeV |
+| AK4 jet pT min | 32 GeV |
+| AK4 jet eta max | 2.5 |
+| AK8 jet pT min | 180 GeV |
+| AK8 jet eta max | 2.5 |
+
+**Selection logic:** (>= 2 leptons passing pT/eta, lead > 52, sublead > 45) AND (>= 2 AK4 jets OR >= 1 AK8 jet)
+
+To print these from the command line:
+```bash
+python3 bin/skim.py --cuts
+```
+
+## Quick Start
+
+### Skim a single file locally
+
+```bash
+python3 bin/skim.py run /TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-.../NANOAODSIM --start 1 --local
+```
+
+### Skim all files via Condor
+
+```bash
+python3 bin/skim.py run /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM --all
+```
+
+Without `--local`, the `run` subcommand automatically generates and submits HTCondor jobs. Use `--dry-run` to generate the job files without submitting.
+
+### Check for failures
+
+```bash
+python3 bin/skim.py check /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM
+```
+
+### Merge outputs
+
+```bash
+python3 bin/skim.py merge /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM
+```
+
+## Subcommands
+
+### `run` — Skim NanoAOD files
+
+By default, submits to Condor. Use `--local` for direct execution on the current machine.
+
+| Flag | Description |
+|------|-------------|
+| `das_path` | **Required positional.** DAS dataset path |
+| `--start N` | 1-indexed start file number |
+| `--end N` | 1-indexed end file number (inclusive) |
+| `--all` | Process all files in the dataset |
+| `--local` | Run locally instead of submitting to Condor |
+| `--dry-run` | Generate Condor job files without submitting (no effect with `--local`) |
+
+**Examples:**
+```bash
+# Skim file 1 locally
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --local
+
+# Skim files 1-10 locally
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 10 --local
+
+# Submit all files to Condor
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --all
+
+# Submit a file range to Condor
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 100
+
+# Dry run (generate JDL + arguments without submitting)
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --all --dry-run
+```
+
+### `submit` — Advanced Condor submission
+
+Like `run --all` but submits all files without querying a file range.
+
+| Flag | Description |
+|------|-------------|
+| `das_path` | **Required positional.** DAS dataset path |
+| `--dry-run` | Generate files without submitting |
+
+### `check` — Detect missing/failed jobs
+
+Compares the expected number of output tarballs against what was produced. Reports any missing or failed jobs.
+
+| Flag | Description |
+|------|-------------|
+| `das_path` | **Required positional.** DAS dataset path |
+| `--resubmit FILE` | Write a resubmit `arguments.txt` for failed jobs |
+
+**Example:**
+```bash
+# Check completion
+python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM
+
+# Write resubmit file for failed jobs
+python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM --resubmit resubmit_args.txt
+```
+
+### `merge` — Extract, hadd, and validate
+
+Incrementally extracts output tarballs one at a time, groups files by HLT path, and runs `hadd` in batches of ~1M events. Individual skim files are deleted after each successful merge to keep disk usage bounded. After all files are merged, event counts and `genEventSumw` totals are validated.
+
+| Flag | Description |
+|------|-------------|
+| `das_path` | **Required positional.** DAS dataset path |
+| `--max-events N` | Max events per merged file (default: 1,000,000) |
+| `--validate-only` | Only validate existing merged files, don't merge |
+| `--config JSON` | Cross-check merged `genEventSumw` against an analysis config JSON |
+
+**Examples:**
+```bash
+# Full merge pipeline
+python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM
+
+# Merge with config cross-check
+python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM \
+  --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_mc_dy_lo_inc.json
+
+# Validate only (no merging)
+python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM --validate-only
+```
+
+## Output Layout
+
+Output directories are derived automatically from the DAS path. The campaign string is parsed to determine the run period, year, and era, producing a hierarchical layout under `data/skims/`:
+
+```
+data/skims/Run3/2024/RunIII2024Summer24/
+  TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/
+    TTto2L2Nu_..._skim0.tar.gz        # Condor output tarballs (before merge)
+    TTto2L2Nu_..._part1.root           # Merged output files (after merge)
+    TTto2L2Nu_..._part2.root
+    ...
+  jobs/
+    TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/
+      job.jdl                          # Condor job description
+      arguments.txt                    # File numbers + DAS paths
+      skim_job.sh                      # Worker script
+      WrCoffea.tar.gz                  # Repo tarball sent to workers
+  logs/
+    TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/
+      TTto2L2Nu_..._0.out             # Condor stdout
+      TTto2L2Nu_..._0.err             # Condor stderr
+      TTto2L2Nu_..._0.log             # Condor log
+```
+
+This mirrors the directory convention used for configs (`data/configs/Run3/2024/RunIII2024Summer24/`) and other data files. The mapping from DAS campaign to subdirectory is defined in `wrcoffea/das_utils.py:ERA_SUBDIRS`.
+
+## Architecture
+
+- **`wrcoffea/skimmer.py`** — Core skim selection logic (`apply_skim_selection`), streaming I/O with uproot (`_skim_impl`), and the single-file entry point (`skim_single_file`). Uses coffea/dask to compute the selection mask, then uproot for branch-filtered streaming writes.
+- **`wrcoffea/das_utils.py`** — DAS dataset path validation, `dasgoclient` queries, XRootD URL construction with redirector fallback.
+- **`wrcoffea/skim_merge.py`** — Post-skim tarball extraction, HLT-aware grouping, `hadd`, and validation of event counts and Runs tree `genEventSumw`.
+- **`bin/skim.py`** — CLI entry point with `run`, `submit`, `check`, `merge` subcommands. Handles Condor job generation (JDL, arguments, tarball creation).
+- **`bin/skim_job.sh`** — Condor worker script. Extracts the repo tarball, activates the `.env` venv, runs the skimmer on one file, and tars the output for transfer back.
+
+## Condor Job Details
+
+Each skim job processes a single NanoAOD file. The JDL uses:
+- **Container:** `coffeateam/coffea-dask-almalinux8:latest` via Apptainer
+- **Memory:** 4 GB
+- **Input:** Repo tarball (`WrCoffea.tar.gz`, ~24 MB)
+- **Output:** Per-file skim tarball (`<dataset>_skim<N>.tar.gz`)
+
+The worker script (`skim_job.sh`) activates the `.env` Python 3.10 venv that was built inside the coffea container, ensuring package versions match the container runtime.

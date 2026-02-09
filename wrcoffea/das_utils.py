@@ -7,11 +7,22 @@ for file lists, and converting logical file names to XRootD URLs.
 from __future__ import annotations
 
 import logging
+import re
 import shutil
 import subprocess
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+# Map analysis era name → subdirectory under data/skims/ (and data/configs/, etc.)
+ERA_SUBDIRS = {
+    "RunIISummer20UL18": "RunII/2018/RunIISummer20UL18",
+    "Run3Summer22": "Run3/2022/Run3Summer22",
+    "Run3Summer22EE": "Run3/2022/Run3Summer22EE",
+    "Run3Summer23": "Run3/2023/Run3Summer23",
+    "Run3Summer23BPix": "Run3/2023/Run3Summer23BPix",
+    "RunIII2024Summer24": "Run3/2024/RunIII2024Summer24",
+}
 
 REDIRECTOR = "root://cmsxrootd.fnal.gov/"
 DASGOCLIENT_PATH = "/cvmfs/cms.cern.ch/common/dasgoclient"
@@ -51,6 +62,24 @@ def validate_das_path(das_path: str) -> tuple[str, str, str]:
 def primary_dataset_from_das_path(das_path: str) -> str:
     """Extract the primary dataset name from a DAS path."""
     return validate_das_path(das_path)[0]
+
+
+def era_from_campaign(campaign: str) -> str | None:
+    """Extract the analysis era name from a DAS campaign string.
+
+    The campaign looks like ``RunIII2024Summer24NanoAODv15-150X_...``.
+    We strip the ``NanoAOD...`` suffix to get the era prefix, then match
+    against known eras in :data:`ERA_SUBDIRS`.
+
+    Returns ``None`` if no known era matches.
+    """
+    m = re.match(r"^(.+?)NanoAOD", campaign)
+    if not m:
+        return None
+    prefix = m.group(1)
+    if prefix in ERA_SUBDIRS:
+        return prefix
+    return None
 
 
 def check_dasgoclient() -> str:
@@ -146,7 +175,14 @@ def das_files_to_urls(lfns: list[str]) -> list[str]:
 def infer_output_dir(das_path: str) -> Path:
     """Derive default output directory from a DAS path.
 
-    Returns ``data/skims/<primary_dataset>/``.
+    Returns ``data/skims/<run>/<year>/<era>/<primary_dataset>/``
+    (e.g. ``data/skims/Run3/2024/RunIII2024Summer24/TTto2L2Nu_.../``).
+
+    Falls back to ``data/skims/<primary_dataset>/`` if the campaign
+    does not match any known era.
     """
-    primary_ds = primary_dataset_from_das_path(das_path)
+    primary_ds, campaign, _ = validate_das_path(das_path)
+    era = era_from_campaign(campaign)
+    if era is not None:
+        return Path("data/skims") / ERA_SUBDIRS[era] / primary_ds
     return Path("data/skims") / primary_ds

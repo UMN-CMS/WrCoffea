@@ -60,11 +60,35 @@ def extract_tarballs(directory: str | Path, dataset_name: str) -> int:
     for tb in tarballs:
         logger.info("Extracting %s", tb.name)
         with tarfile.open(tb, "r:gz") as tf:
-            tf.extractall(path=directory)
+            for member in tf.getmembers():
+                # Strip leading directory so files land directly in *directory*
+                member.name = Path(member.name).name
+                if member.name and not member.isdir():
+                    tf.extract(member, path=directory)
         tb.unlink()
 
     logger.info("Extracted %d tarballs", len(tarballs))
     return len(tarballs)
+
+
+def extract_single_tarball(tarball: Path, directory: Path) -> list[str]:
+    """Extract one tarball into *directory*, delete the tarball.
+
+    Returns a list of paths to extracted ROOT files.
+    """
+    directory = Path(directory)
+    extracted = []
+    logger.info("Extracting %s", tarball.name)
+    with tarfile.open(tarball, "r:gz") as tf:
+        for member in tf.getmembers():
+            member.name = Path(member.name).name
+            if member.name and not member.isdir():
+                tf.extract(member, path=directory)
+                fpath = directory / member.name
+                if fpath.suffix == ".root":
+                    extracted.append(str(fpath))
+    tarball.unlink()
+    return extracted
 
 
 # ---------------------------------------------------------------------------
@@ -103,11 +127,19 @@ def read_runs_sumw(filepath: str) -> float:
             if "Runs" not in f:
                 return 0.0
             runs = f["Runs"]
-            # Try genEventSumw_ first (uproot naming), then genEventSumw
+            keys = runs.keys()
             for branch_name in ("genEventSumw_", "genEventSumw"):
-                if branch_name in runs.keys():
+                if branch_name not in keys:
+                    continue
+                try:
                     arr = runs[branch_name].array(library="np")
                     return float(arr.sum())
+                except Exception:
+                    # Variable-length branches can fail with library="np";
+                    # fall back to awkward and flatten.
+                    import awkward as ak
+                    arr = runs[branch_name].array()
+                    return float(ak.sum(ak.flatten(arr, axis=None)))
         return 0.0
     except Exception as e:
         logger.warning("Failed to read Runs sumw from %s: %s", filepath, e)
@@ -138,7 +170,10 @@ def group_by_hlt(
     dict mapping HLT-signature-tuple -> list of (filepath, n_events).
     """
     groups: dict[tuple[str, ...], list[tuple[str, int]]] = defaultdict(list)
-    for fpath in root_files:
+    total = len(root_files)
+    for i, fpath in enumerate(root_files):
+        if (i + 1) % 50 == 0 or i == 0 or (i + 1) == total:
+            logger.info("HLT grouping: %d/%d files", i + 1, total)
         try:
             sig = get_hlt_signature(fpath, tree_name)
             nev = count_events(fpath, tree_name)
@@ -317,6 +352,211 @@ def merge_dataset(
     return MergeResult(
         dataset=dataset_name,
         input_files=len(input_files),
+        output_files=len(output_paths),
+        total_events_in=total_events_in,
+        total_events_out=total_events_out,
+        total_sumw_in=total_sumw_in,
+        total_sumw_out=total_sumw_out,
+        events_match=events_match,
+        sumw_match=sumw_match,
+        output_paths=output_paths,
+    )
+
+
+def _flush_merge_batch(
+    batch: list[tuple[str, int]],
+    dataset_name: str,
+    output_dir: Path,
+    part: int,
+    hlt_aware: bool,
+    output_paths: list[str],
+) -> int:
+    """Merge a batch of skim files via hadd, delete originals, return next part number.
+
+    If any hadd fails, original skim files are preserved for retry.
+    """
+    if not batch:
+        return part
+
+    batch_files = [f for f, _ in batch]
+
+    if hlt_aware:
+        groups = group_by_hlt(batch_files)
+    else:
+        groups = {(): list(batch)}
+
+    all_ok = True
+    for sig, members in groups.items():
+        member_files = [f for f, _ in members]
+        outpath = str(output_dir / f"{dataset_name}_part{part}.root")
+        if merge_files(member_files, outpath):
+            output_paths.append(outpath)
+        else:
+            all_ok = False
+        part += 1
+
+    if all_ok:
+        for f in batch_files:
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+        logger.info("Cleaned up %d skim files", len(batch_files))
+    else:
+        logger.error(
+            "Some hadd operations failed — keeping %d skim files for retry",
+            len(batch_files),
+        )
+
+    return part
+
+
+def merge_dataset_incremental(
+    input_dir: str | Path,
+    dataset_name: str,
+    *,
+    max_events: int = 1_000_000,
+    hlt_aware: bool = True,
+    output_dir: str | Path | None = None,
+    file_pattern: str = "*_skim.root",
+) -> MergeResult:
+    """Incremental merge pipeline: extract tarballs one at a time, hadd in batches.
+
+    Instead of extracting all tarballs up front, this function extracts
+    them one by one, accumulating skimmed ROOT files until *max_events*
+    is reached.  At that point the batch is hadded into a single merged
+    file, the individual skims are deleted, and extraction continues.
+    This keeps disk usage bounded.
+
+    Any pre-existing ROOT files matching *file_pattern* (e.g. from a
+    previous interrupted run) are included in the first batch.
+
+    Returns a MergeResult summarizing the operation.
+    """
+    input_dir = Path(input_dir)
+    if output_dir is None:
+        output_dir = input_dir
+    else:
+        output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    tarball_pattern = f"{dataset_name}_*.tar.gz"
+    tarballs = sorted(input_dir.glob(tarball_pattern))
+
+    # Seed batch with any pre-existing skim files (e.g. from an interrupted run)
+    existing_skims = sorted(str(p) for p in input_dir.glob(file_pattern))
+
+    if not tarballs and not existing_skims:
+        logger.warning(
+            "No tarballs matching '%s' and no files matching '%s' in %s",
+            tarball_pattern, file_pattern, input_dir,
+        )
+        return MergeResult(
+            dataset=dataset_name, input_files=0, output_files=0,
+            total_events_in=0, total_events_out=0,
+            total_sumw_in=0.0, total_sumw_out=0.0,
+            events_match=True, sumw_match=True,
+        )
+
+    logger.info(
+        "Found %d tarballs and %d pre-existing skim files",
+        len(tarballs), len(existing_skims),
+    )
+
+    total_events_in = 0
+    total_sumw_in = 0.0
+    total_input_files = 0
+    output_paths: list[str] = []
+    part = 1
+
+    # Batch state
+    batch: list[tuple[str, int]] = []
+    batch_events = 0
+
+    def _add_file(fpath: str):
+        nonlocal total_events_in, total_sumw_in, total_input_files
+        nonlocal batch_events
+        nev = count_events(fpath)
+        sw = read_runs_sumw(fpath)
+        total_events_in += nev
+        total_sumw_in += sw
+        total_input_files += 1
+        batch.append((fpath, nev))
+        batch_events += nev
+
+    def _maybe_flush():
+        nonlocal part, batch, batch_events
+        if batch_events >= max_events:
+            logger.info(
+                "Batch reached %d events (>= %d) — merging %d files",
+                batch_events, max_events, len(batch),
+            )
+            part = _flush_merge_batch(
+                batch, dataset_name, output_dir, part, hlt_aware, output_paths,
+            )
+            batch = []
+            batch_events = 0
+
+    # 1. Seed with pre-existing skim files
+    for fpath in existing_skims:
+        _add_file(fpath)
+    _maybe_flush()
+
+    # 2. Extract tarballs one at a time
+    for i, tb in enumerate(tarballs):
+        extracted = extract_single_tarball(tb, input_dir)
+        for fpath in extracted:
+            _add_file(fpath)
+        _maybe_flush()
+
+        if (i + 1) % 20 == 0:
+            logger.info("Processed %d/%d tarballs", i + 1, len(tarballs))
+
+    # 3. Flush remaining
+    if batch:
+        logger.info(
+            "Flushing final batch: %d events in %d files",
+            batch_events, len(batch),
+        )
+        part = _flush_merge_batch(
+            batch, dataset_name, output_dir, part, hlt_aware, output_paths,
+        )
+
+    # 4. Validate
+    total_events_out = 0
+    total_sumw_out = 0.0
+    for op in output_paths:
+        total_events_out += count_events(op)
+        total_sumw_out += read_runs_sumw(op)
+
+    events_match = total_events_in == total_events_out
+    sumw_match = (
+        abs(total_sumw_in - total_sumw_out) < 1.0
+        if total_sumw_in > 0
+        else total_sumw_out == 0.0
+    )
+
+    if not events_match:
+        logger.error(
+            "Event count mismatch! in=%d out=%d (diff=%d)",
+            total_events_in, total_events_out,
+            total_events_out - total_events_in,
+        )
+    if not sumw_match:
+        logger.error(
+            "Runs sumw mismatch! in=%.2f out=%.2f (ratio=%.4f)",
+            total_sumw_in, total_sumw_out,
+            total_sumw_out / total_sumw_in if total_sumw_in else float("inf"),
+        )
+
+    logger.info(
+        "Merge complete: %d input files -> %d output files, %d events",
+        total_input_files, len(output_paths), total_events_out,
+    )
+
+    return MergeResult(
+        dataset=dataset_name,
+        input_files=total_input_files,
         output_files=len(output_paths),
         total_events_in=total_events_in,
         total_events_out=total_events_out,

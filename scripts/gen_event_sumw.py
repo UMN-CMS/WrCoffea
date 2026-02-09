@@ -27,15 +27,16 @@ Requirements:
   - python: uproot, numpy
 
 Examples:
-  python3 check_or_update_genEventSumw.py -i dy.json -o dy_checked.json
-  python3 check_or_update_genEventSumw.py -i mc.json -o mc_checked.json --physics-group DYJets
-  python3 check_or_update_genEventSumw.py -i mc.json -o mc_checked.json --dry-run --verbose
+  python3 gen_event_sumw.py -i dy.json -o dy_checked.json
+  python3 gen_event_sumw.py -i mc.json -o mc_checked.json --physics-group DYJets
+  python3 gen_event_sumw.py -i mc.json -o mc_checked.json --dry-run --verbose
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import logging
 import math
 import shutil
 import subprocess
@@ -47,31 +48,21 @@ import numpy as np
 import uproot
 
 
+logger = logging.getLogger(__name__)
+
 FNAL_REDIRECTOR = "root://cmsxrootd.fnal.gov//"
-
-
-def die(msg: str, code: int = 1) -> None:
-    print(f"[ERROR] {msg}", file=sys.stderr)
-    sys.exit(code)
-
-
-def warn(msg: str) -> None:
-    print(f"[WARN] {msg}", file=sys.stderr)
-
-
-def info(msg: str) -> None:
-    print(f"[INFO] {msg}", file=sys.stderr)
 
 
 def das_query_lines(query: str) -> List[str]:
     if shutil.which("dasgoclient") is None:
-        die("dasgoclient not found in PATH. Run inside a CMSSW environment (cmsenv).")
+        logger.critical("dasgoclient not found in PATH. Run inside a CMSSW environment (cmsenv).")
+        sys.exit(1)
 
     cmd = ["dasgoclient", "--query", query]
     try:
         out = subprocess.check_output(cmd, text=True, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        warn(f"dasgoclient failed for query: {query}\n{e.output.strip()}")
+        logger.warning("dasgoclient failed for query: %s\n%s", query, e.output.strip())
         return []
     return [ln.strip() for ln in out.splitlines() if ln.strip()]
 
@@ -85,23 +76,20 @@ def open_with_retries(
     timeout: int,
     retries: int,
     sleep_s: float,
-    verbose: bool,
 ) -> Optional[uproot.ReadOnlyDirectory]:
     last_err: Optional[str] = None
     for attempt in range(1, retries + 1):
         try:
-            if verbose:
-                info(f"Opening (attempt {attempt}/{retries}): {url}")
+            logger.debug("Opening (attempt %d/%d): %s", attempt, retries, url)
             return uproot.open(url, timeout=timeout)
         except Exception as e:
             last_err = str(e)
-            if verbose:
-                warn(f"Open failed: {url}\n  {last_err}")
+            logger.debug("Open failed: %s\n  %s", url, last_err)
             if attempt < retries:
                 time.sleep(sleep_s)
 
     if last_err:
-        warn(f"Giving up on: {url}\n  Last error: {last_err}")
+        logger.warning("Giving up on: %s\n  Last error: %s", url, last_err)
     return None
 
 
@@ -110,23 +98,22 @@ def file_genEventSumw(
     timeout: int,
     retries: int,
     sleep_s: float,
-    verbose: bool,
 ) -> float:
-    f = open_with_retries(url, timeout=timeout, retries=retries, sleep_s=sleep_s, verbose=verbose)
+    f = open_with_retries(url, timeout=timeout, retries=retries, sleep_s=sleep_s)
     if f is None:
         return 0.0
     try:
         if "Runs" not in f:
-            warn(f"No 'Runs' tree in file: {url}")
+            logger.warning("No 'Runs' tree in file: %s", url)
             return 0.0
         runs = f["Runs"]
         if "genEventSumw" not in runs.keys():
-            warn(f"No 'genEventSumw' branch in Runs for file: {url}")
+            logger.warning("No 'genEventSumw' branch in Runs for file: %s", url)
             return 0.0
         arr = runs["genEventSumw"].array(library="np")
         return float(np.sum(arr))
     except Exception as e:
-        warn(f"Failed reading genEventSumw from: {url}\n  {e}")
+        logger.warning("Failed reading genEventSumw from: %s\n  %s", url, e)
         return 0.0
     finally:
         try:
@@ -141,7 +128,6 @@ def compute_dataset_genEventSumw(
     retries: int,
     sleep_s: float,
     max_files: int,
-    verbose: bool,
 ) -> Tuple[float, int]:
     """
     Returns (sumw, nfiles_used). If max_files>0, uses only first max_files files.
@@ -156,9 +142,8 @@ def compute_dataset_genEventSumw(
     total = 0.0
     for i, lf in enumerate(files, start=1):
         url = FNAL_REDIRECTOR + lf.lstrip("/")
-        if verbose:
-            info(f"[{i}/{len(files)}] {lf}")
-        total += file_genEventSumw(url, timeout=timeout, retries=retries, sleep_s=sleep_s, verbose=verbose)
+        logger.debug("[%d/%d] %s", i, len(files), lf)
+        total += file_genEventSumw(url, timeout=timeout, retries=retries, sleep_s=sleep_s)
 
     return (total, len(files))
 
@@ -181,7 +166,9 @@ def parse_float(x: Any) -> Optional[float]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(
+        description="Validate/update genEventSumw in config JSONs by summing from DAS files."
+    )
     ap.add_argument("-i", "--input", required=True, help="Input JSON")
     ap.add_argument("-o", "--output", required=True, help="Output JSON (updated if needed)")
     ap.add_argument("--physics-group", default=None,
@@ -193,10 +180,15 @@ def main() -> None:
     ap.add_argument("--rel-tol", type=float, default=1e-6, help="Relative tolerance for comparing sums")
     ap.add_argument("--abs-tol", type=float, default=1e-3, help="Absolute tolerance for comparing sums")
     ap.add_argument("--dry-run", action="store_true", help="Do not write changes; still prints what would happen")
-    ap.add_argument("--verbose", action="store_true", help="Verbose logging")
+    ap.add_argument("--verbose", action="store_true", help="Show DEBUG-level messages (file-by-file progress)")
     ap.add_argument("--strict", action="store_true",
                     help="Fail if DAS has 0 files or computed sum is 0 for any processed entry")
     args = ap.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(levelname)s: %(message)s",
+    )
 
     with open(args.input, "r") as f:
         data: Dict[str, Any] = json.load(f)
@@ -221,12 +213,12 @@ def main() -> None:
 
         ds = payload.get("das_name", top_key)
         if not isinstance(ds, str) or not ds.startswith("/"):
-            warn(f"Skipping (no valid das_name): {top_key}")
+            logger.warning("Skipping (no valid das_name): %s", top_key)
             skipped += 1
             continue
 
         checked += 1
-        info(f"Checking genEventSumw for: {ds}")
+        logger.info("Checking genEventSumw for: %s", ds)
 
         computed, nfiles = compute_dataset_genEventSumw(
             ds,
@@ -234,35 +226,36 @@ def main() -> None:
             retries=args.retries,
             sleep_s=args.sleep,
             max_files=args.max_files,
-            verbose=args.verbose,
         )
 
         if nfiles == 0:
-            warn(f"DAS returned 0 files for: {ds}")
+            logger.warning("DAS returned 0 files for: %s", ds)
             if args.strict:
-                die(f"Strict mode: 0 files for {ds}")
+                logger.critical("Strict mode: 0 files for %s", ds)
+                sys.exit(1)
             continue
 
         if args.strict and computed == 0.0:
-            die(f"Strict mode: computed genEventSumw=0 for {ds} (likely read failures)")
+            logger.critical("Strict mode: computed genEventSumw=0 for %s (likely read failures)", ds)
+            sys.exit(1)
 
         current = parse_float(payload.get("genEventSumw", None))
         if current is None:
-            warn(f"Missing/non-numeric genEventSumw in JSON for {ds} -> setting to computed={computed:.6g}")
+            logger.warning("Missing/non-numeric genEventSumw in JSON for %s -> setting to computed=%.6g", ds, computed)
             if not args.dry_run:
                 payload["genEventSumw"] = computed
             updated += 1
             continue
 
         if nearly_equal(current, computed, rel_tol=args.rel_tol, abs_tol=args.abs_tol):
-            info(f"  OK: JSON={current:.6g}  DAS={computed:.6g}  (nfiles={nfiles})")
+            logger.info("  OK: JSON=%.6g  DAS=%.6g  (nfiles=%d)", current, computed, nfiles)
         else:
-            warn(f"  MISMATCH: JSON={current:.6g}  DAS={computed:.6g}  (nfiles={nfiles}) -> updating")
+            logger.warning("  MISMATCH: JSON=%.6g  DAS=%.6g  (nfiles=%d) -> updating", current, computed, nfiles)
             if not args.dry_run:
                 payload["genEventSumw"] = computed
             updated += 1
 
-    info(f"Done. checked={checked}, updated={updated}, skipped={skipped}")
+    logger.info("Done. checked=%d, updated=%d, skipped=%d", checked, updated, skipped)
 
     if args.dry_run:
         return

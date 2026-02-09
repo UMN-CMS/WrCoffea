@@ -3,14 +3,7 @@
 This repository provides the main analysis framework for processing WR→Nℓ→ℓℓjj events using the Coffea columnar analysis toolkit. It handles background, data, and signal samples to produce histograms for downstream limit-setting and plotting.
 
 ## Table of Contents
-- [Quick Start](#quick-start) – Get started running the analyzer
-  - [Prerequisites](#prerequisites) – Required filesets
-  - [Backgrounds](#backgrounds) – Process background samples
-  - [Data](#data) – Process data samples
-  - [Signal](#signal) – Process signal samples
-  - [Output Locations](#output-locations) – Where histograms are saved
-  - [Region Selection](#region-selection) – Run resolved/boosted separately
-  - [Systematics](#systematics) – Produce systematic-varied histograms
+- [Quick Start](#quick-start) – Run the analyzer
 - [Skimming](#skimming) – Skim NanoAOD files for faster analysis
 - [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
 - [Command Reference](#command-reference) – Complete flag reference and examples
@@ -23,296 +16,48 @@ This repository provides the main analysis framework for processing WR→Nℓ→
 
 ## Quick Start
 
-### Prerequisites
-
-Before running the analyzer, you must create filesets (see [`docs/filesets.md`](docs/filesets.md) for instructions). Check that filesets exist for your era:
-```bash
-ls data/filesets/<era>/
-```
-
-To see available eras:
-```bash
-python3 bin/run_analysis.py --list-eras
-```
-
-To see available samples:
-```bash
-python3 bin/run_analysis.py --list-samples
-```
-
----
-
-### Backgrounds
-
-Run the analyzer on background samples:
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets
-python3 bin/run_analysis.py RunIISummer20UL18 Nonprompt
-python3 bin/run_analysis.py Run3Summer22EE tt_tW
-```
-
-To run over all backgrounds for a given era:
-```bash
-bash bin/analyze_all.sh bkg RunIII2024Summer24
-```
-
----
-
-### Data
-
-Process data samples (EGamma or Muon):
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma
-python3 bin/run_analysis.py RunIISummer20UL18 Muon
-```
-
-To run over both EGamma and Muon:
-```bash
-bash bin/analyze_all.sh data RunIII2024Summer24
-```
-
----
-
-### Signal
-
-Signal samples require the `--mass` flag:
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
-python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3200_N3000
-```
-
-To see available signal mass points:
-```bash
-python3 bin/run_analysis.py --list-masses
-python3 bin/run_analysis.py RunIII2024Summer24 --list-masses
-```
-
-To run over a set of signal mass points:
-```bash
-bash bin/analyze_all.sh signal RunIII2024Summer24
-```
-
----
-
-### Output Locations
-
-By default, ROOT histograms are saved to:
-```
-WR_Plotter/rootfiles/<Run>/<Year>/<Era>/WRAnalyzer_<Sample>.root
-```
-
-Examples:
-```
-WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/WRAnalyzer_DYJets.root
-WR_Plotter/rootfiles/RunII/2018/RunIISummer20UL18/WRAnalyzer_signal_WR4000_N2100.root
-```
-
-Using `--dir` creates a subdirectory:
-```
-WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/my_study/WRAnalyzer_DYJets.root
-```
-
-Using `--name` modifies the filename:
-```
-WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/WRAnalyzer_test_DYJets.root
-```
-
----
-
-### Region Selection
-
-By default, both resolved and boosted histograms are filled. Use `--region` to process only specific regions:
+First, create filesets (see [filesets.md](docs/filesets.md)). Then run the analyzer by specifying an era and sample:
 
 ```bash
-# Only fill resolved histograms (faster)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
-
-# Only fill boosted histograms (faster)
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --region boosted
-
-# Fill both (default behavior)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region both
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # background
+python3 bin/run_analysis.py RunIII2024Summer24 EGamma                          # data
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      # signal
+bash bin/analyze_all.sh all RunIII2024Summer24                                 # everything
 ```
 
-This is useful for:
-- **Performance**: Processing only the region you need reduces runtime
-- **Testing**: Debugging specific region selections independently
-- **Studies**: Focused analysis on resolved or boosted topologies
+Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
 
----
-
-### Systematics
-
-Use `--systs` to produce systematic-varied histograms alongside the nominal. **Systematics are only applied to MC samples** (backgrounds and signal); data samples always produce nominal-only histograms. Multiple options can be combined:
-
-```bash
-# MC samples: systematics are applied
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --systs lumi pileup sf
-
-# Data samples: --systs is ignored (data has no systematics)
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma --systs lumi pileup sf  # no effect
-```
-
-| Option | Variations produced | Description |
-|--------|-------------------|-------------|
-| `lumi` | LumiUp, LumiDown | Luminosity uncertainty (flat ±1.4% for Run3, ±2.5% for UL18) |
-| `pileup` | PileupUp, PileupDown | Pileup reweighting up/down from correctionlib |
-| `sf` | MuonRecoSfUp/Down, MuonIdSfUp/Down, MuonIsoSfUp/Down, MuonTrigSfUp/Down, ElectronRecoSfUp/Down, ElectronIdSfUp/Down, ElectronTrigSfUp/Down | Lepton scale factor uncertainties (7 independent sources) |
-
-Each enabled variation produces a separate histogram in the output ROOT file under `syst_<name>_<region>/` directories. The plotter reads these automatically to build the systematic uncertainty band.
-
-Without `--systs`, only nominal histograms are produced and the plots show MC statistical uncertainty only.
-
-**Using analyze_all.sh with systematics:**
-When passing `--systs` to `analyze_all.sh`, systematics are automatically filtered:
-- Data mode: `--systs` is removed (data doesn't need systematics)
-- Background mode: `--systs` is applied to MC backgrounds
-- Signal mode: `--systs` is applied to signal MC
-- All mode: `--systs` filtered for data, applied to backgrounds and signal
-
-```bash
-# Systematics applied only to backgrounds and signal, not data
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
-```
+See **[Running the Analyzer](docs/run_analysis.md)** for full details: all samples, output customization, region selection, systematics, and batch processing.
 
 ---
 
 ### Skimming
 
-The skimmer applies a loose event preselection (looser than the analysis cuts) to NanoAOD files, reducing file sizes for faster analysis iteration. The core logic lives in `wrcoffea/skimmer.py` (importable/testable), with a single CLI entry point at `bin/skim.py` using subcommands. Files are resolved directly from DAS via `dasgoclient` — no pre-built filesets required.
+The skimmer applies a loose event preselection to NanoAOD files, reducing file sizes for faster analysis iteration. It uses `bin/skim.py` with subcommands for the full workflow: skim locally or on Condor, check for failures, and merge outputs.
 
-**Show skim selection cuts:**
 ```bash
-python3 bin/skim.py --cuts
+python3 bin/skim.py --cuts                                           # show skim cuts
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --local  # skim one file locally
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --all              # submit all to Condor
+python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM                  # check for failures
+python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM                  # extract + hadd + validate
 ```
 
-**Skim a single file (local or Condor single-file mode):**
-```bash
-python3 bin/skim.py run /TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer24NanoAODv15-.../NANOAODSIM --start 1
-```
-
-**Skim all files in a dataset:**
-```bash
-python3 bin/skim.py run /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --all
-```
-
-**Submit skim jobs to Condor:**
-```bash
-python3 bin/skim.py submit /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM
-python3 bin/skim.py submit /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --dry-run
-```
-
-**Check Condor job completion:**
-```bash
-python3 bin/skim.py check /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM
-python3 bin/skim.py check /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --resubmit resubmit_args.txt
-```
-
-**Merge skim outputs (extract tarballs + hadd + validate):**
-```bash
-python3 bin/skim.py merge /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM
-python3 bin/skim.py merge /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --validate-only
-```
-
-Skim outputs are written to `data/skims/<primary_dataset>/`. The merger validates both event counts and Runs `genEventSumw` totals to catch normalization issues.
+See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all subcommand flags, output layout, and architecture.
 
 ---
 
 ### Running on Condor
 
-To scale out processing across many workers at FNAL LPC, use the `--condor` flag. This requires the [lpcjobqueue](https://github.com/CoffeaTeam/lpcjobqueue) Apptainer environment.
-
-**First-time setup** (run once from the repo root):
-```bash
-curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh
-bash bootstrap.sh
-```
-
-**Enter the Apptainer shell** (required before each Condor session):
-```bash
-./shell coffeateam/coffea-dask-almalinux8:latest
-```
-
-On first launch, the `.env` virtual environment is created automatically. Then install the analysis package:
-```bash
-pip install -e .
-```
-
-**Run with Condor:**
-```bash
-python bin/run_analysis.py RunIII2024Summer24 DYJets --condor
-python bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --condor
-```
-
-By default, 50 Condor workers are launched. Use `--max-workers` to change this:
-```bash
-python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
-```
-
-To run all backgrounds, signal points, or everything on Condor:
-```bash
-bash bin/analyze_all.sh data RunIII2024Summer24 --condor
-bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor
-bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor
-```
-
-**Default `analyze_all.sh` Condor configuration:**
-- **Data**: 50 workers, 50k events/chunk (skimmed); 400 workers with `--unskimmed`
-- **Background**: 50 workers, 250k events/chunk (skimmed); 400 workers with `--unskimmed`
-- **Signal**: 10 workers/mass point, 50k events/chunk (conservative)
-
-These defaults can be overridden by passing `--max-workers` and `--chunksize` as extra arguments.
-
-**Tip: Free your shell with tmux**
-
-Condor jobs can run for a long time. Use `tmux` to keep your session alive after disconnecting from the LPC node. Note which node you are on (`hostname`), since tmux sessions are local to that node — you must SSH back to the same node to reattach.
+Scale out processing across many workers at FNAL LPC using HTCondor with the Dask executor. Requires the [lpcjobqueue](https://github.com/CoffeaTeam/lpcjobqueue) Apptainer environment.
 
 ```bash
-# Check and note your hostname (e.g., cmslpc320.fnal.gov)
-hostname
-
-# Start a new named session
-tmux new -s analysis
-
-# Enter the Apptainer shell and run your jobs as usual
-./shell coffeateam/coffea-dask-almalinux8:latest
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor
+./shell coffeateam/coffea-dask-almalinux8:latest                     # enter container
+python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # run with Condor
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor              # run everything
 ```
 
-You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later, SSH to the **same node**:
-```bash
-ssh cmslpc320.fnal.gov   # replace with your node
-tmux attach -t analysis
-```
-
-Other useful tmux commands:
-- `tmux ls` — list active sessions
-- `Ctrl-b` then `d` — detach from current session
-- `tmux kill-session -t analysis` — kill a session
-
-**Condor logs**
-
-Dask worker logs are written to:
-```
-/uscmst1b_scratch/lpc1/3DayLifetime/$USER/dask-logs/
-```
-
-Files in this scratch area are automatically deleted after 3 days. To inspect logs:
-```bash
-# List recent logs
-ls -lt /uscmst1b_scratch/lpc1/3DayLifetime/$USER/dask-logs/ | head -20
-
-# View a specific worker log
-less /uscmst1b_scratch/lpc1/3DayLifetime/$USER/dask-logs/worker-<JOBID>.0.err
-
-# Check Condor job status
-condor_q              # currently queued/running jobs
-condor_history        # recently completed jobs
-```
-
-A small percentage of workers failing with "Nanny failed to start" is normal — Dask redistributes work to healthy workers automatically.
+See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, tmux tips, and log locations.
 
 ---
 
@@ -452,6 +197,8 @@ test/        # Development and validation scripts
 **`docs/`** - Documentation
 - [`run_analysis.md`](docs/run_analysis.md) - Detailed analysis options and workflows
 - [`filesets.md`](docs/filesets.md) - Fileset creation instructions
+- [`skimming.md`](docs/skimming.md) - Skimming pipeline: cuts, subcommands, Condor jobs, output layout
+- [`condor.md`](docs/condor.md) - HTCondor setup, worker defaults, tmux, logs
 - [`run_combine.md`](docs/run_combine.md) - Limit-setting with Combine framework
 
 **`tests/`** - Automated Test Suite
@@ -566,6 +313,8 @@ pip install -e ".[test]"
 
 - **[Running the Analyzer](docs/run_analysis.md)** - Detailed analysis options and workflows
 - **[Creating Filesets](docs/filesets.md)** - Instructions for generating NanoAOD file lists
+- **[Skimming](docs/skimming.md)** - Skimming pipeline: selection cuts, CLI reference, Condor job details
+- **[Running on Condor](docs/condor.md)** - HTCondor setup, worker defaults, tmux tips, log locations
 - **[Expected Limits](docs/run_combine.md)** - Limit-setting with Higgs Combine framework
 - **[WR Plotter](WR_Plotter/README.md)** - Plotting ROOT histograms and making stackplots
 

@@ -129,7 +129,7 @@ def cmd_run(args):
     start_idx = start_1 - 1
     end_idx = end_1 - 1
 
-    outdir = args.outdir or default_outdir
+    outdir = default_outdir
     outdir.mkdir(parents=True, exist_ok=True)
 
     t0 = time.monotonic()
@@ -297,8 +297,8 @@ def cmd_submit(args):
     base_dir.mkdir(parents=True, exist_ok=True)
     tarball = _create_tarball(base_dir)
 
-    job_dir = args.jobdir or (base_dir / "jobs" / primary_ds)
-    log_dir = args.logdir or (base_dir / "logs" / primary_ds)
+    job_dir = base_dir / "jobs" / primary_ds
+    log_dir = base_dir / "logs" / primary_ds
 
     job_dir.mkdir(parents=True, exist_ok=True)
     dest_tb = job_dir / "WrCoffea.tar.gz"
@@ -352,7 +352,7 @@ def cmd_check(args):
     """Detect missing / failed Condor skim jobs."""
     primary_ds, file_urls, default_outdir = _resolve_das(args.das_path)
 
-    skim_dir = args.skim_dir or default_outdir
+    skim_dir = default_outdir
     result = _check_dataset(primary_ds, file_urls, skim_dir)
 
     status = "OK" if not result["missing"] else "INCOMPLETE"
@@ -403,49 +403,60 @@ def _print_merge_result(result):
 
 def cmd_merge(args):
     """Extract tarballs, hadd, and validate merged outputs."""
-    from wrcoffea.skim_merge import extract_tarballs, merge_dataset, validate_merge
+    from wrcoffea.skim_merge import merge_dataset_incremental, validate_merge
 
     # Merge only needs the DAS path for directory derivation — no DAS query
     primary_ds = primary_dataset_from_das_path(args.das_path)
-    default_dir = infer_output_dir(args.das_path)
-    input_dir = args.input_dir or default_dir
+    skim_dir = infer_output_dir(args.das_path)
 
-    if not input_dir.is_dir():
-        logger.error("Input directory not found: %s", input_dir)
+    if not skim_dir.is_dir():
+        logger.error("Skim directory not found: %s", skim_dir)
         raise SystemExit(1)
 
     # Validate-only
     if args.validate_only:
-        merged = sorted(str(p) for p in input_dir.glob(f"{primary_ds}_part*.root"))
+        merged = sorted(str(p) for p in skim_dir.glob(f"{primary_ds}_part*.root"))
         if not merged:
-            logger.error("No merged files found in %s", input_dir)
+            logger.error("No merged files found in %s", skim_dir)
             raise SystemExit(1)
-        result = validate_merge(merged, expected_events=args.expected_events, expected_sumw=args.expected_sumw)
+        result = validate_merge(merged)
         _print_merge_result(result)
         raise SystemExit(0 if result.events_match and result.sumw_match else 1)
 
-    # Extract
-    if not args.no_extract:
-        extract_tarballs(input_dir, primary_ds)
-
-    # Merge
-    output_dir = args.output_dir or input_dir
-    result = merge_dataset(
-        input_dir, primary_ds,
+    # Incremental: extract tarballs one-by-one, hadd in ~max_events batches,
+    # delete skim files as we go to keep disk usage bounded.
+    result = merge_dataset_incremental(
+        skim_dir, primary_ds,
         max_events=args.max_events,
-        hlt_aware=not args.no_hlt_group,
-        output_dir=output_dir,
     )
+
     _print_merge_result(result)
 
     if not result.events_match or not result.sumw_match:
         logger.error("Merge validation FAILED — original files preserved.")
         raise SystemExit(1)
 
-    logger.info("Removing original *_skim.root files...")
-    for fpath in input_dir.glob("*_skim.root"):
-        fpath.unlink()
-    logger.info("Cleanup complete.")
+    # Cross-check genEventSumw against analysis config JSON
+    if args.config:
+        import json
+        with open(args.config) as f:
+            config = json.load(f)
+        entry = config.get(args.das_path)
+        if entry is None:
+            logger.warning("DAS path %s not found in %s — skipping sumw cross-check", args.das_path, args.config)
+        else:
+            expected_sumw = entry.get("genEventSumw")
+            if expected_sumw is not None:
+                diff = abs(result.total_sumw_out - expected_sumw)
+                ratio = result.total_sumw_out / expected_sumw if expected_sumw else float("inf")
+                if diff < 1.0:
+                    logger.info("Config sumw cross-check PASSED (config=%.2f, merged=%.2f)", expected_sumw, result.total_sumw_out)
+                else:
+                    logger.error(
+                        "Config sumw cross-check FAILED! config=%.2f, merged=%.2f (ratio=%.6f)",
+                        expected_sumw, result.total_sumw_out, ratio,
+                    )
+                    raise SystemExit(1)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -470,7 +481,6 @@ def main(argv=None):
     p_run.add_argument("--start", type=int, default=1, help="1-indexed start file (default: 1)")
     p_run.add_argument("--end", type=int, default=None, help="1-indexed end file (inclusive)")
     p_run.add_argument("--all", action="store_true", help="Process all files")
-    p_run.add_argument("--outdir", type=Path, default=None, help="Output directory")
     p_run.add_argument("--local", action="store_true",
                         help="Run locally instead of submitting to Condor")
     p_run.add_argument("--dry-run", action="store_true",
@@ -481,28 +491,21 @@ def main(argv=None):
     p_submit = sub.add_parser("submit", help="Submit Condor skim jobs")
     p_submit.add_argument("das_path", help="DAS dataset path")
     p_submit.add_argument("--dry-run", action="store_true", help="Generate files without submitting")
-    p_submit.add_argument("--jobdir", type=Path, default=None, help="Override job directory")
-    p_submit.add_argument("--logdir", type=Path, default=None, help="Override log directory")
     p_submit.set_defaults(func=cmd_submit)
 
     # --- check ---
     p_check = sub.add_parser("check", help="Check Condor job completion")
     p_check.add_argument("das_path", help="DAS dataset path")
-    p_check.add_argument("--skim-dir", type=Path, default=None, help="Override skim directory")
     p_check.add_argument("--resubmit", type=Path, default=None, metavar="FILE", help="Write resubmit arguments.txt")
     p_check.set_defaults(func=cmd_check)
 
     # --- merge ---
     p_merge = sub.add_parser("merge", help="Extract, hadd, and validate skims")
     p_merge.add_argument("das_path", help="DAS dataset path")
-    p_merge.add_argument("--input-dir", type=Path, default=None, help="Input directory")
-    p_merge.add_argument("--output-dir", type=Path, default=None, help="Output directory")
     p_merge.add_argument("--max-events", type=int, default=1_000_000, help="Max events per merged file")
-    p_merge.add_argument("--no-extract", action="store_true", help="Skip tarball extraction")
-    p_merge.add_argument("--no-hlt-group", action="store_true", help="Disable HLT-aware grouping")
     p_merge.add_argument("--validate-only", action="store_true", help="Only validate, don't merge")
-    p_merge.add_argument("--expected-events", type=int, default=None, help="Expected event count")
-    p_merge.add_argument("--expected-sumw", type=float, default=None, help="Expected genEventSumw")
+    p_merge.add_argument("--config", type=Path, default=None, metavar="JSON",
+                          help="Analysis config JSON to cross-check genEventSumw against")
     p_merge.set_defaults(func=cmd_merge)
 
     args = parser.parse_args(argv)
