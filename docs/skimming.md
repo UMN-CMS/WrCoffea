@@ -86,15 +86,6 @@ python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 100
 python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --dry-run
 ```
 
-### `submit` — Advanced Condor submission
-
-Like `run --all` but submits all files without querying a file range.
-
-| Flag | Description |
-|------|-------------|
-| `das_path` | **Required positional.** DAS dataset path |
-| `--dry-run` | Generate files without submitting |
-
 ### `check` — Detect missing/failed jobs
 
 Compares the expected number of output tarballs against what was produced. Reports any missing or failed jobs.
@@ -168,7 +159,7 @@ This mirrors the directory convention used for configs (`data/configs/Run3/2024/
 - **`wrcoffea/skimmer.py`** — Core skim selection logic (`apply_skim_selection`), streaming I/O with uproot (`_skim_impl`), and the single-file entry point (`skim_single_file`). Uses coffea/dask to compute the selection mask, then uproot for branch-filtered streaming writes.
 - **`wrcoffea/das_utils.py`** — DAS dataset path validation, `dasgoclient` queries, XRootD URL construction with redirector fallback.
 - **`wrcoffea/skim_merge.py`** — Post-skim tarball extraction, HLT-aware grouping, `hadd`, and validation of event counts and Runs tree `genEventSumw`.
-- **`bin/skim.py`** — CLI entry point with `run`, `submit`, `check`, `merge` subcommands. Handles Condor job generation (JDL, arguments, tarball creation).
+- **`bin/skim.py`** — CLI entry point with `run`, `check`, `merge` subcommands. Handles Condor job generation (JDL, arguments, tarball creation).
 - **`bin/skim_job.sh`** — Condor worker script. Extracts the repo tarball, activates the `.env` venv, runs the skimmer on one file, and tars the output for transfer back.
 
 ## Condor Job Details

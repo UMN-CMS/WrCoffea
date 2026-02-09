@@ -160,7 +160,7 @@ test/        # Development and validation scripts
 **`bin/`** - Production Scripts
 - [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script
 - [`analyze_all.sh`](bin/analyze_all.sh) - Batch processing wrapper for multiple samples
-- [`skim.py`](bin/skim.py) - Skimming pipeline (`run`, `submit`, `check`, `merge` subcommands)
+- [`skim.py`](bin/skim.py) - Skimming pipeline (`run`, `check`, `merge` subcommands)
 - [`skim_job.sh`](bin/skim_job.sh) - Condor worker shell script for skimming
 
 **`wrcoffea/`** - Installable Python Package

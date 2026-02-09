@@ -4,7 +4,6 @@
 Subcommands
 -----------
 run       Skim NanoAOD files (Condor by default; --local for direct execution)
-submit    Generate and submit HTCondor skim jobs (advanced: custom dirs)
 check     Detect missing / failed Condor skim jobs
 merge     Extract tarballs, hadd, and validate merged outputs
 
@@ -12,13 +11,10 @@ Examples
 --------
     python bin/skim.py --cuts
 
-    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --all
-    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --start 1
-    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --all --dry-run
-    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --start 1 --local
-
-    python bin/skim.py submit /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM
-    python bin/skim.py submit /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --dry-run
+    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM
+    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --start 1 --end 10
+    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --dry-run
+    python bin/skim.py run   /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM --start 1 --end 1 --local
 
     python bin/skim.py check  /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM
 
@@ -285,37 +281,6 @@ def _submit_run(das_path, primary_ds, file_urls, start, end, dry_run=False):
     logger.info("Done.")
 
 
-def cmd_submit(args):
-    """Generate and submit HTCondor skim jobs."""
-    primary_ds, file_urls, default_outdir = _resolve_das(args.das_path)
-    n_jobs = len(file_urls)
-
-    base_dir = default_outdir.parent  # data/skims/
-    base_dir.mkdir(parents=True, exist_ok=True)
-    tarball = _create_tarball(base_dir)
-
-    job_dir = base_dir / "jobs" / primary_ds
-    log_dir = base_dir / "logs" / primary_ds
-
-    job_dir.mkdir(parents=True, exist_ok=True)
-    dest_tb = job_dir / "WrCoffea.tar.gz"
-    if not dest_tb.exists() or dest_tb.stat().st_size != tarball.stat().st_size:
-        shutil.copy2(tarball, dest_tb)
-
-    jdl_path, _ = _generate_job(primary_ds, args.das_path, n_jobs, job_dir, log_dir, default_outdir)
-
-    if args.dry_run:
-        logger.info("[dry-run] Would submit %d jobs from %s", n_jobs, jdl_path)
-    else:
-        logger.info("Submitting %d jobs for %s...", n_jobs, primary_ds)
-        subprocess.run(["bash", "-c", f"condor_submit {jdl_path.name}"], cwd=str(job_dir), check=True)
-        logger.info("Submitted %s", primary_ds)
-
-    if tarball.exists():
-        tarball.unlink()
-    logger.info("Done.")
-
-
 # ═══════════════════════════════════════════════════════════════════════════
 # check
 # ═══════════════════════════════════════════════════════════════════════════
@@ -482,12 +447,6 @@ def main(argv=None):
     p_run.add_argument("--dry-run", action="store_true",
                         help="Generate Condor files without submitting (no effect with --local)")
     p_run.set_defaults(func=cmd_run)
-
-    # --- submit ---
-    p_submit = sub.add_parser("submit", help="Submit Condor skim jobs")
-    p_submit.add_argument("das_path", help="DAS dataset path")
-    p_submit.add_argument("--dry-run", action="store_true", help="Generate files without submitting")
-    p_submit.set_defaults(func=cmd_submit)
 
     # --- check ---
     p_check = sub.add_parser("check", help="Check Condor job completion")
