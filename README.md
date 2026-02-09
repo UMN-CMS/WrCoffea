@@ -37,8 +37,7 @@ The skimmer applies a loose event preselection to NanoAOD files, reducing file s
 
 ```bash
 python3 bin/skim.py --cuts                                           # show skim cuts
-python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --local  # skim one file locally
-python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --all              # submit all to Condor
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM                    # submit all to Condor
 python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM                  # check for failures
 python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM                  # extract + hadd + validate
 ```

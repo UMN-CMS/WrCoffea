@@ -26,19 +26,19 @@ python3 bin/skim.py --cuts
 
 ## Quick Start
 
-### Skim a single file locally
-
-```bash
-python3 bin/skim.py run /TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-.../NANOAODSIM --start 1 --local
-```
-
 ### Skim all files via Condor
 
 ```bash
-python3 bin/skim.py run /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM --all
+python3 bin/skim.py run /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM
 ```
 
-Without `--local`, the `run` subcommand automatically generates and submits HTCondor jobs. Use `--dry-run` to generate the job files without submitting.
+By default, all files are submitted to HTCondor. Use `--dry-run` to generate the job files without submitting, or `--local` to run directly on the current machine.
+
+### Skim a single file locally
+
+```bash
+python3 bin/skim.py run /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM --start 1 --end 1 --local
+```
 
 ### Check for failures
 
@@ -61,28 +61,29 @@ By default, submits to Condor. Use `--local` for direct execution on the current
 | Flag | Description |
 |------|-------------|
 | `das_path` | **Required positional.** DAS dataset path |
-| `--start N` | 1-indexed start file number |
-| `--end N` | 1-indexed end file number (inclusive) |
-| `--all` | Process all files in the dataset |
+| `--start N` | 1-indexed start file number (default: first) |
+| `--end N` | 1-indexed end file number (default: last) |
 | `--local` | Run locally instead of submitting to Condor |
 | `--dry-run` | Generate Condor job files without submitting (no effect with `--local`) |
 
+By default, all files in the dataset are processed. Use `--start`/`--end` to select a subset.
+
 **Examples:**
 ```bash
+# Submit all files to Condor (default)
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM
+
 # Skim file 1 locally
-python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --local
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 1 --local
 
 # Skim files 1-10 locally
 python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 10 --local
-
-# Submit all files to Condor
-python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --all
 
 # Submit a file range to Condor
 python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 100
 
 # Dry run (generate JDL + arguments without submitting)
-python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --all --dry-run
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --dry-run
 ```
 
 ### `submit` — Advanced Condor submission

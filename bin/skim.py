@@ -108,12 +108,9 @@ def cmd_run(args):
     num_files = len(file_urls)
     logger.info("Dataset '%s': %d files from DAS", primary_ds, num_files)
 
-    # File range (1-indexed)
-    if args.all:
-        start_1, end_1 = 1, num_files
-    else:
-        start_1 = args.start
-        end_1 = args.end if args.end else args.start
+    # File range (1-indexed): default is all files
+    start_1 = args.start if args.start else 1
+    end_1 = args.end if args.end else num_files
 
     if start_1 < 1 or end_1 > num_files:
         logger.error("File range [%d, %d] out of bounds (%d files).", start_1, end_1, num_files)
@@ -478,9 +475,8 @@ def main(argv=None):
     # --- run ---
     p_run = sub.add_parser("run", help="Skim NanoAOD files")
     p_run.add_argument("das_path", help="DAS dataset path (e.g., /TTto2L2Nu_.../Run3Summer24.../NANOAODSIM)")
-    p_run.add_argument("--start", type=int, default=1, help="1-indexed start file (default: 1)")
-    p_run.add_argument("--end", type=int, default=None, help="1-indexed end file (inclusive)")
-    p_run.add_argument("--all", action="store_true", help="Process all files")
+    p_run.add_argument("--start", type=int, default=None, help="1-indexed start file (default: first)")
+    p_run.add_argument("--end", type=int, default=None, help="1-indexed end file (default: last)")
     p_run.add_argument("--local", action="store_true",
                         help="Run locally instead of submitting to Condor")
     p_run.add_argument("--dry-run", action="store_true",
