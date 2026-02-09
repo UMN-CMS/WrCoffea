@@ -11,6 +11,7 @@ This repository provides the main analysis framework for processing WR→Nℓ→
   - [Output Locations](#output-locations) – Where histograms are saved
   - [Region Selection](#region-selection) – Run resolved/boosted separately
   - [Systematics](#systematics) – Produce systematic-varied histograms
+- [Skimming](#skimming) – Skim NanoAOD files for faster analysis
 - [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
 - [Command Reference](#command-reference) – Complete flag reference and examples
 - [Repository Structure](#-repository-structure) – Overview of how the codebase is organized
@@ -174,6 +175,47 @@ When passing `--systs` to `analyze_all.sh`, systematics are automatically filter
 # Systematics applied only to backgrounds and signal, not data
 bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
 ```
+
+---
+
+### Skimming
+
+The skimmer applies a loose event preselection (looser than the analysis cuts) to NanoAOD files, reducing file sizes for faster analysis iteration. The core logic lives in `wrcoffea/skimmer.py` (importable/testable), with a single CLI entry point at `bin/skim.py` using subcommands. Files are resolved directly from DAS via `dasgoclient` — no pre-built filesets required.
+
+**Show skim selection cuts:**
+```bash
+python3 bin/skim.py --cuts
+```
+
+**Skim a single file (local or Condor single-file mode):**
+```bash
+python3 bin/skim.py run /TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer24NanoAODv15-.../NANOAODSIM --start 1
+```
+
+**Skim all files in a dataset:**
+```bash
+python3 bin/skim.py run /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --all
+```
+
+**Submit skim jobs to Condor:**
+```bash
+python3 bin/skim.py submit /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM
+python3 bin/skim.py submit /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --dry-run
+```
+
+**Check Condor job completion:**
+```bash
+python3 bin/skim.py check /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM
+python3 bin/skim.py check /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --resubmit resubmit_args.txt
+```
+
+**Merge skim outputs (extract tarballs + hadd + validate):**
+```bash
+python3 bin/skim.py merge /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM
+python3 bin/skim.py merge /TTto2L2Nu_.../Run3Summer24NanoAODv15-.../NANOAODSIM --validate-only
+```
+
+Skim outputs are written to `data/skims/<primary_dataset>/`. The merger validates both event counts and Runs `genEventSumw` totals to catch normalization issues.
 
 ---
 
@@ -374,7 +416,8 @@ test/        # Development and validation scripts
 **`bin/`** - Production Scripts
 - [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script
 - [`analyze_all.sh`](bin/analyze_all.sh) - Batch processing wrapper for multiple samples
-- Thin wrappers around the core analysis processor
+- [`skim.py`](bin/skim.py) - Skimming pipeline (`run`, `submit`, `check`, `merge` subcommands)
+- [`skim_job.sh`](bin/skim_job.sh) - Condor worker shell script for skimming
 
 **`wrcoffea/`** - Installable Python Package
 - [`analyzer.py`](wrcoffea/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis (object selection, resolved/boosted regions, histogram filling, cutflows)
@@ -386,6 +429,9 @@ test/        # Development and validation scripts
 - [`fileset_utils.py`](wrcoffea/fileset_utils.py) - Fileset path construction, config parsing, JSON writing
 - [`fileset_validation.py`](wrcoffea/fileset_validation.py) - Schema and selection validation for filesets
 - [`save_hists.py`](wrcoffea/save_hists.py) - ROOT histogram serialization
+- [`skimmer.py`](wrcoffea/skimmer.py) - Skim selection, Runs tree handling, single-file skimming
+- [`skim_merge.py`](wrcoffea/skim_merge.py) - Post-skim merging, HLT grouping, hadd, validation
+- [`das_utils.py`](wrcoffea/das_utils.py) - DAS dataset path validation, dasgoclient queries, XRootD URL construction
 
 **`data/`** - Configuration and Metadata
 - `configs/` - Per-era dataset configurations (JSON format, input to fileset scripts)
