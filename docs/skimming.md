@@ -26,6 +26,8 @@ python3 bin/skim.py --cuts
 
 ## Quick Start
 
+All subcommands take a **DAS dataset path** as the first argument — the same `/<primary_dataset>/<campaign>/<datatier>` string you would pass to `dasgoclient`. File lists are resolved directly from DAS, so no pre-built filesets are needed.
+
 ### Skim all files via Condor
 
 ```bash
@@ -106,7 +108,7 @@ python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM --resubmit resubmit_args.txt
 
 ### `merge` — Extract, hadd, and validate
 
-Incrementally extracts output tarballs one at a time, groups files by HLT path, and runs `hadd` in batches of ~1M events. Individual skim files are deleted after each successful merge to keep disk usage bounded. After all files are merged, event counts and `genEventSumw` totals are validated.
+Each Condor skim job produces one small ROOT file per input file. Coffea and XRootD are inefficient when opening many small files, so `merge` combines them into larger files of ~1M events each, which the analyzer can process much more efficiently. Tarballs are extracted incrementally one at a time and `hadd`'d in batches, with individual skim files deleted after each successful merge to keep disk usage bounded. Files are grouped by HLT path to avoid schema mismatches. After all files are merged, event counts and `genEventSumw` totals are validated.
 
 | Flag | Description |
 |------|-------------|
