@@ -17,11 +17,8 @@ else
   PYTHON="$(command -v python)"
 fi
 
-# ERA options available in the script
-ERA_OPTIONS=(
-  RunIISummer20UL18
-  RunIII2024Summer24
-)
+# ERA options derived from the Python config (single source of truth).
+mapfile -t ERA_OPTIONS < <("${PYTHON}" -c "from wrcoffea.era_utils import ERA_MAPPING; print('\n'.join(ERA_MAPPING))")
 
 # Data options
 DATA_OPTIONS=(
@@ -63,19 +60,8 @@ if [ "${valid}" != "true" ]; then
   exit 1
 fi
 
-# Build MASS_OPTIONS dynamically from the repo's canonical CSV file for the era.
-MASS_OPTIONS=()
+# Mass CSV path (only checked when signal mode is actually used).
 MASS_CSV="${REPO_ROOT}/data/signal_points/${SELECTED_ERA}_mass_points.csv"
-if [ -f "${MASS_CSV}" ]; then
-  while IFS= read -r mass; do
-    if [ -n "${mass}" ]; then
-      MASS_OPTIONS+=( "${mass}" )
-    fi
-  done < <(awk -F, 'NR>1{gsub(/^[ \t]+|[ \t]+$/,"",$1); gsub(/^[ \t]+|[ \t]+$/,"",$2); if($1!="" && $2!="") print "WR"$1"_N"$2}' "${MASS_CSV}")
-else
-  echo "Error: Signal mass CSV not found: ${MASS_CSV}"
-  exit 1
-fi
 
 # Now shift off mode & era, EXTRA_ARGS will remain the same
 shift 2
@@ -169,6 +155,10 @@ elif [ "${MODE}" == "all" ]; then
 fi
 
 if [ "${MODE}" == "signal" ]; then
+  if [ ! -f "${MASS_CSV}" ]; then
+    echo "Error: Signal mass CSV not found: ${MASS_CSV}"
+    exit 1
+  fi
   # Default signal behavior: pick ~9 points: WR=2000/4000/6000, and for each WR take
   # N = (min, median, max) from the era's mass-point CSV. If those WR values don't exist
   # for the era, fall back to 9 evenly spaced points from the full list.

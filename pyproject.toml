@@ -16,10 +16,14 @@ dependencies = [
     "dask>=2024.8,<2026",
     "dask-awkward>=2025.5,<2026",
     "uproot>=5.6,<6",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
 test = ["pytest>=7"]
+
+[tool.setuptools.package-data]
+wrcoffea = ["config.yaml"]
 
 [tool.setuptools.packages.find]
 include = ["wrcoffea*"]

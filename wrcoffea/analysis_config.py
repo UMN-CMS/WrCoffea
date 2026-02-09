@@ -1,118 +1,55 @@
 """Lightweight configuration for the Coffea WR analysis.
 
-Keep this module dependency-free so it can be shipped to Dask workers cheaply.
+Loads physics parameters and per-era settings from ``config.yaml`` (shipped
+with the package).  Edit the YAML file to change cuts or add new eras
+without modifying Python code.
+
+Selection name constants (``SEL_*``) remain here as Python constants since
+they are code-level identifiers used for PackedSelection bookkeeping.
 """
 
-# Integrated luminosities (fb^-1)
-LUMIS = {
-    "RunIISummer20UL18": 59.83,
-    "Run3Summer22": 7.9804,
-    "Run3Summer22EE": 26.6717,
-    "Run3Summer23": 17.794,       # placeholder — update when 2023 lumi is finalized
-    "Run3Summer23BPix": 9.451,    # placeholder — update when 2023 lumi is finalized
-    "RunIII2024Summer24": 109.08,
-}
+from pathlib import Path
 
-# Default MC fileset tag per era.  All MC DY filesets contain every
-# physics_group (tt_tW, Nonprompt, Other, …), so this tag only controls
-# which DY variant is used when --dy is not explicitly given.
-DEFAULT_MC_TAG = {
-    "RunIISummer20UL18": "dy_lo_ht",
-    "Run3Summer22": "dy_lo_inc",
-    "Run3Summer22EE": "dy_lo_inc",
-    "Run3Summer23": "dy_lo_inc",
-    "Run3Summer23BPix": "dy_lo_inc",
-    "RunIII2024Summer24": "dy_lo_inc",
-}
+import yaml
 
-# Eras where unskimmed signal filesets are not available (no DAS entries).
-# For these eras, --unskimmed signal falls back to skimmed filesets.
-SKIMMED_ONLY_SIGNAL = {"RunIISummer20UL18"}
+# ---------------------------------------------------------------------------
+# Load YAML config from the package directory.
+# ---------------------------------------------------------------------------
 
-# Golden JSON paths for data lumi masking
-LUMI_JSONS = {
-    "RunIISummer20UL18": "data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
-    "Run3Summer22": "data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt",
-    "Run3Summer22EE": "data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt",
-    "RunIII2024Summer24": "data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.txt",
-}
+_CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
+with open(_CONFIG_PATH, "r", encoding="utf-8") as _f:
+    _cfg = yaml.safe_load(_f)
 
-# JSON POG payloads
-JME_JSONS = {
-    "RunIII2024Summer24": "data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz",
-}
+# ---------------------------------------------------------------------------
+# Expose config sections as module-level constants (preserves existing API).
+# ---------------------------------------------------------------------------
 
-JETVETO_JSONS = {
-    "RunIISummer20UL18": "data/jsonpog/JME/RunII/RunIISummer20UL18/jetvetomaps.json.gz",
-    "RunIII2024Summer24": "data/jsonpog/JME/Run3/RunIII2024Summer24/jetvetomaps.json.gz",
-}
+LUMIS = _cfg["lumis"]
+DEFAULT_MC_TAG = _cfg["default_mc_tag"]
+SKIMMED_ONLY_SIGNAL = set(_cfg["skimmed_only_signal"])
 
-JETVETO_CORRECTION_NAMES = {
-    "RunIISummer20UL18": "Summer19UL18_V1",
-    "RunIII2024Summer24": "Summer24Prompt24_RunBCDEFGHI_V1",
-}
+LUMI_JSONS = _cfg["lumi_jsons"]
+JME_JSONS = _cfg["jme_jsons"]
 
-MUON_JSONS = {
-    "RunIISummer20UL18": "data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz",
-    "RunIII2024Summer24": "data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json",
-}
+JETVETO_JSONS = _cfg["jetveto_jsons"]
+JETVETO_CORRECTION_NAMES = _cfg["jetveto_correction_names"]
 
-PILEUP_JSONS = {
-    "RunIISummer20UL18": "data/jsonpog/LUM/RunII/RunIISummer20UL18/puWeights.json.gz",
-    "RunIII2024Summer24": "data/jsonpog/LUM/Run3/RunIII2024Summer24/puWeights_BCDEFGHI.json.gz",
-}
+MUON_JSONS = _cfg["muon_jsons"]
 
-# Correction name inside each pileup JSON (differs per era)
-PILEUP_CORRECTION_NAMES = {
-    "RunIISummer20UL18": "Collisions18_UltraLegacy_goldenJSON",
-    "RunIII2024Summer24": "Collisions24_BCDEFGHI_goldenJSON",
-}
+PILEUP_JSONS = _cfg["pileup_jsons"]
+PILEUP_CORRECTION_NAMES = _cfg["pileup_correction_names"]
 
-ELECTRON_JSONS = {
-    "RunIISummer20UL18": {
-        "RECO": "data/jsonpog/EGM/RunII/RunIISummer20UL18/electron.json.gz",
-    },
-    "RunIII2024Summer24": {
-        "RECO": "data/jsonpog/EGM/Run3/RunIII2024Summer24/electron.json.gz",
-        "TRIGGER": "data/jsonpog/EGM/Run3/RunIII2024Summer24/electronHlt.json.gz",
-    },
-}
+ELECTRON_JSONS = _cfg["electron_jsons"]
+ELECTRON_SF_ERA_KEYS = _cfg["electron_sf_era_keys"]
+ELECTRON_RECO_CONFIG = _cfg["electron_reco_config"]
 
-# correctionlib era key used inside EGM JSON payloads (differs from analysis era name)
-ELECTRON_SF_ERA_KEYS = {
-    "RunIISummer20UL18": "2018",
-    "RunIII2024Summer24": "2024Prompt",
-}
+LUMI_UNC = _cfg["lumi_unc"]
+CUTS = _cfg["cuts"]
 
-# Per-era electron Reco SF configuration (correction name and WP names differ between eras)
-ELECTRON_RECO_CONFIG = {
-    "RunIISummer20UL18": {
-        "correction": "UL-Electron-ID-SF",
-        "wp_low": "RecoBelow20",
-        "wp_high": "RecoAbove20",
-        "pt_split": 20.0,
-    },
-    "RunIII2024Summer24": {
-        "correction": "Electron-ID-SF",
-        "wp_low": "Reco20to75",
-        "wp_high": "RecoAbove75",
-        "pt_split": 75.0,
-    },
-}
+# ---------------------------------------------------------------------------
+# Selection name constants (code-level identifiers, not user-configurable)
+# ---------------------------------------------------------------------------
 
-# Systematic uncertainties: integrated luminosity fractional uncertainty
-LUMI_UNC = {
-    "RunIISummer20UL18": 0.025,  # 2.5% (UL2018)
-    "Run3Summer22": 0.014,  # 1.4% (2022)
-    "Run3Summer22EE": 0.014,  # 1.4% (2022EE)
-    "Run3Summer23": 0.014,  # placeholder — update when 2023 lumi is finalized
-    "Run3Summer23BPix": 0.014,  # placeholder — update when 2023 lumi is finalized
-    "RunIII2024Summer24": 0.014,  # placeholder until 2024 lumi is finalized
-}
-
-# --- Selection name constants (single source of truth for string keys) ---------
-#
-# Used for PackedSelection.add() names, region definitions, and cutflow bookkeeping.
 SEL_MIN_TWO_AK4_JETS_PTETA = "min_two_ak4_jets_pteta"
 SEL_MIN_TWO_AK4_JETS_ID = "min_two_ak4_jets_id"
 
@@ -155,29 +92,3 @@ SEL_EE_SR = "ee_sr"
 SEL_EMU_CR = "emu_cr"
 SEL_MUE_CR = "mue_cr"
 SEL_JET_VETO_MAP = "jet_veto_map"
-
-# --- Physics thresholds (single source of truth for analysis cuts) -------------
-CUTS = {
-    "lepton_pt_min": 53,
-    "lepton_eta_max": 2.4,
-    "muon_highPtId": 2,
-    "muon_iso_max": 0.1,
-    "ak4_pt_min": 40,
-    "ak4_eta_max": 2.4,
-    "ak8_pt_min": 200,
-    "ak8_eta_max": 2.4,
-    "ak8_msoftdrop_min": 40,
-    "ak8_lsf3_min": 0.75,
-    "lead_lepton_pt_min": 60,
-    "sublead_lepton_pt_min": 53,
-    "mll_dy_low": 60,
-    "mll_dy_high": 150,
-    "mll_sr_min": 200,
-    "mll_sr_high_min": 400,
-    "mlljj_min": 800,
-    "dr_min": 0.4,
-    "dphi_boosted_min": 2.0,
-    "dr_loose_veto": 0.01,
-    "dr_ak8_loose": 0.8,
-    "jet_veto_pt_min": 15,
-}

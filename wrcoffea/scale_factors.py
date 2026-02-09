@@ -24,6 +24,27 @@ _CORRECTIONSET_CACHE = {}
 _WARN_ONCE: set[str] = set()
 
 
+def _unflatten_and_product(flat_nom, flat_up, flat_down, counts):
+    """Unflatten per-object SFs, take product over objects per event.
+
+    Parameters
+    ----------
+    flat_nom, flat_up, flat_down : numpy arrays
+        Flat per-object SF values (nominal / up / down).
+    counts : awkward array
+        Number of objects per event (from ``ak.num``).
+
+    Returns
+    -------
+    (event_nom, event_up, event_down) : tuple of numpy float64 arrays
+        Per-event SF products. Events with no objects get SF = 1.0.
+    """
+    nom = np.asarray(ak.fill_none(ak.prod(ak.unflatten(flat_nom, counts), axis=1), 1.0), dtype=np.float64)
+    up = np.asarray(ak.fill_none(ak.prod(ak.unflatten(flat_up, counts), axis=1), 1.0), dtype=np.float64)
+    down = np.asarray(ak.fill_none(ak.prod(ak.unflatten(flat_down, counts), axis=1), 1.0), dtype=np.float64)
+    return nom, up, down
+
+
 def pileup_weight(events, era):
     """Compute per-event pileup reweighting using correctionlib.
 
@@ -34,6 +55,10 @@ def pileup_weight(events, era):
     ones = np.ones(n_events, dtype=np.float64)
 
     if era not in PILEUP_JSONS:
+        key = f"pileup_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No pileup JSON configured for era '%s'; using weight=1.", era)
         return ones, ones.copy(), ones.copy()
 
     import correctionlib
@@ -66,6 +91,10 @@ def jet_veto_event_mask(events, era):
     n_events = len(events)
 
     if era not in JETVETO_JSONS:
+        key = f"jetveto_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No jet veto map configured for era '%s'; passing all events.", era)
         return np.ones(n_events, dtype=bool)
 
     import correctionlib
@@ -126,6 +155,10 @@ def muon_sf(tight_muons, era):
     identity = (ones, ones.copy(), ones.copy())
 
     if era not in MUON_JSONS:
+        key = f"muon_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No muon SF JSON configured for era '%s'; using SF=1.", era)
         return {"reco": identity, "id": identity, "iso": identity}
 
     ceval = _get_muon_ceval(era)
@@ -147,22 +180,18 @@ def muon_sf(tight_muons, era):
     idiso_eta = np.clip(flat_eta, -2.399, 2.399)
     idiso_pt = np.clip(flat_pt, 50.001, 1e9)
 
-    def _eval_and_unflatten(corr, eta, pt_or_p):
+    def _eval_component(corr, eta, pt_or_p):
         nom = corr.evaluate(eta, pt_or_p, "nominal")
         up = corr.evaluate(eta, pt_or_p, "systup")
         down = corr.evaluate(eta, pt_or_p, "systdown")
-        # Unflatten per-muon SFs and take product over muons per event.
-        ev_nom = np.asarray(ak.fill_none(ak.prod(ak.unflatten(nom, counts), axis=1), 1.0), dtype=np.float64)
-        ev_up = np.asarray(ak.fill_none(ak.prod(ak.unflatten(up, counts), axis=1), 1.0), dtype=np.float64)
-        ev_down = np.asarray(ak.fill_none(ak.prod(ak.unflatten(down, counts), axis=1), 1.0), dtype=np.float64)
-        return ev_nom, ev_up, ev_down
+        return _unflatten_and_product(nom, up, down, counts)
 
     # RECO SF (uses momentum p, not pT)
-    reco = _eval_and_unflatten(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_eta, reco_p)
+    reco = _eval_component(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_eta, reco_p)
     # ID SF
-    id_sf = _eval_and_unflatten(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
+    id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
     # ISO SF
-    iso = _eval_and_unflatten(ceval["NUM_probe_TightRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
+    iso = _eval_component(ceval["NUM_probe_TightRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
 
     return {"reco": reco, "id": id_sf, "iso": iso}
 
@@ -184,6 +213,10 @@ def muon_trigger_sf(tight_muons, era):
     ones = np.ones(n_events, dtype=np.float64)
 
     if era not in MUON_JSONS:
+        key = f"muon_trig_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No muon trigger SF JSON configured for era '%s'; using SF=1.", era)
         return ones, ones.copy(), ones.copy()
 
     ceval = _get_muon_ceval(era)
@@ -204,16 +237,7 @@ def muon_trigger_sf(tight_muons, era):
     sf_up_flat = sf_corr.evaluate(hlt_eta, hlt_pt, "systup")
     sf_down_flat = sf_corr.evaluate(hlt_eta, hlt_pt, "systdown")
 
-    # Unflatten and take product over muons per event.
-    sf_nom_jagged = ak.unflatten(sf_nom_flat, counts)
-    sf_up_jagged = ak.unflatten(sf_up_flat, counts)
-    sf_down_jagged = ak.unflatten(sf_down_flat, counts)
-
-    trig_sf_nom = np.asarray(ak.fill_none(ak.prod(sf_nom_jagged, axis=1), 1.0), dtype=np.float64)
-    trig_sf_up = np.asarray(ak.fill_none(ak.prod(sf_up_jagged, axis=1), 1.0), dtype=np.float64)
-    trig_sf_down = np.asarray(ak.fill_none(ak.prod(sf_down_jagged, axis=1), 1.0), dtype=np.float64)
-
-    return trig_sf_nom, trig_sf_up, trig_sf_down
+    return _unflatten_and_product(sf_nom_flat, sf_up_flat, sf_down_flat, counts)
 
 
 def _get_electron_ceval(era, key):
@@ -245,7 +269,11 @@ def electron_trigger_sf(tight_electrons, era):
     n_events = len(tight_electrons)
     ones = np.ones(n_events, dtype=np.float64)
 
-    if era not in ELECTRON_JSONS or "TRIGGER" not in ELECTRON_JSONS[era]:
+    if era not in ELECTRON_JSONS or "TRIGGER" not in ELECTRON_JSONS.get(era, {}):
+        key = f"electron_trig_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No electron trigger SF JSON configured for era '%s'; using SF=1.", era)
         return ones, ones.copy(), ones.copy()
 
     sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
@@ -334,6 +362,10 @@ def electron_id_sf(tight_electrons, era):
     ones = np.ones(n_events, dtype=np.float64)
 
     if era not in ELECTRON_JSONS:
+        key = f"electron_id_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No electron ID SF JSON configured for era '%s'; using SF=1.", era)
         return ones, ones.copy(), ones.copy()
 
     counts = ak.num(tight_electrons)
@@ -369,16 +401,7 @@ def electron_id_sf(tight_electrons, era):
     sf_up = sf_nom + sf_unc
     sf_down = sf_nom - sf_unc
 
-    # Unflatten and take product over electrons per event.
-    sf_nom_jagged = ak.unflatten(sf_nom, counts)
-    sf_up_jagged = ak.unflatten(sf_up, counts)
-    sf_down_jagged = ak.unflatten(sf_down, counts)
-
-    event_sf_nom = np.asarray(ak.fill_none(ak.prod(sf_nom_jagged, axis=1), 1.0), dtype=np.float64)
-    event_sf_up = np.asarray(ak.fill_none(ak.prod(sf_up_jagged, axis=1), 1.0), dtype=np.float64)
-    event_sf_down = np.asarray(ak.fill_none(ak.prod(sf_down_jagged, axis=1), 1.0), dtype=np.float64)
-
-    return event_sf_nom, event_sf_up, event_sf_down
+    return _unflatten_and_product(sf_nom, sf_up, sf_down, counts)
 
 
 def electron_reco_sf(tight_electrons, era):
@@ -396,6 +419,10 @@ def electron_reco_sf(tight_electrons, era):
     ones = np.ones(n_events, dtype=np.float64)
 
     if era not in ELECTRON_JSONS:
+        key = f"electron_reco_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No electron reco SF JSON configured for era '%s'; using SF=1.", era)
         return ones, ones.copy(), ones.copy()
 
     sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
@@ -460,13 +487,4 @@ def electron_reco_sf(tight_electrons, era):
     sf_up = np.where(is_low_pt, sf_low_up, sf_high_up)
     sf_down = np.where(is_low_pt, sf_low_down, sf_high_down)
 
-    # Unflatten and take product over electrons per event.
-    sf_nom_jagged = ak.unflatten(sf_nom, counts)
-    sf_up_jagged = ak.unflatten(sf_up, counts)
-    sf_down_jagged = ak.unflatten(sf_down, counts)
-
-    event_sf_nom = np.asarray(ak.fill_none(ak.prod(sf_nom_jagged, axis=1), 1.0), dtype=np.float64)
-    event_sf_up = np.asarray(ak.fill_none(ak.prod(sf_up_jagged, axis=1), 1.0), dtype=np.float64)
-    event_sf_down = np.asarray(ak.fill_none(ak.prod(sf_down_jagged, axis=1), 1.0), dtype=np.float64)
-
-    return event_sf_nom, event_sf_up, event_sf_down
+    return _unflatten_and_product(sf_nom, sf_up, sf_down, counts)
