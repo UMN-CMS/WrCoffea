@@ -271,6 +271,11 @@ def merge_files(
                             fout["Events"].extend(chunk_dict)
                         del arrays, chunk_dict
 
+            if first:
+                # No events were written from any input file
+                logger.error("No events found in any input file — aborting %s", Path(output_path).name)
+                return False
+
             # Merge Runs trees: sum genEventSumw/genEventCount, keep first for others
             _merge_runs(input_files, fout)
 
@@ -476,9 +481,9 @@ def _flush_merge_batch(
     hlt_aware: bool,
     output_paths: list[str],
 ) -> int:
-    """Merge a batch of skim files via hadd, delete originals, return next part number.
+    """Merge a batch of skim files, delete originals, return next part number.
 
-    If any hadd fails, original skim files are preserved for retry.
+    If any merge fails, original skim files are preserved for retry.
     """
     if not batch:
         return part
@@ -509,7 +514,7 @@ def _flush_merge_batch(
         logger.info("Cleaned up %d skim files", len(batch_files))
     else:
         logger.error(
-            "Some hadd operations failed — keeping %d skim files for retry",
+            "Some merge operations failed — keeping %d skim files for retry",
             len(batch_files),
         )
 

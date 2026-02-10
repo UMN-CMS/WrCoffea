@@ -5,7 +5,7 @@ Subcommands
 -----------
 run       Skim NanoAOD files (Condor by default; --local for direct execution)
 check     Detect missing / failed Condor skim jobs
-merge     Extract tarballs, hadd, and validate merged outputs
+merge     Extract tarballs, merge, and validate merged outputs
 
 Examples
 --------
@@ -364,7 +364,7 @@ def _print_merge_result(result):
 
 
 def cmd_merge(args):
-    """Extract tarballs, hadd, and validate merged outputs."""
+    """Extract tarballs, merge, and validate merged outputs."""
     from wrcoffea.skim_merge import merge_dataset_incremental, validate_merge
 
     # Merge only needs the DAS path for directory derivation — no DAS query
@@ -385,7 +385,7 @@ def cmd_merge(args):
         _print_merge_result(result)
         raise SystemExit(0 if result.events_match and result.sumw_match else 1)
 
-    # Incremental: extract tarballs one-by-one, hadd in ~max_events batches,
+    # Incremental: extract tarballs one-by-one, merge in ~max_events batches,
     # delete skim files as we go to keep disk usage bounded.
     result = merge_dataset_incremental(
         skim_dir, primary_ds,
@@ -455,7 +455,7 @@ def main(argv=None):
     p_check.set_defaults(func=cmd_check)
 
     # --- merge ---
-    p_merge = sub.add_parser("merge", help="Extract, hadd, and validate skims")
+    p_merge = sub.add_parser("merge", help="Extract, merge, and validate skims")
     p_merge.add_argument("das_path", help="DAS dataset path")
     p_merge.add_argument("--max-events", type=int, default=1_000_000, help="Max events per merged file")
     p_merge.add_argument("--validate-only", action="store_true", help="Only validate, don't merge")

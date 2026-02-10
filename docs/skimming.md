@@ -106,9 +106,9 @@ python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM
 python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM --resubmit resubmit_args.txt
 ```
 
-### `merge` — Extract, hadd, and validate
+### `merge` — Extract, merge, and validate
 
-Each Condor skim job produces one small ROOT file per input file. Coffea and XRootD are inefficient when opening many small files, so `merge` combines them into larger files of ~1M events each, which the analyzer can process much more efficiently. Tarballs are extracted incrementally one at a time and `hadd`'d in batches, with individual skim files deleted after each successful merge to keep disk usage bounded. Files are grouped by HLT path to avoid schema mismatches. After all files are merged, event counts and `genEventSumw` totals are validated.
+Each Condor skim job produces one small ROOT file per input file. Coffea and XRootD are inefficient when opening many small files, so `merge` combines them into larger files of ~1M events each, which the analyzer can process much more efficiently. Tarballs are extracted incrementally one at a time and merged in batches using uproot, with individual skim files deleted after each successful merge to keep disk usage bounded. Files are grouped by HLT path to avoid schema mismatches. After all files are merged, event counts and `genEventSumw` totals are validated.
 
 | Flag | Description |
 |------|-------------|
@@ -129,6 +129,43 @@ python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM \
 # Validate only (no merging)
 python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM --validate-only
 ```
+
+## Uploading to T2 Storage
+
+After merging, copy the merged files to a remote XRootD storage element for long-term storage and shared access.
+
+**1. Check for existing files:**
+```bash
+REMOTE_HOST=cmsxrootd.hep.wisc.edu
+REMOTE_PATH=/store/user/<username>/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8
+
+xrdfs $REMOTE_HOST ls $REMOTE_PATH
+```
+
+**2. Remove old files (if needed):**
+```bash
+for f in $(xrdfs $REMOTE_HOST ls $REMOTE_PATH | grep '\.root$'); do
+  xrdfs $REMOTE_HOST rm "$f"
+done
+```
+
+**3. Upload new files:**
+```bash
+LOCAL_DIR=data/skims/Run3/2024/RunIII2024Summer24/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8
+REMOTE_URL=root://$REMOTE_HOST/$REMOTE_PATH
+
+for f in $LOCAL_DIR/*.root; do
+  echo "Copying $(basename $f) ..."
+  xrdcp "$f" "$REMOTE_URL/$(basename $f)"
+done
+```
+
+**4. Verify:**
+```bash
+xrdfs $REMOTE_HOST ls -l $REMOTE_PATH
+```
+
+The upload is ~3-4 GB per file, so run this in a tmux session. Your grid proxy must have write access to the destination directory.
 
 ## Output Layout
 
@@ -160,7 +197,7 @@ This mirrors the directory convention used for configs (`data/configs/Run3/2024/
 
 - **`wrcoffea/skimmer.py`** — Core skim selection logic (`apply_skim_selection`), streaming I/O with uproot (`_skim_impl`), and the single-file entry point (`skim_single_file`). Uses coffea/dask to compute the selection mask, then uproot for branch-filtered streaming writes.
 - **`wrcoffea/das_utils.py`** — DAS dataset path validation, `dasgoclient` queries, XRootD URL construction with redirector fallback.
-- **`wrcoffea/skim_merge.py`** — Post-skim tarball extraction, HLT-aware grouping, `hadd`, and validation of event counts and Runs tree `genEventSumw`.
+- **`wrcoffea/skim_merge.py`** — Post-skim tarball extraction, HLT-aware grouping, uproot-based merge, and validation of event counts and Runs tree `genEventSumw`.
 - **`bin/skim.py`** — CLI entry point with `run`, `check`, `merge` subcommands. Handles Condor job generation (JDL, arguments, tarball creation).
 - **`bin/skim_job.sh`** — Condor worker script. Extracts the repo tarball, activates the `.env` venv, runs the skimmer on one file, and tars the output for transfer back.
 
