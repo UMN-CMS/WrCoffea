@@ -1,4 +1,4 @@
-"""Post-skim merging: extract tarballs, hadd ROOT files, validate.
+"""Post-skim merging: extract tarballs, merge ROOT files, validate.
 
 Replaces the old hadd_dataset.sh, hadd_dataset2.sh, and the merge logic
 in unzip_files.sh with testable, importable Python.
@@ -6,11 +6,8 @@ in unzip_files.sh with testable, importable Python.
 
 from __future__ import annotations
 
-import glob
 import logging
 import os
-import re
-import subprocess
 import tarfile
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -184,11 +181,47 @@ def group_by_hlt(
 
 
 # ---------------------------------------------------------------------------
-# hadd wrapper
+# Merge via uproot (handles both TTree and RNTuple inputs)
 # ---------------------------------------------------------------------------
 
-# hadd warning that indicates incompatible TTree schemas
-_BAD_WARN_RE = re.compile(r"Warning in <TTree::CopyEntries>.*not present in the import TTree")
+# Branches that should be summed (not copied) when merging the Runs tree.
+_SUMMED_RUNS_BRANCHES = ("genEventSumw", "genEventCount", "LHEWeight")
+
+_CHUNK_SIZE = 100_000  # entries per read chunk during merge
+
+
+def _native_endian(ak_array):
+    """Convert an awkward array's underlying buffers to native byte order.
+
+    RNTuple and older ROOT files may store data in big-endian format,
+    which uproot's TTree writer cannot handle.  This function repacks
+    the array through ``ak.from_buffers`` with native-endian buffers.
+    """
+    import awkward as ak
+    import numpy as np
+
+    form, length, container = ak.to_buffers(ak_array)
+    native_container = {}
+    for key, buf in container.items():
+        if isinstance(buf, np.ndarray) and buf.dtype.byteorder not in ("=", "|", "<"):
+            native_container[key] = buf.astype(buf.dtype.newbyteorder("="))
+        else:
+            native_container[key] = buf
+    return ak.from_buffers(form, length, native_container)
+
+
+def _is_counter_branch(name: str, all_names: set[str]) -> bool:
+    """Return True if *name* looks like a NanoAOD counter (e.g. nMuon, nJet).
+
+    Uproot auto-generates these from jagged arrays, so including them
+    explicitly causes a dtype mismatch during extend().
+    """
+    if not name.startswith("n") or len(name) < 2 or not name[1].isupper():
+        return False
+    # NanoAOD convention: nX is the counter for X_* branches or single X branch.
+    collection = name[1:]
+    return (collection in all_names
+            or any(n.startswith(collection + "_") for n in all_names))
 
 
 def merge_files(
@@ -197,35 +230,107 @@ def merge_files(
     *,
     check_warnings: bool = True,
 ) -> bool:
-    """Run ``hadd -f`` to merge *input_files* into *output_path*.
+    """Merge *input_files* into *output_path* using uproot.
 
-    If *check_warnings* is True, the ``CopyEntries`` warning is treated as
-    fatal and the output file is removed.
+    Reads each input file in chunks and writes a TTree-format output,
+    handling both TTree and RNTuple input files transparently.
 
     Returns True on success, False on failure.
     """
-    cmd = ["hadd", "-f", output_path] + input_files
     logger.info("Merging %d files -> %s", len(input_files), Path(output_path).name)
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        with uproot.recreate(output_path) as fout:
+            first = True
+            for fpath in input_files:
+                with uproot.open(fpath) as fin:
+                    if "Events" not in fin:
+                        logger.warning("No Events tree in %s — skipping", fpath)
+                        continue
+                    tree = fin["Events"]
+                    all_names = set(tree.keys())
+                    # Skip counter branches — uproot auto-generates them
+                    branches = [b for b in tree.keys()
+                                if not _is_counter_branch(b, all_names)]
+                    n_entries = tree.num_entries
+                    for start in range(0, n_entries, _CHUNK_SIZE):
+                        stop = min(start + _CHUNK_SIZE, n_entries)
+                        arrays = tree.arrays(
+                            branches,
+                            entry_start=start,
+                            entry_stop=stop,
+                            library="ak",
+                        )
+                        chunk_dict = {
+                            f: _native_endian(arrays[f])
+                            for f in arrays.fields
+                        }
+                        if first:
+                            fout["Events"] = chunk_dict
+                            first = False
+                        else:
+                            fout["Events"].extend(chunk_dict)
+                        del arrays, chunk_dict
 
-    if result.returncode != 0:
-        logger.error("hadd failed (exit %d):\n%s", result.returncode, result.stderr[-500:])
+            # Merge Runs trees: sum genEventSumw/genEventCount, keep first for others
+            _merge_runs(input_files, fout)
+
+        size_mb = os.path.getsize(output_path) / (1024 * 1024)
+        logger.info("Wrote %s (%.1f MB)", Path(output_path).name, size_mb)
+        return True
+
+    except Exception:
+        logger.exception("Merge failed for %s", Path(output_path).name)
         if os.path.exists(output_path):
             os.remove(output_path)
         return False
 
-    if check_warnings and _BAD_WARN_RE.search(result.stdout + result.stderr):
-        logger.error(
-            "hadd produced a fatal CopyEntries warning — removing %s",
-            output_path,
-        )
-        if os.path.exists(output_path):
-            os.remove(output_path)
-        return False
 
-    size_mb = os.path.getsize(output_path) / (1024 * 1024)
-    logger.info("Wrote %s (%.1f MB)", Path(output_path).name, size_mb)
-    return True
+def _merge_runs(input_files: list[str], fout) -> None:
+    """Merge Runs trees from *input_files*, writing a single collapsed entry to *fout*."""
+    import numpy as np
+
+    summed: dict[str, float] = {}
+    first_values: dict[str, object] = {}
+    skip_branches: set[str] = set()
+
+    for fpath in input_files:
+        try:
+            with uproot.open(fpath) as fin:
+                if "Runs" not in fin:
+                    continue
+                runs_raw = fin["Runs"].arrays(library="np")
+                # RNTuple returns a structured numpy array; TTree returns a dict.
+                if isinstance(runs_raw, np.ndarray) and runs_raw.dtype.names:
+                    runs_dict = {name: runs_raw[name] for name in runs_raw.dtype.names}
+                elif hasattr(runs_raw, "items"):
+                    runs_dict = dict(runs_raw.items())
+                else:
+                    continue
+                for branch, arr in runs_dict.items():
+                    if branch in skip_branches:
+                        continue
+                    if arr.dtype.kind == "O":
+                        skip_branches.add(branch)
+                        continue
+                    if any(s in branch for s in _SUMMED_RUNS_BRANCHES):
+                        summed[branch] = summed.get(branch, 0.0) + float(arr.sum())
+                    elif branch not in first_values:
+                        first_values[branch] = arr[:1] if arr.ndim > 0 else np.array([arr])
+        except Exception as e:
+            logger.warning("Failed to read Runs from %s: %s", fpath, e)
+
+    if not summed and not first_values:
+        return
+
+    collapsed: dict[str, object] = {}
+    for branch, val in first_values.items():
+        if hasattr(val, "dtype") and val.dtype.byteorder not in ("=", "|", "<"):
+            val = val.astype(val.dtype.newbyteorder("="))
+        collapsed[branch] = val
+    for branch, val in summed.items():
+        collapsed[branch] = np.array([val])
+
+    fout["Runs"] = collapsed
 
 
 # ---------------------------------------------------------------------------
