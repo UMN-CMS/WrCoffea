@@ -167,6 +167,13 @@ xrdfs $REMOTE_HOST ls -l $REMOTE_PATH
 
 The upload is ~3-4 GB per file, so run this in a tmux session. Your grid proxy must have write access to the destination directory.
 
+**5. Regenerate the skimmed fileset:**
+```bash
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_mc_dy_lo_inc.json
+```
+
+This queries Wisconsin via `gfal-ls`, rebuilds the file list for all datasets in the config, and writes the output to `data/filesets/Run3/2024/RunIII2024Summer24/skimmed/`.
+
 ## Output Layout
 
 Output directories are derived automatically from the DAS path. The campaign string is parsed to determine the run period, year, and era, producing a hierarchical layout under `data/skims/`:
