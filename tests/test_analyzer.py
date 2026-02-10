@@ -148,7 +148,7 @@ class TestSelectLeptons:
     def test_two_tight_muons(self):
         proc = WrAnalysis(mass_point=None)
         ev = _mock_events(n_muons=2, n_electrons=0)
-        tight, loose, masks = proc.select_leptons(ev)
+        tight, loose, masks, *_ = proc.select_leptons(ev)
         assert ak.num(tight, axis=1).tolist() == [2]
         flavors = tight.flavor[0].tolist()
         assert all(f == "muon" for f in flavors)
@@ -156,7 +156,7 @@ class TestSelectLeptons:
     def test_two_tight_electrons(self):
         proc = WrAnalysis(mass_point=None)
         ev = _mock_events(n_muons=0, n_electrons=2)
-        tight, loose, masks = proc.select_leptons(ev)
+        tight, loose, masks, *_ = proc.select_leptons(ev)
         assert ak.num(tight, axis=1).tolist() == [2]
         flavors = tight.flavor[0].tolist()
         assert all(f == "electron" for f in flavors)
@@ -164,19 +164,19 @@ class TestSelectLeptons:
     def test_low_pt_muons_rejected(self):
         proc = WrAnalysis(mass_point=None)
         ev = _mock_events(n_muons=2, muon_pts=[10.0, 10.0])
-        tight, loose, masks = proc.select_leptons(ev)
+        tight, loose, masks, *_ = proc.select_leptons(ev)
         assert ak.num(tight, axis=1).tolist() == [0]
 
     def test_mixed_flavor(self):
         proc = WrAnalysis(mass_point=None)
         ev = _mock_events(n_muons=1, n_electrons=1)
-        tight, loose, masks = proc.select_leptons(ev)
+        tight, loose, masks, *_ = proc.select_leptons(ev)
         assert ak.num(tight, axis=1).tolist() == [2]
 
     def test_sorted_by_pt(self):
         proc = WrAnalysis(mass_point=None)
         ev = _mock_events(n_muons=2, muon_pts=[55.0, 200.0])
-        tight, loose, masks = proc.select_leptons(ev)
+        tight, loose, masks, *_ = proc.select_leptons(ev)
         assert ak.num(tight, axis=1).tolist() == [2]
         # Higher pT should be first
         assert tight[0, 0].pt > tight[0, 1].pt
@@ -184,7 +184,7 @@ class TestSelectLeptons:
     def test_masks_returned(self):
         proc = WrAnalysis(mass_point=None)
         ev = _mock_events(n_muons=2, n_electrons=1)
-        tight, loose, masks = proc.select_leptons(ev)
+        tight, loose, masks, *_ = proc.select_leptons(ev)
         assert "ele_pteta" in masks
         assert "mu_pteta" in masks
         assert "ele_id" in masks

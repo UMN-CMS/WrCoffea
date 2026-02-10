@@ -160,20 +160,28 @@ class WrAnalysis(processor.ProcessorABC):
         loose_electrons = events.Electron[electron_loose_mask]
         loose_muons     = events.Muon[muon_loose_mask]
 
-        # --- Add flavor tags ---
+        # --- Add flavor tags (on original collections, before slimming) ---
         tight_electrons = ak.with_field(tight_electrons, "electron", "flavor")
         tight_muons     = ak.with_field(tight_muons,     "muon",     "flavor")
         loose_electrons = ak.with_field(loose_electrons, "electron", "flavor")
         loose_muons     = ak.with_field(loose_muons,     "muon",     "flavor")
 
         # --- Combine and sort by pT ---
-        tight_leptons = ak.with_name(
-            ak.concatenate([tight_electrons, tight_muons], axis=1),
-            "PtEtaPhiMCandidate",
+        # Slim to common fields before concatenating so awkward creates a
+        # regular record (not a union), preserving `charge` for the
+        # PtEtaPhiMCandidate `+` operator and avoiding field-access issues.
+        def _to_candidate(col):
+            return ak.zip(
+                {"pt": col.pt, "eta": col.eta, "phi": col.phi,
+                 "mass": col.mass, "charge": col.charge, "flavor": col.flavor},
+                with_name="PtEtaPhiMCandidate",
+            )
+
+        tight_leptons = ak.concatenate(
+            [_to_candidate(tight_electrons), _to_candidate(tight_muons)], axis=1,
         )
-        loose_leptons = ak.with_name(
-            ak.concatenate([loose_electrons, loose_muons], axis=1),
-            "PtEtaPhiMCandidate",
+        loose_leptons = ak.concatenate(
+            [_to_candidate(loose_electrons), _to_candidate(loose_muons)], axis=1,
         )
 
         tight_leps = tight_leptons[ak.argsort(tight_leptons.pt, axis=1, ascending=False)]
@@ -525,7 +533,7 @@ class WrAnalysis(processor.ProcessorABC):
         dr_l1l2 = ak.where(
             ak.num(tightLeptons_inc) >= 2,
             muons_padded[:,0].deltaR(muons_padded[:,1]),
-            ak.full_like(ak.num(tightLeptons_inc), np.nan)
+            np.nan,
         )
         # For jets
         jpad = ak.pad_none(AK4Jets_inc, 2)
@@ -536,7 +544,7 @@ class WrAnalysis(processor.ProcessorABC):
 
         # dr_jl_min: compute only if both jets and leptons exist.
         has_j_and_l = (ak.num(AK4Jets_inc) >= 1) & (ak.num(tightLeptons_inc) >= 1)
-        dr_jl_min = ak.where( has_j_and_l, ak.min(AK4Jets_inc[:, :2].nearest(tightLeptons_inc).deltaR(AK4Jets_inc[:, :2]), axis=1), ak.full_like(has_j_and_l, np.nan))
+        dr_jl_min = ak.where(has_j_and_l, ak.min(AK4Jets_inc[:, :2].nearest(tightLeptons_inc).deltaR(AK4Jets_inc[:, :2]), axis=1), np.nan)
         # Build all 2 leptons × 2 jets pairs.
         dr_lj = ak.cartesian({"lep": tightLeptons_inc[:,:2], "jet": AK4Jets_inc[:,:2]}, axis=1)
         dr_lj_vals = dr_lj["lep"].deltaR(dr_lj["jet"])
@@ -898,13 +906,16 @@ class WrAnalysis(processor.ProcessorABC):
             except Exception as e:
                 logger.warning(f"Boosted selections failed; skipping boosted histograms: {e}")
 
-        # Event weights (needs tight leptons split by flavor for SF evaluation).
-        tight_muons = tight_leptons[tight_leptons.flavor == "muon"]
-        tight_electrons = tight_leptons[tight_leptons.flavor == "electron"]
+        # Reconstruct tight lepton collections from events + masks for SF
+        # evaluation.  Using short-lived NanoAOD slices (not carried from
+        # select_leptons) so the full column cache is freed promptly.
+        tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
+        tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
         weights, syst_weights = self.build_event_weights(
             events, metadata, is_mc,
             tight_muons=tight_muons, tight_electrons=tight_electrons,
         )
+        del tight_electrons, tight_muons
 
         # Fill histograms.
         if resolved_selections is not None:

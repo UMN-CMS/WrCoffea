@@ -107,6 +107,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
 
         cluster = LPCCondorCluster(
             ship_env=True,
+            memory="4GB",
             transfer_input_files=[
                 str(repo_root / "wrcoffea"),
                 str(repo_root / "bin"),
@@ -126,7 +127,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         logging.info("Started with %d/%d workers; remaining will join dynamically.", len(client.scheduler_info()["workers"]), NWORKERS)
 
     else:
-        n_workers = args.max_workers or 6
+        n_workers = args.max_workers or 3
         cluster = LocalCluster(n_workers=n_workers, threads_per_worker=(args.threads_per_worker or 1))
         client = Client(cluster)
 
@@ -187,7 +188,7 @@ if __name__ == "__main__":
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
     optional.add_argument("--condor", action='store_true', help="Run on condor.")
-    optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 6, condor default: 50).")
+    optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 3, condor default: 50).")
     optional.add_argument("--threads-per-worker", type=int, default=None, help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).")
     optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
     optional.add_argument("--maxchunks", type=int, default=None, help="Max chunks per dataset file (default: all). Use 1 for quick testing.")

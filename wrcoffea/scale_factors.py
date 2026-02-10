@@ -330,16 +330,18 @@ def electron_trigger_sf(tight_electrons, era):
     event_eff_mc_down = 1.0 - ak.prod(1.0 - eff_mc_down_jagged, axis=1)
 
     # Compute event-level SF = e_data(event) / e_MC(event).
-    # Protect against division by zero.
-    trig_sf_nom = np.asarray(ak.fill_none(
-        ak.where(event_eff_mc_nom > 0, event_eff_data_nom / event_eff_mc_nom, 1.0), 1.0
-    ), dtype=np.float64)
-    trig_sf_up = np.asarray(ak.fill_none(
-        ak.where(event_eff_mc_up > 0, event_eff_data_up / event_eff_mc_up, 1.0), 1.0
-    ), dtype=np.float64)
-    trig_sf_down = np.asarray(ak.fill_none(
-        ak.where(event_eff_mc_down > 0, event_eff_data_down / event_eff_mc_down, 1.0), 1.0
-    ), dtype=np.float64)
+    # For events with no electrons both efficiencies are 0 → 0/0;
+    # use np.divide(where=) to avoid the RuntimeWarning and default to 1.
+    def _safe_ratio(num, den):
+        num_np = np.asarray(ak.fill_none(num, 0.0), dtype=np.float64)
+        den_np = np.asarray(ak.fill_none(den, 0.0), dtype=np.float64)
+        out = np.ones_like(num_np)
+        np.divide(num_np, den_np, out=out, where=den_np > 0)
+        return out
+
+    trig_sf_nom = _safe_ratio(event_eff_data_nom, event_eff_mc_nom)
+    trig_sf_up = _safe_ratio(event_eff_data_up, event_eff_mc_up)
+    trig_sf_down = _safe_ratio(event_eff_data_down, event_eff_mc_down)
 
     return trig_sf_nom, trig_sf_up, trig_sf_down
 
