@@ -13,7 +13,6 @@ from typing import Callable
 
 import awkward as ak
 import hist
-import numpy as np
 
 from wrcoffea.analysis_config import (
     CUTS,
@@ -26,6 +25,7 @@ from wrcoffea.analysis_config import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 ResolvedGetter = Callable[[ak.Array, ak.Array, ak.Array, ak.Array], ak.Array]
 BoostedGetter = Callable[[ak.Array, ak.Array, ak.Array], ak.Array]

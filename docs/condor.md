@@ -12,8 +12,10 @@ bash bootstrap.sh
 
 ### Enter the Apptainer shell (required before each Condor session):
 ```bash
-./shell coffeateam/coffea-dask-almalinux8:latest
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
 ```
+
+> **Important:** Always use a pinned container tag instead of `:latest`. The `:latest` tag may lag behind and ship older coffea versions, causing version mismatches between the container's system packages and `pip install -e .` dependencies. Available tags can be found under `/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux8:*`.
 
 On first launch, the `.env` virtual environment is created automatically. Then install the analysis package:
 ```bash
@@ -43,7 +45,7 @@ bash bin/analyze_all.sh all RunIII2024Summer24 --condor
 ```
 
 **Default `analyze_all.sh` Condor configuration:**
-- **Data**: 50 workers, 50k events/chunk (skimmed); 400 workers with `--unskimmed`
+- **Data**: 50 workers, 250k events/chunk (skimmed); 400 workers with `--unskimmed`
 - **Background**: 50 workers, 250k events/chunk (skimmed); 400 workers with `--unskimmed`
 - **Signal**: 10 workers/mass point, 50k events/chunk (conservative)
 
@@ -69,7 +71,7 @@ hostname
 tmux new -s analysis
 
 # Enter the Apptainer shell and run your jobs as usual
-./shell coffeateam/coffea-dask-almalinux8:latest
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
 bash bin/analyze_all.sh all RunIII2024Summer24 --condor
 ```
 
@@ -114,3 +116,17 @@ condor_history        # recently completed jobs
 ### Skim job logs
 
 Skim Condor logs are written to `data/skims/logs/<primary_dataset>/`. See [Skimming](skimming.md) for details.
+
+## Processing Times
+
+Wall-clock times for `RunIII2024Summer24` on Condor (250k chunksize, 4 GB/worker).
+
+| Sample    | Skimmed (50 workers) | Unskimmed (400 workers) |
+|-----------|----------------------|-------------------------|
+| Muon      |      21 minutes      |       81.24 minutes     |
+| EGamma    |       9 minutes      |                         |
+| DYJets    |       7 minutes      |                         |
+| tt_tW     |                      |                         |
+| Nonprompt |                      |                         |
+| Other     |                      |                         |
+| Signal    |                      |                         |

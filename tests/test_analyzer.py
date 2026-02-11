@@ -64,6 +64,7 @@ def _mock_events(n_muons=2, n_electrons=0, n_jets=2, n_fatjets=0,
             "tkRelIso": np.full(n_muons, 0.05, dtype=np.float64),
             "cutBased_HEEP": np.zeros(n_muons, dtype=np.bool_),
             "cutBased": np.zeros(n_muons, dtype=np.int32),
+            "charge": np.ones(n_muons, dtype=np.int32),
         },
     )
 
@@ -76,6 +77,7 @@ def _mock_events(n_muons=2, n_electrons=0, n_jets=2, n_fatjets=0,
             "tkRelIso": np.zeros(n_electrons, dtype=np.float64),
             "cutBased_HEEP": np.ones(n_electrons, dtype=np.bool_),
             "cutBased": np.full(n_electrons, 4, dtype=np.int32),
+            "charge": np.ones(n_electrons, dtype=np.int32),
         },
     )
 

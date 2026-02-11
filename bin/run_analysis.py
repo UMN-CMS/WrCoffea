@@ -123,7 +123,7 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         client = Client(cluster)
         client.register_worker_plugin(_CondorWorkerSetup())
         logging.info("Waiting for Condor workers (requested %d)...", NWORKERS)
-        client.wait_for_workers(1, timeout="180s")
+        client.wait_for_workers(1, timeout="600s")
         logging.info("Started with %d/%d workers; remaining will join dynamically.", len(client.scheduler_info()["workers"]), NWORKERS)
 
     else:
@@ -140,6 +140,13 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         align_clusters=False,
         savemetrics=True,
         schema=NanoAODSchema,
+    )
+
+    logging.info(
+        "Launching with %d workers, chunksize=%d%s",
+        NWORKERS if run_on_condor else n_workers,
+        args.chunksize,
+        " (condor)" if run_on_condor else " (local)",
     )
 
     try:
@@ -266,9 +273,10 @@ if __name__ == "__main__":
         maxfiles=args.maxfiles,
     )
 
+    n_files = sum(len(ds.get("files", {})) for ds in filtered_fileset.values())
     logging.info(
-        "Selected %d dataset(s) after filtering.",
-        len(filtered_fileset),
+        "Selected %d dataset(s), %d file(s) after filtering.",
+        len(filtered_fileset), n_files,
     )
 
     if args.preflight_only:

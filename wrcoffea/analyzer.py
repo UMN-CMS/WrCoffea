@@ -168,8 +168,7 @@ class WrAnalysis(processor.ProcessorABC):
 
         # --- Combine and sort by pT ---
         # Slim to common fields before concatenating so awkward creates a
-        # regular record (not a union), preserving `charge` for the
-        # PtEtaPhiMCandidate `+` operator and avoiding field-access issues.
+        # regular record (not a union), avoiding field-access issues.
         def _to_candidate(col):
             return ak.zip(
                 {"pt": col.pt, "eta": col.eta, "phi": col.phi,

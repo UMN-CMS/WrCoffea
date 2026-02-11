@@ -130,7 +130,7 @@ if [ "${MODE}" == "data" ]; then
   # Use DATA_ARGS (filtered to exclude --systs) for data
   EXTRA_ARGS=("${DATA_ARGS[@]}")
   for process in "${DATA_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers ${WORKERS}
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
   done
 elif [ "${MODE}" == "bkg" ]; then
   for process in "${MC_OPTIONS[@]}"; do
@@ -142,7 +142,7 @@ elif [ "${MODE}" == "all" ]; then
   SAVED_EXTRA_ARGS=("${EXTRA_ARGS[@]}")
   EXTRA_ARGS=("${DATA_ARGS[@]}")
   for process in "${DATA_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}" --chunksize 50000 --max-workers ${WORKERS}
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
   done
   # Restore EXTRA_ARGS (with --systs) for MC
   EXTRA_ARGS=("${SAVED_EXTRA_ARGS[@]}")

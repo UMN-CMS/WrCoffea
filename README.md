@@ -51,7 +51,7 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 Scale out processing across many workers at FNAL LPC using HTCondor with the Dask executor. Requires the [lpcjobqueue](https://github.com/CoffeaTeam/lpcjobqueue) Apptainer environment.
 
 ```bash
-./shell coffeateam/coffea-dask-almalinux8:latest                     # enter container
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12           # enter container
 python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # run with Condor
 bash bin/analyze_all.sh all RunIII2024Summer24 --condor              # run everything
 ```
@@ -227,11 +227,11 @@ git submodule update --init --recursive
 
 ### Environment Setup
 
-There are two ways to set up your environment depending on whether you need Condor submission.
+There are two ways to set up your environment depending on whether you need Condor submission. Both use **Python 3.12** and **coffea 2025.12.0** to ensure local and Condor environments match.
 
 #### Option A: Local runs (no Condor)
 
-Create and activate a Python virtual environment, then install the package:
+Requires Python 3.12 (available on FNAL LPC via CVMFS). Create and activate a virtual environment, then install the package:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -248,10 +248,12 @@ curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap
 bash bootstrap.sh
 ```
 
-Enter the container (required before each Condor session):
+Enter the container using a **pinned tag** (required before each Condor session):
 ```bash
-./shell coffeateam/coffea-dask-almalinux8:latest
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
 ```
+
+> **Important:** Always use a pinned container tag instead of `:latest`. The `:latest` tag may lag behind and ship older coffea versions, causing version mismatches between the container's system packages and `pip install -e .` dependencies.
 
 On first launch, the `.env` virtual environment is created automatically. Then install the analysis package:
 ```bash
@@ -259,6 +261,14 @@ pip install -e .
 ```
 
 To leave the container, type `exit`.
+
+#### Verifying your environment
+
+After setup, confirm that versions match between local and container environments:
+```bash
+python -c "import coffea; print(coffea.__version__)"   # should print 2025.12.0
+python -c "import sys; print(sys.version)"              # should print 3.12.x
+```
 
 ### Grid Proxy
 
