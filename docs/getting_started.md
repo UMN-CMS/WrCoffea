@@ -1,0 +1,81 @@
+# Getting Started
+
+## Clone the Repository
+
+Clone with submodules to include the WR_Plotter:
+```bash
+git clone --recursive git@github.com:UMN-CMS/WrCoffea.git
+cd WrCoffea
+```
+
+If you already cloned without `--recursive`, initialize the submodule:
+```bash
+git submodule update --init --recursive
+```
+
+## Environment Setup
+
+There are two ways to set up your environment depending on whether you need Condor submission. Both use **Python 3.12** and **coffea 2025.12.0** to ensure local and Condor environments match.
+
+### Option A: Local runs (no Condor)
+
+Requires Python 3.12 (available on FNAL LPC via CVMFS, since the system Python is 3.9). Create and activate a virtual environment, then install the package:
+```bash
+/cvmfs/sft.cern.ch/lcg/releases/Python/3.12.11-531c6/x86_64-el9-gcc13-opt/bin/python3 -m venv --system-site-packages .venv
+source .venv/bin/activate
+pip install --upgrade pip setuptools
+pip install -e .
+```
+
+> **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. The venv must be named `.venv` so that `analyze_all.sh` can auto-detect it. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
+
+### Option B: Condor runs at FNAL LPC (recommended for production)
+
+Set up the lpcjobqueue Apptainer environment (one-time):
+```bash
+curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh
+bash bootstrap.sh
+```
+
+Enter the container using a **pinned tag** (required before each Condor session):
+```bash
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
+```
+
+> **Important:** Always use a pinned container tag instead of `:latest`. The `:latest` tag may lag behind and ship older coffea versions, causing version mismatches between the container's system packages and `pip install -e .` dependencies.
+
+On first launch, the `.env` virtual environment is created automatically. Then install the analysis package:
+```bash
+pip install -e .
+```
+
+To leave the container, type `exit`.
+
+### Verifying your environment
+
+After setup, confirm that versions match between local and container environments:
+```bash
+python -c "import coffea; print(coffea.__version__)"   # should print 2025.12.0
+python -c "import sys; print(sys.version)"              # should print 3.12.x
+```
+
+## Grid Proxy
+
+Authenticate for accessing grid resources (required for both local and Condor runs):
+```bash
+voms-proxy-init --rfc --voms cms -valid 192:00
+```
+
+## ROOT
+
+Source the appropriate LCG release for ROOT functionality (only needed outside the Apptainer container):
+
+**For FNAL LPC (el9 nodes):**
+```bash
+source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
+```
+
+**For UMN (centos8 nodes):**
+```bash
+source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
+```
