@@ -22,6 +22,9 @@ from wrcoffea.analysis_config import (
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
     SEL_JET_VETO_MAP,
+    # Boosted selections
+    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_AK8JETS_WITH_LSF,
+    SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR,
 )
 
 logger = logging.getLogger(__name__)
@@ -231,6 +234,61 @@ def fill_cutflows(output, selections, weights):
         bucket = output["cutflow"][flavor]
 
         # Cut names for axis labels: "no_cuts" + the selection step names
+        cut_names = ["no_cuts"] + list(steps)
+
+        cf = selections.cutflow(*steps, weights=weights)
+        h_onecut_raw, h_cum_raw, _labels = cf.yieldhist(weighted=True)
+        bucket["onecut"] = _relabel_cutflow(h_onecut_raw, cut_names)
+        bucket["cumulative"] = _relabel_cutflow(h_cum_raw, cut_names)
+
+        h_onecut_unw, h_cum_unw, _labels = cf.yieldhist(weighted=False)
+        bucket["onecut_unweighted"] = _relabel_cutflow(h_onecut_unw, cut_names)
+        bucket["cumulative_unweighted"] = _relabel_cutflow(h_cum_unw, cut_names)
+
+
+def fill_boosted_cutflows(output, selections, weights):
+    """Build cumulative cutflows for boosted ee, mumu, and em channels.
+
+    Similar to fill_cutflows but for boosted topology. Shows progression
+    through boosted-specific selections (SR progression for ee/mumu,
+    flavor CR for em).
+
+    Output layout (keys under ``output["cutflow_boosted"]``):
+        - per-flavor: ``ee``, ``mumu``, ``em``
+            - ``onecut`` / ``cumulative`` (and unweighted variants)
+    """
+    output.setdefault("cutflow_boosted", {})
+
+    # Boosted cutflow chains - showing SR progression for ee/mumu, flavor CR for em
+    chains = {
+        "ee": [
+            SEL_BOOSTEDTAG,
+            SEL_LEAD_TIGHT_PT60_BOOSTED,
+            SEL_AK8JETS_WITH_LSF,
+            SEL_JET_VETO_MAP,
+            SEL_EE_SR,
+        ],
+        "mumu": [
+            SEL_BOOSTEDTAG,
+            SEL_LEAD_TIGHT_PT60_BOOSTED,
+            SEL_AK8JETS_WITH_LSF,
+            SEL_JET_VETO_MAP,
+            SEL_MUMU_SR,
+        ],
+        "em": [
+            SEL_BOOSTEDTAG,
+            SEL_LEAD_TIGHT_PT60_BOOSTED,
+            SEL_AK8JETS_WITH_LSF,
+            SEL_JET_VETO_MAP,
+            SEL_EMU_CR,
+        ],
+    }
+
+    # Generate cutflow histograms per flavor
+    for flavor, steps in chains.items():
+        output["cutflow_boosted"].setdefault(flavor, {})
+        bucket = output["cutflow_boosted"][flavor]
+
         cut_names = ["no_cuts"] + list(steps)
 
         cf = selections.cutflow(*steps, weights=weights)

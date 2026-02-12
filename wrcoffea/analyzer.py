@@ -50,7 +50,7 @@ from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS,
     _booking_specs, create_hist,
-    fill_resolved_histograms, fill_boosted_histograms, fill_cutflows,
+    fill_resolved_histograms, fill_boosted_histograms, fill_cutflows, fill_boosted_cutflows,
 )
 
 ak.behavior.update(vector.behavior)
@@ -823,6 +823,9 @@ class WrAnalysis(processor.ProcessorABC):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
         boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
+
+        # Fill boosted cutflows
+        fill_boosted_cutflows(output, boosted_sel, weights)
 
         boosted_regions = {
             'wr_mumu_boosted_dy_cr': boosted_sel.all(
