@@ -19,6 +19,21 @@ from uproot.behaviors.TTree import TTree
 logger = logging.getLogger(__name__)
 
 
+def _ensure_uproot_patch():
+    """Activate the uproot shared-counter monkey-patch if not already applied.
+
+    The patch (defined in wrcoffea.skimmer) fixes uproot's _cascadetree.Tree
+    when counter_name maps multiple jagged branches to the same counter
+    (e.g. Jet_pt and Jet_eta both -> nJet).  We import lazily to avoid
+    pulling in coffea/dask when only merge functionality is needed.
+    """
+    import uproot.writing._cascadetree as _ct
+    if getattr(_ct.Tree.__init__, '_shared_counter_patched', False):
+        return
+    from wrcoffea.skimmer import _patch_uproot_shared_counters
+    _patch_uproot_shared_counters()
+
+
 # ---------------------------------------------------------------------------
 # Dataclasses
 # ---------------------------------------------------------------------------
@@ -185,7 +200,10 @@ def group_by_hlt(
 # ---------------------------------------------------------------------------
 
 # Branches that should be summed (not copied) when merging the Runs tree.
-_SUMMED_RUNS_BRANCHES = ("genEventSumw", "genEventCount", "LHEWeight")
+_SUMMED_RUNS_BRANCHES = ("genEventSumw", "genEventCount", "nEvents", "LHEWeight")
+
+# Jagged Runs branches that should be element-wise summed when collapsing.
+_SUMMED_RUNS_JAGGED = {"LHEScaleSumw", "LHEPdfSumw", "PSSumw"}
 
 _CHUNK_SIZE = 100_000  # entries per read chunk during merge
 
@@ -237,10 +255,14 @@ def merge_files(
 
     Returns True on success, False on failure.
     """
+    import awkward as ak
+
+    _ensure_uproot_patch()
+
     logger.info("Merging %d files -> %s", len(input_files), Path(output_path).name)
     try:
         with uproot.recreate(output_path) as fout:
-            first = True
+            tree_created = False
             for fpath in input_files:
                 with uproot.open(fpath) as fin:
                     if "Events" not in fin:
@@ -248,31 +270,55 @@ def merge_files(
                         continue
                     tree = fin["Events"]
                     all_names = set(tree.keys())
-                    # Skip counter branches — uproot auto-generates them
-                    branches = [b for b in tree.keys()
-                                if not _is_counter_branch(b, all_names)]
+                    counter_branches = {
+                        bname for bname in tree.keys()
+                        if _is_counter_branch(bname, all_names)
+                    }
+                    data_branches = [b for b in tree.keys()
+                                     if b not in counter_branches]
+
+                    # Create TTree on first file encountered.  mktree +
+                    # counter_name auto-generates shared counters (nJet,
+                    # nMuon, etc.) so we exclude them from branch_types.
+                    if not tree_created:
+                        branch_types = {}
+                        for bname in data_branches:
+                            interp = tree[bname].interpretation
+                            if hasattr(interp, "content") and hasattr(interp.content, "to_dtype"):
+                                inner_dt = interp.content.to_dtype
+                                if inner_dt.names is not None:
+                                    inner_dt = inner_dt[inner_dt.names[0]]
+                                branch_types[bname] = "var * " + str(inner_dt)
+                            elif hasattr(interp, "to_dtype"):
+                                dt = interp.to_dtype
+                                if dt.names is not None:
+                                    dt = dt[dt.names[0]]
+                                branch_types[bname] = dt
+                            else:
+                                branch_types[bname] = interp
+                        fout.mktree(
+                            "Events", branch_types,
+                            counter_name=lambda counted: "n" + counted.split("_")[0],
+                        )
+                        tree_created = True
+
                     n_entries = tree.num_entries
                     for start in range(0, n_entries, _CHUNK_SIZE):
                         stop = min(start + _CHUNK_SIZE, n_entries)
                         arrays = tree.arrays(
-                            branches,
+                            data_branches,
                             entry_start=start,
                             entry_stop=stop,
                             library="ak",
                         )
-                        chunk_dict = {
+                        data_dict = {
                             f: _native_endian(arrays[f])
                             for f in arrays.fields
                         }
-                        if first:
-                            fout["Events"] = chunk_dict
-                            first = False
-                        else:
-                            fout["Events"].extend(chunk_dict)
-                        del arrays, chunk_dict
+                        fout["Events"].extend(data_dict)
+                        del arrays, data_dict
 
-            if first:
-                # No events were written from any input file
+            if not tree_created:
                 logger.error("No events found in any input file — aborting %s", Path(output_path).name)
                 return False
 
@@ -291,51 +337,68 @@ def merge_files(
 
 
 def _merge_runs(input_files: list[str], fout) -> None:
-    """Merge Runs trees from *input_files*, writing a single collapsed entry to *fout*."""
-    import numpy as np
+    """Merge Runs trees from *input_files*, writing a single collapsed entry to *fout*.
 
-    summed: dict[str, float] = {}
-    first_values: dict[str, object] = {}
-    skip_branches: set[str] = set()
+    Uses mktree + extend to produce a TTree (not RNTuple).  Jagged branches
+    (LHEScaleSumw, LHEPdfSumw, PSSumw) are element-wise summed; scalar
+    weight branches are summed; all others keep the first value.
+    """
+    import awkward as ak
+
+    all_data: dict[str, list] = {}
+    branch_types: dict | None = None
 
     for fpath in input_files:
         try:
             with uproot.open(fpath) as fin:
                 if "Runs" not in fin:
                     continue
-                runs_raw = fin["Runs"].arrays(library="np")
-                # RNTuple returns a structured numpy array; TTree returns a dict.
-                if isinstance(runs_raw, np.ndarray) and runs_raw.dtype.names:
-                    runs_dict = {name: runs_raw[name] for name in runs_raw.dtype.names}
-                elif hasattr(runs_raw, "items"):
-                    runs_dict = dict(runs_raw.items())
-                else:
-                    continue
-                for branch, arr in runs_dict.items():
-                    if branch in skip_branches:
-                        continue
-                    if arr.dtype.kind == "O":
-                        skip_branches.add(branch)
-                        continue
-                    if any(s in branch for s in _SUMMED_RUNS_BRANCHES):
-                        summed[branch] = summed.get(branch, 0.0) + float(arr.sum())
-                    elif branch not in first_values:
-                        first_values[branch] = arr[:1] if arr.ndim > 0 else np.array([arr])
+                runs_tree = fin["Runs"]
+
+                # Build branch_types from first file encountered
+                if branch_types is None:
+                    branch_types = {}
+                    for bname in runs_tree.keys():
+                        interp = runs_tree[bname].interpretation
+                        if hasattr(interp, "content") and hasattr(interp.content, "to_dtype"):
+                            inner_dt = interp.content.to_dtype
+                            if inner_dt.names is not None:
+                                inner_dt = inner_dt[inner_dt.names[0]]
+                            branch_types[bname] = "var * " + str(inner_dt)
+                        elif hasattr(interp, "to_dtype"):
+                            dt = interp.to_dtype
+                            if dt.names is not None:
+                                dt = dt[dt.names[0]]
+                            branch_types[bname] = dt
+                        else:
+                            continue
+
+                runs_ak = runs_tree.arrays(list(branch_types.keys()), library="ak")
+                for bname in branch_types:
+                    arr = runs_ak[bname]
+                    if bname not in all_data:
+                        all_data[bname] = []
+                    all_data[bname].append(arr)
         except Exception as e:
             logger.warning("Failed to read Runs from %s: %s", fpath, e)
 
-    if not summed and not first_values:
+    if branch_types is None or not all_data:
         return
 
-    collapsed: dict[str, object] = {}
-    for branch, val in first_values.items():
-        if hasattr(val, "dtype") and val.dtype.byteorder not in ("=", "|", "<"):
-            val = val.astype(val.dtype.newbyteorder("="))
-        collapsed[branch] = val
-    for branch, val in summed.items():
-        collapsed[branch] = np.array([val])
+    collapsed: dict = {}
+    for bname in branch_types:
+        if bname not in all_data:
+            continue
+        combined = ak.concatenate(all_data[bname])
+        if any(s in bname for s in _SUMMED_RUNS_BRANCHES):
+            collapsed[bname] = ak.Array([ak.sum(combined)])
+        elif bname in _SUMMED_RUNS_JAGGED:
+            collapsed[bname] = ak.Array([ak.sum(combined, axis=0)])
+        else:
+            collapsed[bname] = combined[:1]
 
-    fout["Runs"] = collapsed
+    fout.mktree("Runs", branch_types)
+    fout["Runs"].extend(collapsed)
 
 
 # ---------------------------------------------------------------------------

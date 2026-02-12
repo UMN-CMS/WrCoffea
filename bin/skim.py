@@ -36,6 +36,7 @@ from wrcoffea.das_utils import (
     check_dasgoclient,
     check_grid_proxy,
     das_files_to_urls,
+    infer_base_dir,
     infer_output_dir,
     query_das_files,
     validate_das_path,
@@ -100,6 +101,31 @@ def _print_skim_cuts():
 
 def cmd_run(args):
     """Skim NanoAOD files (submits to Condor unless --local or on a worker)."""
+    if args.lfn:
+        # Direct LFN mode: skip DAS query, process exactly this one file.
+        primary_ds = primary_dataset_from_das_path(args.das_path)
+        file_urls = [das_files_to_urls([args.lfn])[0]]
+        default_outdir = infer_output_dir(args.das_path)
+        logger.info("Dataset '%s': using direct LFN %s", primary_ds, args.lfn)
+
+        outdir = default_outdir
+        outdir.mkdir(parents=True, exist_ok=True)
+
+        src = file_urls[0]
+        dest = outdir / f"{Path(src).stem}_skim.root"
+        fname = Path(src).name
+
+        t0 = time.monotonic()
+        logger.info("File: %s", fname)
+        result = skim_single_file(str(src), str(dest))
+        elapsed = time.monotonic() - t0
+        logger.info(
+            "Done in %.1f min. %d -> %d events (%.1f%%), %.1f MB",
+            elapsed / 60, result.n_events_before, result.n_events_after,
+            result.efficiency, result.file_size_bytes / 1_048_576,
+        )
+        return
+
     primary_ds, file_urls, default_outdir = _resolve_das(args.das_path)
     num_files = len(file_urls)
     logger.info("Dataset '%s': %d files from DAS", primary_ds, num_files)
@@ -180,7 +206,7 @@ should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 request_memory = 4000
 x509userproxy = $ENV(X509_USER_PROXY)
-+ApptainerImage = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux8:latest"
++ApptainerImage = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12"
 output = {log_dir}/{dataset}_$(ProcId).out
 error  = {log_dir}/{dataset}_$(ProcId).err
 log    = {log_dir}/{dataset}_$(ProcId).log
@@ -208,11 +234,14 @@ def _create_tarball(dest_dir: Path) -> Path:
     return tarball
 
 
-def _generate_job(primary_ds, das_path, n_jobs, job_dir, log_dir, output_dir, start=1, end=None):
+def _generate_job(primary_ds, das_path, n_jobs, job_dir, log_dir, output_dir,
+                   file_urls, start=1, end=None):
     """Generate Condor job files for a file range.
 
     Parameters
     ----------
+    file_urls : list[str]
+        XRootD URLs for every file in the dataset (0-indexed).
     start, end : int
         1-indexed file range (inclusive). Defaults to all files.
     output_dir : Path
@@ -224,9 +253,15 @@ def _generate_job(primary_ds, das_path, n_jobs, job_dir, log_dir, output_dir, st
     log_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    (job_dir / "arguments.txt").write_text(
-        "".join(f"{i} {das_path}\n" for i in range(start, end + 1))
-    )
+    # Include the LFN so workers don't need to re-query DAS.
+    lines = []
+    for i in range(start, end + 1):
+        url = file_urls[i - 1]  # file_urls is 0-indexed
+        # Extract LFN: root://host//store/... → /store/...
+        lfn_idx = url.find("//store/")
+        lfn = url[lfn_idx + 1:] if lfn_idx >= 0 else url
+        lines.append(f"{i} {das_path} {lfn}\n")
+    (job_dir / "arguments.txt").write_text("".join(lines))
 
     src_sh = REPO_ROOT / "bin" / "skim_job.sh"
     dest_sh = job_dir / "skim_job.sh"
@@ -250,7 +285,7 @@ def _generate_job(primary_ds, das_path, n_jobs, job_dir, log_dir, output_dir, st
 def _submit_run(das_path, primary_ds, file_urls, start, end, dry_run=False):
     """Submit a file range to Condor (called by cmd_run when not on a worker)."""
     n_total = len(file_urls)
-    base_dir = infer_output_dir(das_path).parent  # data/skims/
+    base_dir = infer_base_dir(das_path)
     base_dir.mkdir(parents=True, exist_ok=True)
     tarball = _create_tarball(base_dir)
 
@@ -265,7 +300,7 @@ def _submit_run(das_path, primary_ds, file_urls, start, end, dry_run=False):
     output_dir = infer_output_dir(das_path)
     jdl_path, actual_jobs = _generate_job(
         primary_ds, das_path, n_total, job_dir, log_dir, output_dir,
-        start=start, end=end,
+        file_urls, start=start, end=end,
     )
 
     if dry_run:
@@ -344,6 +379,111 @@ def cmd_check(args):
 # merge
 # ═══════════════════════════════════════════════════════════════════════════
 
+def _check_log_completion(log_dir: Path, primary_ds: str, expected_indices: set[int]):
+    """Verify Condor log files confirm successful completion for each job.
+
+    Checks that each job's .out file ends with "Job completed successfully"
+    and .err file ends with a "Done in ..." summary line.
+
+    Returns (passed_indices, failed_details) where failed_details is a list
+    of (index, reason) tuples.
+    """
+    passed = set()
+    failed = []
+
+    for idx in sorted(expected_indices):
+        out_file = log_dir / f"{primary_ds}_{idx}.out"
+        err_file = log_dir / f"{primary_ds}_{idx}.err"
+
+        # Check .out file
+        if not out_file.exists():
+            failed.append((idx, "missing .out log"))
+            continue
+
+        try:
+            # Read last non-empty line of .out
+            lines = out_file.read_text().strip().splitlines()
+            last_out = lines[-1].strip() if lines else ""
+        except Exception as e:
+            failed.append((idx, f".out read error: {e}"))
+            continue
+
+        if "Job completed successfully" not in last_out:
+            failed.append((idx, f".out last line: {last_out!r}"))
+            continue
+
+        # Check .err file
+        if not err_file.exists():
+            failed.append((idx, "missing .err log"))
+            continue
+
+        try:
+            lines = err_file.read_text().strip().splitlines()
+            last_err = lines[-1].strip() if lines else ""
+        except Exception as e:
+            failed.append((idx, f".err read error: {e}"))
+            continue
+
+        if "Done in" not in last_err or "events" not in last_err:
+            failed.append((idx, f".err last line: {last_err!r}"))
+            continue
+
+        passed.add(idx)
+
+    return passed, failed
+
+
+def _pre_merge_check(das_path: str, primary_ds: str, skim_dir: Path) -> bool:
+    """Run completeness checks before merging. Returns True if all pass."""
+    logger.info("Running pre-merge completeness check...")
+
+    # 1. Query DAS for the full file list
+    primary_ds_check, file_urls, _ = _resolve_das(das_path)
+
+    # 2. Check tarballs / loose ROOT files against DAS
+    result = _check_dataset(primary_ds_check, file_urls, skim_dir)
+    expected = result["expected"]
+    found = result["found"]
+
+    status = "OK" if not result["missing"] else "INCOMPLETE"
+    logger.info("Tarball check: %d/%d files found [%s]", found, expected, status)
+
+    if result["missing"]:
+        if len(result["missing"]) <= 10:
+            for idx, url in result["missing"]:
+                logger.warning("  Missing file %d: %s", idx, Path(url).name)
+        else:
+            logger.warning("  %d files missing from skim directory", len(result["missing"]))
+        return False
+
+    # 3. Check log files for successful completion
+    base_dir = infer_base_dir(das_path)
+    log_dir = base_dir / "logs" / primary_ds
+
+    if not log_dir.is_dir():
+        logger.warning("Log directory not found: %s — skipping log check", log_dir)
+    else:
+        # Condor ProcId is 0-indexed; arguments.txt uses 1-indexed file numbers
+        # but ProcId in log filenames is 0-indexed
+        expected_indices = set(range(0, expected))
+        passed, failed = _check_log_completion(log_dir, primary_ds, expected_indices)
+
+        logger.info("Log check: %d/%d jobs confirmed successful", len(passed), expected)
+
+        if failed:
+            if len(failed) <= 10:
+                for idx, reason in failed:
+                    logger.warning("  Job %d: %s", idx, reason)
+            else:
+                logger.warning("  %d jobs with log issues (showing first 10):", len(failed))
+                for idx, reason in failed[:10]:
+                    logger.warning("    Job %d: %s", idx, reason)
+            return False
+
+    logger.info("Pre-merge check PASSED — all %d files present and logs confirm success.", expected)
+    return True
+
+
 def _print_merge_result(result):
     print()
     print(f"{'Dataset:':<22} {result.dataset}")
@@ -367,13 +507,18 @@ def cmd_merge(args):
     """Extract tarballs, merge, and validate merged outputs."""
     from wrcoffea.skim_merge import merge_dataset_incremental, validate_merge
 
-    # Merge only needs the DAS path for directory derivation — no DAS query
     primary_ds = primary_dataset_from_das_path(args.das_path)
     skim_dir = infer_output_dir(args.das_path)
 
     if not skim_dir.is_dir():
         logger.error("Skim directory not found: %s", skim_dir)
         raise SystemExit(1)
+
+    # Pre-merge completeness check (unless --skip-check or --validate-only)
+    if not args.validate_only and not args.skip_check:
+        if not _pre_merge_check(args.das_path, primary_ds, skim_dir):
+            logger.error("Pre-merge check FAILED — aborting. Use --skip-check to override.")
+            raise SystemExit(1)
 
     # Validate-only
     if args.validate_only:
@@ -446,6 +591,8 @@ def main(argv=None):
                         help="Run locally instead of submitting to Condor")
     p_run.add_argument("--dry-run", action="store_true",
                         help="Generate Condor files without submitting (no effect with --local)")
+    p_run.add_argument("--lfn", default=None,
+                        help="Direct logical file name (skips DAS query; used by Condor workers)")
     p_run.set_defaults(func=cmd_run)
 
     # --- check ---
@@ -459,6 +606,8 @@ def main(argv=None):
     p_merge.add_argument("das_path", help="DAS dataset path")
     p_merge.add_argument("--max-events", type=int, default=1_000_000, help="Max events per merged file")
     p_merge.add_argument("--validate-only", action="store_true", help="Only validate, don't merge")
+    p_merge.add_argument("--skip-check", action="store_true",
+                          help="Skip pre-merge completeness check (DAS + log verification)")
     p_merge.add_argument("--config", type=Path, default=None, metavar="JSON",
                           help="Analysis config JSON to cross-check genEventSumw against")
     p_merge.set_defaults(func=cmd_merge)

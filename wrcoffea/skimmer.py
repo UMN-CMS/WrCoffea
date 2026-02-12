@@ -28,6 +28,157 @@ logger = logging.getLogger(__name__)
 NanoAODSchema.warn_missing_crossrefs = False
 NanoAODSchema.error_missing_event_ids = False
 
+
+# ---------------------------------------------------------------------------
+# Monkey-patch: fix uproot shared-counter deduplication bug
+# ---------------------------------------------------------------------------
+# uproot's _cascadetree.Tree.__init__ has two bugs triggered when
+# counter_name maps multiple jagged branches to the same counter
+# (e.g. Jet_pt and Jet_eta both → nJet):
+#
+# Bug 1: The dedup code does `del _branch_data[_branch_lookup[name]]`
+#   which shifts indices without updating _branch_lookup. With many
+#   branches (1200+ in NanoAOD) this cascading index corruption deletes
+#   data branches instead of counters. Result: stale counter references
+#   cause `struct.pack(">...", None)` during write_anew.
+#
+# Bug 2: extend() validates shared counters via awkward.to_numpy() on a
+#   big-endian numpy array (dtype ">u4"), which awkward rejects.
+#
+# Fix strategy: call __init__ with an identity counter_name (no
+# collisions → no dedup → no corruption), then correctly merge counters.
+
+def _patch_uproot_shared_counters():
+    import uproot.writing._cascadetree as _ct
+
+    # Guard: don't re-apply if already patched.
+    if getattr(_ct.Tree.__init__, '_shared_counter_patched', False):
+        return
+
+    # Bug 2 fix: patch awkward.to_numpy to pass through numpy arrays.
+    try:
+        _ak = uproot.extras.awkward()
+        _orig_to_numpy = _ak.to_numpy
+
+        def _safe_to_numpy(array, *args, **kwargs):
+            if isinstance(array, np.ndarray):
+                return array
+            return _orig_to_numpy(array, *args, **kwargs)
+
+        _ak.to_numpy = _safe_to_numpy
+    except ModuleNotFoundError:
+        pass
+
+    # Bug 1 fix: intercept __init__ to prevent buggy dedup.
+    _original_init = _ct.Tree.__init__
+
+    def _patched_init(self, directory, name, title, branch_types,
+                      freesegments, counter_name, field_name,
+                      initial_basket_capacity, resize_factor):
+        # Quick check: does counter_name produce any collisions?
+        if isinstance(branch_types, dict):
+            items = list(branch_types.items())
+        else:
+            items = list(branch_types)
+
+        seen_counters: dict = {}
+        has_collisions = False
+        for bname, btype in items:
+            is_jagged = isinstance(btype, str) and btype.strip().startswith("var *")
+            if is_jagged:
+                cname = counter_name(bname)
+                if cname in seen_counters:
+                    has_collisions = True
+                    break
+                seen_counters[cname] = bname
+
+        if not has_collisions:
+            # No collisions → original code is safe, run unchanged.
+            _original_init(self, directory, name, title, branch_types,
+                           freesegments, counter_name, field_name,
+                           initial_basket_capacity, resize_factor)
+            return
+
+        # Collisions exist → use identity counter_name so no dedup occurs.
+        identity_counter = lambda counted: "n" + counted
+        _original_init(self, directory, name, title, branch_types,
+                       freesegments, identity_counter, field_name,
+                       initial_basket_capacity, resize_factor)
+
+        # Restore the real counter_name function.
+        self._counter_name = counter_name
+
+        # Now do correct dedup: merge per-field counters into shared ones.
+        # e.g. nJet_pt, nJet_eta, nJet_mass → single nJet counter.
+        canonical: dict = {}       # real_name → canonical counter dict
+        to_remove: set = set()     # ids of duplicate counter dicts
+
+        for datum in self._branch_data:
+            if datum.get("kind") != "counter":
+                continue
+            # Per-field counter fName like "nJet_pt" → data branch "Jet_pt"
+            data_branch_name = datum["fName"][1:]
+            real_name = counter_name(data_branch_name)
+
+            if real_name not in canonical:
+                # First occurrence: rename to shared counter name.
+                datum["fName"] = real_name
+                letter = datum["fTitle"].rsplit("/", 1)[-1]
+                datum["fTitle"] = f"{real_name}/{letter}"
+                canonical[real_name] = datum
+            else:
+                # Duplicate: mark for removal.
+                to_remove.add(id(datum))
+
+        # Point all data branches to the canonical counter and fix titles.
+        for datum in self._branch_data:
+            if datum.get("counter") is None or datum.get("kind") == "counter":
+                continue
+            real_name = counter_name(datum["fName"])
+            if real_name in canonical:
+                datum["counter"] = canonical[real_name]
+                # Fix fTitle: "Jet_pt[nJet_pt]/F" → "Jet_pt[nJet]/F"
+                old = datum["fTitle"]
+                bstart = old.find("[")
+                bend = old.find("]")
+                if bstart >= 0 and bend >= 0:
+                    datum["fTitle"] = old[:bstart] + "[" + real_name + "]" + old[bend + 1:]
+
+        # Remove duplicate counters.
+        self._branch_data = [
+            d for d in self._branch_data if id(d) not in to_remove
+        ]
+
+        # Reorder so each counter appears before its first data branch.
+        placed: set = set()
+        reordered: list = []
+        for d in self._branch_data:
+            if d.get("kind") == "counter":
+                continue  # placed on demand below
+            c = d.get("counter")
+            if c is not None and id(c) not in placed:
+                reordered.append(c)
+                placed.add(id(c))
+            reordered.append(d)
+        # Append any orphan counters (shouldn't happen in practice).
+        for c in canonical.values():
+            if id(c) not in placed:
+                reordered.append(c)
+        self._branch_data = reordered
+
+        # Rebuild _branch_lookup indices.
+        self._branch_lookup = {}
+        for i, d in enumerate(self._branch_data):
+            key = d.get("fName") or d.get("name")
+            if key:
+                self._branch_lookup[key] = i
+
+    _patched_init._shared_counter_patched = True
+    _ct.Tree.__init__ = _patched_init
+
+
+_patch_uproot_shared_counters()
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -79,6 +230,9 @@ SUMMED_RUNS_BRANCHES = {
     "nEvents",
 }
 
+# Jagged Runs branches that should be element-wise summed when collapsing.
+SUMMED_RUNS_JAGGED = {"LHEScaleSumw", "LHEPdfSumw", "PSSumw"}
+
 
 # ---------------------------------------------------------------------------
 # Dataclass for skim results
@@ -128,7 +282,7 @@ def _kept_branch_names(tree_keys):
 # Runs tree handling — BUG FIX: collapse multi-entry to single entry
 # ---------------------------------------------------------------------------
 
-def read_runs_tree(src_path: str) -> dict | None:
+def read_runs_tree(src_path: str) -> tuple[dict, dict] | None:
     """Read the Runs tree from a source NanoAOD file, collapsing to one entry.
 
     NanoAOD files that were themselves produced by hadd can contain multiple
@@ -137,22 +291,54 @@ def read_runs_tree(src_path: str) -> dict | None:
 
     This function collapses:
     - ``genEventSumw``, ``genEventCount``, etc. → **summed** into one value
+    - ``LHEScaleSumw``, ``LHEPdfSumw``, ``PSSumw`` → **element-wise summed**
     - All other branches → first entry kept
+
+    Returns
+    -------
+    (collapsed_data, branch_types) or None
+        collapsed_data : dict of awkward arrays, each length 1
+        branch_types : dict of mktree-compatible type specs
     """
     try:
         with uproot.open(src_path) as fin:
             if "Runs" not in fin:
                 return None
-            runs = fin["Runs"].arrays(library="np")
-            collapsed: dict = {}
-            for branch, arr in runs.items():
-                if arr.dtype.kind == "O":
-                    continue  # skip object-dtype branches (strings, ragged) — not writable
-                if any(s in branch for s in SUMMED_RUNS_BRANCHES):
-                    collapsed[branch] = np.array([arr.sum()])
+            runs_tree = fin["Runs"]
+
+            # Build branch types from source tree (same logic as Events)
+            branch_types: dict = {}
+            for bname in runs_tree.keys():
+                interp = runs_tree[bname].interpretation
+                if hasattr(interp, "content") and hasattr(interp.content, "to_dtype"):
+                    inner_dt = interp.content.to_dtype
+                    if inner_dt.names is not None:
+                        inner_dt = inner_dt[inner_dt.names[0]]
+                    branch_types[bname] = "var * " + str(inner_dt)
+                elif hasattr(interp, "to_dtype"):
+                    dt = interp.to_dtype
+                    if dt.names is not None:
+                        dt = dt[dt.names[0]]
+                    branch_types[bname] = dt
                 else:
-                    collapsed[branch] = arr[:1]
-            return collapsed
+                    continue  # skip unrecognized interpretation types
+
+            # Read with awkward library to properly handle jagged branches
+            runs_ak = runs_tree.arrays(list(branch_types.keys()), library="ak")
+
+            collapsed: dict = {}
+            for bname in branch_types:
+                arr = runs_ak[bname]
+                if any(s in bname for s in SUMMED_RUNS_BRANCHES):
+                    # Flat branches to sum (genEventSumw, genEventCount, etc.)
+                    collapsed[bname] = ak.Array([ak.sum(arr)])
+                elif bname in SUMMED_RUNS_JAGGED:
+                    # Jagged branches to element-wise sum
+                    collapsed[bname] = ak.Array([ak.sum(arr, axis=0)])
+                else:
+                    collapsed[bname] = arr[:1]
+
+            return collapsed, branch_types
     except Exception as e:
         logger.warning("Failed to read Runs from %s: %s", src_path, e)
         return None
@@ -325,8 +511,57 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
         if use_log:
             logger.info("    Keeping %d / %d branches", len(kept), len(tree.keys()))
 
+        # Detect shared NanoAOD counter branches (nJet, nMuon, etc.).
+        # These are auto-generated by mktree via counter_name, so we
+        # exclude them from branch_types and from the data we read/write.
+        counter_branches: set[str] = set()
+        kept_set = set(kept)
+        for bname in kept:
+            if not (bname.startswith("n") and len(bname) > 1 and bname[1].isupper()):
+                continue
+            coll = bname[1:]  # nJet → Jet
+            interp = tree[bname].interpretation
+            is_flat = hasattr(interp, "to_dtype") and not hasattr(interp, "content")
+            if is_flat and any(b.startswith(coll + "_") for b in kept_set):
+                counter_branches.add(bname)
+
+        data_branches = [b for b in kept if b not in counter_branches]
+        if use_log and counter_branches:
+            logger.info("    %d shared counters detected (auto-generated by mktree)",
+                        len(counter_branches))
+
         with uproot.recreate(dest_path) as fout:
-            first_chunk = True
+            # Build TTree branch types from the source tree so the output
+            # uses TTree (not RNTuple, which uproot 5.7+ writes by default
+            # for dict assignment).  This preserves the original NanoAOD
+            # float storage and avoids tiny precision changes at cut edges.
+            branch_types = {}
+            for bname in data_branches:
+                branch = tree[bname]
+                interp = branch.interpretation
+                # AsJagged wrapping AsDtype: variable-length branch (e.g. Jet_pt)
+                if hasattr(interp, "content") and hasattr(interp.content, "to_dtype"):
+                    inner_dt = interp.content.to_dtype
+                    if inner_dt.names is not None:
+                        inner_dt = inner_dt[inner_dt.names[0]]
+                    branch_types[bname] = "var * " + str(inner_dt)
+                # AsDtype: flat scalar branch (e.g. run, genWeight)
+                elif hasattr(interp, "to_dtype"):
+                    dt = interp.to_dtype
+                    if dt.names is not None:
+                        dt = dt[dt.names[0]]
+                    branch_types[bname] = dt
+                else:
+                    # Fallback: let uproot infer the type from the first chunk
+                    branch_types[bname] = interp
+
+            # Use shared NanoAOD counter names: Jet_pt → nJet (not nJet_pt).
+            # This triggers the monkey-patched dedup in _patch_uproot_shared_counters.
+            fout.mktree(
+                "Events", branch_types,
+                counter_name=lambda counted: "n" + counted.split("_")[0],
+            )
+
             chunk_num = 0
             for start in range(0, total_entries, STEP):
                 stop = min(start + STEP, total_entries)
@@ -334,15 +569,11 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
                 if not np.any(chunk_mask):
                     continue
                 chunk = tree.arrays(
-                    kept, entry_start=start, entry_stop=stop, library="ak"
+                    data_branches, entry_start=start, entry_stop=stop, library="ak"
                 )
                 chunk = chunk[chunk_mask]
                 chunk_dict = {f: chunk[f] for f in chunk.fields}
-                if first_chunk:
-                    fout["Events"] = chunk_dict
-                    first_chunk = False
-                else:
-                    fout["Events"].extend(chunk_dict)
+                fout["Events"].extend(chunk_dict)
                 del chunk, chunk_dict, chunk_mask
                 gc.collect()
                 chunk_num += 1
@@ -350,10 +581,12 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
                     logger.info("    Chunk %d written  [peak RSS: %.0f MB]",
                                 chunk_num, _mem_mb())
 
-            # Runs tree
-            runs_payload = read_runs_tree(src_path)
-            if runs_payload is not None:
-                fout["Runs"] = runs_payload
+            # Runs tree — also written as TTree via mktree
+            runs_result = read_runs_tree(src_path)
+            if runs_result is not None:
+                runs_data, runs_types = runs_result
+                fout.mktree("Runs", runs_types)
+                fout["Runs"].extend(runs_data)
             else:
                 logger.warning("No Runs tree in source; skipping Runs for %s", dest_path)
 

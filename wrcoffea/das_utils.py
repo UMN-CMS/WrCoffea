@@ -172,17 +172,27 @@ def das_files_to_urls(lfns: list[str]) -> list[str]:
     return [f"{REDIRECTOR}{lfn}" for lfn in lfns]
 
 
+def infer_base_dir(das_path: str) -> Path:
+    """Derive the era-level base directory from a DAS path.
+
+    Returns ``data/skims/<run>/<year>/<era>/``
+    (e.g. ``data/skims/Run3/2024/RunIII2024Summer24/``).
+
+    Falls back to ``data/skims/`` if the campaign
+    does not match any known era.
+    """
+    _, campaign, _ = validate_das_path(das_path)
+    era = era_from_campaign(campaign)
+    if era is not None:
+        return Path("data/skims") / ERA_SUBDIRS[era]
+    return Path("data/skims")
+
+
 def infer_output_dir(das_path: str) -> Path:
     """Derive default output directory from a DAS path.
 
-    Returns ``data/skims/<run>/<year>/<era>/<primary_dataset>/``
-    (e.g. ``data/skims/Run3/2024/RunIII2024Summer24/TTto2L2Nu_.../``).
-
-    Falls back to ``data/skims/<primary_dataset>/`` if the campaign
-    does not match any known era.
+    Returns ``data/skims/<run>/<year>/<era>/files/<primary_dataset>/``
+    (e.g. ``data/skims/Run3/2024/RunIII2024Summer24/files/TTto2L2Nu_.../``).
     """
-    primary_ds, campaign, _ = validate_das_path(das_path)
-    era = era_from_campaign(campaign)
-    if era is not None:
-        return Path("data/skims") / ERA_SUBDIRS[era] / primary_ds
-    return Path("data/skims") / primary_ds
+    primary_ds = primary_dataset_from_das_path(das_path)
+    return infer_base_dir(das_path) / "files" / primary_ds
