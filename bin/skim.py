@@ -401,15 +401,16 @@ def _check_log_completion(log_dir: Path, primary_ds: str, expected_indices: set[
             continue
 
         try:
-            # Read last non-empty line of .out
-            lines = out_file.read_text().strip().splitlines()
-            last_out = lines[-1].strip() if lines else ""
+            # Check if .out contains success marker
+            out_content = out_file.read_text()
         except Exception as e:
             failed.append((idx, f".out read error: {e}"))
             continue
 
-        if "Job completed successfully" not in last_out:
-            failed.append((idx, f".out last line: {last_out!r}"))
+        if "Job completed successfully" not in out_content:
+            lines = out_content.strip().splitlines()
+            last_out = lines[-1].strip() if lines else ""
+            failed.append((idx, f".out missing success marker, last line: {last_out!r}"))
             continue
 
         # Check .err file
