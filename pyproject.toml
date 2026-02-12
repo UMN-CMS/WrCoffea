@@ -6,17 +6,18 @@ build-backend = "setuptools.build_meta"
 name = "wrcoffea"
 version = "0.1.0"
 description = "Coffea-based WR→Nℓ→ℓℓjj analysis"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "coffea>=2025.7,<2026",
     "awkward>=2.8,<3",
     "hist>=2.8,<3",
     "correctionlib>=2.7,<3",
     "numpy>=2.0,<3",
-    "dask>=2024.8,<2026",
+    "dask[distributed]>=2024.8,<2026",
     "dask-awkward>=2025.5,<2026",
     "uproot>=5.6,<6",
     "pyyaml>=6.0",
+    "fsspec-xrootd",
 ]
 
 [project.optional-dependencies]

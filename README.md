@@ -231,14 +231,15 @@ There are two ways to set up your environment depending on whether you need Cond
 
 #### Option A: Local runs (no Condor)
 
-Requires Python 3.12 (available on FNAL LPC via CVMFS). Create and activate a virtual environment, then install the package:
+Requires Python 3.12 (available on FNAL LPC via CVMFS, since the system Python is 3.9). Create and activate a virtual environment, then install the package:
 ```bash
-python3 -m venv .venv
+/cvmfs/sft.cern.ch/lcg/releases/Python/3.12.11-531c6/x86_64-el9-gcc13-opt/bin/python3 -m venv --system-site-packages .venv
 source .venv/bin/activate
+pip install --upgrade pip setuptools
 pip install -e .
 ```
 
-> **Note:** The venv must be named `.venv` so that `analyze_all.sh` can auto-detect it. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
+> **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. The venv must be named `.venv` so that `analyze_all.sh` can auto-detect it. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
 
 #### Option B: Condor runs at FNAL LPC (recommended for production)
 
