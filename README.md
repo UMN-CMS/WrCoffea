@@ -20,6 +20,7 @@ For first-time setup (cloning, creating the venv, Condor environment), see **[Ge
 - [Quick Start](#quick-start) – Run the analyzer
 - [Skimming](#skimming) – Skim NanoAOD files for faster analysis
 - [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
+- [Using tmux](#using-tmux) – Keep long-running jobs alive after disconnecting
 - [Command Reference](#command-reference) – Complete flag reference and examples
 - [Repository Structure](#repository-structure) – Overview of how the codebase is organized
 - [Testing](#testing) – Running the automated test suite
@@ -71,7 +72,25 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # run with 
 bash bin/analyze_all.sh all RunIII2024Summer24 --condor              # run everything
 ```
 
-See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, tmux tips, and log locations.
+See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, and log locations.
+
+---
+
+### Using tmux
+
+Condor jobs can run for a long time. Use `tmux` to keep your session alive after disconnecting. Note which node you are on (`hostname`), since tmux sessions are local to that node — you must SSH back to the same node to reattach.
+
+```bash
+hostname                                                              # note your node (e.g., cmslpc320.fnal.gov)
+tmux new -s analysis                                                  # start a named session
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12           # enter container and run jobs
+```
+
+Detach with `Ctrl-b` then `d` and safely log out. To reattach later:
+```bash
+ssh cmslpc320.fnal.gov                                                # same node as before
+tmux attach -t analysis
+```
 
 ---
 

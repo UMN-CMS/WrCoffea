@@ -130,9 +130,9 @@ python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM \
 python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM --validate-only
 ```
 
-## Uploading to T2 Storage
+## Uploading to Remote Storage
 
-After merging, copy the merged files to a remote XRootD storage element for long-term storage and shared access.
+After merging, copy the merged files to a remote XRootD storage element for long-term storage and shared access. The examples below use T2 Wisconsin, but you can also upload to the LPC EOS area (e.g., `/store/user/<username>/...` on `cmseos.fnal.gov`). If using a different storage endpoint, you will need to modify `scripts/skimmed_fileset.py` to query the new location when regenerating filesets.
 
 **1. Check for existing files:**
 ```bash
@@ -180,11 +180,12 @@ Output directories are derived automatically from the DAS path. The campaign str
 
 ```
 data/skims/Run3/2024/RunIII2024Summer24/
-  TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/
-    TTto2L2Nu_..._skim0.tar.gz        # Condor output tarballs (before merge)
-    TTto2L2Nu_..._part1.root           # Merged output files (after merge)
-    TTto2L2Nu_..._part2.root
-    ...
+  files/
+    TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/
+      TTto2L2Nu_..._skim0.tar.gz      # Condor output tarballs (before merge)
+      TTto2L2Nu_..._part1.root         # Merged output files (after merge)
+      TTto2L2Nu_..._part2.root
+      ...
   jobs/
     TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/
       job.jdl                          # Condor job description
@@ -211,9 +212,9 @@ This mirrors the directory convention used for configs (`data/configs/Run3/2024/
 ## Condor Job Details
 
 Each skim job processes a single NanoAOD file. The JDL uses:
-- **Container:** `coffeateam/coffea-dask-almalinux8:latest` via Apptainer
+- **Container:** `coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12` via Apptainer
 - **Memory:** 4 GB
 - **Input:** Repo tarball (`WrCoffea.tar.gz`, ~24 MB)
 - **Output:** Per-file skim tarball (`<dataset>_skim<N>.tar.gz`)
 
-The worker script (`skim_job.sh`) activates the `.env` Python 3.10 venv that was built inside the coffea container, ensuring package versions match the container runtime.
+The worker script (`skim_job.sh`) activates the `.env` Python 3.12 venv that was built inside the coffea container, ensuring package versions match the container runtime.

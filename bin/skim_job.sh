@@ -1,21 +1,22 @@
 #!/bin/bash
 # Condor worker script for WrCoffea skimming.
 #
-# Called by HTCondor with arguments: FILE_NUM DAS_PATH
+# Called by HTCondor with arguments: FILE_NUM DAS_PATH LFN
 # Untars the WrCoffea repo, runs the skimmer on one file, tars the output.
 set -e
 
 FILE_NUM=$1
 DAS_PATH=$2
+LFN=$3
 
 # Extract primary dataset name from DAS path (first component)
 PRIMARY_DS=$(echo "$DAS_PATH" | cut -d'/' -f2)
 
 echo "-------------------------------------------"
-echo "Skim job: das_path=$DAS_PATH file=$FILE_NUM"
+echo "Skim job: das_path=$DAS_PATH file=$FILE_NUM lfn=$LFN"
 echo "-------------------------------------------"
 
-# Unpack the repo and activate the .env venv (Python 3.10, matches container)
+# Unpack the repo and activate the .env venv (Python 3.12, matches container)
 tar -xzf WrCoffea.tar.gz
 cd WrCoffea
 # The activate script has a hardcoded VIRTUAL_ENV from the build host.
@@ -24,8 +25,8 @@ export VIRTUAL_ENV="$(pwd)/.env"
 export PATH="$(pwd)/.env/bin:$PATH"
 export PYTHONPATH="$(pwd):$PYTHONPATH"
 
-# Run the skimmer for this single file
-python3 bin/skim.py run "$DAS_PATH" --start "$FILE_NUM" --end "$FILE_NUM" --local
+# Run the skimmer for this single file (--lfn skips DAS query on worker)
+python3 bin/skim.py run "$DAS_PATH" --local --lfn "$LFN"
 
 # Tar the output for Condor transfer
 cd data/skims
