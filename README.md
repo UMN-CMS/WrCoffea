@@ -9,6 +9,11 @@ Activate the virtual environment before running any commands:
 source .venv/bin/activate
 ```
 
+> **Tip:** Add this line to your `~/.bashrc` to activate automatically on login:
+> ```bash
+> cd /path/to/WrCoffea && source .venv/bin/activate && cd -
+> ```
+
 For first-time setup (cloning, creating the venv, Condor environment), see **[Getting Started](docs/getting_started.md)**.
 
 ## Table of Contents
@@ -16,7 +21,7 @@ For first-time setup (cloning, creating the venv, Condor environment), see **[Ge
 - [Skimming](#skimming) – Skim NanoAOD files for faster analysis
 - [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
 - [Command Reference](#command-reference) – Complete flag reference and examples
-- [Repository Structure](#-repository-structure) – Overview of how the codebase is organized
+- [Repository Structure](#repository-structure) – Overview of how the codebase is organized
 - [Testing](#testing) – Running the automated test suite
 - [Additional Documentation](#additional-documentation) – Links to detailed guides
 
@@ -24,7 +29,7 @@ For first-time setup (cloning, creating the venv, Condor environment), see **[Ge
 
 ## Quick Start
 
-First, create filesets (see [filesets.md](docs/filesets.md)). Then run the analyzer by specifying an era and sample:
+Run the analyzer by specifying an era and sample:
 
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # background
@@ -34,6 +39,8 @@ bash bin/analyze_all.sh all RunIII2024Summer24                                 #
 ```
 
 Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
+
+> **Note:** Filesets for existing eras are already included in the repository. To create filesets for a new era, see [filesets.md](docs/filesets.md).
 
 See **[Running the Analyzer](docs/run_analysis.md)** for full details: all samples, output customization, region selection, systematics, and batch processing.
 
@@ -146,7 +153,7 @@ bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 The repository follows a clean architecture separating executable scripts, core analysis logic, configuration, and documentation.
 
