@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Clear xrootd cache
+        run: pip cache remove xrootd || true
       - name: Install package with test dependencies
         run: pip install -e ".[test]"
       - name: Run tests
