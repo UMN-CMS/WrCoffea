@@ -2,10 +2,10 @@
 Tests for event weight computation in WrAnalysis.build_event_weights()
 
 Critical functionality:
-- MC normalization (xsec × lumi / genEventSumw)
+- MC normalization (genWeight * xsec * lumi * 1000 / genEventSumw)
 - Pileup reweighting
 - Lepton scale factors (RECO, ID, ISO, trigger)
-- Systematic variations
+- Systematic variations (lumi, pileup, SF)
 - Data vs MC path separation
 """
 
@@ -13,380 +13,505 @@ import pytest
 import numpy as np
 import awkward as ak
 from coffea.analysis_tools import Weights
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 from wrcoffea.analyzer import WrAnalysis
 
 
-@pytest.fixture
-def mock_events():
-    """Create mock NanoAOD events for testing weight computation."""
-    n_events = 100
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+N_EVENTS = 100
+
+# Use an era that IS configured in config.yaml for muon, electron, pileup JSONs.
+ERA = "RunIII2024Summer24"
+
+# Expected lumi from config.yaml (fb^-1).  The code multiplies by 1000 to
+# get pb^-1 inside build_event_weights.
+LUMI_FB = 109.08
+
+
+class MockEvents:
+    """Minimal mock that looks like a NanoAOD events object."""
+    pass
+
+
+def _make_mock_events(n=N_EVENTS, gen_weights=None):
+    """Return a MockEvents object with genWeight and len() support."""
+    ev = MockEvents()
+    if gen_weights is None:
+        gen_weights = np.random.default_rng(42).normal(1.0, 0.1, n)
+    ev.genWeight = ak.Array(gen_weights)
+    # Make len(ev) work.
+    type(ev).__len__ = lambda self: len(self.genWeight)
+    return ev
+
+
+def _make_metadata(era=ERA, xsec=1234.5, sumw=50000.0, sample="TestSample"):
+    """Return metadata dict that build_event_weights expects."""
     return {
-        "genWeight": ak.Array(np.random.normal(1.0, 0.1, n_events)),
-        "Pileup_nTrueInt": ak.Array(np.random.uniform(10, 50, n_events)),
-        "Electron": {
-            "pt": ak.Array([[45.0, 35.0], [50.0], [], [60.0, 40.0]] * 25),
-            "eta": ak.Array([[1.2, -1.5], [0.8], [], [2.0, -2.1]] * 25),
-        },
-        "Muon": {
-            "pt": ak.Array([[55.0], [65.0, 45.0], [70.0, 50.0, 40.0], []] * 25),
-            "eta": ak.Array([[0.5], [1.0, -1.2], [1.5, -0.8, 2.0], []] * 25),
-        },
+        "era": era,
+        "xsec": xsec,
+        "genEventSumw": sumw,
+        "sample": sample,
     }
 
 
-@pytest.fixture
-def mock_metadata():
-    """Create mock metadata for MC normalization."""
-    return {
-        "xsec": 1234.5,  # pb
-        "genEventSumw": 50000.0,
-        "is_mc": True,
-    }
+def _make_tight_muons(n=N_EVENTS):
+    """Return an awkward record array mimicking tight muons with pt/eta."""
+    return ak.zip({
+        "pt": ak.Array([[50.0, 40.0]] * n),
+        "eta": ak.Array([[1.0, -1.0]] * n),
+    })
 
+
+def _make_tight_electrons(n=N_EVENTS):
+    """Return an awkward record array mimicking tight electrons with pt/eta/deltaEtaSC."""
+    return ak.zip({
+        "pt": ak.Array([[45.0, 35.0]] * n),
+        "eta": ak.Array([[1.2, -1.5]] * n),
+        "deltaEtaSC": ak.Array([[0.01, -0.02]] * n),
+    })
+
+
+def _sf_triple(n, nom_val=1.0, up_val=1.01, down_val=0.99):
+    """Return a (nominal, up, down) tuple of flat numpy arrays."""
+    return (
+        np.full(n, nom_val, dtype=np.float64),
+        np.full(n, up_val, dtype=np.float64),
+        np.full(n, down_val, dtype=np.float64),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def analyzer():
-    """Create WrAnalysis instance for testing."""
-    return WrAnalysis(era="RunIII2024Summer24", region="both", systematics=[])
+    """WrAnalysis with no systematics enabled."""
+    return WrAnalysis(mass_point=None, enabled_systs=[], region="both")
 
+
+@pytest.fixture
+def mock_events():
+    """Mock events object with genWeight."""
+    return _make_mock_events()
+
+
+@pytest.fixture
+def metadata():
+    """Standard MC metadata."""
+    return _make_metadata()
+
+
+# ---------------------------------------------------------------------------
+# MC weight tests
+# ---------------------------------------------------------------------------
 
 class TestEventWeightsMC:
     """Test event weight computation for MC samples."""
 
-    def test_mc_normalization_formula(self, analyzer, mock_events, mock_metadata):
-        """Test MC weight = genWeight × xsec × lumi / genEventSumw."""
-        n_events = len(mock_events["genWeight"])
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_mc_normalization_formula(self, mock_pu, analyzer, mock_events, metadata):
+        """Test MC weight = genWeight * xsec * lumi * 1000 / genEventSumw."""
+        n = len(mock_events)
+        mock_pu.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
 
-        # Mock tight leptons (empty for simplicity)
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
-
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=np.ones(n_events)):
-            weights = analyzer.build_event_weights(
-                mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
-            )
-
-        # Extract nominal weights
-        nominal_weights = weights.weight()
-
-        # Verify formula: genWeight × xsec × lumi / genEventSumw
-        lumi = 35000.0  # RunIII2024Summer24 lumi in pb^-1
-        expected_factor = mock_metadata["xsec"] * lumi / mock_metadata["genEventSumw"]
-        expected_weights = mock_events["genWeight"] * expected_factor
-
-        np.testing.assert_allclose(
-            nominal_weights,
-            expected_weights,
-            rtol=1e-5,
-            err_msg="MC normalization formula incorrect"
+        weights, syst_weights = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
         )
 
-    def test_zero_sumw_handling(self, analyzer, mock_events):
-        """Test graceful handling of zero genEventSumw (avoid division by zero)."""
-        metadata_zero_sumw = {"xsec": 100.0, "genEventSumw": 0.0, "is_mc": True}
-        n_events = len(mock_events["genWeight"])
+        nominal = weights.weight()
 
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
+        expected_factor = (
+            metadata["xsec"] * LUMI_FB * 1000.0 / metadata["genEventSumw"]
+        )
+        expected = np.asarray(mock_events.genWeight) * expected_factor
 
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=np.ones(n_events)):
-            weights = analyzer.build_event_weights(
-                mock_events, tight_electrons, tight_muons, ak4_jets, metadata_zero_sumw
-            )
+        np.testing.assert_allclose(
+            nominal, expected, rtol=1e-5,
+            err_msg="MC normalization formula incorrect",
+        )
 
-        # Should return all zeros or handle gracefully (not crash)
-        nominal_weights = weights.weight()
-        assert len(nominal_weights) == n_events
-        assert not np.any(np.isnan(nominal_weights)), "NaN weights from zero sumw"
-        assert not np.any(np.isinf(nominal_weights)), "Inf weights from zero sumw"
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_return_type_is_tuple(self, mock_pu, analyzer, mock_events, metadata):
+        """build_event_weights returns (Weights, dict)."""
+        n = len(mock_events)
+        mock_pu.return_value = _sf_triple(n)
 
-    def test_pileup_reweighting_applied(self, analyzer, mock_events, mock_metadata):
-        """Test that pileup weights are multiplied into total weight."""
-        n_events = len(mock_events["genWeight"])
-        pileup_weights = np.random.uniform(0.8, 1.2, n_events)
+        result = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
+        )
 
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
+        assert isinstance(result, tuple) and len(result) == 2
+        weights, syst_weights = result
+        assert isinstance(weights, Weights)
+        assert isinstance(syst_weights, dict)
+        assert "Nominal" in syst_weights
 
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=pileup_weights):
-            weights = analyzer.build_event_weights(
-                mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
-            )
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_zero_sumw_raises(self, mock_pu, analyzer, mock_events):
+        """Zero genEventSumw should raise ZeroDivisionError."""
+        n = len(mock_events)
+        mock_pu.return_value = _sf_triple(n)
+        bad_meta = _make_metadata(sumw=0.0)
 
-        # Check pileup weight is in the Weights object
+        with pytest.raises(ZeroDivisionError):
+            analyzer.build_event_weights(mock_events, bad_meta, is_mc=True)
+
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_pileup_reweighting_applied(self, mock_pu, analyzer, mock_events, metadata):
+        """Pileup weight is multiplied into the total weight."""
+        n = len(mock_events)
+        pu_nom = np.random.default_rng(7).uniform(0.8, 1.2, n)
+        pu_up = pu_nom * 1.05
+        pu_down = pu_nom * 0.95
+        mock_pu.return_value = (pu_nom, pu_up, pu_down)
+
+        weights, _ = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
+        )
+
+        # The pileup weight should be registered in the Weights object.
         assert "pileup" in weights.weightStatistics
 
-        # Nominal weight should include pileup
-        lumi = 35000.0
-        mc_factor = mock_metadata["xsec"] * lumi / mock_metadata["genEventSumw"]
-        expected_weights = mock_events["genWeight"] * mc_factor * pileup_weights
+        # Nominal weight should include pileup.
+        factor = metadata["xsec"] * LUMI_FB * 1000.0 / metadata["genEventSumw"]
+        expected = np.asarray(mock_events.genWeight) * factor * pu_nom
 
         np.testing.assert_allclose(
-            weights.weight(),
-            expected_weights,
-            rtol=1e-5,
-            err_msg="Pileup weights not applied correctly"
+            weights.weight(), expected, rtol=1e-5,
+            err_msg="Pileup weights not applied correctly",
         )
 
-    @patch("wrcoffea.scale_factors.muon_sf")
-    @patch("wrcoffea.scale_factors.muon_trigger_sf")
-    def test_muon_sf_components_stacked(
-        self, mock_trig_sf, mock_muon_sf, analyzer, mock_events, mock_metadata
-    ):
-        """Test muon SF components (RECO, ID, ISO) are multiplied together."""
-        n_events = len(mock_events["genWeight"])
+    @patch("wrcoffea.analyzer.muon_trigger_sf")
+    @patch("wrcoffea.analyzer.muon_sf")
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_muon_sf_components(self, mock_pu, mock_mu_sf, mock_mu_trig,
+                                analyzer, mock_events, metadata):
+        """Muon RECO, ID, ISO, trigger SFs are registered as independent weights."""
+        n = len(mock_events)
+        mock_pu.return_value = _sf_triple(n)
 
-        # Mock SF returns: (nominal, up, down) for each component
-        sf_reco = (np.ones(n_events) * 0.98, np.ones(n_events) * 0.99, np.ones(n_events) * 0.97)
-        sf_id = (np.ones(n_events) * 0.95, np.ones(n_events) * 0.96, np.ones(n_events) * 0.94)
-        sf_iso = (np.ones(n_events) * 0.97, np.ones(n_events) * 0.98, np.ones(n_events) * 0.96)
-        sf_trig = (np.ones(n_events) * 0.93, np.ones(n_events) * 0.94, np.ones(n_events) * 0.92)
-
-        mock_muon_sf.return_value = (sf_reco, sf_id, sf_iso)
-        mock_trig_sf.return_value = sf_trig
-
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {
-            "pt": ak.Array([[50.0] for _ in range(n_events)]),
-            "eta": ak.Array([[1.0] for _ in range(n_events)]),
+        # muon_sf returns dict of component -> (nom, up, down)
+        mock_mu_sf.return_value = {
+            "reco": _sf_triple(n, 0.98, 0.99, 0.97),
+            "id":   _sf_triple(n, 0.95, 0.96, 0.94),
+            "iso":  _sf_triple(n, 0.97, 0.98, 0.96),
         }
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
+        mock_mu_trig.return_value = _sf_triple(n, 0.93, 0.94, 0.92)
 
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=np.ones(n_events)):
-            weights = analyzer.build_event_weights(
-                mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
-            )
+        tight_muons = _make_tight_muons(n)
 
-        # Check all muon SF components are present
-        assert "muon_sf_RECO" in weights.weightStatistics
-        assert "muon_sf_ID" in weights.weightStatistics
-        assert "muon_sf_ISO" in weights.weightStatistics
-        assert "muon_trigger_sf" in weights.weightStatistics
-
-        # Nominal weight should include product of all SFs
-        lumi = 35000.0
-        mc_factor = mock_metadata["xsec"] * lumi / mock_metadata["genEventSumw"]
-        expected_sf_product = sf_reco[0] * sf_id[0] * sf_iso[0] * sf_trig[0]
-        expected_weights = mock_events["genWeight"] * mc_factor * expected_sf_product
-
-        np.testing.assert_allclose(
-            weights.weight(),
-            expected_weights,
-            rtol=1e-4,
-            err_msg="Muon SF components not stacked correctly"
+        weights, syst_weights = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
+            tight_muons=tight_muons,
         )
 
+        # All muon SF components should be in weight statistics.
+        assert "muon_reco_sf" in weights.weightStatistics
+        assert "muon_id_sf" in weights.weightStatistics
+        assert "muon_iso_sf" in weights.weightStatistics
+        assert "muon_trig_sf" in weights.weightStatistics
+
+        # Nominal weight should include product of all SFs.
+        factor = metadata["xsec"] * LUMI_FB * 1000.0 / metadata["genEventSumw"]
+        sf_product = 0.98 * 0.95 * 0.97 * 0.93
+        expected = np.asarray(mock_events.genWeight) * factor * sf_product
+
+        np.testing.assert_allclose(
+            weights.weight(), expected, rtol=1e-4,
+            err_msg="Muon SF components not stacked correctly",
+        )
+
+    @patch("wrcoffea.analyzer.electron_trigger_sf")
+    @patch("wrcoffea.analyzer.electron_id_sf")
+    @patch("wrcoffea.analyzer.electron_reco_sf")
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_electron_sf_components(self, mock_pu, mock_e_reco, mock_e_id,
+                                    mock_e_trig, analyzer, mock_events, metadata):
+        """Electron RECO, ID, trigger SFs are registered as independent weights."""
+        n = len(mock_events)
+        mock_pu.return_value = _sf_triple(n)
+        mock_e_reco.return_value = _sf_triple(n, 0.98, 0.99, 0.97)
+        mock_e_id.return_value = _sf_triple(n, 0.97, 0.98, 0.96)
+        mock_e_trig.return_value = _sf_triple(n, 0.96, 0.97, 0.95)
+
+        tight_electrons = _make_tight_electrons(n)
+
+        weights, syst_weights = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
+            tight_electrons=tight_electrons,
+        )
+
+        assert "electron_reco_sf" in weights.weightStatistics
+        assert "electron_id_sf" in weights.weightStatistics
+        assert "electron_trig_sf" in weights.weightStatistics
+
+        factor = metadata["xsec"] * LUMI_FB * 1000.0 / metadata["genEventSumw"]
+        sf_product = 0.98 * 0.97 * 0.96
+        expected = np.asarray(mock_events.genWeight) * factor * sf_product
+
+        np.testing.assert_allclose(
+            weights.weight(), expected, rtol=1e-4,
+            err_msg="Electron SF components not stacked correctly",
+        )
+
+
+# ---------------------------------------------------------------------------
+# Data weight tests
+# ---------------------------------------------------------------------------
 
 class TestEventWeightsData:
     """Test event weight computation for data samples."""
 
-    def test_data_weights_all_ones(self, analyzer, mock_events):
-        """Test that data weights are exactly 1.0 (no genWeight, SF, pileup)."""
-        metadata_data = {"is_mc": False}
-        n_events = len(mock_events["genWeight"])
+    def test_data_weights_all_ones(self, analyzer):
+        """Data weights are exactly 1.0."""
+        n = N_EVENTS
+        ev = _make_mock_events(n)
+        meta = _make_metadata()
 
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
-
-        weights = analyzer.build_event_weights(
-            mock_events, tight_electrons, tight_muons, ak4_jets, metadata_data
+        weights, syst_weights = analyzer.build_event_weights(
+            ev, meta, is_mc=False,
         )
 
-        # Data should have weight = 1.0 for all events
         np.testing.assert_array_equal(
-            weights.weight(),
-            np.ones(n_events),
-            err_msg="Data weights should all be 1.0"
+            weights.weight(), np.ones(n),
+            err_msg="Data weights should all be 1.0",
         )
+        assert "Nominal" in syst_weights
 
-        # Should have no weight variations for data
-        assert len(weights.variations) == 0 or all(
-            "nominal" in var for var in weights.variations
-        ), "Data should not have systematic weight variations"
+    def test_data_no_sf_called(self, analyzer):
+        """Scale factor functions are never called for data."""
+        n = N_EVENTS
+        ev = _make_mock_events(n)
+        meta = _make_metadata()
+        tight_muons = _make_tight_muons(n)
+        tight_electrons = _make_tight_electrons(n)
 
-    def test_data_no_sf_applied(self, analyzer, mock_events):
-        """Test that scale factors are not applied to data."""
-        metadata_data = {"is_mc": False}
-        n_events = len(mock_events["genWeight"])
+        with patch("wrcoffea.analyzer.muon_sf") as mock_mu, \
+             patch("wrcoffea.analyzer.electron_reco_sf") as mock_e_reco, \
+             patch("wrcoffea.analyzer.pileup_weight") as mock_pu:
 
-        tight_electrons = {
-            "pt": ak.Array([[50.0] for _ in range(n_events)]),
-            "eta": ak.Array([[1.0] for _ in range(n_events)]),
-        }
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
-
-        with patch("wrcoffea.scale_factors.electron_id_sf") as mock_sf:
-            weights = analyzer.build_event_weights(
-                mock_events, tight_electrons, tight_muons, ak4_jets, metadata_data
+            weights, _ = analyzer.build_event_weights(
+                ev, meta, is_mc=False,
+                tight_muons=tight_muons, tight_electrons=tight_electrons,
             )
 
-            # SF functions should never be called for data
-            mock_sf.assert_not_called()
+            mock_mu.assert_not_called()
+            mock_e_reco.assert_not_called()
+            mock_pu.assert_not_called()
 
-        np.testing.assert_array_equal(weights.weight(), np.ones(n_events))
+        np.testing.assert_array_equal(weights.weight(), np.ones(n))
 
+    def test_data_no_systematic_variations(self, analyzer):
+        """Data syst_weights dict contains only Nominal."""
+        n = N_EVENTS
+        ev = _make_mock_events(n)
+        meta = _make_metadata()
+
+        _, syst_weights = analyzer.build_event_weights(
+            ev, meta, is_mc=False,
+        )
+
+        assert set(syst_weights.keys()) == {"Nominal"}
+
+
+# ---------------------------------------------------------------------------
+# Systematic weight tests
+# ---------------------------------------------------------------------------
 
 class TestSystematicWeights:
     """Test systematic weight variations."""
 
-    def test_lumi_systematic_variations(self, mock_events, mock_metadata):
-        """Test luminosity up/down variations (typically ±2.5%)."""
-        analyzer = WrAnalysis(era="RunIII2024Summer24", region="both", systematics=["lumi"])
-        n_events = len(mock_events["genWeight"])
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_lumi_systematic_variations(self, mock_pu):
+        """Lumi up/down variations are present and have correct direction."""
+        n = N_EVENTS
+        mock_pu.return_value = _sf_triple(n)
+        ev = _make_mock_events(n)
+        meta = _make_metadata()
 
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
-
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=np.ones(n_events)):
-            weights = analyzer.build_event_weights(
-                mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
-            )
-
-        # Check lumi variations exist
-        variations = weights.variations
-        assert "lumiUp" in variations, "lumiUp variation missing"
-        assert "lumiDown" in variations, "lumiDown variation missing"
-
-        # Lumi up should be > nominal, lumi down should be < nominal
-        nominal = weights.weight()
-        lumi_up = weights.weight("lumiUp")
-        lumi_down = weights.weight("lumiDown")
-
-        assert np.all(lumi_up > nominal), "lumiUp should increase weights"
-        assert np.all(lumi_down < nominal), "lumiDown should decrease weights"
-
-        # Check typical lumi uncertainty magnitude (~2.5%)
-        relative_up = (lumi_up - nominal) / nominal
-        relative_down = (nominal - lumi_down) / nominal
-        np.testing.assert_allclose(relative_up, 0.025, atol=0.01)
-        np.testing.assert_allclose(relative_down, 0.025, atol=0.01)
-
-    @patch("wrcoffea.scale_factors.pileup_weight")
-    def test_pileup_systematic_variations(self, mock_pu_weight, mock_events, mock_metadata):
-        """Test pileup up/down variations."""
-        analyzer = WrAnalysis(era="RunIII2024Summer24", region="both", systematics=["pileup"])
-        n_events = len(mock_events["genWeight"])
-
-        # Mock pileup weight returns: (nominal, up, down)
-        pu_nominal = np.ones(n_events)
-        pu_up = np.ones(n_events) * 1.05
-        pu_down = np.ones(n_events) * 0.95
-        mock_pu_weight.return_value = (pu_nominal, pu_up, pu_down)
-
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
-
-        weights = analyzer.build_event_weights(
-            mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
+        analyzer = WrAnalysis(mass_point=None, enabled_systs=["lumi"], region="both")
+        weights, syst_weights = analyzer.build_event_weights(
+            ev, meta, is_mc=True,
         )
 
-        # Check pileup variations exist
-        assert "pileupUp" in weights.variations
-        assert "pileupDown" in weights.variations
+        assert "LumiUp" in syst_weights, "LumiUp variation missing"
+        assert "LumiDown" in syst_weights, "LumiDown variation missing"
 
-        # Verify up/down weights match expected values
-        nominal = weights.weight()
-        weight_up = weights.weight("pileupUp")
-        weight_down = weights.weight("pileupDown")
+        nominal = np.asarray(syst_weights["Nominal"])
+        lumi_up = np.asarray(syst_weights["LumiUp"])
+        lumi_down = np.asarray(syst_weights["LumiDown"])
 
-        # Up variation should use pu_up, down should use pu_down
-        lumi = 35000.0
-        mc_factor = mock_metadata["xsec"] * lumi / mock_metadata["genEventSumw"]
-        expected_up = mock_events["genWeight"] * mc_factor * pu_up
-        expected_down = mock_events["genWeight"] * mc_factor * pu_down
+        # Lumi up should be > nominal, lumi down should be < nominal
+        # (for events with positive weights).
+        pos_mask = nominal > 0
+        assert np.all(lumi_up[pos_mask] > nominal[pos_mask]), "LumiUp should increase weights"
+        assert np.all(lumi_down[pos_mask] < nominal[pos_mask]), "LumiDown should decrease weights"
 
-        np.testing.assert_allclose(weight_up, expected_up, rtol=1e-5)
-        np.testing.assert_allclose(weight_down, expected_down, rtol=1e-5)
+        # Check typical lumi uncertainty magnitude (~1.4% for RunIII2024Summer24).
+        relative_up = (lumi_up[pos_mask] - nominal[pos_mask]) / nominal[pos_mask]
+        np.testing.assert_allclose(relative_up, 0.014, atol=0.005)
 
-    @patch("wrcoffea.scale_factors.muon_sf")
-    def test_sf_systematic_variations(self, mock_sf, mock_events, mock_metadata):
-        """Test scale factor systematic variations."""
-        analyzer = WrAnalysis(era="RunIII2024Summer24", region="both", systematics=["sf"])
-        n_events = len(mock_events["genWeight"])
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_pileup_systematic_variations(self, mock_pu):
+        """Pileup up/down variations are present in syst_weights."""
+        n = N_EVENTS
+        pu_nom = np.ones(n)
+        pu_up = np.ones(n) * 1.05
+        pu_down = np.ones(n) * 0.95
+        mock_pu.return_value = (pu_nom, pu_up, pu_down)
 
-        # Mock SF with variations: (nominal, up, down) for each component
-        sf_reco = (np.ones(n_events) * 0.98, np.ones(n_events) * 0.99, np.ones(n_events) * 0.97)
-        sf_id = (np.ones(n_events), np.ones(n_events), np.ones(n_events))
-        sf_iso = (np.ones(n_events), np.ones(n_events), np.ones(n_events))
-        mock_sf.return_value = (sf_reco, sf_id, sf_iso)
+        ev = _make_mock_events(n)
+        meta = _make_metadata()
 
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {
-            "pt": ak.Array([[50.0] for _ in range(n_events)]),
-            "eta": ak.Array([[1.0] for _ in range(n_events)]),
+        analyzer = WrAnalysis(mass_point=None, enabled_systs=["pileup"], region="both")
+        weights, syst_weights = analyzer.build_event_weights(
+            ev, meta, is_mc=True,
+        )
+
+        assert "PileupUp" in syst_weights
+        assert "PileupDown" in syst_weights
+
+        # Verify the up/down variations reflect the pileup changes.
+        factor = meta["xsec"] * LUMI_FB * 1000.0 / meta["genEventSumw"]
+        gen = np.asarray(ev.genWeight)
+        expected_up = gen * factor * pu_up
+        expected_down = gen * factor * pu_down
+
+        np.testing.assert_allclose(
+            np.asarray(syst_weights["PileupUp"]), expected_up, rtol=1e-5,
+        )
+        np.testing.assert_allclose(
+            np.asarray(syst_weights["PileupDown"]), expected_down, rtol=1e-5,
+        )
+
+    @patch("wrcoffea.analyzer.muon_trigger_sf")
+    @patch("wrcoffea.analyzer.muon_sf")
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_sf_systematic_variations(self, mock_pu, mock_mu_sf, mock_mu_trig):
+        """Scale-factor systematic variations appear in syst_weights."""
+        n = N_EVENTS
+        mock_pu.return_value = _sf_triple(n)
+        mock_mu_sf.return_value = {
+            "reco": _sf_triple(n, 0.98, 0.99, 0.97),
+            "id":   _sf_triple(n, 1.0, 1.0, 1.0),
+            "iso":  _sf_triple(n, 1.0, 1.0, 1.0),
         }
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
+        mock_mu_trig.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
 
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=np.ones(n_events)):
-            with patch("wrcoffea.scale_factors.muon_trigger_sf", return_value=(np.ones(n_events), np.ones(n_events), np.ones(n_events))):
-                weights = analyzer.build_event_weights(
-                    mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
-                )
+        ev = _make_mock_events(n)
+        meta = _make_metadata()
+        tight_muons = _make_tight_muons(n)
 
-        # Check SF variations exist
-        assert "muon_sf_RECOUp" in weights.variations
-        assert "muon_sf_RECODown" in weights.variations
+        analyzer = WrAnalysis(mass_point=None, enabled_systs=["sf"], region="both")
+        weights, syst_weights = analyzer.build_event_weights(
+            ev, meta, is_mc=True,
+            tight_muons=tight_muons,
+        )
 
+        assert "MuonRecoSfUp" in syst_weights
+        assert "MuonRecoSfDown" in syst_weights
+        assert "MuonTrigSfUp" in syst_weights
+        assert "MuonTrigSfDown" in syst_weights
+
+
+# ---------------------------------------------------------------------------
+# Edge cases
+# ---------------------------------------------------------------------------
 
 class TestEdgeCases:
     """Test edge cases and error handling."""
 
-    def test_empty_lepton_collections(self, analyzer, mock_events, mock_metadata):
-        """Test handling of events with no tight leptons."""
-        n_events = len(mock_events["genWeight"])
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_no_leptons_passed(self, mock_pu, analyzer, mock_events, metadata):
+        """When no tight leptons are passed, only event_weight + pileup are set."""
+        n = len(mock_events)
+        mock_pu.return_value = _sf_triple(n)
 
-        # All empty lepton collections
-        tight_electrons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        tight_muons = {"pt": ak.Array([[] for _ in range(n_events)])}
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
+        weights, syst_weights = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
+            # tight_muons=None, tight_electrons=None  (defaults)
+        )
 
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=np.ones(n_events)):
-            weights = analyzer.build_event_weights(
-                mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
-            )
+        assert len(weights.weight()) == n
+        assert not np.any(np.isnan(np.asarray(weights.weight())))
+        assert "Nominal" in syst_weights
 
-        # Should not crash, weights should be valid
-        assert len(weights.weight()) == n_events
-        assert not np.any(np.isnan(weights.weight()))
-
-    def test_mixed_electron_muon_events(self, analyzer, mock_events, mock_metadata):
-        """Test events with both electrons and muons (should apply both SFs)."""
-        n_events = len(mock_events["genWeight"])
-
-        tight_electrons = {
-            "pt": ak.Array([[50.0] if i % 2 == 0 else [] for i in range(n_events)]),
-            "eta": ak.Array([[1.0] if i % 2 == 0 else [] for i in range(n_events)]),
+    @patch("wrcoffea.analyzer.electron_trigger_sf")
+    @patch("wrcoffea.analyzer.electron_id_sf")
+    @patch("wrcoffea.analyzer.electron_reco_sf")
+    @patch("wrcoffea.analyzer.muon_trigger_sf")
+    @patch("wrcoffea.analyzer.muon_sf")
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_both_lepton_flavors(self, mock_pu, mock_mu_sf, mock_mu_trig,
+                                 mock_e_reco, mock_e_id, mock_e_trig,
+                                 analyzer, mock_events, metadata):
+        """Both muon and electron SFs are applied when both collections are provided."""
+        n = len(mock_events)
+        mock_pu.return_value = _sf_triple(n)
+        mock_mu_sf.return_value = {
+            "reco": _sf_triple(n, 0.95, 1.0, 0.90),
+            "id":   _sf_triple(n, 1.0, 1.0, 1.0),
+            "iso":  _sf_triple(n, 1.0, 1.0, 1.0),
         }
-        tight_muons = {
-            "pt": ak.Array([[60.0] if i % 2 == 1 else [] for i in range(n_events)]),
-            "eta": ak.Array([[1.2] if i % 2 == 1 else [] for i in range(n_events)]),
-        }
-        ak4_jets = {"pt": ak.Array([[] for _ in range(n_events)])}
+        mock_mu_trig.return_value = _sf_triple(n, 0.94, 1.0, 0.88)
+        mock_e_reco.return_value = _sf_triple(n, 0.98, 1.0, 0.96)
+        mock_e_id.return_value = _sf_triple(n, 0.97, 1.0, 0.94)
+        mock_e_trig.return_value = _sf_triple(n, 0.96, 1.0, 0.92)
 
-        with patch("wrcoffea.scale_factors.pileup_weight", return_value=np.ones(n_events)):
-            with patch("wrcoffea.scale_factors.electron_id_sf", return_value=(np.ones(n_events) * 0.97, np.ones(n_events), np.ones(n_events))):
-                with patch("wrcoffea.scale_factors.electron_reco_sf", return_value=(np.ones(n_events) * 0.98, np.ones(n_events), np.ones(n_events))):
-                    with patch("wrcoffea.scale_factors.electron_trigger_sf", return_value=(np.ones(n_events) * 0.96, np.ones(n_events), np.ones(n_events))):
-                        with patch("wrcoffea.scale_factors.muon_sf", return_value=((np.ones(n_events) * 0.95, np.ones(n_events), np.ones(n_events)), (np.ones(n_events), np.ones(n_events), np.ones(n_events)), (np.ones(n_events), np.ones(n_events), np.ones(n_events)))):
-                            with patch("wrcoffea.scale_factors.muon_trigger_sf", return_value=(np.ones(n_events) * 0.94, np.ones(n_events), np.ones(n_events))):
-                                weights = analyzer.build_event_weights(
-                                    mock_events, tight_electrons, tight_muons, ak4_jets, mock_metadata
-                                )
+        tight_muons = _make_tight_muons(n)
+        tight_electrons = _make_tight_electrons(n)
 
-        # Both electron and muon SFs should be in weight statistics
+        weights, syst_weights = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
+            tight_muons=tight_muons, tight_electrons=tight_electrons,
+        )
+
         weight_names = set(weights.weightStatistics.keys())
-        assert any("electron" in name for name in weight_names), "No electron SF applied"
         assert any("muon" in name for name in weight_names), "No muon SF applied"
+        assert any("electron" in name for name in weight_names), "No electron SF applied"
 
-        # Weights should still be valid
-        assert len(weights.weight()) == n_events
-        assert not np.any(np.isnan(weights.weight()))
+        assert len(weights.weight()) == n
+        assert not np.any(np.isnan(np.asarray(weights.weight())))
+
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_compute_sumw_mode(self, mock_pu):
+        """compute_sumw=True omits the /sumw division."""
+        n = N_EVENTS
+        mock_pu.return_value = _sf_triple(n)
+        ev = _make_mock_events(n)
+        meta = _make_metadata(sumw=50000.0)
+
+        analyzer_sumw = WrAnalysis(
+            mass_point=None, enabled_systs=[], region="both", compute_sumw=True,
+        )
+        weights, _ = analyzer_sumw.build_event_weights(
+            ev, meta, is_mc=True,
+        )
+
+        # Without /sumw, weight = genWeight * xsec * lumi * 1000
+        expected = np.asarray(ev.genWeight) * meta["xsec"] * LUMI_FB * 1000.0
+
+        np.testing.assert_allclose(
+            weights.weight(), expected, rtol=1e-5,
+            err_msg="compute_sumw mode should omit /sumw normalization",
+        )
+
+    def test_unconfigured_era_no_pileup(self, analyzer):
+        """An era not in PILEUP_JSONS should skip pileup weight without error."""
+        n = N_EVENTS
+        ev = _make_mock_events(n)
+        # Use an era that is in LUMIS but not in PILEUP_JSONS.
+        meta = _make_metadata(era="Run3Summer22")
+
+        weights, syst_weights = analyzer.build_event_weights(
+            ev, meta, is_mc=True,
+        )
+
+        # Pileup should NOT be in the weight statistics.
+        assert "pileup" not in weights.weightStatistics
+        assert len(weights.weight()) == n

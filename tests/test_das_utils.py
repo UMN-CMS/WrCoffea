@@ -172,8 +172,9 @@ class TestInferOutputDir:
         result = infer_output_dir(
             "/TTto2L2Nu_TuneCP5/Run3Summer24/NANOAODSIM"
         )
-        assert result == Path("data/skims/TTto2L2Nu_TuneCP5")
+        # Campaign "Run3Summer24" has no "NanoAOD" substring → fallback base
+        assert result == Path("data/skims/files/TTto2L2Nu_TuneCP5")
 
     def test_data_dataset(self):
         result = infer_output_dir("/EGamma0/Run2024C-v1/NANOAOD")
-        assert result == Path("data/skims/EGamma0")
+        assert result == Path("data/skims/files/EGamma0")
