@@ -151,7 +151,7 @@ done
 
 **3. Upload new files:**
 ```bash
-LOCAL_DIR=data/skims/Run3/2024/RunIII2024Summer24/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8
+LOCAL_DIR=data/skims/Run3/2024/RunIII2024Summer24/files/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8
 REMOTE_URL=root://$REMOTE_HOST/$REMOTE_PATH
 
 for f in $LOCAL_DIR/*.root; do
