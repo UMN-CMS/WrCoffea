@@ -65,17 +65,3 @@ Authenticate for accessing grid resources (required for both local and Condor ru
 ```bash
 voms-proxy-init --rfc --voms cms -valid 192:00
 ```
-
-## ROOT
-
-Source the appropriate LCG release for ROOT functionality (only needed outside the Apptainer container):
-
-**For FNAL LPC (el9 nodes):**
-```bash
-source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
-```
-
-**For UMN (centos8 nodes):**
-```bash
-source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
-```
