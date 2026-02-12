@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Coffea-based WR→Nℓ→ℓℓjj analysis"
 requires-python = ">=3.10"
 dependencies = [
-    "coffea>=2025.7,<2026",
+    "coffea>=2025.12,<2026",
     "awkward>=2.8,<3",
     "hist>=2.8,<3",
     "correctionlib>=2.7,<3",
