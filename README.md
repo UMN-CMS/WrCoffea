@@ -1,139 +1,81 @@
+<div align="center">
+  <img src="docs/coffea_logo.svg" alt="Coffea Logo" width="250">
+</div>
+
 # WrCoffea Documentation
 
 This repository provides the main analysis framework for processing WR→Nℓ→ℓℓjj events using the Coffea columnar analysis toolkit. It handles background, data, and signal samples to produce histograms for downstream limit-setting and plotting.
 
+## Getting Started
+
+Activate the virtual environment before running any commands:
+```bash
+source .venv/bin/activate
+```
+
+> **Tip:** Add this line to your `~/.bashrc` to activate automatically on login:
+> ```bash
+> cd /path/to/WrCoffea && source .venv/bin/activate && cd -
+> ```
+
+For first-time setup (cloning, creating the venv, Condor environment), see **[Getting Started](docs/getting_started.md)**.
+
 ## Table of Contents
-- [Quick Start](#quick-start) – Get started running the analyzer
-  - [Prerequisites](#prerequisites) – Required filesets
-  - [Backgrounds](#backgrounds) – Process background samples
-  - [Data](#data) – Process data samples
-  - [Signal](#signal) – Process signal samples
-  - [Output Locations](#output-locations) – Where histograms are saved
-  - [Region Selection](#region-selection) – Run resolved/boosted separately
+- [Quick Start](#quick-start) – Run the analyzer
+- [Running on Condor](#running-on-condor) – Scale out with HTCondor at LPC
+- [Skimming](#skimming) – Skim NanoAOD files for faster analysis
 - [Command Reference](#command-reference) – Complete flag reference and examples
-- [📂 Repository Structure](#-repository-structure) – Overview of how the codebase is organized
-- [Getting Started](#getting-started) – Installation and environment setup
+- [Repository Structure](#repository-structure) – Overview of how the codebase is organized
+- [Testing](#testing) – Running the automated test suite
 - [Additional Documentation](#additional-documentation) – Links to detailed guides
 
 ---
 
 ## Quick Start
 
-### Prerequisites
+Run the analyzer by specifying an era and sample:
 
-Before running the analyzer, you must create filesets (see [`docs/filesets.md`](docs/filesets.md) for instructions). Check that filesets exist for your era:
 ```bash
-ls data/filesets/<era>/
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # background
+python3 bin/run_analysis.py RunIII2024Summer24 EGamma                          # data
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      # signal
+bash bin/analyze_all.sh all RunIII2024Summer24                                 # everything
 ```
 
-To see available eras:
-```bash
-python3 bin/run_analysis.py --list-eras
-```
+Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
 
-To see available samples:
-```bash
-python3 bin/run_analysis.py --list-samples
-```
+> **Note:** Filesets for existing eras are already included in the repository. To create filesets for a new era, see [filesets.md](docs/filesets.md).
+
+See **[Running the Analyzer](docs/run_analysis.md)** for full details: all samples, output customization, region selection, systematics, and batch processing.
 
 ---
 
-### Backgrounds
+## Running on Condor
 
-Run the analyzer on background samples:
+Scale out processing across many workers at FNAL LPC using HTCondor with the Dask executor. Requires the [lpcjobqueue](https://github.com/CoffeaTeam/lpcjobqueue) Apptainer environment.
+
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets
-python3 bin/run_analysis.py RunIISummer20UL18 Nonprompt
-python3 bin/run_analysis.py Run3Summer22EE tt_tW
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12           # enter container
+python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # run with Condor
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor              # run everything
 ```
 
-To run over all backgrounds for a given era:
-```bash
-bash bin/analyze_all.sh bkg RunIII2024Summer24
-```
+See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, log locations, and using tmux.
 
 ---
 
-### Data
+## Skimming
 
-Process data samples (EGamma or Muon):
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma
-python3 bin/run_analysis.py RunIISummer20UL18 Muon
-```
-
-To run over both EGamma and Muon:
-```bash
-bash bin/analyze_all.sh data RunIII2024Summer24
-```
-
----
-
-### Signal
-
-Signal samples require the `--mass` flag:
-```bash
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
-python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3200_N3000
-```
-
-To see available signal mass points:
-```bash
-python3 bin/run_analysis.py --list-masses
-python3 bin/run_analysis.py RunIII2024Summer24 --list-masses
-```
-
-To run over a set of signal mass points:
-```bash
-bash bin/analyze_all.sh signal RunIII2024Summer24
-```
-
----
-
-### Output Locations
-
-By default, ROOT histograms are saved to:
-```
-WR_Plotter/rootfiles/<Run>/<Year>/<Era>/WRAnalyzer_<Sample>.root
-```
-
-Examples:
-```
-WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/WRAnalyzer_DYJets.root
-WR_Plotter/rootfiles/RunII/2018/RunIISummer20UL18/WRAnalyzer_signal_WR4000_N2100.root
-```
-
-Using `--dir` creates a subdirectory:
-```
-WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/my_study/WRAnalyzer_DYJets.root
-```
-
-Using `--name` modifies the filename:
-```
-WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/WRAnalyzer_test_DYJets.root
-```
-
----
-
-### Region Selection
-
-By default, both resolved and boosted histograms are filled. Use `--region` to process only specific regions:
+The skimmer applies a loose event preselection to NanoAOD files, reducing file sizes for faster analysis iteration. It uses `bin/skim.py` with subcommands for the full workflow: skim locally or on Condor, check for failures, and merge outputs.
 
 ```bash
-# Only fill resolved histograms (faster)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
-
-# Only fill boosted histograms (faster)
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --region boosted
-
-# Fill both (default behavior)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region both
+python3 bin/skim.py --cuts                                           # show skim cuts
+python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM                    # submit all to Condor
+python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM                  # check for failures
+python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM                  # extract + hadd + validate
 ```
 
-This is useful for:
-- **Performance**: Processing only the region you need reduces runtime
-- **Testing**: Debugging specific region selections independently
-- **Studies**: Focused analysis on resolved or boosted topologies
+See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all subcommand flags, output layout, and architecture.
 
 ---
 
@@ -153,10 +95,11 @@ This is useful for:
 | `--debug` | | Run without saving histograms (for testing) |
 | `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
-| `--condor` | | Submit jobs to HTCondor (not yet implemented) |
-| `--max-workers` | `<int>` | Cap number of Dask workers (local: adaptive max, condor: scale count) |
+| `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
+| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 50, analyze_all.sh: 50 skimmed / 400 unskimmed for data/bkg, 10 for signal) |
+| `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000, analyze_all.sh: 50000 for data/signal) |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
-| `--systs` | `lumi` | Enable systematic variations (currently: lumi) |
+| `--systs` | `lumi` `pileup` `sf` | Enable systematic variations (see [Systematics](#systematics)) |
 | `--list-eras` | | Print available eras and exit |
 | `--list-samples` | | Print available samples and exit |
 | `--list-masses` | | Print available signal mass points and exit |
@@ -180,8 +123,11 @@ python3 bin/run_analysis.py Run3Summer22EE DYJets --dir my_study --name test
 # Debug mode (no histogram output)
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --debug
 
-# Process with systematics
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi
+# Process with systematics (all supported)
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
+
+# Only pileup uncertainty
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs pileup
 
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only
@@ -197,11 +143,21 @@ bash bin/analyze_all.sh signal RunIII2024Summer24
 
 # analyze_all.sh with custom directory
 bash bin/analyze_all.sh bkg RunIII2024Summer24 --dir my_study --name test
+
+# Run on Condor (must be inside Apptainer shell)
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 400
+
+# Run all samples on Condor (uses optimized worker/chunksize defaults)
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor
+
+# Run with systematics (applied to MC only, filtered for data)
+bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
 ```
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 The repository follows a clean architecture separating executable scripts, core analysis logic, configuration, and documentation.
 
@@ -210,11 +166,11 @@ The repository follows a clean architecture separating executable scripts, core 
 ```
 WR_Plotter/  # Submodule for plotting ROOT histograms
 bin/         # User-facing CLI scripts (production workflows)
-src/         # Core analysis code (Coffea processor)
-python/      # Reusable analysis utilities and helpers
+wrcoffea/    # Installable Python package (analysis code, utilities, config)
 data/        # Configuration files (JSON, CSV) and metadata
 docs/        # Documentation (markdown guides)
 scripts/     # Helper scripts for setup and post-processing
+tests/       # Automated test suite (pytest)
 test/        # Development and validation scripts
 ```
 
@@ -223,28 +179,29 @@ test/        # Development and validation scripts
 **`bin/`** - Production Scripts
 - [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script
 - [`analyze_all.sh`](bin/analyze_all.sh) - Batch processing wrapper for multiple samples
-- Thin wrappers around the core analysis processor
+- [`skim.py`](bin/skim.py) - Skimming pipeline (`run`, `check`, `merge` subcommands)
+- [`skim_job.sh`](bin/skim_job.sh) - Condor worker shell script for skimming
 
-**`src/`** - Core Analysis Code
-- [`analyzer.py`](src/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis
-  - Object selection (electrons, muons, AK4/AK8 jets)
-  - Resolved and boosted region definitions
-  - Histogram filling with systematic variations
-  - Cutflow bookkeeping
-
-**`python/`** - Analysis Utilities
-- [`run_utils.py`](python/run_utils.py) - Fileset loading, sample validation, mass point handling
-- [`preprocess_utils.py`](python/preprocess_utils.py) - Era/year/run parsing utilities
-- [`save_hists.py`](python/save_hists.py) - ROOT histogram serialization
-- [`analysis_config.py`](python/analysis_config.py) - Centralized configuration (lumi, JME JSONs, etc.)
+**`wrcoffea/`** - Installable Python Package
+- [`analyzer.py`](wrcoffea/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis (object selection, resolved/boosted regions, histogram filling, cutflows)
+- [`histograms.py`](wrcoffea/histograms.py) - Histogram specification, creation, and filling
+- [`scale_factors.py`](wrcoffea/scale_factors.py) - Lepton scale factor evaluation (correctionlib)
+- [`analysis_config.py`](wrcoffea/analysis_config.py) - Centralized configuration (luminosities, correction paths, selection names, cuts)
+- [`cli_utils.py`](wrcoffea/cli_utils.py) - CLI plumbing: fileset loading, sample validation, mass point handling
+- [`era_utils.py`](wrcoffea/era_utils.py) - Era/year/run mapping and JSON I/O
+- [`fileset_utils.py`](wrcoffea/fileset_utils.py) - Fileset path construction, config parsing, JSON writing
+- [`fileset_validation.py`](wrcoffea/fileset_validation.py) - Schema and selection validation for filesets
+- [`save_hists.py`](wrcoffea/save_hists.py) - ROOT histogram serialization
+- [`skimmer.py`](wrcoffea/skimmer.py) - Skim selection, Runs tree handling, single-file skimming
+- [`skim_merge.py`](wrcoffea/skim_merge.py) - Post-skim merging, HLT grouping, hadd, validation
+- [`das_utils.py`](wrcoffea/das_utils.py) - DAS dataset path validation, dasgoclient queries, XRootD URL construction
 
 **`data/`** - Configuration and Metadata
-- `filesets/` - Per-era NanoAOD file lists (JSON format)
-  - Organized by era (e.g., `RunIII2024Summer24/`, `RunIISummer20UL18/`)
-  - Background, data, and signal filesets
+- `configs/` - Per-era dataset configurations (JSON format, input to fileset scripts)
+- `filesets/` - Per-era NanoAOD file lists (JSON format, output of fileset scripts)
 - `signal_points/` - Available signal mass points per era (CSV format)
 - `lumis/` - Golden JSON lumi masks for data
-- `analysis_config.py` - Luminosity values, JME correction paths, uncertainties
+- `jsonpog/` - Correction payloads for scale factors (correctionlib)
 
 **`WR_Plotter/`** - Plotting Submodule
 - Separate repository for ROOT histogram plotting
@@ -256,9 +213,16 @@ test/        # Development and validation scripts
 - Post-processing and analysis utilities
 
 **`docs/`** - Documentation
+- [`getting_started.md`](docs/getting_started.md) - Installation, environment setup, grid proxy
 - [`run_analysis.md`](docs/run_analysis.md) - Detailed analysis options and workflows
 - [`filesets.md`](docs/filesets.md) - Fileset creation instructions
+- [`skimming.md`](docs/skimming.md) - Skimming pipeline: cuts, subcommands, Condor jobs, output layout
+- [`condor.md`](docs/condor.md) - HTCondor setup, worker defaults, tmux, logs
 - [`run_combine.md`](docs/run_combine.md) - Limit-setting with Combine framework
+
+**`tests/`** - Automated Test Suite
+- Unit tests for utilities, config consistency, and validation logic
+- Run with pytest (see [Testing](#testing))
 
 **`test/`** - Development Scripts
 - Analysis validation and optimization studies
@@ -266,61 +230,38 @@ test/        # Development and validation scripts
 
 ---
 
-## Getting Started
+## Testing
 
-### Clone the Repository
-
-Clone with submodules to include the WR_Plotter:
+Run the automated test suite with pytest:
 ```bash
-git clone --recursive git@github.com:UMN-CMS/WrCoffea.git
-cd WrCoffea
+python -m pytest tests/ -v
 ```
 
-If you already cloned without `--recursive`, initialize the submodule:
+The tests cover utility functions, configuration consistency, fileset validation, histogram creation/filling, and processor selection logic. They run quickly (no data or correctionlib files needed) and are useful for catching regressions when modifying analysis configuration or utility code.
+
+### Quick Local Validation
+
+To quickly test the full analysis chain on a small slice of data:
 ```bash
-git submodule update --init --recursive
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --maxchunks 1 --maxfiles 1 --chunksize 1000
 ```
 
-### Environment Setup
+This processes a single file with one small chunk, which is useful for verifying that code changes don't break the processing pipeline before submitting large Condor jobs.
 
-Create and activate a Python virtual environment:
+To install the test dependency:
 ```bash
-python3 -m venv wr-env
-source wr-env/bin/activate
-```
-
-Install required packages:
-```bash
-python3 -m pip install -r requirements.txt
-```
-
-### Grid UI
-
-Authenticate for accessing grid resources:
-```bash
-voms-proxy-init --rfc --voms cms -valid 192:00
-```
-
-### ROOT
-
-Source the appropriate LCG release for ROOT functionality:
-
-**For FNAL LPC (el9 nodes):**
-```bash
-source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
-```
-
-**For UMN (centos8 nodes):**
-```bash
-source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-centos8-gcc11-opt/setup.sh
+pip install -e ".[test]"
 ```
 
 ---
 
 ## Additional Documentation
 
+- **[Getting Started](docs/getting_started.md)** - Installation, environment setup, and grid proxy
 - **[Running the Analyzer](docs/run_analysis.md)** - Detailed analysis options and workflows
 - **[Creating Filesets](docs/filesets.md)** - Instructions for generating NanoAOD file lists
+- **[Skimming](docs/skimming.md)** - Skimming pipeline: selection cuts, CLI reference, Condor job details
+- **[Running on Condor](docs/condor.md)** - HTCondor setup, worker defaults, tmux tips, log locations
 - **[Expected Limits](docs/run_combine.md)** - Limit-setting with Higgs Combine framework
 - **[WR Plotter](WR_Plotter/README.md)** - Plotting ROOT histograms and making stackplots
 

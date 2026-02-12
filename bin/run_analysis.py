@@ -1,22 +1,17 @@
+import os
+os.environ.setdefault("NUMEXPR_MAX_THREADS", "1")
+
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="coffea.*")
 warnings.filterwarnings("ignore", category=FutureWarning, module="htcondor.*")
+warnings.filterwarnings("ignore", category=RuntimeWarning, message="Missing cross-reference", module="coffea.*")
 import argparse
 import time
-import json
 import logging
 from pathlib import Path
-import sys
-import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../python')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-
-from python.preprocess_utils import get_era_details
-from python.run_utils import (
+from wrcoffea.era_utils import get_era_details
+from wrcoffea.cli_utils import (
     build_fileset_path,
     list_eras,
     list_samples,
@@ -29,8 +24,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 def validate_arguments(args, sig_points):
-    if args.condor:
-        raise NotImplementedError("TO-DO. Condor is not implemented.")
+    """Check CLI argument combinations are valid before running."""
     if args.sample == "Signal" and not args.mass:
         logging.error("For 'Signal', you must provide a --mass argument (e.g. --mass WR2000_N1900).")
         raise ValueError("Missing mass argument for Signal sample.")
@@ -51,16 +45,50 @@ def validate_arguments(args, sig_points):
         raise ValueError("--max-workers must be a positive integer")
     if args.threads_per_worker is not None and args.threads_per_worker < 1:
         raise ValueError("--threads-per-worker must be a positive integer")
+    if args.chunksize < 1:
+        raise ValueError("--chunksize must be a positive integer")
+
+def normalize_by_sumw(hists_dict):
+    """Normalize histograms by the on-the-fly accumulated sum of genWeights.
+
+    When ``compute_sumw=True``, the processor fills histograms with
+    ``genWeight * xsec * lumi * 1000`` (no ``/sumw``).  This function
+    divides each dataset's histograms by the accumulated ``_sumw`` to
+    complete the normalization.
+
+    Recursively normalizes nested structures (e.g., cutflow histograms).
+    """
+    import hist as hist_mod
+
+    for dataset, data in hists_dict.items():
+        sumw = data.pop("_sumw", None)
+        if sumw is None or sumw == 0.0:
+            continue
+        logging.info("Normalizing %s by computed sumw = %.6g", dataset, sumw)
+
+        def _normalize_recursive(obj):
+            """Recursively normalize Hist objects in nested dicts."""
+            if isinstance(obj, hist_mod.Hist):
+                obj.view(flow=True).value /= sumw
+                obj.view(flow=True).variance /= sumw * sumw
+            elif isinstance(obj, dict):
+                for v in obj.values():
+                    _normalize_recursive(v)
+
+        for obj in data.values():
+            _normalize_recursive(obj)
+
+    return hists_dict
+
 
 def run_analysis(args, filtered_fileset, run_on_condor):
-
-    # Heavy imports (coffea/dask/analyzer + transitive deps like pandas/scipy)
-    # are intentionally delayed so `--preflight-only` is fast.
-    from dask.distributed import Client, LocalCluster
+    """Set up a Dask cluster, preprocess, run the WrAnalysis processor, and return histograms."""
+    # Heavy imports delayed so `--preflight-only` is fast.
+    from dask.distributed import Client, LocalCluster, WorkerPlugin
     from coffea.nanoevents import NanoAODSchema
     from coffea.processor import Runner, DaskExecutor
 
-    from analyzer import WrAnalysis
+    from wrcoffea.analyzer import WrAnalysis
 
     NanoAODSchema.warn_missing_crossrefs = False
     NanoAODSchema.error_missing_event_ids = False
@@ -68,51 +96,68 @@ def run_analysis(args, filtered_fileset, run_on_condor):
     if run_on_condor:
         from lpcjobqueue import LPCCondorCluster
 
+        class _CondorWorkerSetup(WorkerPlugin):
+            """Runs on every worker (including late arrivals) to fix paths."""
+            def setup(self, worker):
+                import sys, os
+                for p in (".", "wrcoffea"):
+                    if os.path.isdir(p) and p not in sys.path:
+                        sys.path.insert(0, p)
+                # Condor transfers "data/lumis" and "data/jsonpog" as flat
+                # dirs ("lumis/", "jsonpog/") but config references them
+                # under "data/...".  Recreate the expected structure.
+                os.makedirs("data", exist_ok=True)
+                for subdir in ("lumis", "jsonpog"):
+                    src = os.path.abspath(subdir)
+                    dst = os.path.join("data", subdir)
+                    if os.path.isdir(src) and not os.path.exists(dst):
+                        os.symlink(src, dst)
+
         repo_root = Path(__file__).resolve().parent.parent
         log_dir = f"/uscmst1b_scratch/lpc1/3DayLifetime/{os.environ['USER']}/dask-logs"
 
         cluster = LPCCondorCluster(
-            ship_env=False,
+            ship_env=True,
+            memory="4GB",
             transfer_input_files=[
-                str(repo_root / "src"),
-                str(repo_root / "python"),
+                str(repo_root / "wrcoffea"),
                 str(repo_root / "bin"),
                 str(repo_root / "data" / "lumis"),
+                str(repo_root / "data" / "jsonpog"),
             ],
             log_directory=log_dir,
         )
 
-        NWORKERS = args.max_workers or 20
+        NWORKERS = args.max_workers or 50
         cluster.scale(NWORKERS)
 
         client = Client(cluster)
-        client.wait_for_workers(NWORKERS, timeout="180s")
-
-    #    cluster.adapt(minimum=1, maximum=200)
-
-        def _add_paths():
-            import sys, os
-            for p in ("src", "python"):
-                if os.path.isdir(p) and p not in sys.path:
-                    sys.path.insert(0, p)
-            return sys.path
-
-        client.run(_add_paths)
+        client.register_worker_plugin(_CondorWorkerSetup())
+        logging.info("Waiting for Condor workers (requested %d)...", NWORKERS)
+        client.wait_for_workers(1, timeout="600s")
+        logging.info("Started with %d/%d workers; remaining will join dynamically.", len(client.scheduler_info()["workers"]), NWORKERS)
 
     else:
-        cluster = LocalCluster(n_workers=1, threads_per_worker=(args.threads_per_worker or 1))
-        cluster.adapt(minimum=1, maximum=(args.max_workers or 10))
+        n_workers = args.max_workers or 3
+        cluster = LocalCluster(n_workers=n_workers, threads_per_worker=(args.threads_per_worker or 1))
         client = Client(cluster)
 
     run = Runner(
-        executor = DaskExecutor(client=client, compression=None, retries=10),
-        chunksize = 250_000, 
-        maxchunks = None, # Change to 1 for testing, None for all
+        executor=DaskExecutor(client=client, compression=None, retries=10),
+        chunksize=args.chunksize,
+        maxchunks=args.maxchunks,
         skipbadfiles=False,
-        xrootdtimeout = 5,
-        align_clusters = False,
+        xrootdtimeout=60 if run_on_condor else 10,
+        align_clusters=False,
         savemetrics=True,
         schema=NanoAODSchema,
+    )
+
+    logging.info(
+        "Launching with %d workers, chunksize=%d%s",
+        NWORKERS if run_on_condor else n_workers,
+        args.chunksize,
+        " (condor)" if run_on_condor else " (local)",
     )
 
     try:
@@ -124,9 +169,18 @@ def run_analysis(args, filtered_fileset, run_on_condor):
         histograms, metrics = run(
             preproc,
             treename="Events",
-            processor_instance=WrAnalysis(mass_point=args.mass, enabled_systs=args.systs, region=args.region),
+            processor_instance=WrAnalysis(
+                mass_point=args.mass,
+                enabled_systs=args.systs,
+                region=args.region,
+                compute_sumw=args.unskimmed,
+            ),
         )
         logging.info("Processing completed")
+
+        if args.unskimmed:
+            histograms = normalize_by_sumw(histograms)
+
         return histograms
     finally:
         try:
@@ -145,38 +199,20 @@ if __name__ == "__main__":
     optional = parser.add_argument_group("Optional arguments")
     optional.add_argument("--dy", type=str, default=None, choices=DY_CHOICES, help="Specific DY sample to analyze (LO, NLO, etc)")
     optional.add_argument("--mass", type=str, default=None, help="Signal mass point to analyze.")
+    optional.add_argument("--fileset", type=Path, default=None, help="Override automatic fileset path with a custom fileset JSON.")
     optional.add_argument("--dir", type=str, default=None, help="Create a new output directory.")
     optional.add_argument("--name", type=str, default=None, help="Append the filenames of the output ROOT files.")
     optional.add_argument("--debug", action='store_true', help="Debug mode (don't compute histograms)")
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
     optional.add_argument("--condor", action='store_true', help="Run on condor.")
-    optional.add_argument(
-        "--max-workers",
-        type=int,
-        default=None,
-        help="Cap the number of Dask workers (local adaptive maximum; condor scale count).",
-    )
-    optional.add_argument(
-        "--threads-per-worker",
-        type=int,
-        default=None,
-        help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).",
-    )
-    optional.add_argument(
-        "--systs",
-        nargs="*",
-        default=[],
-        choices=["lumi"],
-        help="Enable systematic histogram variations. Currently supported: lumi.",
-    )
-    optional.add_argument(
-        "--region",
-        type=str,
-        default="both",
-        choices=["resolved", "boosted", "both"],
-        help="Analysis region to run: resolved, boosted, or both (default: both).",
-    )
+    optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 3, condor default: 50).")
+    optional.add_argument("--threads-per-worker", type=int, default=None, help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).")
+    optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
+    optional.add_argument("--maxchunks", type=int, default=None, help="Max chunks per dataset file (default: all). Use 1 for quick testing.")
+    optional.add_argument("--maxfiles", type=int, default=None, help="Max files per dataset (default: all). Use 1 for quick testing.")
+    optional.add_argument("--systs", nargs="*", default=[], choices=["lumi", "pileup", "sf"], help="Enable systematic histogram variations. Supported: lumi, pileup, sf (muon+electron scale factors).")
+    optional.add_argument("--region", type=str, default="both", choices=["resolved", "boosted", "both"], help="Analysis region to run: resolved, boosted, or both (default: both).")
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")
     optional.add_argument("--list-masses", action="store_true", help="Print available signal mass points for the given era (or all eras if none provided) and exit.")
@@ -213,13 +249,25 @@ if __name__ == "__main__":
     signal_points = Path(f"data/signal_points/{args.era}_mass_points.csv")
     MASS_CHOICES = load_masses_from_csv(signal_points)
 
-    print()
     logging.info(f"Analyzing {args.era} - {args.sample} events")
-    
     validate_arguments(args, MASS_CHOICES)
     run, year, era = get_era_details(args.era)
 
-    filepath = build_fileset_path(era=era, sample=args.sample, unskimmed=args.unskimmed, dy=args.dy)
+    if args.fileset:
+        filepath = args.fileset
+    else:
+        filepath = build_fileset_path(era=era, sample=args.sample, unskimmed=args.unskimmed, dy=args.dy)
+
+    # If the path fell back to skimmed (e.g. UL18 signal has no unskimmed),
+    # disable on-the-fly sumw normalization so the analyzer doesn't try to
+    # compute sumw for files that are already properly normalized.
+    if args.unskimmed and "unskimmed" not in filepath.parts:
+        logging.warning(
+            "Falling back to skimmed fileset for %s %s; "
+            "disabling on-the-fly sumw normalization.",
+            args.era, args.sample,
+        )
+        args.unskimmed = False
 
     logging.info(f"Reading files from {filepath}")
 
@@ -233,11 +281,13 @@ if __name__ == "__main__":
         filepath=filepath,
         desired_process=args.sample,
         mass=args.mass,
+        maxfiles=args.maxfiles,
     )
 
+    n_files = sum(len(ds.get("files", {})) for ds in filtered_fileset.values())
     logging.info(
-        "Selected %d dataset(s) after filtering.",
-        len(filtered_fileset),
+        "Selected %d dataset(s), %d file(s) after filtering.",
+        len(filtered_fileset), n_files,
     )
 
     if args.preflight_only:
@@ -252,7 +302,7 @@ if __name__ == "__main__":
         raise
 
     if not args.debug:
-        from python.save_hists import save_histograms
+        from wrcoffea.save_hists import save_histograms
 
         save_histograms(hists_dict, args)
     exec_time = time.monotonic() - t0

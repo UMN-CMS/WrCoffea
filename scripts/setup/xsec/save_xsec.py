@@ -15,13 +15,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------------------
-# Add the repo root to sys.path so "from python.era_utils import get_era_details" works
+# Add the repo root to sys.path so "from wrcoffea.era_utils import ..." works
 # ------------------------------------------------------------------------------
 current_dir = os.path.dirname(os.path.abspath(__file__))
 repo_root = os.path.abspath(os.path.join(current_dir, "../../../"))
 sys.path.insert(0, repo_root)
 
-from python.preprocess_utils import get_era_details
+from wrcoffea.era_utils import get_era_details
 
 def extract_xsec_summary(input_file, output_file):
     """Extracts the GenXsecAnalyzer section from the log and saves it to output_file."""

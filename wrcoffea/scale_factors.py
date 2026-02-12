@@ -1,0 +1,492 @@
+"""Scale factor evaluation for muon and electron corrections.
+
+Uses correctionlib CorrectionSet payloads. Caches per worker process
+to avoid re-reading JSON every chunk.
+"""
+
+import logging
+
+import awkward as ak
+import numpy as np
+
+from wrcoffea.analysis_config import (
+    CUTS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS,
+    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, MUON_JSONS,
+    PILEUP_CORRECTION_NAMES, PILEUP_JSONS,
+)
+
+logger = logging.getLogger(__name__)
+
+# Cache correctionlib payloads per worker process (avoid re-reading JSON every chunk).
+_CORRECTIONSET_CACHE = {}
+
+# Warn-once cache (per worker process) to avoid log spam.
+_WARN_ONCE: set[str] = set()
+
+
+def _unflatten_and_product(flat_nom, flat_up, flat_down, counts):
+    """Unflatten per-object SFs, take product over objects per event.
+
+    Parameters
+    ----------
+    flat_nom, flat_up, flat_down : numpy arrays
+        Flat per-object SF values (nominal / up / down).
+    counts : awkward array
+        Number of objects per event (from ``ak.num``).
+
+    Returns
+    -------
+    (event_nom, event_up, event_down) : tuple of numpy float64 arrays
+        Per-event SF products. Events with no objects get SF = 1.0.
+    """
+    nom = np.asarray(ak.fill_none(ak.prod(ak.unflatten(flat_nom, counts), axis=1), 1.0), dtype=np.float64)
+    up = np.asarray(ak.fill_none(ak.prod(ak.unflatten(flat_up, counts), axis=1), 1.0), dtype=np.float64)
+    down = np.asarray(ak.fill_none(ak.prod(ak.unflatten(flat_down, counts), axis=1), 1.0), dtype=np.float64)
+    return nom, up, down
+
+
+def pileup_weight(events, era):
+    """Compute per-event pileup reweighting using correctionlib.
+
+    Evaluates the pileup weight correction on ``Pileup.nTrueInt``.
+    Returns (nominal, up, down) arrays of shape (n_events,).
+    """
+    n_events = len(events)
+    ones = np.ones(n_events, dtype=np.float64)
+
+    if era not in PILEUP_JSONS:
+        key = f"pileup_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No pileup JSON configured for era '%s'; using weight=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    import correctionlib
+
+    json_path = PILEUP_JSONS[era]
+    ceval = _CORRECTIONSET_CACHE.get(json_path)
+    if ceval is None:
+        ceval = correctionlib.CorrectionSet.from_file(json_path)
+        _CORRECTIONSET_CACHE[json_path] = ceval
+
+    corr_name = PILEUP_CORRECTION_NAMES[era]
+    corr = ceval[corr_name]
+
+    nTrueInt = np.asarray(events.Pileup.nTrueInt, dtype=np.float64)
+
+    nom = corr.evaluate(nTrueInt, "nominal")
+    up = corr.evaluate(nTrueInt, "up")
+    down = corr.evaluate(nTrueInt, "down")
+
+    return nom, up, down
+
+
+def jet_veto_event_mask(events, era):
+    """Return a per-event boolean mask (True = pass) using JME jet veto maps.
+
+    Evaluates the ``jetvetomap`` correction on all jets with pT > 15 GeV.
+    Events containing at least one jet in a vetoed (eta, phi) region are
+    flagged False.  Applies to both data and MC.
+    """
+    n_events = len(events)
+
+    if era not in JETVETO_JSONS:
+        key = f"jetveto_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No jet veto map configured for era '%s'; passing all events.", era)
+        return np.ones(n_events, dtype=bool)
+
+    import correctionlib
+
+    json_path = JETVETO_JSONS[era]
+    ceval = _CORRECTIONSET_CACHE.get(json_path)
+    if ceval is None:
+        ceval = correctionlib.CorrectionSet.from_file(json_path)
+        _CORRECTIONSET_CACHE[json_path] = ceval
+
+    corr = ceval[JETVETO_CORRECTION_NAMES[era]]
+
+    # Select all jets above the veto map pT threshold.
+    jets = events.Jet
+    pt_mask = jets.pt > CUTS["jet_veto_pt_min"]
+    sel_jets = jets[pt_mask]
+
+    counts = ak.num(sel_jets)
+    flat_eta = np.asarray(ak.flatten(sel_jets.eta), dtype=np.float64)
+    flat_phi = np.asarray(ak.flatten(sel_jets.phi), dtype=np.float64)
+
+    if len(flat_eta) == 0:
+        return np.ones(n_events, dtype=bool)
+
+    # Evaluate: non-zero → vetoed region.
+    veto_vals = corr.evaluate("jetvetomap", flat_eta, flat_phi)
+
+    # Unflatten and check if any jet per event is vetoed.
+    vetoed_per_jet = ak.unflatten(veto_vals != 0.0, counts)
+    any_vetoed = ak.any(vetoed_per_jet, axis=1)
+
+    return np.asarray(~ak.fill_none(any_vetoed, False), dtype=bool)
+
+
+def _get_muon_ceval(era):
+    """Load (and cache) a correctionlib CorrectionSet for the muon SF file."""
+    import correctionlib
+
+    json_path = MUON_JSONS[era]
+    ceval = _CORRECTIONSET_CACHE.get(json_path)
+    if ceval is None:
+        ceval = correctionlib.CorrectionSet.from_file(json_path)
+        _CORRECTIONSET_CACHE[json_path] = ceval
+    return ceval
+
+
+def muon_sf(tight_muons, era):
+    """Compute per-event muon RECO, ID, and ISO scale factors independently.
+
+    Returns a dict of three independent components, each a (nominal, up, down) tuple
+    of arrays with shape (n_events,). Register each component as a separate weight
+    in the Coffea Weights object so that variations are handled independently.
+
+    Events with no tight muons get SF = 1.0 for all components.
+    """
+    n_events = len(tight_muons)
+    ones = np.ones(n_events, dtype=np.float64)
+    identity = (ones, ones.copy(), ones.copy())
+
+    if era not in MUON_JSONS:
+        key = f"muon_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No muon SF JSON configured for era '%s'; using SF=1.", era)
+        return {"reco": identity, "id": identity, "iso": identity}
+
+    ceval = _get_muon_ceval(era)
+
+    # Flatten muon arrays for correctionlib evaluation.
+    counts = ak.num(tight_muons)
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_muons.eta, 0.0)), dtype=np.float64)
+    flat_pt = np.asarray(ak.flatten(ak.fill_none(tight_muons.pt, 0.0)), dtype=np.float64)
+
+    if len(flat_pt) == 0:
+        return {"reco": identity, "id": identity, "iso": identity}
+
+    # Compute momentum p = pt * cosh(eta) for RECO.
+    flat_p = flat_pt * np.cosh(flat_eta)
+
+    # Clip inputs to valid bin edges (signed eta).
+    reco_eta = np.clip(flat_eta, -2.399, 2.399)
+    reco_p = np.clip(flat_p, 50.001, 1e9)
+    idiso_eta = np.clip(flat_eta, -2.399, 2.399)
+    idiso_pt = np.clip(flat_pt, 50.001, 1e9)
+
+    def _eval_component(corr, eta, pt_or_p):
+        nom = corr.evaluate(eta, pt_or_p, "nominal")
+        up = corr.evaluate(eta, pt_or_p, "systup")
+        down = corr.evaluate(eta, pt_or_p, "systdown")
+        return _unflatten_and_product(nom, up, down, counts)
+
+    # RECO SF (uses momentum p, not pT)
+    reco = _eval_component(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_eta, reco_p)
+    # ID SF
+    id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
+    # ISO SF
+    iso = _eval_component(ceval["NUM_probe_TightRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
+
+    return {"reco": reco, "id": id_sf, "iso": iso}
+
+
+def muon_trigger_sf(tight_muons, era):
+    """Compute per-event trigger SF as product of per-muon HLT SFs.
+
+    Returns (nominal, up, down) arrays of shape (n_events,).
+    Events with no tight muons get SF = 1.0.
+
+    IMPORTANT: This uses the product of per-muon SFs, which is an approximation
+    for dilepton events. The proper dilepton formula is:
+        e(l1,l2) = 1 - (1-e1)(1-e2)
+    However, the muon JSON file only provides SFs (not raw efficiencies),
+    so we cannot implement the exact formula. This approximation is commonly
+    used in analyses when raw efficiencies are unavailable.
+    """
+    n_events = len(tight_muons)
+    ones = np.ones(n_events, dtype=np.float64)
+
+    if era not in MUON_JSONS:
+        key = f"muon_trig_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No muon trigger SF JSON configured for era '%s'; using SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    ceval = _get_muon_ceval(era)
+    sf_corr = ceval["NUM_HLT_DEN_HighPtTightRelIsoProbes"]
+
+    flat_pt = np.asarray(ak.flatten(ak.fill_none(tight_muons.pt, 0.0)), dtype=np.float64)
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_muons.eta, 0.0)), dtype=np.float64)
+    counts = ak.num(tight_muons)
+
+    if len(flat_pt) == 0:
+        return ones, ones.copy(), ones.copy()
+
+    # Clip inputs (signed eta).
+    hlt_eta = np.clip(flat_eta, -2.399, 2.399)
+    hlt_pt = np.clip(flat_pt, 50.001, 1e9)
+
+    sf_nom_flat = sf_corr.evaluate(hlt_eta, hlt_pt, "nominal")
+    sf_up_flat = sf_corr.evaluate(hlt_eta, hlt_pt, "systup")
+    sf_down_flat = sf_corr.evaluate(hlt_eta, hlt_pt, "systdown")
+
+    return _unflatten_and_product(sf_nom_flat, sf_up_flat, sf_down_flat, counts)
+
+
+def _get_electron_ceval(era, key):
+    """Load (and cache) a correctionlib CorrectionSet for an electron SF file."""
+    import correctionlib
+
+    json_path = ELECTRON_JSONS[era][key]
+    ceval = _CORRECTIONSET_CACHE.get(json_path)
+    if ceval is None:
+        ceval = correctionlib.CorrectionSet.from_file(json_path)
+        _CORRECTIONSET_CACHE[json_path] = ceval
+    return ceval
+
+
+def electron_trigger_sf(tight_electrons, era):
+    """Compute per-event electron trigger SF using dilepton efficiency formula.
+
+    Implements: e(l1,l2) = 1 - (1-e(l1))(1-e(l2))
+    Then SF = e_data(event) / e_MC(event)
+
+    This correctly accounts for the fact that we need at least one electron
+    to fire the trigger (OR logic), not both (AND logic).
+
+    Returns (nominal, up, down) arrays of shape (n_events,).
+    Events with no tight electrons get SF = 1.0.
+
+    Note: Uses HLT_SF_Ele30_TightID as proxy for Ele32_WPTight_Gsf trigger.
+    """
+    n_events = len(tight_electrons)
+    ones = np.ones(n_events, dtype=np.float64)
+
+    if era not in ELECTRON_JSONS or "TRIGGER" not in ELECTRON_JSONS.get(era, {}):
+        key = f"electron_trig_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No electron trigger SF JSON configured for era '%s'; using SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
+    if sf_era_key is None:
+        logger.warning("No electron trigger SF era key for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    ceval = _get_electron_ceval(era, "TRIGGER")
+    data_eff_corr = ceval["Electron-HLT-DataEff"]
+    mc_eff_corr = ceval["Electron-HLT-McEff"]
+
+    counts = ak.num(tight_electrons)
+    flat_pt = np.asarray(ak.flatten(ak.fill_none(tight_electrons.pt, 0.0)), dtype=np.float64)
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_electrons.eta, 0.0)), dtype=np.float64)
+
+    if len(flat_pt) == 0:
+        return ones, ones.copy(), ones.copy()
+
+    # Clip inputs to valid ranges.
+    hlt_eta = np.clip(flat_eta, -2.499, 2.499)
+    hlt_pt = np.clip(flat_pt, 30.001, 1e6)
+
+    # Use Ele30_TightID as proxy for Ele32_WPTight_Gsf.
+    trigger_path = "HLT_SF_Ele30_TightID"
+
+    # Get per-electron efficiencies in data and MC.
+    eff_data_nom = data_eff_corr.evaluate(sf_era_key, "nom", trigger_path, hlt_eta, hlt_pt)
+    eff_data_up = data_eff_corr.evaluate(sf_era_key, "up", trigger_path, hlt_eta, hlt_pt)
+    eff_data_down = data_eff_corr.evaluate(sf_era_key, "down", trigger_path, hlt_eta, hlt_pt)
+
+    eff_mc_nom = mc_eff_corr.evaluate(sf_era_key, "nom", trigger_path, hlt_eta, hlt_pt)
+    eff_mc_up = mc_eff_corr.evaluate(sf_era_key, "up", trigger_path, hlt_eta, hlt_pt)
+    eff_mc_down = mc_eff_corr.evaluate(sf_era_key, "down", trigger_path, hlt_eta, hlt_pt)
+
+    # Unflatten per-electron efficiencies.
+    eff_data_nom_jagged = ak.unflatten(eff_data_nom, counts)
+    eff_data_up_jagged = ak.unflatten(eff_data_up, counts)
+    eff_data_down_jagged = ak.unflatten(eff_data_down, counts)
+
+    eff_mc_nom_jagged = ak.unflatten(eff_mc_nom, counts)
+    eff_mc_up_jagged = ak.unflatten(eff_mc_up, counts)
+    eff_mc_down_jagged = ak.unflatten(eff_mc_down, counts)
+
+    # Apply dilepton trigger efficiency formula: e(l1,l2) = 1 - (1-e1)(1-e2)
+    # For events with 1 electron: e(event) = e1
+    # For events with 2+ electrons: e(event) = 1 - (1-e1)(1-e2)...(1-en)
+    # This is equivalent to: 1 - product(1 - ei)
+    event_eff_data_nom = 1.0 - ak.prod(1.0 - eff_data_nom_jagged, axis=1)
+    event_eff_data_up = 1.0 - ak.prod(1.0 - eff_data_up_jagged, axis=1)
+    event_eff_data_down = 1.0 - ak.prod(1.0 - eff_data_down_jagged, axis=1)
+
+    event_eff_mc_nom = 1.0 - ak.prod(1.0 - eff_mc_nom_jagged, axis=1)
+    event_eff_mc_up = 1.0 - ak.prod(1.0 - eff_mc_up_jagged, axis=1)
+    event_eff_mc_down = 1.0 - ak.prod(1.0 - eff_mc_down_jagged, axis=1)
+
+    # Compute event-level SF = e_data(event) / e_MC(event).
+    # For events with no electrons both efficiencies are 0 → 0/0;
+    # use np.divide(where=) to avoid the RuntimeWarning and default to 1.
+    def _safe_ratio(num, den):
+        num_np = np.asarray(ak.fill_none(num, 0.0), dtype=np.float64)
+        den_np = np.asarray(ak.fill_none(den, 0.0), dtype=np.float64)
+        out = np.ones_like(num_np)
+        np.divide(num_np, den_np, out=out, where=den_np > 0)
+        return out
+
+    trig_sf_nom = _safe_ratio(event_eff_data_nom, event_eff_mc_nom)
+    trig_sf_up = _safe_ratio(event_eff_data_up, event_eff_mc_up)
+    trig_sf_down = _safe_ratio(event_eff_data_down, event_eff_mc_down)
+
+    return trig_sf_nom, trig_sf_up, trig_sf_down
+
+
+def electron_id_sf(tight_electrons, era):
+    """Compute per-event HEEP electron ID scale factor.
+
+    Uses flat barrel/endcap SFs from the Run2 UL2018 HEEP V7.0 measurement
+    as a proxy for Run3, per EGamma POG recommendation (Run3 HEEP SFs not
+    yet available).
+
+    Source: EGamma POG twiki – "HEEP ID Scale Factor for UL"
+      Barrel (|eta_SC| < 1.4442): 0.973 +/- 0.001 (stat) +/- 0.004 (syst)
+      Endcap (1.566 < |eta_SC| < 2.5): 0.980 +/- 0.002 (stat) +/- 0.011 (syst)
+
+    Returns (nominal, up, down) arrays of shape (n_events,).
+    Events with no tight electrons get SF = 1.0.
+    """
+    n_events = len(tight_electrons)
+    ones = np.ones(n_events, dtype=np.float64)
+
+    if era not in ELECTRON_JSONS:
+        key = f"electron_id_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No electron ID SF JSON configured for era '%s'; using SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    counts = ak.num(tight_electrons)
+
+    if ak.sum(counts) == 0:
+        return ones, ones.copy(), ones.copy()
+
+    # Supercluster eta = eta + deltaEtaSC.
+    try:
+        delta_eta_sc = tight_electrons.deltaEtaSC
+    except AttributeError:
+        key = f"missing_deltaEtaSC_id::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.warning(
+                "Electron `deltaEtaSC` branch missing; using eta as fallback for HEEP ID SF."
+            )
+        delta_eta_sc = ak.zeros_like(tight_electrons.eta)
+
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_electrons.eta, 0.0)), dtype=np.float64)
+    flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(delta_eta_sc, 0.0)), dtype=np.float64)
+    flat_sc_eta = np.abs(flat_eta + flat_deltaEtaSC)
+
+    # UL2018 HEEP V7.0 SFs (stat + syst added in quadrature).
+    barrel_sf, barrel_unc = 0.973, np.sqrt(0.001**2 + 0.004**2)  # 0.00412
+    endcap_sf, endcap_unc = 0.980, np.sqrt(0.002**2 + 0.011**2)  # 0.01118
+
+    is_barrel = flat_sc_eta < 1.4442
+
+    sf_nom = np.where(is_barrel, barrel_sf, endcap_sf)
+    sf_unc = np.where(is_barrel, barrel_unc, endcap_unc)
+
+    sf_up = sf_nom + sf_unc
+    sf_down = sf_nom - sf_unc
+
+    return _unflatten_and_product(sf_nom, sf_up, sf_down, counts)
+
+
+def electron_reco_sf(tight_electrons, era):
+    """Compute per-event electron Reco scale factor for tight electrons.
+
+    Uses two working points depending on pT, with era-specific configuration
+    from ELECTRON_RECO_CONFIG (correction name, WP names, and pT split point
+    differ between UL and Run3 JSONs).
+
+    The correction uses supercluster eta (eta + deltaEtaSC) and pT.
+    Returns (nominal, up, down) arrays of shape (n_events,).
+    Events with no tight electrons get SF = 1.0.
+    """
+    n_events = len(tight_electrons)
+    ones = np.ones(n_events, dtype=np.float64)
+
+    if era not in ELECTRON_JSONS:
+        key = f"electron_reco_sf_unconfigured::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.info("No electron reco SF JSON configured for era '%s'; using SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
+    if sf_era_key is None:
+        logger.warning("No electron reco SF era key for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    reco_cfg = ELECTRON_RECO_CONFIG.get(era)
+    if reco_cfg is None:
+        logger.warning("No ELECTRON_RECO_CONFIG for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
+
+    ceval = _get_electron_ceval(era, "RECO")
+    corr = ceval[reco_cfg["correction"]]
+
+    counts = ak.num(tight_electrons)
+    flat_pt = np.asarray(ak.flatten(tight_electrons.pt), dtype=np.float64)
+
+    if len(flat_pt) == 0:
+        return ones, ones.copy(), ones.copy()
+
+    # Supercluster eta = eta + deltaEtaSC.
+    # Some NanoAOD variants may not have `deltaEtaSC`; fall back to 0.0 and warn once.
+    try:
+        delta_eta_sc = tight_electrons.deltaEtaSC
+    except AttributeError:
+        key = f"missing_deltaEtaSC::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.warning(
+                "Electron `deltaEtaSC` branch missing; using eta as a fallback for electron SF evaluation."
+            )
+        delta_eta_sc = ak.zeros_like(tight_electrons.eta)
+
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_electrons.eta, 0.0)), dtype=np.float64)
+    flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(delta_eta_sc, 0.0)), dtype=np.float64)
+    flat_sc_eta = flat_eta + flat_deltaEtaSC
+
+    # Clip sc_eta to valid bin edges.
+    flat_sc_eta = np.clip(flat_sc_eta, -2.499, 2.499)
+
+    # Split into low-pT and high-pT groups at the era-specific threshold.
+    pt_split = reco_cfg["pt_split"]
+    wp_low = reco_cfg["wp_low"]
+    wp_high = reco_cfg["wp_high"]
+    is_low_pt = flat_pt < pt_split
+
+    # Clip pT to valid bin ranges for each WP.
+    pt_low = np.clip(flat_pt, 10.001, pt_split - 0.001)
+    pt_high = np.clip(flat_pt, pt_split + 0.001, 1e6)
+
+    # Evaluate both WPs on all electrons, then select per-electron.
+    sf_low_nom = corr.evaluate(sf_era_key, "sf", wp_low, flat_sc_eta, pt_low)
+    sf_low_up = corr.evaluate(sf_era_key, "sfup", wp_low, flat_sc_eta, pt_low)
+    sf_low_down = corr.evaluate(sf_era_key, "sfdown", wp_low, flat_sc_eta, pt_low)
+
+    sf_high_nom = corr.evaluate(sf_era_key, "sf", wp_high, flat_sc_eta, pt_high)
+    sf_high_up = corr.evaluate(sf_era_key, "sfup", wp_high, flat_sc_eta, pt_high)
+    sf_high_down = corr.evaluate(sf_era_key, "sfdown", wp_high, flat_sc_eta, pt_high)
+
+    sf_nom = np.where(is_low_pt, sf_low_nom, sf_high_nom)
+    sf_up = np.where(is_low_pt, sf_low_up, sf_high_up)
+    sf_down = np.where(is_low_pt, sf_low_down, sf_high_down)
+
+    return _unflatten_and_product(sf_nom, sf_up, sf_down, counts)

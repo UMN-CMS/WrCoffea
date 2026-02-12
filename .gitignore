@@ -4,12 +4,11 @@
 # Under development
 data/configs/Run3/2023
 
-docs/condor.md
 
 data/xsec
 data/skims
 data/reweights
-
+test/
 scripts/setup/skims/tmp/
 
 *~
@@ -18,6 +17,7 @@ __pycache__
 *.root
 *.tgz
 *.gz
+!data/jsonpog/**/*.gz
 *.png
 *.pdf
 *.out
@@ -36,6 +36,7 @@ venv/
 .venv/
 wr-env/
 coffea_env
+*.egg-info/
 .cmslpc-local-conf
 bootstrap.sh
 shell

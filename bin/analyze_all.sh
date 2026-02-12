@@ -17,11 +17,8 @@ else
   PYTHON="$(command -v python)"
 fi
 
-# ERA options available in the script
-ERA_OPTIONS=(
-  RunIISummer20UL18
-  RunIII2024Summer24
-)
+# ERA options derived from the Python config (single source of truth).
+mapfile -t ERA_OPTIONS < <("${PYTHON}" -c "from wrcoffea.era_utils import ERA_MAPPING; print('\n'.join(ERA_MAPPING))")
 
 # Data options
 DATA_OPTIONS=(
@@ -39,13 +36,13 @@ MC_OPTIONS=(
 
 # Validate mandatory arguments: mode and era
 if [ "$#" -lt 2 ]; then
-  echo "Usage: $0 {data|bkg|signal} era [additional options]"
+  echo "Usage: $0 {data|bkg|signal|all} era [additional options]"
   exit 1
 fi
 
 MODE="$1"
-if [ "${MODE}" != "data" ] && [ "${MODE}" != "bkg" ] && [ "${MODE}" != "signal" ]; then
-  echo "Error: First argument must be 'data', 'bkg', or 'signal'"
+if [ "${MODE}" != "data" ] && [ "${MODE}" != "bkg" ] && [ "${MODE}" != "signal" ] && [ "${MODE}" != "all" ]; then
+  echo "Error: First argument must be 'data', 'bkg', 'signal', or 'all'"
   exit 1
 fi
 
@@ -63,38 +60,55 @@ if [ "${valid}" != "true" ]; then
   exit 1
 fi
 
-# Build MASS_OPTIONS dynamically from the repo's canonical CSV file for the era.
-MASS_OPTIONS=()
+# Mass CSV path (only checked when signal mode is actually used).
 MASS_CSV="${REPO_ROOT}/data/signal_points/${SELECTED_ERA}_mass_points.csv"
-if [ -f "${MASS_CSV}" ]; then
-  while IFS= read -r mass; do
-    if [ -n "${mass}" ]; then
-      MASS_OPTIONS+=( "${mass}" )
-    fi
-  done < <(awk -F, 'NR>1{gsub(/^[ \t]+|[ \t]+$/,"",$1); gsub(/^[ \t]+|[ \t]+$/,"",$2); if($1!="" && $2!="") print "WR"$1"_N"$2}' "${MASS_CSV}")
-else
-  echo "Error: Signal mass CSV not found: ${MASS_CSV}"
-  exit 1
-fi
 
 # Now shift off mode & era, EXTRA_ARGS will remain the same
 shift 2
 EXTRA_ARGS=( "$@" )
 
-# Shift off the mode and era arguments, leaving additional options (if any)
-#if [ "$#" -ge 3 ]; then
-#  shift 2
-#  EXTRA_ARGS=("$@")
-#else
-#  EXTRA_ARGS=()
-#fi
+# Set worker counts based on whether we're running on unskimmed files
+UNSKIMMED=false
+for arg in "$@"; do
+  if [ "${arg}" = "--unskimmed" ]; then
+    UNSKIMMED=true
+    break
+  fi
+done
+
+if [ "${UNSKIMMED}" = true ]; then
+  WORKERS=400
+else
+  WORKERS=50
+fi
+
+# Filter out --systs for data mode (data doesn't use systematics)
+DATA_ARGS=()
+skip_systs=false
+for arg in "${EXTRA_ARGS[@]}"; do
+  if [ "${skip_systs}" = true ]; then
+    # Skip arguments after --systs until we hit another flag
+    if [[ "${arg}" =~ ^-- ]]; then
+      skip_systs=false
+      DATA_ARGS+=("${arg}")
+    fi
+    # Otherwise skip this syst value (e.g., "lumi", "pileup", "sf")
+  elif [ "${arg}" = "--systs" ]; then
+    # Start skipping --systs and its values
+    skip_systs=true
+  else
+    DATA_ARGS+=("${arg}")
+  fi
+done
 
 # Function for data and bkg modes
 run_analysis() {
   local era="$1"
   local process="$2"
+  shift 2
+  local mode_args=("$@")
 #  echo "Running analysis for era ${era} and --process ${process}"
-  "${PYTHON}" bin/run_analysis.py "${era}" "${process}" "${EXTRA_ARGS[@]}" || {
+  "${PYTHON}" bin/run_analysis.py "${era}" "${process}" "${mode_args[@]}" "${EXTRA_ARGS[@]}" || {
     echo "Error running analysis for process ${process} with era ${era}. Skipping..."
     return 1
   }
@@ -105,7 +119,7 @@ run_signal_analysis() {
   local era="$1"
   local mass="$2"
 #  echo "Running analysis for era ${era} and signal with --mass ${mass}"
-  "${PYTHON}" bin/run_analysis.py "${era}" "Signal" --mass "${mass}" "${EXTRA_ARGS[@]}" || {
+  "${PYTHON}" bin/run_analysis.py "${era}" "Signal" --mass "${mass}" --max-workers 10 --chunksize 50000 "${EXTRA_ARGS[@]}" || {
     echo "Error running signal analysis for mass ${mass} with era ${era}. Skipping..."
     return 1
   }
@@ -113,14 +127,37 @@ run_signal_analysis() {
 
 # Run analysis based on mode
 if [ "${MODE}" == "data" ]; then
+  # Use DATA_ARGS (filtered to exclude --systs) for data
+  EXTRA_ARGS=("${DATA_ARGS[@]}")
   for process in "${DATA_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}"
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
   done
 elif [ "${MODE}" == "bkg" ]; then
   for process in "${MC_OPTIONS[@]}"; do
-    run_analysis "${SELECTED_ERA}" "${process}"
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
   done
-elif [ "${MODE}" == "signal" ]; then
+elif [ "${MODE}" == "all" ]; then
+  echo "=== Running data ==="
+  # Temporarily use DATA_ARGS (no --systs) for data
+  SAVED_EXTRA_ARGS=("${EXTRA_ARGS[@]}")
+  EXTRA_ARGS=("${DATA_ARGS[@]}")
+  for process in "${DATA_OPTIONS[@]}"; do
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
+  done
+  # Restore EXTRA_ARGS (with --systs) for MC
+  EXTRA_ARGS=("${SAVED_EXTRA_ARGS[@]}")
+  echo "=== Running backgrounds ==="
+  for process in "${MC_OPTIONS[@]}"; do
+    run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
+  done
+  # Signal excluded from 'all' mode - use 'signal' mode explicitly if needed
+fi
+
+if [ "${MODE}" == "signal" ]; then
+  if [ ! -f "${MASS_CSV}" ]; then
+    echo "Error: Signal mass CSV not found: ${MASS_CSV}"
+    exit 1
+  fi
   # Default signal behavior: pick ~9 points: WR=2000/4000/6000, and for each WR take
   # N = (min, median, max) from the era's mass-point CSV. If those WR values don't exist
   # for the era, fall back to 9 evenly spaced points from the full list.

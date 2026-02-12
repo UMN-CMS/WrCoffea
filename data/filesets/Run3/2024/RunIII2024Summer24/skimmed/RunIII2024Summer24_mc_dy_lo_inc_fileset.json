@@ -1,0 +1,495 @@
+{
+  "/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim5.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim6.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim7.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim8.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 6528298935475.837,
+      "physics_group": "DYJets",
+      "run": "Run3",
+      "sample": "DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+      "total_uncertainty": 21.134,
+      "xsec": 2113.4,
+      "year": "2024"
+    }
+  },
+  "/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim10.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim11.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim12.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim13.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim5.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim6.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim7.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim8.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim9.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 7004927750806.445,
+      "physics_group": "DYJets",
+      "run": "Run3",
+      "sample": "DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+      "total_uncertainty": 21.134,
+      "xsec": 2113.4,
+      "year": "2024"
+    }
+  },
+  "/TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 1715570891.556693,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8",
+      "total_uncertainty": 0.1084,
+      "xsec": 38.6,
+      "year": "2024"
+    }
+  },
+  "/TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 29602028.402244397,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 0.0003008,
+      "xsec": 2.278,
+      "year": "2024"
+    }
+  },
+  "/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 340956.54948466003,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 3.903e-05,
+      "xsec": 0.08646,
+      "year": "2024"
+    }
+  },
+  "/TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8/TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 53133.33726022999,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 5.69e-06,
+      "xsec": 0.01769,
+      "year": "2024"
+    }
+  },
+  "/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part10.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part11.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part12.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part13.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part14.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part15.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part16.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part17.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part18.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part19.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part20.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part21.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part22.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part23.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part24.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part25.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part26.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part27.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part28.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part29.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part30.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part31.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part32.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part33.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part34.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part35.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part36.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part37.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part38.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part39.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part40.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part41.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part42.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part43.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part44.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part45.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part46.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part47.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part48.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part49.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part5.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part50.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part51.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part52.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part53.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part54.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part55.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part56.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part57.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part6.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part7.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part8.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_part9.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 37820112169.87066,
+      "physics_group": "tt_tW",
+      "run": "Run3",
+      "sample": "TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
+      "total_uncertainty": 0.1345,
+      "xsec": 96.978,
+      "year": "2024"
+    }
+  },
+  "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim10.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim11.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim12.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim13.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim14.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim15.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim16.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim17.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim5.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim6.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim7.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim8.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_skim9.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 161967473084.46893,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8",
+      "total_uncertainty": 0.1345,
+      "xsec": 404.537,
+      "year": "2024"
+    }
+  },
+  "/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 56972823.76477993,
+      "physics_group": "tt_tW",
+      "run": "Run3",
+      "sample": "TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
+      "total_uncertainty": 0.16275,
+      "xsec": 4.61475,
+      "year": "2024"
+    }
+  },
+  "/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 517007992.0704845,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8",
+      "total_uncertainty": 0.05875,
+      "xsec": 23.34,
+      "year": "2024"
+    }
+  },
+  "/TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 11402994.327884708,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 0.0001633,
+      "xsec": 1.43,
+      "year": "2024"
+    }
+  },
+  "/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 57087278.5178998,
+      "physics_group": "tt_tW",
+      "run": "Run3",
+      "sample": "TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
+      "total_uncertainty": 0.16275,
+      "xsec": 4.61475,
+      "year": "2024"
+    }
+  },
+  "/WWW-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WWW-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/WWW-4F_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WWW-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 1000694.7252464801,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "WWW-4F_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 8.821e-05,
+      "xsec": 0.2328,
+      "year": "2024"
+    }
+  },
+  "/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 2997995.9066717895,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 6.705e-05,
+      "xsec": 0.1851,
+      "year": "2024"
+    }
+  },
+  "/WW_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WW_TuneCP5_13p6TeV_pythia8/WW_TuneCP5_13p6TeV_pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WW_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 63987466.06173213,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "WW_TuneCP5_13p6TeV_pythia8",
+      "total_uncertainty": 0.3733,
+      "xsec": 80.23,
+      "year": "2024"
+    }
+  },
+  "/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 1005658.4341803684,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 2.608e-05,
+      "xsec": 0.06206,
+      "year": "2024"
+    }
+  },
+  "/WZ_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WZ_TuneCP5_13p6TeV_pythia8/WZ_TuneCP5_13p6TeV_pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WZ_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 30547825.0,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "WZ_TuneCP5_13p6TeV_pythia8",
+      "total_uncertainty": 0.1318,
+      "xsec": 29.1,
+      "year": "2024"
+    }
+  },
+  "/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 13586456902817.596,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+      "total_uncertainty": 24.37,
+      "xsec": 9141,
+      "year": "2024"
+    }
+  },
+  "/WtoLNu-4Jets_Bin-2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WtoLNu-4Jets_Bin-2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/WtoLNu-4Jets_Bin-2J_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WtoLNu-4Jets_Bin-2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/WtoLNu-4Jets_Bin-2J_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WtoLNu-4Jets_Bin-2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 5581810849886.828,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "WtoLNu-4Jets_Bin-2J_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+      "total_uncertainty": 8.539,
+      "xsec": 2931,
+      "year": "2024"
+    }
+  },
+  "/WtoLNu-4Jets_Bin-3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WtoLNu-4Jets_Bin-3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/WtoLNu-4Jets_Bin-3J_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WtoLNu-4Jets_Bin-3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/WtoLNu-4Jets_Bin-3J_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WtoLNu-4Jets_Bin-3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 1669192464456.091,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "WtoLNu-4Jets_Bin-3J_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+      "total_uncertainty": 2.634,
+      "xsec": 864.6,
+      "year": "2024"
+    }
+  },
+  "/WtoLNu-4Jets_Bin-4J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WtoLNu-4Jets_Bin-4J_TuneCP5_13p6TeV_madgraphMLM-pythia8/WtoLNu-4Jets_Bin-4J_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim0.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/WtoLNu-4Jets_Bin-4J_TuneCP5_13p6TeV_madgraphMLM-pythia8/WtoLNu-4Jets_Bin-4J_TuneCP5_13p6TeV_madgraphMLM-pythia8_skim1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/WtoLNu-4Jets_Bin-4J_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 622793538982.8905,
+      "physics_group": "Nonprompt",
+      "run": "Run3",
+      "sample": "WtoLNu-4Jets_Bin-4J_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+      "total_uncertainty": 1.283,
+      "xsec": 417.8,
+      "year": "2024"
+    }
+  },
+  "/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 258040.24531645895,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8",
+      "total_uncertainty": 5.835e-07,
+      "xsec": 0.01591,
+      "year": "2024"
+    }
+  },
+  "/ZZ_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/ZZ_TuneCP5_13p6TeV_pythia8/ZZ_TuneCP5_13p6TeV_pythia8_skim0.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/ZZ_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+      "datatype": "mc",
+      "era": "RunIII2024Summer24",
+      "genEventSumw": 4800000.0,
+      "physics_group": "Other",
+      "run": "Run3",
+      "sample": "ZZ_TuneCP5_13p6TeV_pythia8",
+      "total_uncertainty": 0.0649,
+      "xsec": 12.75,
+      "year": "2024"
+    }
+  }
+}

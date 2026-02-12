@@ -1,0 +1,191 @@
+from __future__ import annotations
+
+import csv
+import logging
+import re
+from collections.abc import Mapping
+from pathlib import Path
+
+from wrcoffea.fileset_validation import validate_fileset_schema, validate_selection
+from wrcoffea.era_utils import ERA_MAPPING, get_era_details, load_json
+from wrcoffea.analysis_config import DEFAULT_MC_TAG, SKIMMED_ONLY_SIGNAL
+
+logger = logging.getLogger(__name__)
+
+_MASS_RE_WR_N = re.compile(r"^WR(?P<wr>\d+)_N(?P<n>\d+)$")
+_MASS_RE_MWR_MN = re.compile(r"^MWR(?P<wr>\d+)_MN(?P<n>\d+)$")
+
+
+def list_eras() -> list[str]:
+    """Return supported era strings in the repo's preferred order."""
+
+    # Dict insertion order is intentional here (curated in era_utils).
+    return list(ERA_MAPPING.keys())
+
+
+def list_samples() -> list[str]:
+    """Return supported top-level sample choices for the CLI."""
+
+    return ["DYJets", "tt_tW", "Nonprompt", "Other", "EGamma", "Muon", "Signal"]
+
+
+def normalize_mass_point(mass: str | None) -> str | None:
+    """Normalize user-provided mass points to the repo's canonical format.
+
+    Canonical: WR<wr>_N<n>
+    Legacy accepted: MWR<wr>_MN<n> (auto-converted)
+    """
+
+    if mass is None:
+        return None
+
+    mass = mass.strip()
+    if _MASS_RE_WR_N.match(mass):
+        return mass
+
+    m = _MASS_RE_MWR_MN.match(mass)
+    if m:
+        converted = f"WR{m.group('wr')}_N{m.group('n')}"
+        logger.warning(
+            "Interpreting legacy mass '%s' as '%s' (canonical WR/N format).",
+            mass,
+            converted,
+        )
+        return converted
+
+    return mass
+
+
+def signal_sample_matches_mass(sample_name: str, mass_wr_n: str) -> bool:
+    """True if a signal dataset/sample string corresponds to the mass point.
+
+    Keep matching flexible because dataset names vary across campaigns.
+
+    Examples observed in this repo:
+      - ..._MWR2000_N1100_...
+      - ..._MWR600_MN100_...
+    """
+
+    if not sample_name:
+        return False
+
+    m = _MASS_RE_WR_N.match(mass_wr_n)
+    if not m:
+        return mass_wr_n in sample_name
+
+    wr = m.group("wr")
+    n = m.group("n")
+    needles = (
+        mass_wr_n,
+        f"MWR{wr}_N{n}",
+        f"MWR{wr}_MN{n}",
+    )
+    return any(x in sample_name for x in needles)
+
+
+def load_masses_from_csv(file_path: Path) -> list[str]:
+    mass_choices: list[str] = []
+    try:
+        with open(file_path, mode="r", encoding="utf-8") as file:
+            csv_reader = csv.reader(file)
+            next(csv_reader)
+            for row in csv_reader:
+                if len(row) >= 2:
+                    wr_mass = row[0].strip()
+                    n_mass = row[1].strip()
+                    mass_choices.append(f"WR{wr_mass}_N{n_mass}")
+    except FileNotFoundError:
+        logger.error("Mass CSV file not found at: %s", file_path)
+        raise
+    except Exception:
+        logger.exception("Error loading mass CSV: %s", file_path)
+        raise
+    return mass_choices
+
+
+def filter_by_process(fileset: Mapping, desired_process: str, *, mass: str | None = None) -> dict:
+    if desired_process == "Signal":
+        if mass is None:
+            raise ValueError("Signal filtering requires a mass point.")
+        return {
+            ds: data
+            for ds, data in fileset.items()
+            if signal_sample_matches_mass(
+                (data.get("metadata") or {}).get("sample", ""),
+                mass,
+            )
+        }
+
+    return {
+        ds: data
+        for ds, data in fileset.items()
+        if (data.get("metadata") or {}).get("physics_group") == desired_process
+    }
+
+
+def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Path:
+    run, year, era_name = get_era_details(era)
+
+    if dy == "LO_inclusive":
+        filename = f"{era_name}_mc_dy_lo_inc_fileset.json"
+    elif dy == "NLO_mll_binned":
+        filename = f"{era_name}_mc_dy_nlo_mll_fileset.json"
+    elif dy == "LO_HT":
+        filename = f"{era_name}_mc_dy_lo_ht_fileset.json"
+    elif sample in ["EGamma", "Muon"]:
+        filename = f"{era_name}_data_fileset.json"
+    elif sample == "Signal":
+        filename = f"{era_name}_signal_fileset.json"
+    else:
+        tag = DEFAULT_MC_TAG.get(era_name)
+        if tag is None:
+            raise ValueError(
+                f"No default MC fileset tag for era '{era_name}'. "
+                "Add it to DEFAULT_MC_TAG in analysis_config.py."
+            )
+        filename = f"{era_name}_mc_{tag}_fileset.json"
+
+    base = Path("data/filesets") / run / year / era_name
+    if unskimmed and sample == "Signal" and era_name in SKIMMED_ONLY_SIGNAL:
+        logger.warning(
+            "Unskimmed signal filesets are not available for %s; "
+            "falling back to skimmed.",
+            era_name,
+        )
+        base = base / "skimmed"
+    elif unskimmed:
+        base = base / "unskimmed"
+    else:
+        base = base / "skimmed"
+    return base / filename
+
+
+def load_and_select_fileset(
+    *,
+    filepath: Path,
+    desired_process: str,
+    mass: str | None,
+    maxfiles: int | None = None,
+) -> dict:
+    if not filepath.exists():
+        raise FileNotFoundError(
+            f"Fileset JSON not found: {filepath}. "
+            "Create filesets first (see docs/filesets.md), or check --unskimmed and era/sample names."
+        )
+
+    preprocessed_fileset = load_json(str(filepath))
+    validate_fileset_schema(preprocessed_fileset, filepath=str(filepath))
+
+    filtered_fileset = filter_by_process(preprocessed_fileset, desired_process, mass=mass)
+    validate_selection(
+        filtered_fileset,
+        desired_process=desired_process,
+        mass=mass,
+        preprocessed_fileset=preprocessed_fileset,
+    )
+
+    if maxfiles is not None:
+        from coffea.dataset_tools import max_files
+        filtered_fileset = max_files(filtered_fileset, maxfiles)
+
+    return filtered_fileset

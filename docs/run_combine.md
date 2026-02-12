@@ -1,38 +1,54 @@
-## Run the combine
-set up the environment -
-```
-source runcombine.sh
-```
-Create datacards -
-```
-python3 datacards.py
-```
-Get expected asymptotic limits
-```
-source v1_Asymptotic_limit.sh
+# Expected Limits with Combine
+
+Compute expected asymptotic limits using the Higgs Combine framework. All scripts live in `combine_framework/`.
+
+## Setup
+
+Source the Combine environment:
+```bash
+source combine_framework/runcombine.sh
 ```
 
-## analyze the output & create the plots
+## Create Datacards
+
+Generate datacards from the analyzer output histograms:
+```bash
+python3 combine_framework/datacards.py
 ```
-cd plotting
+
+## Run Asymptotic Limits
+
+```bash
+source combine_framework/v1_Asymptotic_limit.sh
+```
+
+## Analyze Output and Create Plots
+
+Merge the Combine output files and produce limit plots:
+
+```bash
+cd combine_framework/plotting
 hadd -f combine.root ../higgsCombine*root
 make
 ./plotlimit input_combine.txt out_WRcombine.root WR
 ```
 
-Add combine.root file path in the 'input_combine.txt' before running the above last command.
+Add the `combine.root` file path in `input_combine.txt` before running the last command.
 
-Get 2D plots 
-```
+### 2D Exclusion Plot
+
+```bash
 root -b -q 'getExclusion.C("out_WRcombine.root")'
 ```
 
-Get 1D limit plot as a function of WR mass
-```
+### 1D Limit Plot (vs WR Mass)
+
+```bash
 python3 limitPlotter.py limits_EE.root WR_cross_sections.txt output_limit_plot.png 1200
 ```
 
-Get 1D limit plot as a function	of N mass
-```
+### 1D Limit Plot (vs N Mass)
+
+```bash
 python3 limitPlotter_mN.py limits_EE.root WR_cross_sections.txt output_limit_plot_mW.png 1200
 ```

@@ -27,9 +27,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 repo_root = os.path.abspath(os.path.join(current_dir, "../"))
 sys.path.insert(0, repo_root)
 
-from python.preprocess_utils import get_era_details, load_json
-from python.fileset_utils import (
-    normalize_skimmed_sample,
+from wrcoffea.era_utils import get_era_details, load_json
+from wrcoffea.fileset_utils import (
     output_dir,
     parse_config_path,
     rename_dataset_key_to_sample,
@@ -243,7 +242,7 @@ def main():
     fileset = replace_files_in_json(fileset, run, year, era, args.umn, sample)
     fileset = rename_dataset_key_to_sample(fileset)
 
-    out_dir_path = output_dir(data_root=data_root, run=run, year=year, era=era)
+    out_dir_path = output_dir(data_root=data_root, run=run, year=year, era=era) / "skimmed"
     out_file = out_dir_path / f"{era}_{sample}_fileset.json"
     write_fileset_json(out_file, fileset, indent=2, sort_keys=True)
     logging.info(f"Saved JSON to {out_file}")
