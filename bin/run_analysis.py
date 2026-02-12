@@ -55,6 +55,8 @@ def normalize_by_sumw(hists_dict):
     ``genWeight * xsec * lumi * 1000`` (no ``/sumw``).  This function
     divides each dataset's histograms by the accumulated ``_sumw`` to
     complete the normalization.
+
+    Recursively normalizes nested structures (e.g., cutflow histograms).
     """
     import hist as hist_mod
 
@@ -63,10 +65,19 @@ def normalize_by_sumw(hists_dict):
         if sumw is None or sumw == 0.0:
             continue
         logging.info("Normalizing %s by computed sumw = %.6g", dataset, sumw)
-        for key, obj in data.items():
+
+        def _normalize_recursive(obj):
+            """Recursively normalize Hist objects in nested dicts."""
             if isinstance(obj, hist_mod.Hist):
                 obj.view(flow=True).value /= sumw
                 obj.view(flow=True).variance /= sumw * sumw
+            elif isinstance(obj, dict):
+                for v in obj.values():
+                    _normalize_recursive(v)
+
+        for obj in data.values():
+            _normalize_recursive(obj)
+
     return hists_dict
 
 
