@@ -29,6 +29,12 @@ pip install -e .
 
 > **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. The venv must be named `.venv` so that `analyze_all.sh` can auto-detect it. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
 
+> **Troubleshooting XRootD:** The `xrootd` package is built from source during installation. If `pip install -e .` fails with `ERROR: Wheel 'xrootd' ... is invalid`, a corrupted wheel is cached from a previous attempt. Clear it and retry:
+> ```bash
+> pip cache remove xrootd
+> pip install -e .
+> ```
+
 ### Option B: Condor runs at FNAL LPC (recommended for production)
 
 Set up the lpcjobqueue Apptainer environment (one-time):
