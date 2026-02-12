@@ -8,17 +8,17 @@ version = "0.1.0"
 description = "Coffea-based WR→Nℓ→ℓℓjj analysis"
 requires-python = ">=3.10"
 dependencies = [
-    "coffea>=2025.12.0,<2026",
-    "awkward>=2.8.12,<3",
-    "hist>=2.9.2,<3",
-    "correctionlib>=2.7.0,<3",
-    "numpy>=2.3.5,<3",
-    "matplotlib>=3.10.8",
-    "mplhep>=0.4.1",
-    "dask[distributed]>=2025.3.1,<2026",
+    "coffea==2025.12.0",
+    "awkward==2.8.12",
+    "hist==2.9.2",
+    "correctionlib==2.7.0",
+    "numpy==2.3.5",
+    "matplotlib==3.10.8",
+    "mplhep==0.4.1",
+    "dask[distributed]==2025.3.1",
     "dask-awkward>=2025.5,<2026",
-    "uproot>=5.7.1,<6",
-    "pyyaml>=6.0.3",
+    "uproot==5.7.1",
+    "pyyaml==6.0.3",
     "fsspec-xrootd",
 ]
 
