@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="docs/coffea_logo.svg" alt="Coffea Logo" width="250">
+</div>
+
 # WrCoffea Documentation
 
 This repository provides the main analysis framework for processing WR→Nℓ→ℓℓjj events using the Coffea columnar analysis toolkit. It handles background, data, and signal samples to produce histograms for downstream limit-setting and plotting.
