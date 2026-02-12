@@ -150,8 +150,7 @@ elif [ "${MODE}" == "all" ]; then
   for process in "${MC_OPTIONS[@]}"; do
     run_analysis "${SELECTED_ERA}" "${process}" --max-workers ${WORKERS}
   done
-  echo "=== Running signal ==="
-  MODE="signal"  # fall through to signal mass-point selection below
+  # Signal excluded from 'all' mode - use 'signal' mode explicitly if needed
 fi
 
 if [ "${MODE}" == "signal" ]; then
