@@ -59,6 +59,26 @@ python -c "import coffea; print(coffea.__version__)"   # should print 2025.12.0
 python -c "import sys; print(sys.version)"              # should print 3.12.x
 ```
 
+### Dependency Versions
+
+**Important:** Python package versions in `pyproject.toml` are pinned to **exactly match** the `coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12` container for reproducibility.
+
+If you switch to a different container version:
+1. Check installed versions in the new container:
+   ```bash
+   apptainer exec /cvmfs/unpacked.cern.ch/.../new-container python -c "import coffea; print(coffea.__version__)"
+   ```
+2. Update `pyproject.toml` to match the new container versions
+3. Recreate your local `.venv`:
+   ```bash
+   rm -rf .venv
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -e .
+   ```
+
+This ensures your local development environment matches the production container exactly.
+
 ## Grid Proxy
 
 Authenticate for accessing grid resources (required for both local and Condor runs):
