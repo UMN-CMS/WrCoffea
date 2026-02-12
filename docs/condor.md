@@ -123,10 +123,10 @@ Wall-clock times for `RunIII2024Summer24` on Condor (250k chunksize, 4 GB/worker
 
 | Sample    | Skimmed (50 workers) | Unskimmed (400 workers) |
 |-----------|----------------------|-------------------------|
-| Muon      |      21 minutes      |       81.24 minutes     |
-| EGamma    |       9 minutes      |       80.12 minutes     |
-| DYJets    |       7 minutes      |       55.87 minutes     |
-| tt_tW     |                      |       30.74 minutes     |
-| Nonprompt |                      |                         |
-| Other     |                      |                         |
-| Signal    |                      |                         |
+| Muon      |     17.49 minutes    |       81.24 minutes     |
+| EGamma    |     9.91 minutes     |       80.12 minutes     |
+| DYJets    |     8.05 minutes     |       55.87 minutes     |
+| tt_tW     |     8.51 minutes     |       30.74 minutes     |
+| Nonprompt |     10.47 minutes    |       71.67 minutes     |
+| Other     |     7.05 minutes     |       64.50 minutes     |
+| Signal    |     Run locally      |       Run locally       |
