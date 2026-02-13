@@ -56,7 +56,9 @@ def normalize_by_sumw(hists_dict):
     divides each dataset's histograms by the accumulated ``_sumw`` to
     complete the normalization.
 
-    Recursively normalizes nested structures (e.g., cutflow histograms).
+    Recursively normalizes nested structures (e.g., cutflow histograms),
+    but skips unweighted cutflow histograms (keys containing "unweighted")
+    which hold raw event counts and must not be rescaled.
     """
     import hist as hist_mod
 
@@ -66,17 +68,23 @@ def normalize_by_sumw(hists_dict):
             continue
         logging.info("Normalizing %s by computed sumw = %.6g", dataset, sumw)
 
-        def _normalize_recursive(obj):
+        def _normalize_recursive(obj, key=""):
             """Recursively normalize Hist objects in nested dicts."""
+            if "unweighted" in key:
+                return
             if isinstance(obj, hist_mod.Hist):
-                obj.view(flow=True).value /= sumw
-                obj.view(flow=True).variance /= sumw * sumw
+                view = obj.view(flow=True)
+                if hasattr(view, "value"):
+                    view.value /= sumw
+                    view.variance /= sumw * sumw
+                else:
+                    view /= sumw
             elif isinstance(obj, dict):
-                for v in obj.values():
-                    _normalize_recursive(v)
+                for k, v in obj.items():
+                    _normalize_recursive(v, key=k)
 
-        for obj in data.values():
-            _normalize_recursive(obj)
+        for key, obj in data.items():
+            _normalize_recursive(obj, key=key)
 
     return hists_dict
 

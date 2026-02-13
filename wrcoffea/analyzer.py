@@ -44,6 +44,11 @@ from wrcoffea.analysis_config import (
     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR,
     SEL_EMU_CR, SEL_MUE_CR, SEL_JET_VETO_MAP,
+    SEL_LEAD_IS_ELECTRON, SEL_LEAD_IS_MUON,
+    SEL_NO_DY_PAIR, SEL_NO_EXTRA_TIGHT_SR, SEL_NO_EXTRA_TIGHT_CR,
+    SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
+    SEL_OF_LEPTON_IN_AK8, SEL_NO_SF_LEPTON_IN_AK8,
+    SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 from wrcoffea.era_utils import ERA_MAPPING
 from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask
@@ -655,10 +660,26 @@ class WrAnalysis(processor.ProcessorABC):
         no_extra_tight_flav_cr = self._no_extra_tight_leptons(
             looseMuons, looseElectrons, tight_lep, of_candidate)
 
+        # Expanded boosted cutflow selections.
+        selections.add(SEL_LEAD_IS_ELECTRON, is_lead_e)
+        selections.add(SEL_LEAD_IS_MUON, is_lead_mu)
+        selections.add(SEL_NO_DY_PAIR, ~has_dy_pair)
+        selections.add(SEL_SF_LEPTON_IN_AK8, ~ak.is_none(sf_candidate))
+        selections.add(SEL_NO_OF_LEPTON_IN_AK8, ak.is_none(of_candidate))
+        selections.add(SEL_OF_LEPTON_IN_AK8, ~ak.is_none(of_candidate))
+        selections.add(SEL_NO_SF_LEPTON_IN_AK8, ak.is_none(sf_candidate))
+        selections.add(SEL_NO_EXTRA_TIGHT_SR, no_extra_tight_sr)
+        selections.add(SEL_NO_EXTRA_TIGHT_CR, no_extra_tight_flav_cr)
+        mll_boosted = ak.where(~ak.is_none(sf_candidate), mll_sr, mll_cr)
+        selections.add(SEL_MLL_GT200_BOOSTED, ak.fill_none(mll_boosted > CUTS["mll_sr_min"], False))
+        selections.add(SEL_MLJ_GT800_BOOSTED, ak.fill_none(mlj_sr > CUTS["mlljj_min"], False))
+
         # Triggers.
         if triggers is not None:
             eTrig, muTrig, emu_trig = triggers
-        
+            selections.add(SEL_E_TRIGGER, eTrig)
+            selections.add(SEL_MU_TRIGGER, muTrig)
+
         # Region assignments.
         mumu_dy_cr = muTrig & DYCR_mask & is_lead_mu & no_extra_tight_dyCR
         ee_dy_cr   = eTrig & DYCR_mask & is_lead_e & no_extra_tight_dyCR

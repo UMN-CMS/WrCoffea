@@ -25,7 +25,7 @@ def _folder_and_hist_names(region: str, syst: str, hist_stem: str):
         hname  = f"{hist_stem}_syst_{norm}_{region}"
     return folder, hname
 
-def _sum_cutflow_hists(my_hists):
+def _sum_cutflow_hists(my_hists, cutflow_keys=("cutflow", "__cutflow__")):
     """
     Sum ALL cutflow histograms across datasets, recursively.
 
@@ -35,6 +35,11 @@ def _sum_cutflow_hists(my_hists):
         "mumu": {...},
         "em":   {...},
       }
+
+    Args:
+        my_hists: Nested dataset histogram payload map.
+        cutflow_keys: Ordered tuple of keys to look for in each dataset payload.
+            The first present dict is used (legacy fallback supported).
     """
     def _merge(dst, src):
         # src can be Hist or dict
@@ -58,7 +63,12 @@ def _sum_cutflow_hists(my_hists):
 
     out = {}
     for dataset_payload in my_hists.values():
-        cfmap = dataset_payload.get("cutflow") or dataset_payload.get("__cutflow__")
+        cfmap = None
+        for k in cutflow_keys:
+            candidate = dataset_payload.get(k)
+            if isinstance(candidate, dict):
+                cfmap = candidate
+                break
         if not isinstance(cfmap, dict):
             continue
         for k, v in cfmap.items():
@@ -66,7 +76,7 @@ def _sum_cutflow_hists(my_hists):
     return out
 
 
-def _save_cutflows(root_file, cutflow_summed: Dict[str, dict]):
+def _save_cutflows(root_file, cutflow_summed: Dict[str, dict], prefix: str):
     """
     Recursively write all cutflow histograms while avoiding duplicate writes.
     If a given path is encountered twice, the second write is skipped to prevent ROOT ;2 cycles.
@@ -83,7 +93,7 @@ def _save_cutflows(root_file, cutflow_summed: Dict[str, dict]):
             for name, child in obj.items():
                 _recurse(f"{prefix}/{name}", child)
 
-    _recurse("/cutflow", cutflow_summed)
+    _recurse(prefix, cutflow_summed)
 
 def split_hists_with_syst(summed_hists, *, sum_over_process=True):
     out = {}
@@ -139,7 +149,14 @@ def save_histograms(histograms, args):
     summed_hist = sum_hists(histograms)
     split_histograms_dict = split_hists_with_syst(summed_hist, sum_over_process=True)
 
-    cutflow_summed = _sum_cutflow_hists(histograms)
+    cutflow_resolved_summed = _sum_cutflow_hists(
+        histograms,
+        cutflow_keys=("cutflow", "__cutflow__"),
+    )
+    cutflow_boosted_summed = _sum_cutflow_hists(
+        histograms,
+        cutflow_keys=("cutflow_boosted", "__cutflow_boosted__"),
+    )
 
     with uproot.recreate(output_file) as root_file:
         for (region, syst, hist_name), hist_obj in split_histograms_dict.items():
@@ -149,7 +166,8 @@ def save_histograms(histograms, args):
             folder, hname = _folder_and_hist_names(region, syst, var_stem)
             root_file[f"/{folder}/{hname}"] = hist_obj
 
-        _save_cutflows(root_file, cutflow_summed)
+        _save_cutflows(root_file, cutflow_resolved_summed, "/cutflow_resolved")
+        _save_cutflows(root_file, cutflow_boosted_summed, "/cutflow_boosted")
 
     logger.info(f"Histograms saved to {output_file}.")
 
@@ -177,4 +195,3 @@ def sum_hists(my_hists):
                     sum_histograms[hist_name] = hist_data.copy()
 
     return sum_histograms
-

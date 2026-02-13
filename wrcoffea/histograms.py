@@ -25,6 +25,11 @@ from wrcoffea.analysis_config import (
     # Boosted selections
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR,
+    SEL_LEAD_IS_ELECTRON, SEL_LEAD_IS_MUON,
+    SEL_NO_DY_PAIR, SEL_NO_EXTRA_TIGHT_SR, SEL_NO_EXTRA_TIGHT_CR,
+    SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
+    SEL_OF_LEPTON_IN_AK8, SEL_NO_SF_LEPTON_IN_AK8,
+    SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 
 logger = logging.getLogger(__name__)
@@ -259,28 +264,49 @@ def fill_boosted_cutflows(output, selections, weights):
     """
     output.setdefault("cutflow_boosted", {})
 
-    # Boosted cutflow chains - showing SR progression for ee/mumu, flavor CR for em
+    # Boosted cutflow chains - expanded SR progression for ee/mumu, flavor CR for em
     chains = {
         "ee": [
             SEL_BOOSTEDTAG,
+            SEL_LEAD_IS_ELECTRON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
+            SEL_E_TRIGGER,
+            SEL_NO_DY_PAIR,
             SEL_AK8JETS_WITH_LSF,
+            SEL_NO_EXTRA_TIGHT_SR,
+            SEL_SF_LEPTON_IN_AK8,
+            SEL_NO_OF_LEPTON_IN_AK8,
+            SEL_MLL_GT200_BOOSTED,
+            SEL_MLJ_GT800_BOOSTED,
             SEL_JET_VETO_MAP,
-            SEL_EE_SR,
         ],
         "mumu": [
             SEL_BOOSTEDTAG,
+            SEL_LEAD_IS_MUON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
+            SEL_MU_TRIGGER,
+            SEL_NO_DY_PAIR,
             SEL_AK8JETS_WITH_LSF,
+            SEL_NO_EXTRA_TIGHT_SR,
+            SEL_SF_LEPTON_IN_AK8,
+            SEL_NO_OF_LEPTON_IN_AK8,
+            SEL_MLL_GT200_BOOSTED,
+            SEL_MLJ_GT800_BOOSTED,
             SEL_JET_VETO_MAP,
-            SEL_MUMU_SR,
         ],
         "em": [
             SEL_BOOSTEDTAG,
+            SEL_LEAD_IS_ELECTRON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
+            SEL_E_TRIGGER,
+            SEL_NO_DY_PAIR,
             SEL_AK8JETS_WITH_LSF,
+            SEL_NO_EXTRA_TIGHT_CR,
+            SEL_NO_SF_LEPTON_IN_AK8,
+            SEL_OF_LEPTON_IN_AK8,
+            SEL_MLL_GT200_BOOSTED,
+            SEL_MLJ_GT800_BOOSTED,
             SEL_JET_VETO_MAP,
-            SEL_EMU_CR,
         ],
     }
 
