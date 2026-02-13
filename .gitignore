@@ -25,6 +25,7 @@ __pycache__
 *.log
 myscript.sh
 nano_files*.txt
+.claude/
 .env/
 .local/
 .bashrc
