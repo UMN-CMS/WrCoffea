@@ -34,16 +34,16 @@ source .venv/bin/activate
 
 ## Quick Start
 
-Run the analyzer by specifying an era and sample:
+Run the analyzer by specifying an era and composite mode:
 
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # background
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma                          # data
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      # signal
 python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything
+python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # backgrounds
+python3 bin/run_analysis.py RunIII2024Summer24 data                            # data
+python3 bin/run_analysis.py RunIII2024Summer24 signal                          # signal
 ```
 
-Composite modes process multiple samples sequentially (locally) or in parallel (on Condor with `--condor`):
+Composite modes process multiple samples sequentially (locally) or in parallel (on Condor with `--condor`). You can also run individual samples directly:
 
 | Mode | Samples |
 |------|---------|
@@ -52,6 +52,7 @@ Composite modes process multiple samples sequentially (locally) or in parallel (
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
 | `signal` | Signal (default subset of mass points) |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
+| Single sample | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal` (with `--mass`) |
 
 Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
 
