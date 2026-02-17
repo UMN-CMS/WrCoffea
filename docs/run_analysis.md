@@ -5,18 +5,16 @@
 Run the analyzer by specifying an era and sample:
 
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # background
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      # signal
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma                          # data
-python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # all backgrounds
 python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything
+python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # all backgrounds
+python3 bin/run_analysis.py RunIII2024Summer24 data                            # all data
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # single background
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      # signal mass point
 ```
 
 By default, processing runs locally with 3 Dask workers. Use `--condor` for HTCondor at LPC (see [condor.md](condor.md)).
 
 Available eras: `RunIISummer20UL18`, `Run3Summer22`, `Run3Summer22EE`, `Run3Summer23`, `Run3Summer23BPix`, `RunIII2024Summer24`.
-
-Single samples: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal`.
 
 ### Composite Modes
 
@@ -29,6 +27,8 @@ Composite modes process multiple samples. Locally, they run sequentially (one sa
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
 | `signal` | Signal (default subset of mass points) |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
+
+Single samples: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal`.
 
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir my_study
@@ -161,6 +161,19 @@ These flags control redirector fallback during unskimmed preprocessing. Fallback
 ## Examples
 
 ```bash
+# Everything locally (sequential)
+python3 bin/run_analysis.py RunIII2024Summer24 all --dir 20260217_skimmed
+
+# All backgrounds locally (sequential)
+python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir 20260217_skimmed
+
+# Everything on Condor (parallel)
+python3 bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup sf
+
+# Single sample on Condor
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
+
 # Quick local test (1 file, 1 chunk, 1000 events)
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --maxchunks 1 --maxfiles 1 --chunksize 1000
 
@@ -175,19 +188,6 @@ python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
 
 # Unskimmed files
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy LO_inclusive
-
-# All backgrounds locally (sequential)
-python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir 20260217_skimmed
-
-# Everything locally (sequential)
-python3 bin/run_analysis.py RunIII2024Summer24 all --dir 20260217_skimmed
-
-# Single sample on Condor
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
-
-# Everything on Condor (parallel)
-python3 bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup sf
 
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only

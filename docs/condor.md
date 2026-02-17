@@ -24,31 +24,32 @@ pip install -e .
 
 ## Running the Analysis on Condor
 
-Use the `--condor` flag to submit jobs:
+### Composite modes on Condor
+
+Use `--condor` to run composite modes on Condor (without it, they run locally in sequential order):
+```bash
+python bin/run_analysis.py RunIII2024Summer24 all --condor       # everything
+python bin/run_analysis.py RunIII2024Summer24 bkg --condor       # all backgrounds
+python bin/run_analysis.py RunIII2024Summer24 data --condor      # all data
+python bin/run_analysis.py RunIII2024Summer24 mc --condor        # backgrounds + signal
+python bin/run_analysis.py RunIII2024Summer24 signal --condor    # signal only
+```
+
+### Single samples on Condor
+
 ```bash
 python bin/run_analysis.py RunIII2024Summer24 DYJets --condor
 python bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --condor
 ```
 
-By default, 50 Condor workers are launched. Use `--max-workers` to change this:
+Use `--max-workers` to override the default worker count:
 ```bash
 python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 ```
 
-### Composite modes on Condor
-
-Use `--condor` to run composite modes on Condor (without it, they run locally in sequential order):
-```bash
-python bin/run_analysis.py RunIII2024Summer24 data --condor      # all data
-python bin/run_analysis.py RunIII2024Summer24 bkg --condor       # all backgrounds
-python bin/run_analysis.py RunIII2024Summer24 signal --condor    # signal only
-python bin/run_analysis.py RunIII2024Summer24 mc --condor        # backgrounds + signal
-python bin/run_analysis.py RunIII2024Summer24 all --condor       # everything
-```
-
 **Default Condor worker counts:**
 - **Composite modes** (`all`, `data`, `bkg`, `mc`, `signal`): 3000 workers
-- **Single-sample** (`DYJets`, `EGamma`, etc. with `--condor`): 50 workers
+- **Single-sample** (`DYJets`, `EGamma`, etc.): 50 workers
 
 These defaults can be overridden with `--max-workers`.
 

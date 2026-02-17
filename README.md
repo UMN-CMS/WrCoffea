@@ -94,8 +94,8 @@ Scale out processing across many workers at FNAL LPC using HTCondor with the Das
 
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12           # enter container
-python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # single sample on Condor
 python bin/run_analysis.py RunIII2024Summer24 all --condor           # everything on Condor
+python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # single sample on Condor
 ```
 
 See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, and log locations.
@@ -155,46 +155,37 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 ### Examples
 
 ```bash
-# Basic background processing
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets
-
-# Signal with specific mass point
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
-
-# Only process resolved region (faster)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
-
-# Custom output directory and filename
-python3 bin/run_analysis.py Run3Summer22EE DYJets --dir my_study --name test
-
-# Debug mode (no histogram output)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --debug
-
-# Process with systematics (all supported)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
-
-# Only pileup uncertainty
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs pileup
-
-# Validate fileset without processing
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only
-
-# Composite modes (auto-submit to Condor)
+# Composite modes (run locally by default, sequential)
 python3 bin/run_analysis.py RunIII2024Summer24 all                   # everything
 python3 bin/run_analysis.py RunIII2024Summer24 bkg                   # all backgrounds
 python3 bin/run_analysis.py RunIII2024Summer24 data                  # all data
 python3 bin/run_analysis.py RunIII2024Summer24 mc                    # backgrounds + signal
 python3 bin/run_analysis.py RunIII2024Summer24 signal                # signal only
 
-# Composite mode with custom directory
+# Composite mode with custom directory and systematics
 python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir my_study --name test
+python3 bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
 
-# Run on Condor (must be inside Apptainer shell)
+# Composite modes on Condor (parallel, must be inside Apptainer shell)
+python3 bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup sf
+python3 bin/run_analysis.py RunIII2024Summer24 bkg --condor
+
+# Single sample
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
+
+# Single sample on Condor
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 
-# Run with systematics (applied to MC only, ignored for data)
-python3 bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
+# Custom output directory and filename
+python3 bin/run_analysis.py Run3Summer22EE DYJets --dir my_study --name test
+
+# Only process resolved region
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
+
+# Validate fileset without processing
+python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only
 ```
 
 ---
