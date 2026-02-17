@@ -2,6 +2,129 @@
 
 The skimmer applies a loose event preselection (looser than the analysis cuts) to NanoAOD files, reducing file sizes for faster analysis iteration. The core logic lives in `wrcoffea/skimmer.py` (importable/testable), with a single CLI entry point at `bin/skim.py` using subcommands. Files are resolved directly from DAS via `dasgoclient` — no pre-built filesets required.
 
+## Full Pipeline
+
+The typical workflow to skim an entire era end-to-end:
+
+```bash
+# 1. Submit all datasets for an era to Condor
+python3 bin/skim.py run-era --era Run3Summer22
+
+# 2. Check all datasets for completion
+python3 bin/skim.py check-era --era Run3Summer22
+
+# 2b. If step 2 reports INCOMPLETE, resubmit failed file-jobs
+python3 bin/skim.py resubmit-failures --era Run3Summer22
+
+# 3. Merge all datasets (parallel across datasets)
+python3 bin/skim.py merge-era --era Run3Summer22 --workers 4
+
+# 4. Upload merged files to Wisconsin
+python3 bin/skim.py upload --era Run3Summer22
+
+# 4b. If step 4 had upload failures, retry only the failed datasets
+python3 bin/skim.py upload --era Run3Summer22 --retry-failed
+
+# 5. Regenerate skimmed filesets (run once per config file)
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_data.json
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json
+```
+
+Each step is explained in detail below. All era-level subcommands accept either `--era ERA` (auto-discovers all config JSONs in `data/configs/`) or `--config JSON [JSON ...]` (mutually exclusive). When multiple configs share the same DAS paths, duplicates are skipped automatically.
+
+---
+
+## Step 1: Submit skim jobs (`run-era`)
+
+Submits one Condor job per NanoAOD file for every dataset in the era. Creates the repo tarball once and reuses it across all datasets.
+
+```bash
+python3 bin/skim.py run-era --era Run3Summer22
+```
+
+You can also pass individual config files:
+```bash
+python3 bin/skim.py run-era \
+  --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json \
+           data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json
+```
+
+Datasets with `"note"` containing "no longer available" are automatically skipped.
+
+## Step 2: Check for failures (`check-era`)
+
+Compares the expected number of output tarballs against what was produced. Reports any missing or failed jobs, and auto-writes a resubmit state file.
+
+```bash
+python3 bin/skim.py check-era --era Run3Summer22
+```
+
+If failures are found, a state file (`scripts/.check_era_state_<era>.json`) and resubmit script (`scripts/resubmit_failed_<era>.sh`) are written automatically. Use `--resubmit-script <path>` to override the script output path.
+
+### Resubmitting failures
+
+```bash
+# Resubmit only failed file-jobs from the latest check-era state
+python3 bin/skim.py resubmit-failures --era Run3Summer22
+
+# Validate what would run without submitting
+python3 bin/skim.py resubmit-failures --era Run3Summer22 --dry-run
+```
+
+`resubmit-failures` errors if no state exists (check-era not run yet) or if the latest check-era found zero failed jobs.
+
+## Step 3: Merge outputs (`merge-era`)
+
+Each Condor skim job produces one small ROOT file per input file. Coffea and XRootD are inefficient when opening many small files, so `merge` combines them into larger files of ~1M events each. Tarballs are extracted incrementally one at a time and merged in batches using uproot, with individual skim files deleted after each successful merge to keep disk usage bounded. Files are grouped by HLT path to avoid schema mismatches. After all files are merged, event counts and `genEventSumw` totals are validated.
+
+```bash
+python3 bin/skim.py merge-era --era Run3Summer22 --workers 4
+```
+
+| Flag | Description |
+|------|-------------|
+| `--workers N` | Parallelize merging across datasets |
+| `--max-events N` | Max events per merged file (default: 1,000,000) |
+| `--skip-check` | Skip the pre-merge completion check |
+
+The merge auto cross-checks `genEventSumw` from the config.
+
+## Step 4: Upload to Wisconsin (`upload`)
+
+Copies merged ROOT files to Wisconsin via `xrdcp`.
+
+```bash
+python3 bin/skim.py upload --era Run3Summer22
+```
+
+| Flag | Description |
+|------|-------------|
+| `--retry-failed` | Only retry datasets that failed in the previous upload |
+| `--remote-user USER` | Wisconsin storage user (default: `wijackso`) |
+| `--dry-run` | Print xrdcp commands without executing |
+
+Datasets are uploaded to `root://cmsxrootd.hep.wisc.edu/store/user/<remote-user>/WRAnalyzer/skims/<run>/<year>/<era>/<category>/<dataset>/`, where category is `signals`, `data`, or `backgrounds` based on the dataset name.
+
+If some uploads fail, re-run with `--retry-failed` to retry only the failed datasets:
+```bash
+python3 bin/skim.py upload --era Run3Summer22 --retry-failed
+```
+
+## Step 5: Regenerate skimmed filesets
+
+After uploading, regenerate the skimmed fileset JSONs that the analyzer reads:
+
+```bash
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_data.json
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json
+```
+
+This queries Wisconsin via `gfal-ls`, rebuilds the file list for all datasets in the config, and writes the output to `data/filesets/Run3/2022/Run3Summer22/skimmed/`.
+
+---
+
 ## Skim Selection
 
 The skim keeps events passing a loose lepton + jet preselection. These cuts are intentionally wider than the analysis cuts so the skims remain usable if analysis thresholds change.
@@ -24,53 +147,16 @@ To print these from the command line:
 python3 bin/skim.py --cuts
 ```
 
-## Quick Start
+---
 
-All subcommands take a **DAS dataset path** as the first argument — the same `/<primary_dataset>/<campaign>/<datatier>` string you would pass to `dasgoclient`. File lists are resolved directly from DAS, so no pre-built filesets are needed.
+## Single-Dataset Subcommands
 
-### Skim all files via Condor
-
-```bash
-python3 bin/skim.py run /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM
-```
-
-By default, all files are submitted to HTCondor. Use `--dry-run` to generate the job files without submitting, or `--local` to run directly on the current machine.
-
-### Skim a single file locally
-
-```bash
-python3 bin/skim.py run /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM --start 1 --end 1 --local
-```
-
-### Check for failures
-
-```bash
-python3 bin/skim.py check /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM
-```
-
-### Merge outputs
-
-```bash
-python3 bin/skim.py merge /TTto2L2Nu_.../RunIII2024Summer24NanoAODv15-.../NANOAODSIM
-```
-
-## Subcommands
+For skimming individual datasets (output goes to local `data/skims/` rather than scratch space):
 
 ### `run` — Skim NanoAOD files
 
-By default, submits to Condor. Use `--local` for direct execution on the current machine.
+All subcommands take a **DAS dataset path** as the first argument — the same `/<primary_dataset>/<campaign>/<datatier>` string you would pass to `dasgoclient`.
 
-| Flag | Description |
-|------|-------------|
-| `das_path` | **Required positional.** DAS dataset path |
-| `--start N` | 1-indexed start file number (default: first) |
-| `--end N` | 1-indexed end file number (default: last) |
-| `--local` | Run locally instead of submitting to Condor |
-| `--dry-run` | Generate Condor job files without submitting (no effect with `--local`) |
-
-By default, all files in the dataset are processed. Use `--start`/`--end` to select a subset.
-
-**Examples:**
 ```bash
 # Submit all files to Condor (default)
 python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM
@@ -81,34 +167,40 @@ python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 1 --local
 # Skim files 1-10 locally
 python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 10 --local
 
-# Submit a file range to Condor
-python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --start 1 --end 100
-
 # Dry run (generate JDL + arguments without submitting)
 python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM --dry-run
 ```
 
-### `check` — Detect missing/failed jobs
-
-Compares the expected number of output tarballs against what was produced. Reports any missing or failed jobs.
-
 | Flag | Description |
 |------|-------------|
 | `das_path` | **Required positional.** DAS dataset path |
-| `--resubmit FILE` | Write a resubmit `arguments.txt` for failed jobs |
+| `--start N` | 1-indexed start file number (default: first) |
+| `--end N` | 1-indexed end file number (default: last) |
+| `--local` | Run locally instead of submitting to Condor |
+| `--dry-run` | Generate Condor job files without submitting (no effect with `--local`) |
 
-**Example:**
+### `check` — Detect missing/failed jobs
+
 ```bash
-# Check completion
 python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM
 
 # Write resubmit file for failed jobs
 python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM --resubmit resubmit_args.txt
 ```
 
+| Flag | Description |
+|------|-------------|
+| `das_path` | **Required positional.** DAS dataset path |
+| `--resubmit FILE` | Write a resubmit `arguments.txt` for failed jobs |
+
 ### `merge` — Extract, merge, and validate
 
-Each Condor skim job produces one small ROOT file per input file. Coffea and XRootD are inefficient when opening many small files, so `merge` combines them into larger files of ~1M events each, which the analyzer can process much more efficiently. Tarballs are extracted incrementally one at a time and merged in batches using uproot, with individual skim files deleted after each successful merge to keep disk usage bounded. Files are grouped by HLT path to avoid schema mismatches. After all files are merged, event counts and `genEventSumw` totals are validated.
+```bash
+python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM
+
+# Validate only (no merging)
+python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM --validate-only
+```
 
 | Flag | Description |
 |------|-------------|
@@ -117,150 +209,33 @@ Each Condor skim job produces one small ROOT file per input file. Coffea and XRo
 | `--validate-only` | Only validate existing merged files, don't merge |
 | `--config JSON` | Cross-check merged `genEventSumw` against an analysis config JSON |
 
-**Examples:**
-```bash
-# Full merge pipeline
-python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM
-
-# Merge with config cross-check
-python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM \
-  --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_mc_dy_lo_inc.json
-
-# Validate only (no merging)
-python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM --validate-only
-```
-
-## Era-Level Skimming (Scratch Space)
-
-To skim an entire era/campaign at once, use the `run-era`, `check-era`, `merge-era`, and `upload` subcommands. These write to the LPC 3DayLifetime scratch area (`/uscmst1b_scratch/lpc1/3DayLifetime/$USER/skims/`) instead of local `data/skims/`, providing effectively unlimited storage. Files are auto-purged after 3 days of no access.
-
-### Full pipeline
-
-The simplest way to skim an entire era is with `--era`, which auto-discovers all config JSONs in the corresponding `data/configs/` directory and deduplicates shared datasets across configs:
+### `upload` — Upload a single dataset
 
 ```bash
-# 1. Submit all datasets for an era to Condor
-python3 bin/skim.py run-era --era Run3Summer22
-
-# 2. Check all datasets for completion
-python3 bin/skim.py check-era --era Run3Summer22
-
-# 2b. If step 2 reports INCOMPLETE, resubmit failed file-jobs
-python3 bin/skim.py resubmit-failures --era Run3Summer22
-
-# 3. Merge all datasets (parallel across datasets)
-python3 bin/skim.py merge-era --era Run3Summer22 --workers 4
-
-# 4. Upload merged files to Wisconsin
-python3 bin/skim.py upload --era Run3Summer22
-
-# 5. Regenerate skimmed filesets (run once per config file)
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_data.json
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json
+python3 bin/skim.py upload --das-path /TTto2L2Nu_.../NANOAODSIM --scratch
+python3 bin/skim.py upload --das-path /TTto2L2Nu_.../NANOAODSIM --scratch --dry-run
 ```
 
-You can also pass individual config files with `--config`:
+| Flag | Description |
+|------|-------------|
+| `--das-path` | DAS dataset path |
+| `--scratch` | Read from scratch space (implied for `--config`/`--era` mode) |
+| `--remote-user USER` | Wisconsin storage user (default: `wijackso`) |
+| `--dry-run` | Print xrdcp commands without executing |
+| `--retry-failed` | Only retry datasets that failed in the previous upload |
 
-```bash
-python3 bin/skim.py run-era \
-  --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json
+---
 
-# Multiple configs at once:
-python3 bin/skim.py run-era \
-  --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json \
-           data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json
-```
+## Scratch Space Notes
 
-### Subcommand details
-
-All era-level subcommands accept either `--era ERA` or `--config JSON [JSON ...]` (mutually exclusive).
-
-| Subcommand | Description |
-|------------|-------------|
-| `run-era (--era ERA \| --config JSON [...])` | Submit Condor jobs for all datasets. Creates the repo tarball once. |
-| `check-era (--era ERA \| --config JSON [...]) [--resubmit-script PATH]` | Check all datasets for missing/failed jobs. If failures are found, auto-writes a resubmit shell script (default: `scripts/resubmit_failed_<era>.sh`) and state file (`scripts/.check_era_state_<era>.json`). |
-| `resubmit-failures --era ERA [--dry-run]` | Re-run the failed file-jobs from the latest `check-era` state. Errors if no prior check-era state exists or if there are no failed jobs. |
-| `merge-era (--era ERA \| --config JSON [...]) [--max-events N] [--skip-check] [--workers N]` | Merge all datasets. `--workers N` parallelizes across datasets. Auto cross-checks `genEventSumw` from config. |
-| `upload (--era ERA \| --config JSON [...]) [--remote-user USER] [--dry-run]` | Upload merged files to Wisconsin via `xrdcp`. Default user: `wijackso`. |
-
-Known era names: `RunIISummer20UL18`, `Run3Summer22`, `Run3Summer22EE`, `Run3Summer23`, `Run3Summer23BPix`, `RunIII2024Summer24`.
-
-Datasets with `"note"` containing "no longer available" are automatically skipped. When multiple configs share the same DAS paths (e.g. shared backgrounds), duplicates are skipped automatically. All era-level commands use continue-on-failure: failed datasets are logged and skipped, with a summary printed at the end.
-
-### Handling failures
-
-`check-era` now supports a built-in failed-job workflow:
-
-```bash
-# 1) Run era check (writes state + resubmit script if failures are found)
-python3 bin/skim.py check-era --era Run3Summer23
-
-# 2) Resubmit only failed file-jobs from that state
-python3 bin/skim.py resubmit-failures --era Run3Summer23
-
-# Optional: validate what would run without submitting
-python3 bin/skim.py resubmit-failures --era Run3Summer23 --dry-run
-```
-
-Notes:
-- Default artifacts are `scripts/resubmit_failed_<era>.sh` and `scripts/.check_era_state_<era>.json`.
-- `resubmit-failures` errors if no state exists (check-era not run yet) or if latest check-era found zero failed jobs.
-- Use `check-era --resubmit-script <path>` to override the script output path.
-
-### Scratch space notes
+Era-level subcommands write to the LPC 3DayLifetime scratch area instead of local `data/skims/`.
 
 - **Location:** `/uscmst1b_scratch/lpc1/3DayLifetime/$USER/skims/<run>/<year>/<era>/`
 - **Size:** 141 TB shared, no per-user quota
 - **Purge policy:** Files are deleted after 3 days of no access
 - **Contents:** Output tarballs, merged ROOT files, Condor job files, and logs all live here
 
-## Uploading to Remote Storage
-
-The `upload` subcommand automates copying merged files to Wisconsin:
-
-```bash
-# Upload all datasets from a config (reads from scratch space)
-python3 bin/skim.py upload --config data/configs/.../Run3Summer22_mc_dy_lo_ht.json
-
-# Upload a single dataset (from local or scratch)
-python3 bin/skim.py upload --das-path /TTto2L2Nu_.../NANOAODSIM --scratch
-
-# Dry run (print xrdcp commands without executing)
-python3 bin/skim.py upload --config data/configs/.../Run3Summer22_mc_dy_lo_ht.json --dry-run
-
-# Use a different remote user
-python3 bin/skim.py upload --config data/configs/.../Run3Summer22_mc_dy_lo_ht.json --remote-user myuser
-```
-
-Datasets are uploaded to `root://cmsxrootd.hep.wisc.edu/store/user/<remote-user>/WRAnalyzer/skims/<run>/<year>/<era>/<category>/<dataset>/`, where category is `signals`, `data`, or `backgrounds` based on the dataset name.
-
-After uploading, regenerate the skimmed fileset:
-```bash
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_mc_dy_lo_inc.json
-```
-
-This queries Wisconsin via `gfal-ls`, rebuilds the file list for all datasets in the config, and writes the output to `data/filesets/Run3/2024/RunIII2024Summer24/skimmed/`.
-
-### Manual upload
-
-If you prefer to upload manually (e.g., to a non-Wisconsin endpoint), see the `xrdcp` examples below. If using a different storage endpoint, you will need to modify `scripts/skimmed_fileset.py` to query the new location when regenerating filesets.
-
-```bash
-REMOTE_HOST=cmsxrootd.hep.wisc.edu
-REMOTE_PATH=/store/user/<username>/WRAnalyzer/skims/Run3/2024/RunIII2024Summer24/backgrounds/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8
-LOCAL_DIR=data/skims/Run3/2024/RunIII2024Summer24/files/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8
-
-for f in $LOCAL_DIR/*.root; do
-  echo "Copying $(basename $f) ..."
-  xrdcp "$f" "root://$REMOTE_HOST/$REMOTE_PATH/$(basename $f)"
-done
-
-# Verify
-xrdfs $REMOTE_HOST ls -l $REMOTE_PATH
-```
-
-The upload is ~3-4 GB per file, so run this in a tmux session. Your grid proxy must have write access to the destination directory.
+---
 
 ## Output Layout
 
@@ -289,6 +264,8 @@ data/skims/Run3/2024/RunIII2024Summer24/
 ```
 
 This mirrors the directory convention used for configs (`data/configs/Run3/2024/RunIII2024Summer24/`) and other data files. The mapping from DAS campaign to subdirectory is defined in `wrcoffea/das_utils.py:ERA_SUBDIRS`.
+
+---
 
 ## Architecture
 
