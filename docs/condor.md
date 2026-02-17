@@ -60,33 +60,6 @@ Systematics are automatically filtered by sample type:
 python bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
 ```
 
-## tmux
-
-Condor jobs can run for a long time. Use `tmux` to keep your session alive after disconnecting from the LPC node. Note which node you are on (`hostname`), since tmux sessions are local to that node — you must SSH back to the same node to reattach.
-
-```bash
-# Check and note your hostname (e.g., cmslpc320.fnal.gov)
-hostname
-
-# Start a new named session
-tmux new -s analysis
-
-# Enter the Apptainer shell and run your jobs as usual
-./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
-python bin/run_analysis.py RunIII2024Summer24 all
-```
-
-You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later, SSH to the **same node**:
-```bash
-ssh cmslpc320.fnal.gov   # replace with your node
-tmux attach -t analysis
-```
-
-Other useful tmux commands:
-- `tmux ls` — list active sessions
-- `Ctrl-b` then `d` — detach from current session
-- `tmux kill-session -t analysis` — kill a session
-
 ## Logs
 
 ### Dask worker logs

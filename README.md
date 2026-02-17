@@ -60,6 +60,32 @@ Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
 
 See **[Running the Analyzer](docs/run_analysis.md)** for full details: all samples, output customization, region selection, systematics, and batch processing.
 
+### tmux
+
+Analysis jobs can run for a long time. Use `tmux` to keep your session alive after disconnecting from the LPC node. Note which node you are on (`hostname`), since tmux sessions are local to that node — you must SSH back to the same node to reattach.
+
+```bash
+# Check and note your hostname (e.g., cmslpc320.fnal.gov)
+hostname
+
+# Start a new named session
+tmux new -s analysis
+
+# Run your jobs as usual
+python bin/run_analysis.py RunIII2024Summer24 all --dir 20260217_skimmed
+```
+
+You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later, SSH to the **same node**:
+```bash
+ssh cmslpc320.fnal.gov   # replace with your node
+tmux attach -t analysis
+```
+
+Other useful tmux commands:
+- `tmux ls` — list active sessions
+- `Ctrl-b` then `d` — detach from current session
+- `tmux kill-session -t analysis` — kill a session
+
 ---
 
 ## Running on Condor
@@ -69,10 +95,10 @@ Scale out processing across many workers at FNAL LPC using HTCondor with the Das
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12           # enter container
 python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # single sample on Condor
-python bin/run_analysis.py RunIII2024Summer24 all                    # everything (auto-Condor)
+python bin/run_analysis.py RunIII2024Summer24 all --condor           # everything on Condor
 ```
 
-See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, log locations, and using tmux.
+See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, and log locations.
 
 ---
 
