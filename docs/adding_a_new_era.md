@@ -104,14 +104,6 @@ jetveto_correction_names:
   Run3Summer23: Summer23_V1
 ```
 
-### Signal-only (if unskimmed signal filesets are unavailable on DAS)
-
-```yaml
-skimmed_only_signal:
-  - RunIISummer20UL18
-  # - Run3Summer23          # add here if needed
-```
-
 ---
 
 ## 3. Obtain POG JSON payloads
@@ -198,8 +190,9 @@ WR,N
 ...
 ```
 
-`analyze_all.sh signal` reads this file to choose which signal points
-to process.
+`run_analysis.py` reads this file (via `select_default_signal_points()`)
+to choose which signal points to process in composite modes like `signal`
+or `all`.
 
 ---
 

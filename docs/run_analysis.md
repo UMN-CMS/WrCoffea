@@ -78,23 +78,27 @@ python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --syst
 
 Each enabled variation produces a separate histogram in the output ROOT file under `syst_<name>_<region>/` directories. Without `--systs`, only nominal histograms are produced.
 
-When passing `--systs` to `analyze_all.sh`, systematics are automatically filtered — applied to MC backgrounds and signal, but removed for data.
+Systematics are automatically filtered — applied to MC backgrounds and signal, but ignored for data. This works for both single-sample and composite mode runs.
 
-## Batch Processing
+## Composite Modes
 
-Use `analyze_all.sh` to process multiple samples in one command:
+Use composite modes to process multiple samples in a single cluster:
 ```bash
-bash bin/analyze_all.sh bkg RunIII2024Summer24
-bash bin/analyze_all.sh data RunIII2024Summer24
-bash bin/analyze_all.sh signal RunIII2024Summer24
-bash bin/analyze_all.sh all RunIII2024Summer24
+python3 bin/run_analysis.py RunIII2024Summer24 all       # data + backgrounds + signal
+python3 bin/run_analysis.py RunIII2024Summer24 bkg       # all backgrounds
+python3 bin/run_analysis.py RunIII2024Summer24 data      # all data
+python3 bin/run_analysis.py RunIII2024Summer24 mc        # backgrounds + signal
+python3 bin/run_analysis.py RunIII2024Summer24 signal    # signal only
 ```
 
-Extra flags are forwarded to `run_analysis.py`:
+Composite modes automatically submit to Condor (no `--condor` flag needed). Extra flags are forwarded as usual:
 ```bash
-bash bin/analyze_all.sh bkg RunIII2024Summer24 --dir my_study --name test
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
+python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir my_study --name test
+python3 bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
+python3 bin/run_analysis.py RunIII2024Summer24 all --unskimmed
 ```
+
+Output ROOT files are written per physics group (e.g., `WRAnalyzer_DYJets.root`, `WRAnalyzer_EGamma.root`, etc.).
 
 ## Flag Reference
 
@@ -103,7 +107,7 @@ bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
 | Argument | Description |
 |----------|-------------|
 | `era` | Campaign to analyze: `RunIISummer20UL18`, `Run3Summer22`, `Run3Summer22EE`, `Run3Summer23`, `Run3Summer23BPix`, `RunIII2024Summer24` |
-| `sample` | Sample to analyze: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal` |
+| `sample` | Sample to analyze: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal`, or composite mode: `all`, `data`, `bkg`, `mc`, `signal` |
 
 ### Discovery
 
@@ -148,8 +152,8 @@ bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
 
 | Flag | Description |
 |------|-------------|
-| `--condor` | Submit jobs to HTCondor at LPC (see [condor.md](condor.md)) |
-| `--max-workers N` | Number of Dask workers (local default: 6, condor default: 50) |
+| `--condor` | Submit jobs to HTCondor at LPC (auto-enabled for composite modes; see [condor.md](condor.md)) |
+| `--max-workers N` | Number of Dask workers (local default: 3, single-sample condor: 50, composite condor: 3000) |
 | `--threads-per-worker N` | Threads per Dask worker for local runs |
 | `--chunksize N` | Events per processing chunk (default: 250000) |
 | `--maxchunks N` | Max chunks per file (default: all). Use `1` for quick testing |
@@ -184,6 +188,6 @@ python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy LO_inclus
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 
-# Everything on Condor with systematics
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
+# Everything on Condor with systematics (composite modes auto-submit to Condor)
+python3 bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
 ```

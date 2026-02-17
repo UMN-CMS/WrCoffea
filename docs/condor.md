@@ -35,28 +35,29 @@ By default, 50 Condor workers are launched. Use `--max-workers` to change this:
 python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 ```
 
-### Batch processing with analyze_all.sh
+### Composite modes on Condor
 
+Composite modes automatically submit to Condor — no `--condor` flag needed:
 ```bash
-bash bin/analyze_all.sh data RunIII2024Summer24 --condor
-bash bin/analyze_all.sh bkg RunIII2024Summer24 --condor
-bash bin/analyze_all.sh signal RunIII2024Summer24 --condor
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor
+python bin/run_analysis.py RunIII2024Summer24 data       # all data
+python bin/run_analysis.py RunIII2024Summer24 bkg        # all backgrounds
+python bin/run_analysis.py RunIII2024Summer24 signal     # signal only
+python bin/run_analysis.py RunIII2024Summer24 mc         # backgrounds + signal
+python bin/run_analysis.py RunIII2024Summer24 all        # everything
 ```
 
-**Default `analyze_all.sh` Condor configuration:**
-- **Data**: 50 workers, 250k events/chunk (skimmed); 400 workers with `--unskimmed`
-- **Background**: 50 workers, 250k events/chunk (skimmed); 400 workers with `--unskimmed`
-- **Signal**: 10 workers/mass point, 50k events/chunk (conservative)
+**Default Condor worker counts:**
+- **Composite modes** (`all`, `data`, `bkg`, `mc`, `signal`): 3000 workers
+- **Single-sample** (`DYJets`, `EGamma`, etc. with `--condor`): 50 workers
 
-These defaults can be overridden by passing `--max-workers` and `--chunksize` as extra arguments.
+These defaults can be overridden with `--max-workers`.
 
 ### Systematics on Condor
 
 Systematics are automatically filtered by sample type:
 ```bash
-# Systematics applied only to backgrounds and signal, not data
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
+# Systematics applied only to MC (backgrounds and signal), ignored for data
+python bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
 ```
 
 ## tmux
@@ -72,7 +73,7 @@ tmux new -s analysis
 
 # Enter the Apptainer shell and run your jobs as usual
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor
+python bin/run_analysis.py RunIII2024Summer24 all
 ```
 
 You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later, SSH to the **same node**:
