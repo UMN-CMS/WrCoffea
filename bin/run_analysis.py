@@ -437,13 +437,17 @@ def _process_fileset(args, fileset, *, client, condor=False):
         schema=NanoAODSchema,
     )
 
-    logging.info("***PREPROCESSING***")
+    label = args.sample
+    if args.mass:
+        label += f" ({args.mass})"
+
+    logging.info("***PREPROCESSING %s***", label.upper())
     preproc = _preprocess_with_xrd_fallback(
         run, fileset, treename="Events", args=args
     )
     logging.info("Preprocessing completed")
 
-    logging.info("***PROCESSING***")
+    logging.info("***PROCESSING %s***", label.upper())
     hists, _ = run(preproc, treename="Events", processor_instance=processor)
     logging.info("Processing completed")
     return hists
