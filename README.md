@@ -43,6 +43,16 @@ python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      #
 python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything
 ```
 
+Composite modes process multiple samples sequentially (locally) or in parallel (on Condor with `--condor`):
+
+| Mode | Samples |
+|------|---------|
+| `all` | EGamma, Muon, DYJets, tt_tW, Nonprompt, Other, Signal |
+| `data` | EGamma, Muon |
+| `bkg` | DYJets, tt_tW, Nonprompt, Other |
+| `signal` | Signal (default subset of mass points) |
+| `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
+
 Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
 
 > **Note:** Filesets for existing eras are already included in the repository. To create filesets for a new era, see [filesets.md](docs/filesets.md).

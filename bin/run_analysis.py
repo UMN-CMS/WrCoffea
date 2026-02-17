@@ -550,7 +550,7 @@ if __name__ == "__main__":
     run, year, era = get_era_details(args.era)
 
     is_composite = args.sample in COMPOSITE_SAMPLES
-    is_condor = args.condor or is_composite
+    is_condor = args.condor
 
     # --- Load fileset ---
     if is_composite:
@@ -643,22 +643,65 @@ if __name__ == "__main__":
     else:
         n_workers = args.max_workers or 3
         with _local_cluster(n_workers=n_workers, threads_per_worker=args.threads_per_worker or 1) as client:
-            try:
-                hists = _process_fileset(args, fileset, client=client, condor=False)
+            if is_composite:
+                # Sequential local processing: loop through each sample individually.
+                samples = COMPOSITE_SAMPLES[args.sample]
+                has_signal = "Signal" in samples
+                sig_points = select_default_signal_points(era) if has_signal else []
 
-                if args.unskimmed:
-                    hists = normalize_by_sumw(hists)
+                for sample in samples:
+                    sample_runs = [(sample, None)]
+                    if sample == "Signal":
+                        sample_runs = [(sample, mp) for mp in sig_points]
 
-                if not args.debug:
-                    from wrcoffea.save_hists import save_histograms
-                    save_histograms(hists, args)
-            except Exception:
-                _dump_dask_diagnostics(
-                    client,
-                    label=f"run_analysis_{args.era}_{args.sample}_local",
-                )
-                logging.exception("Local processing failed.")
-                raise
+                    for sample_name, mass_point in sample_runs:
+                        label = f"{sample_name}" + (f" ({mass_point})" if mass_point else "")
+                        logging.info("=== Processing %s ===", label)
+
+                        # Temporarily set args for this sample.
+                        args.sample = sample_name
+                        args.mass = mass_point
+
+                        try:
+                            filepath = build_fileset_path(
+                                era=era, sample=sample_name,
+                                unskimmed=args.unskimmed, dy=args.dy,
+                            )
+                            sample_fileset = load_and_select_fileset(
+                                filepath=filepath,
+                                desired_process=sample_name,
+                                mass=mass_point,
+                                maxfiles=args.maxfiles,
+                            )
+                            hists = _process_fileset(args, sample_fileset, client=client, condor=False)
+
+                            if args.unskimmed:
+                                hists = normalize_by_sumw(hists)
+
+                            if not args.debug:
+                                from wrcoffea.save_hists import save_histograms
+                                save_histograms(hists, args)
+
+                            logging.info("=== Finished %s ===", label)
+                        except Exception:
+                            logging.exception("Failed processing %s. Continuing...", label)
+            else:
+                try:
+                    hists = _process_fileset(args, fileset, client=client, condor=False)
+
+                    if args.unskimmed:
+                        hists = normalize_by_sumw(hists)
+
+                    if not args.debug:
+                        from wrcoffea.save_hists import save_histograms
+                        save_histograms(hists, args)
+                except Exception:
+                    _dump_dask_diagnostics(
+                        client,
+                        label=f"run_analysis_{args.era}_{args.sample}_local",
+                    )
+                    logging.exception("Local processing failed.")
+                    raise
 
     exec_time = time.monotonic() - t0
     logging.info(f"Execution took {exec_time/60:.2f} minutes")
