@@ -29,7 +29,7 @@ ERA = "RunIII2024Summer24"
 
 # Expected lumi from config.yaml (fb^-1).  The code multiplies by 1000 to
 # get pb^-1 inside build_event_weights.
-LUMI_FB = 109.08
+LUMI_FB = 108.95
 
 
 class MockEvents:
@@ -501,12 +501,13 @@ class TestEdgeCases:
             err_msg="compute_sumw mode should omit /sumw normalization",
         )
 
+    @patch("wrcoffea.analyzer.PILEUP_JSONS", {})
+    @patch("wrcoffea.scale_factors.PILEUP_JSONS", {})
     def test_unconfigured_era_no_pileup(self, analyzer):
         """An era not in PILEUP_JSONS should skip pileup weight without error."""
         n = N_EVENTS
         ev = _make_mock_events(n)
-        # Use an era that is in LUMIS but not in PILEUP_JSONS.
-        meta = _make_metadata(era="Run3Summer22")
+        meta = _make_metadata()
 
         weights, syst_weights = analyzer.build_event_weights(
             ev, meta, is_mc=True,

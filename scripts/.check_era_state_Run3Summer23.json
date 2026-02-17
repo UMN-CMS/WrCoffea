@@ -1,0 +1,15 @@
+{
+  "artifact_tag": "Run3Summer23",
+  "configs": [
+    "/uscms_data/d3/bjackson/WrCoffea/data/configs/Run3/2023/Run3Summer23/Run3Summer23_data.json",
+    "/uscms_data/d3/bjackson/WrCoffea/data/configs/Run3/2023/Run3Summer23/Run3Summer23_mc_dy_lo_ht.json",
+    "/uscms_data/d3/bjackson/WrCoffea/data/configs/Run3/2023/Run3Summer23/Run3Summer23_mc_dy_lo_inc.json",
+    "/uscms_data/d3/bjackson/WrCoffea/data/configs/Run3/2023/Run3Summer23/Run3Summer23_mc_dy_nlo_inc.json",
+    "/uscms_data/d3/bjackson/WrCoffea/data/configs/Run3/2023/Run3Summer23/Run3Summer23_signal.json"
+  ],
+  "era": "Run3Summer23",
+  "failed_jobs": 0,
+  "generated_at_utc": "2026-02-17T13:44:57.580030+00:00",
+  "incomplete_datasets": 0,
+  "resubmit_script": "/uscms_data/d3/bjackson/WrCoffea/scripts/resubmit_failed_Run3Summer23.sh"
+}

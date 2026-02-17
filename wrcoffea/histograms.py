@@ -276,9 +276,9 @@ def fill_boosted_cutflows(output, selections, weights):
             SEL_NO_EXTRA_TIGHT_SR,
             SEL_SF_LEPTON_IN_AK8,
             SEL_NO_OF_LEPTON_IN_AK8,
+            SEL_JET_VETO_MAP,
             SEL_MLL_GT200_BOOSTED,
             SEL_MLJ_GT800_BOOSTED,
-            SEL_JET_VETO_MAP,
         ],
         "mumu": [
             SEL_BOOSTEDTAG,
@@ -290,9 +290,9 @@ def fill_boosted_cutflows(output, selections, weights):
             SEL_NO_EXTRA_TIGHT_SR,
             SEL_SF_LEPTON_IN_AK8,
             SEL_NO_OF_LEPTON_IN_AK8,
+            SEL_JET_VETO_MAP,
             SEL_MLL_GT200_BOOSTED,
             SEL_MLJ_GT800_BOOSTED,
-            SEL_JET_VETO_MAP,
         ],
         "em": [
             SEL_BOOSTEDTAG,
@@ -304,9 +304,9 @@ def fill_boosted_cutflows(output, selections, weights):
             SEL_NO_EXTRA_TIGHT_CR,
             SEL_NO_SF_LEPTON_IN_AK8,
             SEL_OF_LEPTON_IN_AK8,
+            SEL_JET_VETO_MAP,
             SEL_MLL_GT200_BOOSTED,
             SEL_MLJ_GT800_BOOSTED,
-            SEL_JET_VETO_MAP,
         ],
     }
 

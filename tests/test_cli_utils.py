@@ -69,9 +69,17 @@ def _mock_fileset():
             "files": {"/path/dy.root": "Events"},
             "metadata": {"physics_group": "DYJets", "sample": "DYJets_50to100"},
         },
-        "TTbar": {
+        "TTto2L2Nu": {
             "files": {"/path/tt.root": "Events"},
-            "metadata": {"physics_group": "tt_tW", "sample": "TTbar"},
+            "metadata": {"physics_group": "tt_tW", "sample": "TTto2L2Nu_TuneCP5"},
+        },
+        "TWminusto2L2Nu": {
+            "files": {"/path/tw1.root": "Events"},
+            "metadata": {"physics_group": "tt_tW", "sample": "TWminusto2L2Nu_TuneCP5"},
+        },
+        "TbarWplusto2L2Nu": {
+            "files": {"/path/tw2.root": "Events"},
+            "metadata": {"physics_group": "tt_tW", "sample": "TbarWplusto2L2Nu_TuneCP5"},
         },
         "Signal_WR2000": {
             "files": {"/path/sig.root": "Events"},
@@ -88,6 +96,18 @@ class TestFilterByProcess:
     def test_filter_background(self):
         result = filter_by_process(_mock_fileset(), "DYJets")
         assert list(result.keys()) == ["DY_50to100"]
+
+    def test_filter_tt_tW_returns_all_top(self):
+        result = filter_by_process(_mock_fileset(), "tt_tW")
+        assert set(result.keys()) == {"TTto2L2Nu", "TWminusto2L2Nu", "TbarWplusto2L2Nu"}
+
+    def test_filter_TTbar_returns_dileptonic_only(self):
+        result = filter_by_process(_mock_fileset(), "TTbar")
+        assert list(result.keys()) == ["TTto2L2Nu"]
+
+    def test_filter_tW_returns_single_top_only(self):
+        result = filter_by_process(_mock_fileset(), "tW")
+        assert set(result.keys()) == {"TWminusto2L2Nu", "TbarWplusto2L2Nu"}
 
     def test_filter_signal_with_mass(self):
         result = filter_by_process(_mock_fileset(), "Signal", mass="WR2000_N1100")
@@ -116,6 +136,11 @@ class TestListHelpers:
         samples = list_samples()
         assert "Signal" in samples
         assert "DYJets" in samples
+
+    def test_list_samples_includes_subgroups(self):
+        samples = list_samples()
+        assert "TTbar" in samples
+        assert "tW" in samples
 
 
 # ---------------------------------------------------------------------------
@@ -176,6 +201,14 @@ class TestBuildFilesetPath:
 
     def test_non_dy_mc_uses_era_default(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="tt_tW", unskimmed=False, dy=None)
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+
+    def test_TTbar_subgroup_uses_parent_fileset(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="TTbar", unskimmed=False, dy=None)
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+
+    def test_tW_subgroup_uses_parent_fileset(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="tW", unskimmed=False, dy=None)
         assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
 
     def test_ul18_default_mc_tag(self):

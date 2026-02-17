@@ -8,9 +8,9 @@ lumis:
   RunIISummer20UL18: 59.83
   Run3Summer22: 7.9804
   Run3Summer22EE: 26.6717
-  Run3Summer23: 17.794         # placeholder — update when 2023 lumi is finalized
-  Run3Summer23BPix: 9.451      # placeholder — update when 2023 lumi is finalized
-  RunIII2024Summer24: 109.08
+  Run3Summer23: 18.063
+  Run3Summer23BPix: 9.693
+  RunIII2024Summer24: 108.95
 
 # Default MC fileset tag per era.  Controls which DY variant is used
 # when --dy is not explicitly given on the command line.
@@ -22,48 +22,80 @@ default_mc_tag:
   Run3Summer23BPix: dy_lo_inc
   RunIII2024Summer24: dy_lo_inc
 
-# Eras where unskimmed signal filesets are not available (no DAS entries).
-# For these eras, --unskimmed signal falls back to skimmed filesets.
-skimmed_only_signal:
-  - RunIISummer20UL18
 
 # Golden JSON paths for data lumi masking
 lumi_jsons:
   RunIISummer20UL18: data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt
   Run3Summer22: data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt
   Run3Summer22EE: data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt
+  Run3Summer23: data/lumis/Run3/2023/Cert_Collisions2023_366442_370790_Golden.json
+  Run3Summer23BPix: data/lumis/Run3/2023/Cert_Collisions2023_366442_370790_Golden.json
   RunIII2024Summer24: data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.txt
 
 # JSON POG payloads — JME
 jme_jsons:
+  # NanoAODv12 eras (Run3Summer22, Run3Summer22EE, Run3Summer23, Run3Summer23BPix)
+  # removed - these eras use Jet.jetId >= 6 instead (see analyzer.py)
   RunIII2024Summer24: data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz
 
 jetveto_jsons:
   RunIISummer20UL18: data/jsonpog/JME/RunII/RunIISummer20UL18/jetvetomaps.json.gz
+  Run3Summer22: data/jsonpog/JME/Run3/Run3Summer22/jetvetomaps.json.gz
+  Run3Summer22EE: data/jsonpog/JME/Run3/Run3Summer22EE/jetvetomaps.json.gz
+  Run3Summer23: data/jsonpog/JME/Run3/Run3Summer23/jetvetomaps.json.gz
+  Run3Summer23BPix: data/jsonpog/JME/Run3/Run3Summer23BPix/jetvetomaps.json.gz
   RunIII2024Summer24: data/jsonpog/JME/Run3/RunIII2024Summer24/jetvetomaps.json.gz
 
 jetveto_correction_names:
   RunIISummer20UL18: Summer19UL18_V1
+  Run3Summer22: Summer22_23Sep2023_RunCD_V1
+  Run3Summer22EE: Summer22EE_23Sep2023_RunEFG_V1
+  Run3Summer23: Summer23Prompt23_RunC_V1
+  Run3Summer23BPix: Summer23BPixPrompt23_RunD_V1
   RunIII2024Summer24: Summer24Prompt24_RunBCDEFGHI_V1
 
 # JSON POG payloads — Muon
 muon_jsons:
   RunIISummer20UL18: data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz
-  RunIII2024Summer24: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json
+  Run3Summer22: data/jsonpog/MUO/Run3/Run3Summer22/muon_HighPt.json.gz
+  Run3Summer22EE: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_HighPt.json.gz
+  Run3Summer23: data/jsonpog/MUO/Run3/Run3Summer23/muon_HighPt.json.gz
+  Run3Summer23BPix: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_HighPt.json.gz
+  RunIII2024Summer24: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json.gz
 
 # JSON POG payloads — Pileup
 pileup_jsons:
   RunIISummer20UL18: data/jsonpog/LUM/RunII/RunIISummer20UL18/puWeights.json.gz
+  Run3Summer22: data/jsonpog/LUM/Run3/Run3Summer22/puWeights.json.gz
+  Run3Summer22EE: data/jsonpog/LUM/Run3/Run3Summer22EE/puWeights.json.gz
+  Run3Summer23: data/jsonpog/LUM/Run3/Run3Summer23/puWeights.json.gz
+  Run3Summer23BPix: data/jsonpog/LUM/Run3/Run3Summer23BPix/puWeights.json.gz
   RunIII2024Summer24: data/jsonpog/LUM/Run3/RunIII2024Summer24/puWeights_BCDEFGHI.json.gz
 
 pileup_correction_names:
   RunIISummer20UL18: Collisions18_UltraLegacy_goldenJSON
+  Run3Summer22: Collisions2022_355100_357900_eraBCD_GoldenJson
+  Run3Summer22EE: Collisions2022_359022_362760_eraEFG_GoldenJson
+  Run3Summer23: Collisions2023_366403_369802_eraBC_GoldenJson
+  Run3Summer23BPix: Collisions2023_369803_370790_eraD_GoldenJson
   RunIII2024Summer24: Collisions24_BCDEFGHI_goldenJSON
 
 # JSON POG payloads — Electron
 electron_jsons:
   RunIISummer20UL18:
     RECO: data/jsonpog/EGM/RunII/RunIISummer20UL18/electron.json.gz
+  Run3Summer22:
+    RECO: data/jsonpog/EGM/Run3/Run3Summer22/electron.json.gz
+    TRIGGER: data/jsonpog/EGM/Run3/Run3Summer22/electronHlt.json.gz
+  Run3Summer22EE:
+    RECO: data/jsonpog/EGM/Run3/Run3Summer22EE/electron.json.gz
+    TRIGGER: data/jsonpog/EGM/Run3/Run3Summer22EE/electronHlt.json.gz
+  Run3Summer23:
+    RECO: data/jsonpog/EGM/Run3/Run3Summer23/electron.json.gz
+    TRIGGER: data/jsonpog/EGM/Run3/Run3Summer23/electronHlt.json.gz
+  Run3Summer23BPix:
+    RECO: data/jsonpog/EGM/Run3/Run3Summer23BPix/electron.json.gz
+    TRIGGER: data/jsonpog/EGM/Run3/Run3Summer23BPix/electronHlt.json.gz
   RunIII2024Summer24:
     RECO: data/jsonpog/EGM/Run3/RunIII2024Summer24/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronHlt.json.gz
@@ -71,6 +103,10 @@ electron_jsons:
 # correctionlib era key used inside EGM JSON payloads (differs from analysis era name)
 electron_sf_era_keys:
   RunIISummer20UL18: "2018"
+  Run3Summer22: "2022Re-recoBCD"
+  Run3Summer22EE: "2022Re-recoE+PromptFG"
+  Run3Summer23: "2023PromptC"
+  Run3Summer23BPix: "2023PromptD"
   RunIII2024Summer24: "2024Prompt"
 
 # Per-era electron Reco SF configuration
@@ -80,6 +116,26 @@ electron_reco_config:
     wp_low: RecoBelow20
     wp_high: RecoAbove20
     pt_split: 20.0
+  Run3Summer22:
+    correction: Electron-ID-SF
+    wp_low: Reco20to75
+    wp_high: RecoAbove75
+    pt_split: 75.0
+  Run3Summer22EE:
+    correction: Electron-ID-SF
+    wp_low: Reco20to75
+    wp_high: RecoAbove75
+    pt_split: 75.0
+  Run3Summer23:
+    correction: Electron-ID-SF
+    wp_low: Reco20to75
+    wp_high: RecoAbove75
+    pt_split: 75.0
+  Run3Summer23BPix:
+    correction: Electron-ID-SF
+    wp_low: Reco20to75
+    wp_high: RecoAbove75
+    pt_split: 75.0
   RunIII2024Summer24:
     correction: Electron-ID-SF
     wp_low: Reco20to75

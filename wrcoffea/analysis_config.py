@@ -26,7 +26,6 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as _f:
 
 LUMIS = _cfg["lumis"]
 DEFAULT_MC_TAG = _cfg["default_mc_tag"]
-SKIMMED_ONLY_SIGNAL = set(_cfg["skimmed_only_signal"])
 
 LUMI_JSONS = _cfg["lumi_jsons"]
 JME_JSONS = _cfg["jme_jsons"]
@@ -68,6 +67,7 @@ SEL_EMU_TRIGGER = "emu_trigger"
 SEL_DR_ALL_PAIRS_GT0P4 = "dr_all_pairs_gt0p4"
 SEL_MLL_GT200 = "mll_gt200"
 SEL_MLLJJ_GT800 = "mlljj_gt800"
+SEL_MLLJJ_LT800 = "mlljj_lt800"
 SEL_MLL_GT400 = "mll_gt400"
 
 # Resolved region selection keys

@@ -6,6 +6,7 @@ import awkward as ak
 import numpy as np
 import pytest
 
+import wrcoffea.skimmer as skimmer
 from wrcoffea.analysis_config import CUTS
 from wrcoffea.skimmer import (
     KEPT_BRANCHES,
@@ -217,3 +218,76 @@ class TestSkimResult:
         )
         assert r.n_events_before == 1000
         assert r.efficiency == 50.0
+        assert r.status == "success"
+        assert r.attempts == 1
+        assert r.redirector is None
+
+
+# ---------------------------------------------------------------------------
+# Retry/error classification
+# ---------------------------------------------------------------------------
+
+
+class TestRetryClassification:
+    def test_classify_network_error_retryable(self):
+        cat, retryable = skimmer._classify_skim_error(RuntimeError("operation timed out on xrootd socket"))
+        assert cat == "network_error"
+        assert retryable is True
+
+    def test_classify_corrupt_error_nonretryable(self):
+        cat, retryable = skimmer._classify_skim_error(RuntimeError("received 0 bytes from server"))
+        assert cat == "corrupt_file"
+        assert retryable is False
+
+    def test_classify_empty_error_nonretryable(self):
+        cat, retryable = skimmer._classify_skim_error(RuntimeError("branch not in fields"))
+        assert cat == "empty_input"
+        assert retryable is False
+
+    def test_retry_backoff_exponential_with_cap(self):
+        with patch.object(skimmer.random, "uniform", return_value=0.0):
+            assert skimmer._retry_sleep_seconds(1) == pytest.approx(1.0)
+            assert skimmer._retry_sleep_seconds(2) == pytest.approx(2.0)
+            assert skimmer._retry_sleep_seconds(3) == pytest.approx(4.0)
+            assert skimmer._retry_sleep_seconds(6) == pytest.approx(30.0)
+
+
+class TestSkimSingleFileRetryFlow:
+    def test_records_attempts_and_redirector(self):
+        calls = []
+
+        def _side_effect(_src, _dest, progress=None):
+            calls.append(_src)
+            if len(calls) == 1:
+                raise RuntimeError("timeout contacting xrootd")
+            return SkimResult(
+                src_path=_src,
+                dest_path=_dest,
+                n_events_before=10,
+                n_events_after=5,
+                file_size_bytes=100,
+                efficiency=50.0,
+            )
+
+        with patch.object(skimmer, "REDIRECTORS", ["root://r1/", "root://r2/"]), \
+             patch.object(skimmer, "MAX_RETRIES_PER_REDIRECTOR", 2), \
+             patch.object(skimmer, "_skim_impl", side_effect=_side_effect), \
+             patch.object(skimmer, "_retry_sleep_seconds", return_value=0.0), \
+             patch.object(skimmer.time, "sleep"):
+            result = skimmer.skim_single_file(
+                "root://host//store/mc/f.root",
+                "out.root",
+            )
+
+        assert result.attempts == 2
+        assert result.redirector == "root://r1/"
+
+    def test_nonretryable_error_raises_immediately(self):
+        with patch.object(skimmer, "REDIRECTORS", ["root://r1/"]), \
+             patch.object(skimmer, "MAX_RETRIES_PER_REDIRECTOR", 3), \
+             patch.object(skimmer, "_skim_impl", side_effect=RuntimeError("received 0 bytes")), \
+             patch.object(skimmer.time, "sleep") as sleep_mock:
+            with pytest.raises(RuntimeError, match=r"Non-retryable \[corrupt_file\]"):
+                skimmer.skim_single_file("root://host//store/mc/f.root", "out.root")
+
+        sleep_mock.assert_not_called()

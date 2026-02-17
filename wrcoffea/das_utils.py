@@ -7,6 +7,7 @@ for file lists, and converting logical file names to XRootD URLs.
 from __future__ import annotations
 
 import logging
+import os
 import re
 import shutil
 import subprocess
@@ -26,6 +27,9 @@ ERA_SUBDIRS = {
 
 REDIRECTOR = "root://cmsxrootd.fnal.gov/"
 DASGOCLIENT_PATH = "/cvmfs/cms.cern.ch/common/dasgoclient"
+SCRATCH_ROOT = Path(
+    f"/uscmst1b_scratch/lpc1/3DayLifetime/{os.environ.get('USER', 'unknown')}/skims"
+)
 
 
 def validate_das_path(das_path: str) -> tuple[str, str, str]:
@@ -172,27 +176,68 @@ def das_files_to_urls(lfns: list[str]) -> list[str]:
     return [f"{REDIRECTOR}{lfn}" for lfn in lfns]
 
 
-def infer_base_dir(das_path: str) -> Path:
+def era_from_das_path(das_path: str) -> str | None:
+    """Return the era name (e.g. ``'Run3Summer22'``) from a DAS path, or ``None``."""
+    _, campaign, _ = validate_das_path(das_path)
+    return era_from_campaign(campaign)
+
+
+def infer_category(primary_ds: str) -> str:
+    """Return ``'signals'``, ``'data'``, or ``'backgrounds'`` for Wisconsin upload paths."""
+    if "WR" in primary_ds:
+        return "signals"
+    if "EGamma" in primary_ds or "Muon" in primary_ds:
+        return "data"
+    return "backgrounds"
+
+
+def base_dir_for_era(era: str, *, scratch: bool = False) -> Path:
+    """Return the era-level base directory for a known era name.
+
+    Unlike :func:`infer_base_dir`, this takes the era name directly
+    (e.g. from config metadata) rather than inferring it from a DAS path.
+    This is necessary for data datasets whose campaign strings don't
+    contain ``NanoAOD``.
+
+    Raises
+    ------
+    ValueError
+        If *era* is not in :data:`ERA_SUBDIRS`.
+    """
+    if era not in ERA_SUBDIRS:
+        raise ValueError(f"Unknown era {era!r}. Known: {list(ERA_SUBDIRS)}")
+    root = SCRATCH_ROOT if scratch else Path("data/skims")
+    return root / ERA_SUBDIRS[era]
+
+
+def infer_base_dir(das_path: str, *, scratch: bool = False) -> Path:
     """Derive the era-level base directory from a DAS path.
 
     Returns ``data/skims/<run>/<year>/<era>/``
     (e.g. ``data/skims/Run3/2024/RunIII2024Summer24/``).
 
-    Falls back to ``data/skims/`` if the campaign
+    When *scratch* is True, returns the equivalent path under
+    ``/uscmst1b_scratch/lpc1/3DayLifetime/$USER/skims/`` instead.
+
+    Falls back to the root skims directory if the campaign
     does not match any known era.
     """
     _, campaign, _ = validate_das_path(das_path)
     era = era_from_campaign(campaign)
+    root = SCRATCH_ROOT if scratch else Path("data/skims")
     if era is not None:
-        return Path("data/skims") / ERA_SUBDIRS[era]
-    return Path("data/skims")
+        return root / ERA_SUBDIRS[era]
+    return root
 
 
-def infer_output_dir(das_path: str) -> Path:
+def infer_output_dir(das_path: str, *, scratch: bool = False) -> Path:
     """Derive default output directory from a DAS path.
 
     Returns ``data/skims/<run>/<year>/<era>/files/<primary_dataset>/``
     (e.g. ``data/skims/Run3/2024/RunIII2024Summer24/files/TTto2L2Nu_.../``).
+
+    When *scratch* is True, returns the equivalent path under the
+    3DayLifetime scratch area.
     """
     primary_ds = primary_dataset_from_das_path(das_path)
-    return infer_base_dir(das_path) / "files" / primary_ds
+    return infer_base_dir(das_path, scratch=scratch) / "files" / primary_ds

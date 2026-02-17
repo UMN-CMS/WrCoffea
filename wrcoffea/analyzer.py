@@ -36,7 +36,7 @@ from wrcoffea.analysis_config import (
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
-    SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
+    SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
     SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
     SEL_60_MLL_150,
@@ -88,9 +88,10 @@ class WrAnalysis(processor.ProcessorABC):
       without the ``/sumw`` normalization; the caller must divide by the accumulated
       ``_sumw`` per dataset after processing.
     """
-    def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False):
+    def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False, tf_study=False):
         self._signal_sample = mass_point
         self._compute_sumw = compute_sumw
+        self._tf_study = tf_study
         enabled = enabled_systs or []
         self._enabled_systs = {str(s).strip().lower() for s in enabled if str(s).strip()}
         self._region = region.lower() if region else "both"
@@ -214,17 +215,24 @@ class WrAnalysis(processor.ProcessorABC):
             try:
                 ak4_id_mask = self.jetid_mask_ak4puppi_tlv(events.Jet, era)
             except AttributeError as e:
+                # Fallback for missing fields (shouldn't happen after config fix)
                 key = f"jetid_fallback::{era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
-                        "are missing; falling back to isTightLeptonVeto for this worker process. "
+                        "are missing; falling back to Jet.jetId>=6 for this worker process. "
                         "(example error: %s)", era, e
                     )
-                ak4_id_mask = events.Jet.isTightLeptonVeto
+                ak4_id_mask = events.Jet.jetId >= 6
         else:
-            ak4_id_mask = events.Jet.isTightLeptonVeto
+            # For eras without jetid.json (including NanoAODv12 eras)
+            # Use isTightLeptonVeto if available, otherwise use jetId >= 6
+            if hasattr(events.Jet, 'isTightLeptonVeto'):
+                ak4_id_mask = events.Jet.isTightLeptonVeto
+            else:
+                # NanoAODv12 and earlier: use jetId integer flag (6 = TightLeptonVeto)
+                ak4_id_mask = events.Jet.jetId >= 6
 
         ak4_mask = ak4_pteta_mask & ak4_id_mask
         ak4_jets = events.Jet[ak4_mask]
@@ -365,6 +373,7 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add("mll_gt200",    ak.fill_none(mll > CUTS["mll_sr_min"], False))
         selections.add("mll_gt400",    ak.fill_none(mll > CUTS["mll_sr_high_min"], False))
         selections.add("mlljj_gt800",  ak.fill_none(mlljj > CUTS["mlljj_min"], False))
+        selections.add("mlljj_lt800",  ak.fill_none(mlljj < CUTS["mlljj_min"], False))
 
         # ΔR > 0.4 requirements among {l1, l2, j1, j2}.
         dr_ll   = ak.fill_none(l1.deltaR(l2) > CUTS["dr_min"], False)
@@ -693,7 +702,23 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add(SEL_EE_SR,    ee_sr & is_sublead_e_sr)
         selections.add(SEL_EMU_CR,   emu_cr & is_sublead_mu_cr)
         selections.add(SEL_MUE_CR,   mue_cr & is_sublead_e_cr)
-        return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate 
+
+        # Transfer factor study: boosted low-mass regions with mlj < 800 GeV.
+        if self._tf_study:
+            SR_mask_tf_low = is_sr & (mlj_sr < CUTS["mlljj_min"]) & (mll_sr > CUTS["mll_sr_min"])
+            CR_mask_tf_low = is_cr & (mlj_cr < CUTS["mlljj_min"]) & (mll_cr > CUTS["mll_sr_min"])
+
+            ee_sr_tf_low = eTrig & SR_mask_tf_low & is_lead_e & no_extra_tight_sr
+            mumu_sr_tf_low = muTrig & SR_mask_tf_low & is_lead_mu & no_extra_tight_sr
+            emu_cr_tf_low = eTrig & CR_mask_tf_low & is_lead_e & no_extra_tight_flav_cr
+            mue_cr_tf_low = muTrig & CR_mask_tf_low & is_lead_mu & no_extra_tight_flav_cr
+
+            selections.add("mumu_sr_tf_low", mumu_sr_tf_low & is_sublead_mu_sr)
+            selections.add("ee_sr_tf_low", ee_sr_tf_low & is_sublead_e_sr)
+            selections.add("emu_cr_tf_low", emu_cr_tf_low & is_sublead_mu_cr)
+            selections.add("mue_cr_tf_low", mue_cr_tf_low & is_sublead_e_cr)
+
+        return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate
 
     def build_event_weights(self, events, metadata, is_mc, tight_muons=None, tight_electrons=None):
         """
@@ -835,6 +860,25 @@ class WrAnalysis(processor.ProcessorABC):
                 SEL_MLL_GT400, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
             ),
         }
+
+        # Transfer factor study: low-mass regions with mlljj < 800 GeV.
+        if self._tf_study:
+            resolved_regions['wr_ee_resolved_sr_tf_low'] = resolved_selections.all(
+                SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                SEL_MLL_GT400, SEL_MLLJJ_LT800, SEL_JET_VETO_MAP,
+            )
+            resolved_regions['wr_mumu_resolved_sr_tf_low'] = resolved_selections.all(
+                SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                SEL_MLL_GT400, SEL_MLLJJ_LT800, SEL_JET_VETO_MAP,
+            )
+            resolved_regions['wr_resolved_flavor_cr_tf_low'] = resolved_selections.all(
+                SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+                SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+                SEL_MLL_GT400, SEL_MLLJJ_LT800, SEL_JET_VETO_MAP,
+            )
+
         for region, cuts in resolved_regions.items():
             fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
 
@@ -881,6 +925,32 @@ class WrAnalysis(processor.ProcessorABC):
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, syst_weights)
             else:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, syst_weights)
+
+        # Transfer factor study: boosted low-mass regions with mlj < 800 GeV.
+        if self._tf_study:
+            tf_boosted_regions = {
+                'wr_mumu_boosted_sr_tf_low': boosted_sel.all(
+                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "mumu_sr_tf_low",
+                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                ),
+                'wr_ee_boosted_sr_tf_low': boosted_sel.all(
+                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "ee_sr_tf_low",
+                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                ),
+                'wr_emu_boosted_flavor_cr_tf_low': boosted_sel.all(
+                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "emu_cr_tf_low",
+                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                ),
+                'wr_mue_boosted_flavor_cr_tf_low': boosted_sel.all(
+                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "mue_cr_tf_low",
+                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                ),
+            }
+            for region, cuts in tf_boosted_regions.items():
+                if "flavor_cr" in region:
+                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, syst_weights)
+                else:
+                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, syst_weights)
 
     def process(self, events):
         """Run analysis for one NanoEvents chunk and return a dataset-nested output dict."""

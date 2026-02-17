@@ -178,7 +178,7 @@ def sum_hists(my_hists):
 
     original_histograms = list(my_hists.values())[0]
     sum_histograms = {
-        key: Hist(*original_histograms[key].axes, 
+        key: Hist(*original_histograms[key].axes,
             storage=original_histograms[key].storage_type())
         for key in original_histograms
         if isinstance(original_histograms[key], Hist)
@@ -195,3 +195,27 @@ def sum_hists(my_hists):
                     sum_histograms[hist_name] = hist_data.copy()
 
     return sum_histograms
+
+
+def save_histograms_by_group(histograms, args, sample_to_group):
+    """Save one ROOT file per physics_group from a composite run.
+
+    Signal groups use the format ``"Signal:<mass_point>"`` so each mass
+    point gets its own ROOT file (e.g. ``WRAnalyzer_signal_WR2000_N1900.root``).
+    """
+    from types import SimpleNamespace
+
+    grouped: Dict[str, dict] = {}
+    for sample_key, data in histograms.items():
+        group = sample_to_group.get(sample_key, "Unknown")
+        grouped.setdefault(group, {})[sample_key] = data
+
+    for group, group_hists in grouped.items():
+        group_args = SimpleNamespace(**vars(args))
+        if group.startswith("Signal:"):
+            group_args.sample = "Signal"
+            group_args.mass = group.split(":", 1)[1]
+        else:
+            group_args.sample = group
+            group_args.mass = None
+        save_histograms(group_hists, group_args)
