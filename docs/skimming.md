@@ -2,6 +2,30 @@
 
 The skimmer applies a loose event preselection (looser than the analysis cuts) to NanoAOD files, reducing file sizes for faster analysis iteration. The core logic lives in `wrcoffea/skimmer.py` (importable/testable), with a single CLI entry point at `bin/skim.py` using subcommands. Files are resolved directly from DAS via `dasgoclient` — no pre-built filesets required.
 
+## Skim Selection
+
+The skim keeps events passing a loose lepton + jet preselection. These cuts are intentionally wider than the analysis cuts so the skims remain usable if analysis thresholds change.
+
+| Cut | Value |
+|-----|-------|
+| Lepton pT min | 45 GeV |
+| Lepton eta max | 2.5 |
+| Lead lepton pT min | 52 GeV |
+| Sublead lepton pT min | 45 GeV |
+| AK4 jet pT min | 32 GeV |
+| AK4 jet eta max | 2.5 |
+| AK8 jet pT min | 180 GeV |
+| AK8 jet eta max | 2.5 |
+
+**Selection logic:** (>= 2 leptons passing pT/eta, lead > 52, sublead > 45) AND (>= 2 AK4 jets OR >= 1 AK8 jet)
+
+To print these from the command line:
+```bash
+python3 bin/skim.py --cuts
+```
+
+---
+
 ## Full Pipeline
 
 The typical workflow to skim an entire era end-to-end:
@@ -122,30 +146,6 @@ python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/
 ```
 
 This queries Wisconsin via `gfal-ls`, rebuilds the file list for all datasets in the config, and writes the output to `data/filesets/Run3/2022/Run3Summer22/skimmed/`.
-
----
-
-## Skim Selection
-
-The skim keeps events passing a loose lepton + jet preselection. These cuts are intentionally wider than the analysis cuts so the skims remain usable if analysis thresholds change.
-
-| Cut | Value |
-|-----|-------|
-| Lepton pT min | 45 GeV |
-| Lepton eta max | 2.5 |
-| Lead lepton pT min | 52 GeV |
-| Sublead lepton pT min | 45 GeV |
-| AK4 jet pT min | 32 GeV |
-| AK4 jet eta max | 2.5 |
-| AK8 jet pT min | 180 GeV |
-| AK8 jet eta max | 2.5 |
-
-**Selection logic:** (>= 2 leptons passing pT/eta, lead > 52, sublead > 45) AND (>= 2 AK4 jets OR >= 1 AK8 jet)
-
-To print these from the command line:
-```bash
-python3 bin/skim.py --cuts
-```
 
 ---
 
