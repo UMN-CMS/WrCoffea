@@ -8,6 +8,8 @@ This repository provides the main analysis framework for processing WR→Nℓ→
 
 ## Getting Started
 
+For first-time setup (cloning, creating the venv, Condor environment), see **[Getting Started](docs/getting_started.md)**.
+
 Activate the virtual environment before running any commands:
 ```bash
 source .venv/bin/activate
@@ -18,7 +20,6 @@ source .venv/bin/activate
 > cd /path/to/WrCoffea && source .venv/bin/activate && cd -
 > ```
 
-For first-time setup (cloning, creating the venv, Condor environment), see **[Getting Started](docs/getting_started.md)**.
 
 ## Table of Contents
 - [Quick Start](#quick-start) – Run the analyzer
@@ -96,10 +97,19 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
 | `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
+| `--fileset` | `<path>` | Override automatic fileset path with a custom fileset JSON |
 | `--max-workers` | `<int>` | Number of Dask workers (local default: 3, single-sample condor: 50, composite condor: 3000) |
+| `--worker-wait-timeout` | `<int>` | Seconds to wait for first Condor worker before failing (default: 1200) |
 | `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000) |
+| `--maxchunks` | `<int>` | Max chunks per file (default: all). Use `1` for quick testing |
+| `--maxfiles` | `<int>` | Max files per dataset (default: all). Use `1` for quick testing |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
 | `--systs` | `lumi` `pileup` `sf` | Enable systematic variations (see [Systematics](#systematics)) |
+| `--tf-study` | | Add transfer factor study regions (no mass cut) to the output |
+| `--xrd-fallback` | | Enable XRootD redirector fallback during unskimmed preprocess |
+| `--xrd-fallback-timeout` | `<int>` | Seconds per fallback probe (default: 10) |
+| `--xrd-fallback-retries-per-redirector` | `<int>` | Probe attempts per redirector during fallback (default: 10) |
+| `--xrd-fallback-sleep` | `<float>` | Seconds between fallback retries (default: 10.0) |
 | `--list-eras` | | Print available eras and exit |
 | `--list-samples` | | Print available samples and exit |
 | `--list-masses` | | Print available signal mass points and exit |
@@ -189,6 +199,7 @@ test/        # Development and validation scripts
 - [`skimmer.py`](wrcoffea/skimmer.py) - Skim selection, Runs tree handling, single-file skimming
 - [`skim_merge.py`](wrcoffea/skim_merge.py) - Post-skim merging, HLT grouping, hadd, validation
 - [`das_utils.py`](wrcoffea/das_utils.py) - DAS dataset path validation, dasgoclient queries, XRootD URL construction
+- [`xrootd_fallback.py`](wrcoffea/xrootd_fallback.py) - XRootD redirector fallback for unskimmed file preprocessing
 
 **`data/`** - Configuration and Metadata
 - `configs/` - Per-era dataset configurations (JSON format, input to fileset scripts)
