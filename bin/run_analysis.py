@@ -472,7 +472,7 @@ if __name__ == "__main__":
     optional.add_argument("--debug", action='store_true', help="Debug mode (don't compute histograms)")
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
-    optional.add_argument("--condor", action='store_true', help="Run on condor (auto-enabled for composite modes).")
+    optional.add_argument("--condor", action='store_true', help="Run on Condor. Without this flag, composite modes run locally in sequential order.")
     optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 3, single-sample condor: 50, composite condor: 3000).")
     optional.add_argument("--worker-wait-timeout", type=int, default=1200, help="Seconds to wait for first Condor worker before failing (default: 1200).")
     optional.add_argument("--threads-per-worker", type=int, default=None, help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).")

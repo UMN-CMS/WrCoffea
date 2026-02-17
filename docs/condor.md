@@ -37,13 +37,13 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 
 ### Composite modes on Condor
 
-Composite modes automatically submit to Condor — no `--condor` flag needed:
+Use `--condor` to run composite modes on Condor (without it, they run locally in sequential order):
 ```bash
-python bin/run_analysis.py RunIII2024Summer24 data       # all data
-python bin/run_analysis.py RunIII2024Summer24 bkg        # all backgrounds
-python bin/run_analysis.py RunIII2024Summer24 signal     # signal only
-python bin/run_analysis.py RunIII2024Summer24 mc         # backgrounds + signal
-python bin/run_analysis.py RunIII2024Summer24 all        # everything
+python bin/run_analysis.py RunIII2024Summer24 data --condor      # all data
+python bin/run_analysis.py RunIII2024Summer24 bkg --condor       # all backgrounds
+python bin/run_analysis.py RunIII2024Summer24 signal --condor    # signal only
+python bin/run_analysis.py RunIII2024Summer24 mc --condor        # backgrounds + signal
+python bin/run_analysis.py RunIII2024Summer24 all --condor       # everything
 ```
 
 **Default Condor worker counts:**
