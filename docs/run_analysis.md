@@ -132,7 +132,7 @@ Each variation produces a separate histogram under `syst_<name>_<region>/` direc
 | Flag | Description |
 |------|-------------|
 | `--condor` | Submit to HTCondor at LPC (see [condor.md](condor.md)) |
-| `--max-workers N` | Number of Dask workers (local default: 3, condor single-sample: 50, condor composite: 3000) |
+| `--max-workers N` | Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 2000) |
 | `--worker-wait-timeout N` | Seconds to wait for first Condor worker before failing (default: 1200) |
 | `--threads-per-worker N` | Threads per Dask worker for local runs |
 | `--chunksize N` | Events per processing chunk (default: 250000) |

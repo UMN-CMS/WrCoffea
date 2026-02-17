@@ -52,8 +52,9 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 ```
 
 **Default Condor worker counts:**
-- **Composite modes** (`all`, `data`, `bkg`, `mc`, `signal`): 3000 workers
 - **Single-sample** (`DYJets`, `EGamma`, etc.): 50 workers
+- **Composite skimmed** (`all`, `data`, `bkg`, `mc`, `signal`): 200 workers
+- **Composite unskimmed** (composite + `--unskimmed`): 2000 workers
 
 These defaults can be overridden with `--max-workers`.
 

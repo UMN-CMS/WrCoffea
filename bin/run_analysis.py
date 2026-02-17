@@ -477,7 +477,7 @@ if __name__ == "__main__":
     optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
     optional.add_argument("--condor", action='store_true', help="Run on Condor. Without this flag, composite modes run locally in sequential order.")
-    optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 3, single-sample condor: 50, composite condor: 3000).")
+    optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 2000).")
     optional.add_argument("--worker-wait-timeout", type=int, default=1200, help="Seconds to wait for first Condor worker before failing (default: 1200).")
     optional.add_argument("--threads-per-worker", type=int, default=None, help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).")
     optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
@@ -620,7 +620,11 @@ if __name__ == "__main__":
     t0 = time.monotonic()
 
     if is_condor:
-        n_workers = args.max_workers or (3000 if is_composite else 50)
+        if is_composite:
+            default_workers = 2000 if args.unskimmed else 200
+        else:
+            default_workers = 50
+        n_workers = args.max_workers or default_workers
         with _condor_cluster(n_workers=n_workers, wait_timeout_s=args.worker_wait_timeout) as client:
             try:
                 hists = _process_fileset(args, fileset, client=client, condor=True)
