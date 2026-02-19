@@ -1086,6 +1086,86 @@ def _write_check_era_state(path: Path, payload: dict) -> None:
         f.write("\n")
 
 
+def _run_era_state_path(base_dir: Path) -> Path:
+    """Path to the JSON file that records failed submissions for an era."""
+    return base_dir / ".run_era_failed.json"
+
+
+def _retry_failed_submissions(args):
+    """Resubmit only datasets whose condor_submit failed previously.
+
+    Reads the failed dataset list saved by the last run-era invocation
+    and resubmits just those job directories.
+    """
+    _resolve_era_configs(args)
+    all_datasets = _load_datasets_from_configs(args.config)
+    if not all_datasets:
+        logger.error("No datasets to process.")
+        raise SystemExit(1)
+
+    first_era = all_datasets[0][1].get("era")
+    if not first_era:
+        logger.error("First dataset missing 'era' in config metadata.")
+        raise SystemExit(1)
+    base_dir = base_dir_for_era(first_era, scratch=True)
+    state_path = _run_era_state_path(base_dir)
+
+    if not state_path.exists():
+        logger.error("No failed-submission state file found at %s", state_path)
+        logger.error("Run 'run-era' first (without --retry-failed).")
+        raise SystemExit(1)
+
+    with state_path.open() as f:
+        failed_datasets = json.load(f)
+
+    if not failed_datasets:
+        logger.info("No failed submissions to retry.")
+        return
+
+    jobs_root = base_dir / "jobs"
+    logger.info("Found %d dataset(s) to retry", len(failed_datasets))
+
+    submitted = 0
+    failed = []
+    for primary_ds in failed_datasets:
+        job_dir = jobs_root / primary_ds
+        jdl = job_dir / "job.jdl"
+        if not jdl.exists():
+            logger.error("No job.jdl found for %s at %s", primary_ds, job_dir)
+            failed.append((primary_ds, "missing job.jdl"))
+            continue
+
+        if args.dry_run:
+            logger.info("[dry-run] Would resubmit %s", primary_ds)
+            submitted += 1
+        else:
+            try:
+                subprocess.run(
+                    ["bash", "-c", "condor_submit job.jdl"],
+                    cwd=str(job_dir), check=True,
+                )
+                logger.info("Resubmitted %s", primary_ds)
+                submitted += 1
+            except subprocess.CalledProcessError as e:
+                logger.error("condor_submit failed for %s: %s", primary_ds, e)
+                failed.append((primary_ds, f"condor_submit failed: {e}"))
+
+    # Update state file: only keep datasets that still failed
+    still_failed = [ds for ds, _reason in failed]
+    with state_path.open("w") as f:
+        json.dump(still_failed, f, indent=2)
+        f.write("\n")
+
+    logger.info("Resubmitted %d/%d. %d still failed.", submitted, len(failed_datasets), len(failed))
+    if failed:
+        for ds, reason in failed:
+            logger.error("  FAILED: %s — %s", ds, reason)
+        raise SystemExit(1)
+    else:
+        state_path.unlink()
+        logger.info("All retries succeeded — cleared state file.")
+
+
 def cmd_run_era(args):
     """Submit Condor skim jobs for all datasets in one or more configs.
 
@@ -1093,6 +1173,9 @@ def cmd_run_era(args):
     sub-eras like Muon0 v1-v4 — are combined into a single Condor
     submission with continuous file numbering to avoid tarball collisions.
     """
+    if getattr(args, "retry_failed", False):
+        return _retry_failed_submissions(args)
+
     check_dasgoclient()
     check_grid_proxy()
     _resolve_era_configs(args)
@@ -1131,7 +1214,7 @@ def cmd_run_era(args):
                 file_urls = das_files_to_urls(lfns)
             except RuntimeError as e:
                 logger.error("DAS query failed for %s: %s", primary_ds, e)
-                failed.append((das_path, str(e)))
+                failed.append((primary_ds, str(e)))
                 das_failed = True
                 break
             for url in file_urls:
@@ -1172,16 +1255,28 @@ def cmd_run_era(args):
                 submitted += 1
             except subprocess.CalledProcessError as e:
                 logger.error("condor_submit failed for %s: %s", primary_ds, e)
-                failed.append((das_path, f"condor_submit failed: {e}"))
+                failed.append((primary_ds, f"condor_submit failed: {e}"))
 
     # Cleanup shared tarball
     if tarball.exists():
         tarball.unlink()
 
+    # Save failed dataset list for --retry-failed
+    state_path = _run_era_state_path(base_dir)
+    if failed:
+        failed_datasets = [ds for ds, _reason in failed]
+        with state_path.open("w") as f:
+            json.dump(failed_datasets, f, indent=2)
+            f.write("\n")
+        logger.info("Saved %d failed dataset(s) to %s", len(failed), state_path)
+    elif state_path.exists():
+        state_path.unlink()
+
     logger.info("Submitted %d/%d groups. %d failed.", submitted, len(groups), len(failed))
     if failed:
-        for das_path, reason in failed:
-            logger.error("  FAILED: %s — %s", das_path.split("/")[1], reason)
+        for ds, reason in failed:
+            logger.error("  FAILED: %s — %s", ds, reason)
+        logger.info("Retry with: python3 bin/skim.py run-era --era %s --retry-failed", first_era)
         raise SystemExit(1)
 
 
@@ -1767,6 +1862,8 @@ def main(argv=None):
                               help="Era name (e.g. Run3Summer23) — auto-discovers all configs")
     p_run_era.add_argument("--dry-run", action="store_true",
                             help="Generate Condor files without submitting")
+    p_run_era.add_argument("--retry-failed", action="store_true",
+                            help="Only resubmit datasets whose condor_submit failed previously")
     p_run_era.set_defaults(func=cmd_run_era)
 
     # --- check-era ---
