@@ -247,6 +247,8 @@ def main() -> None:
     ap.add_argument("--config", required=True, help="Config JSON to read/update in place")
     ap.add_argument("--physics-group", default=None,
                     help="Only process entries whose payload['physics_group'] matches (e.g. DYJets, tt_tW)")
+    ap.add_argument("--dataset", default=None,
+                    help="Only process the entry whose das_name (or top-level key) contains this substring")
     ap.add_argument(
         "--redirectors",
         nargs="+",
@@ -318,6 +320,10 @@ def main() -> None:
         ds = payload.get("das_name", top_key)
         if not isinstance(ds, str) or not ds.startswith("/"):
             logger.warning("Skipping (no valid das_name): %s", top_key)
+            skipped += 1
+            continue
+
+        if args.dataset is not None and args.dataset not in ds:
             skipped += 1
             continue
 
