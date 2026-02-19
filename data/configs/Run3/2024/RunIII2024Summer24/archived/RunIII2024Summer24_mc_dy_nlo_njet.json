@@ -8,7 +8,7 @@
     "physics_group": "DYJets",
     "xsec": 5382,
     "total_uncertainty": 7.732,
-    "genEventSumw": 0.0,
+    "genEventSumw": 2773481498498.5166,
     "datatype": "mc"
   },
   "/DYto2E-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM": {
@@ -20,7 +20,7 @@
     "physics_group": "DYJets",
     "xsec": 972.3,
     "total_uncertainty": 4.98,
-    "genEventSumw": 0.0,
+    "genEventSumw": 1619482817498.6226,
     "datatype": "mc"
   },
   "/DYto2E-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {
@@ -32,7 +32,7 @@
     "physics_group": "DYJets",
     "xsec": 372.4,
     "total_uncertainty": 1.374,
-    "genEventSumw": 0.0,
+    "genEventSumw": 828901035085.2267,
     "datatype": "mc"
   },
   "/DYto2Mu-2Jets_Bin-0J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM": {
@@ -44,7 +44,7 @@
     "physics_group": "DYJets",
     "xsec": 5382,
     "total_uncertainty": 7.732,
-    "genEventSumw": 0.0,
+    "genEventSumw": 2856039660379.0977,
     "datatype": "mc"
   },
   "/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM": {
@@ -56,7 +56,7 @@
     "physics_group": "DYJets",
     "xsec": 975.5,
     "total_uncertainty": 2.152,
-    "genEventSumw": 0.0,
+    "genEventSumw": 1934034513478.7234,
     "datatype": "mc"
   },
   "/DYto2Mu-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM": {
