@@ -462,7 +462,7 @@ if __name__ == "__main__":
     SAMPLE_CHOICES = list_samples()
     COMPOSITE_CHOICES = list(COMPOSITE_SAMPLES.keys())
     ALL_SAMPLE_CHOICES = SAMPLE_CHOICES + COMPOSITE_CHOICES
-    DY_CHOICES = ["LO_inclusive", "NLO_mll_binned", "LO_HT"]
+    DY_CHOICES = ["lo_inc", "nlo_inc"]
 
     parser = argparse.ArgumentParser(description="Processing script for WR analysis.")
     parser.add_argument("era", nargs="?", default=None, type=str, choices=ERA_CHOICES, help="Campaign to analyze.")

@@ -127,7 +127,7 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `sample` | `<sample_name>` | **Required positional.** Sample to analyze (e.g., DYJets, Signal, EGamma) |
 | `--mass` | `<mass_point>` | Signal mass point (e.g., WR4000_N2100). **Required for Signal sample** |
 | `--region` | `resolved\|boosted\|both` | Analysis region to run (default: both) |
-| `--dy` | `LO_inclusive\|NLO_mll_binned\|LO_HT` | Specific DY sample variant (only valid for DYJets) |
+| `--dy` | `lo_inc\|nlo_inc` | Specific DY sample variant (only valid for DYJets) |
 | `--dir` | `<directory>` | Create output subdirectory under rootfiles path |
 | `--name` | `<suffix>` | Append suffix to output ROOT filename |
 | `--debug` | | Run without saving histograms (for testing) |

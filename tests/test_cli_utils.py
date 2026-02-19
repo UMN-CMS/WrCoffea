@@ -162,17 +162,13 @@ class TestBuildFilesetPath:
         path = build_fileset_path(era="RunIII2024Summer24", sample="Signal", unskimmed=False, dy=None)
         assert path.name == "RunIII2024Summer24_signal_fileset.json"
 
-    def test_dy_lo_inclusive(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="LO_inclusive")
+    def test_dy_lo_inc(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="lo_inc")
         assert "dy_lo_inc" in path.name
 
-    def test_dy_nlo_mll(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="NLO_mll_binned")
-        assert "dy_nlo_mll" in path.name
-
-    def test_dy_lo_ht(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="LO_HT")
-        assert "dy_lo_ht" in path.name
+    def test_dy_nlo_inc(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="nlo_inc")
+        assert "dy_nlo_inc" in path.name
 
     def test_unskimmed_mc_path(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy=None)
@@ -190,7 +186,7 @@ class TestBuildFilesetPath:
         assert "unskimmed" in path.parts
 
     def test_unskimmed_dy_lo_path(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy="LO_inclusive")
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy="lo_inc")
         assert "dy_lo_inc" in path.name
         assert "unskimmed" in path.parts
 

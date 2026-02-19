@@ -107,7 +107,7 @@ Each variation produces a separate histogram under `syst_<name>_<region>/` direc
 | Flag | Description |
 |------|-------------|
 | `--mass MASS` | Signal mass point (e.g., `WR4000_N2100`). **Required for Signal sample** |
-| `--dy {LO_inclusive,NLO_mll_binned,LO_HT}` | Specific DY sample variant (only valid for DYJets) |
+| `--dy {lo_inc,nlo_inc}` | Specific DY sample variant (only valid for DYJets) |
 | `--region {resolved,boosted,both}` | Analysis region to run (default: `both`) |
 | `--unskimmed` | Use unskimmed filesets instead of default skimmed files |
 | `--fileset PATH` | Override automatic fileset path with a custom fileset JSON |
@@ -187,7 +187,7 @@ python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
 
 # Unskimmed files
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy LO_inclusive
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy lo_inc
 
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only

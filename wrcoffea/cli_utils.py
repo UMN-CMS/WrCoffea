@@ -216,12 +216,10 @@ def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Pa
     # Resolve sub-samples (TTbar, tW) to their parent group for fileset lookup.
     effective_sample = _PHYSICS_SUBGROUPS[sample][0] if sample in _PHYSICS_SUBGROUPS else sample
 
-    if dy == "LO_inclusive":
+    if dy == "lo_inc":
         filename = f"{era_name}_mc_dy_lo_inc_fileset.json"
-    elif dy == "NLO_mll_binned":
-        filename = f"{era_name}_mc_dy_nlo_mll_fileset.json"
-    elif dy == "LO_HT":
-        filename = f"{era_name}_mc_dy_lo_ht_fileset.json"
+    elif dy == "nlo_inc":
+        filename = f"{era_name}_mc_dy_nlo_inc_fileset.json"
     elif effective_sample in ["EGamma", "Muon"]:
         filename = f"{era_name}_data_fileset.json"
     elif effective_sample == "Signal":
