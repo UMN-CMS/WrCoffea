@@ -192,3 +192,17 @@ python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy lo_inc
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only
 ```
+
+---
+
+## Troubleshooting
+
+### Unskimmed runs crash mid-job
+
+Unskimmed files are accessed via XRootD and are more prone to transient I/O errors. If a run crashes unexpectedly, try setting `skipbadfiles=True` in `bin/run_analysis.py` ([line 433](../bin/run_analysis.py#L433)):
+
+```python
+skipbadfiles=True,
+```
+
+This allows the runner to skip unreadable files and continue processing the rest, at the cost of silently dropping any events in bad files.
