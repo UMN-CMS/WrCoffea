@@ -689,15 +689,30 @@ def _check_log_completion(log_dir: Path, primary_ds: str, expected_indices: set[
     return passed, failed
 
 
-def _pre_merge_check(das_path: str, primary_ds: str, skim_dir: Path, scratch: bool = False) -> bool:
+def _is_already_merged(skim_dir: Path) -> bool:
+    """Return True if merge_summary.json exists and records a successful merge."""
+    summary_path = skim_dir / "merge_summary.json"
+    if not summary_path.exists():
+        return False
+    try:
+        with summary_path.open() as f:
+            summary = json.load(f)
+        return bool(summary.get("events_match") and summary.get("sumw_match"))
+    except Exception:
+        return False
+
+
+def _pre_merge_check(das_path: str, primary_ds: str, skim_dir: Path, scratch: bool = False, era: str | None = None) -> bool:
     """Run completeness checks before merging. Returns True if all pass."""
     logger.info("Running pre-merge completeness check...")
 
     # 1. Query DAS for the full file list
-    primary_ds_check, file_urls, _ = _resolve_das(das_path, scratch=scratch)
+    _primary_ds_check, file_urls, _ = _resolve_das(das_path, scratch=scratch)
 
     # 2. Check tarballs / loose ROOT files against DAS
-    result = _check_dataset(primary_ds_check, file_urls, skim_dir)
+    # Use the caller-supplied primary_ds (which may include a run suffix like
+    # Muon0_Run2024C) rather than the raw DAS name, so the filename glob matches.
+    result = _check_dataset(primary_ds, file_urls, skim_dir)
     expected = result["expected"]
     found = result["found"]
 
@@ -717,7 +732,10 @@ def _pre_merge_check(das_path: str, primary_ds: str, skim_dir: Path, scratch: bo
         return False
 
     # 4. Check log files for successful completion
-    base_dir = infer_base_dir(das_path, scratch=scratch)
+    if era:
+        base_dir = base_dir_for_era(era, scratch=scratch)
+    else:
+        base_dir = infer_base_dir(das_path, scratch=scratch)
     log_dir = base_dir / "logs" / primary_ds
 
     if not log_dir.is_dir():
@@ -845,8 +863,17 @@ def cmd_merge(args):
     from wrcoffea.skim_merge import merge_dataset_incremental, validate_merge
 
     scratch = getattr(args, "scratch", False)
-    primary_ds = primary_dataset_from_das_path(args.das_path)
-    skim_dir = infer_output_dir(args.das_path, scratch=scratch)
+    era = getattr(args, "era", None)
+
+    # For data datasets, the DAS primary name (e.g. "Muon0") differs from the
+    # run-suffixed output name (e.g. "Muon0_Run2024C"). Use --dataset to override.
+    dataset_override = getattr(args, "dataset", None)
+    if era:
+        primary_ds = dataset_override or primary_dataset_from_das_path(args.das_path)
+        skim_dir = base_dir_for_era(era, scratch=scratch) / "files" / primary_ds
+    else:
+        primary_ds = primary_dataset_from_das_path(args.das_path)
+        skim_dir = infer_output_dir(args.das_path, scratch=scratch)
 
     if not skim_dir.is_dir():
         logger.error("Skim directory not found: %s", skim_dir)
@@ -854,7 +881,7 @@ def cmd_merge(args):
 
     # Pre-merge completeness check (unless --skip-check or --validate-only)
     if not args.validate_only and not args.skip_check:
-        if not _pre_merge_check(args.das_path, primary_ds, skim_dir, scratch=scratch):
+        if not _pre_merge_check(args.das_path, primary_ds, skim_dir, scratch=scratch, era=era):
             logger.error("Pre-merge check FAILED — aborting. Use --skip-check to override.")
             raise SystemExit(1)
 
@@ -1529,8 +1556,12 @@ def _merge_one_dataset(das_path, meta, max_events, skip_check, dataset_name=None
         logger.warning("Skim directory not found for %s — skipping", primary_ds)
         return das_path, None, "skim directory not found"
 
+    if _is_already_merged(skim_dir):
+        logger.info("Already merged %s — skipping", primary_ds)
+        return das_path, None, None
+
     if not skip_check:
-        if not _pre_merge_check(das_path, primary_ds, skim_dir, scratch=True):
+        if not _pre_merge_check(das_path, primary_ds, skim_dir, scratch=True, era=era):
             logger.error("Pre-merge check FAILED for %s — skipping", primary_ds)
             return das_path, None, "pre-merge check failed"
 
@@ -1575,8 +1606,16 @@ def cmd_merge_era(args):
     # before dispatching the merge task.
     merge_tasks = []
     failed = []
+    skipped = []
     for (era, primary_ds), group in groups.items():
         first_das_path, first_meta, _cfg = group[0]
+        skim_dir = base_dir_for_era(era, scratch=True) / "files" / primary_ds if era else None
+
+        if skim_dir and _is_already_merged(skim_dir):
+            logger.info("Already merged %s — skipping", primary_ds)
+            skipped.append(primary_ds)
+            continue
+
         skip_check = args.skip_check
         if len(group) > 1 and not skip_check:
             logger.info(
@@ -1618,6 +1657,8 @@ def cmd_merge_era(args):
                     failed.append((das_path, error))
                 elif result:
                     results.append(result)
+                else:
+                    skipped.append(ds_name)
     else:
         for das_path, meta, skip_check, ds_name in merge_tasks:
             das_path, result, error = _merge_one_dataset(
@@ -1628,8 +1669,13 @@ def cmd_merge_era(args):
                 failed.append((das_path, error))
             elif result:
                 results.append(result)
+            else:
+                skipped.append(ds_name)
 
-    logger.info("Merged %d/%d datasets successfully.", len(results), len(results) + len(failed))
+    total = len(results) + len(failed) + len(skipped)
+    logger.info("Merged %d/%d datasets successfully.", len(results), total)
+    if skipped:
+        logger.info("%d datasets already merged, skipped: %s", len(skipped), ", ".join(skipped))
     if failed:
         logger.error("%d datasets failed:", len(failed))
         for das_path, reason in failed:
@@ -1850,6 +1896,10 @@ def main(argv=None):
                           help="Analysis config JSON to cross-check genEventSumw against")
     p_merge.add_argument("--scratch", action="store_true",
                           help="Read from 3DayLifetime scratch space instead of data/skims/")
+    p_merge.add_argument("--era", default=None, metavar="ERA",
+                          help="Era name (e.g. RunIII2024Summer24) — required for data datasets")
+    p_merge.add_argument("--dataset", default=None, metavar="NAME",
+                          help="Override dataset name (e.g. Muon0_Run2024C) — use with --era for data")
     p_merge.set_defaults(func=cmd_merge)
 
     # --- run-era ---

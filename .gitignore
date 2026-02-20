@@ -11,6 +11,8 @@ data/skims
 data/reweights
 test/
 scripts/setup/skims/tmp/
+scripts/.check_era_state_*.json
+scripts/resubmit_failed_*.sh
 
 *~
 __pycache__
