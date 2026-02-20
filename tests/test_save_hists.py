@@ -413,3 +413,92 @@ class TestSaveHistogramsIntegration:
             assert "wr_ee_resolved_sr/pt_leading_lepton_wr_ee_resolved_sr" in f
             # Systematic in syst folder
             assert "syst_lumiup_wr_ee_resolved_sr/pt_leading_lepton_syst_lumiup_wr_ee_resolved_sr" in f
+
+    def test_normalize_by_sumw_skips_unweighted_cutflows(self, tmp_path, monkeypatch):
+        """Test that normalize_by_sumw does not divide unweighted cutflow histograms."""
+        import sys, importlib, os
+        # Import normalize_by_sumw from bin/run_analysis.py
+        bin_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "bin")
+        if bin_dir not in sys.path:
+            sys.path.insert(0, bin_dir)
+        import run_analysis
+        importlib.reload(run_analysis)  # ensure fresh import
+
+        sumw = 65432.0
+
+        # Create a weighted cutflow (should be normalized)
+        h_weighted = hist.Hist(
+            hist.axis.StrCategory(["no_cuts", "cutA"], name="cut"),
+            storage=hist.storage.Weight(),
+        )
+        h_weighted.fill(cut="no_cuts", weight=100.0)
+        h_weighted.fill(cut="cutA", weight=50.0)
+
+        # Create an unweighted cutflow (should NOT be normalized)
+        h_unweighted = hist.Hist(
+            hist.axis.StrCategory(["no_cuts", "cutA"], name="cut"),
+            storage=hist.storage.Weight(),
+        )
+        h_unweighted.fill(cut="no_cuts", weight=10.0)  # integer event count
+        h_unweighted.fill(cut="cutA", weight=5.0)
+
+        hists_dict = {
+            "dataset1": {
+                "_sumw": sumw,
+                "cutflow": {
+                    "ee": {
+                        "cumulative": h_weighted,
+                        "cumulative_unweighted": h_unweighted,
+                    },
+                },
+            },
+        }
+
+        run_analysis.normalize_by_sumw(hists_dict)
+
+        # Weighted should be divided by sumw
+        assert h_weighted[{"cut": "no_cuts"}].value == pytest.approx(100.0 / sumw)
+        assert h_weighted[{"cut": "cutA"}].value == pytest.approx(50.0 / sumw)
+
+        # Unweighted should be UNCHANGED
+        assert h_unweighted[{"cut": "no_cuts"}].value == pytest.approx(10.0)
+        assert h_unweighted[{"cut": "cutA"}].value == pytest.approx(5.0)
+
+    def test_save_histograms_writes_resolved_and_boosted_cutflows(self, tmp_path, monkeypatch):
+        """Test that resolved and boosted cutflows are written to separate namespaces."""
+        monkeypatch.chdir(tmp_path)
+
+        h = self._create_test_hist("mass_dilepton")
+        h.fill(process="DYJets", region="wr_mumu_resolved_sr", syst="Nominal", mass_dilepton=50.0, weight=1.0)
+
+        cf_res = hist.Hist(
+            hist.axis.StrCategory(["no_cuts", "cutA"], name="cut"),
+            storage=hist.storage.Weight(),
+        )
+        cf_res.fill(cut="no_cuts", weight=10.0)
+        cf_res.fill(cut="cutA", weight=5.0)
+
+        cf_boost = hist.Hist(
+            hist.axis.StrCategory(["no_cuts", "cutB"], name="cut"),
+            storage=hist.storage.Weight(),
+        )
+        cf_boost.fill(cut="no_cuts", weight=7.0)
+        cf_boost.fill(cut="cutB", weight=3.0)
+
+        my_hists = {
+            "dataset1": {
+                "mass_dilepton": h,
+                "cutflow": {"mumu": {"cumulative": cf_res}},
+                "cutflow_boosted": {"mumu": {"cumulative": cf_boost}},
+            }
+        }
+        args = self._create_mock_args()
+
+        save_histograms(my_hists, args)
+
+        expected_path = tmp_path / "WR_Plotter" / "rootfiles" / "RunII" / "2018" / "RunIISummer20UL18" / "WRAnalyzer_DYJets.root"
+        with uproot.open(expected_path) as f:
+            assert "cutflow_resolved/mumu/cumulative" in f
+            assert "cutflow_boosted/mumu/cumulative" in f
+            # Legacy location should no longer be used for new outputs.
+            assert "cutflow/mumu/cumulative" not in f

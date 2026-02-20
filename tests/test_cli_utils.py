@@ -69,9 +69,17 @@ def _mock_fileset():
             "files": {"/path/dy.root": "Events"},
             "metadata": {"physics_group": "DYJets", "sample": "DYJets_50to100"},
         },
-        "TTbar": {
+        "TTto2L2Nu": {
             "files": {"/path/tt.root": "Events"},
-            "metadata": {"physics_group": "tt_tW", "sample": "TTbar"},
+            "metadata": {"physics_group": "tt_tW", "sample": "TTto2L2Nu_TuneCP5"},
+        },
+        "TWminusto2L2Nu": {
+            "files": {"/path/tw1.root": "Events"},
+            "metadata": {"physics_group": "tt_tW", "sample": "TWminusto2L2Nu_TuneCP5"},
+        },
+        "TbarWplusto2L2Nu": {
+            "files": {"/path/tw2.root": "Events"},
+            "metadata": {"physics_group": "tt_tW", "sample": "TbarWplusto2L2Nu_TuneCP5"},
         },
         "Signal_WR2000": {
             "files": {"/path/sig.root": "Events"},
@@ -88,6 +96,18 @@ class TestFilterByProcess:
     def test_filter_background(self):
         result = filter_by_process(_mock_fileset(), "DYJets")
         assert list(result.keys()) == ["DY_50to100"]
+
+    def test_filter_tt_tW_returns_all_top(self):
+        result = filter_by_process(_mock_fileset(), "tt_tW")
+        assert set(result.keys()) == {"TTto2L2Nu", "TWminusto2L2Nu", "TbarWplusto2L2Nu"}
+
+    def test_filter_TTbar_returns_dileptonic_only(self):
+        result = filter_by_process(_mock_fileset(), "TTbar")
+        assert list(result.keys()) == ["TTto2L2Nu"]
+
+    def test_filter_tW_returns_single_top_only(self):
+        result = filter_by_process(_mock_fileset(), "tW")
+        assert set(result.keys()) == {"TWminusto2L2Nu", "TbarWplusto2L2Nu"}
 
     def test_filter_signal_with_mass(self):
         result = filter_by_process(_mock_fileset(), "Signal", mass="WR2000_N1100")
@@ -117,6 +137,11 @@ class TestListHelpers:
         assert "Signal" in samples
         assert "DYJets" in samples
 
+    def test_list_samples_includes_subgroups(self):
+        samples = list_samples()
+        assert "TTbar" in samples
+        assert "tW" in samples
+
 
 # ---------------------------------------------------------------------------
 # build_fileset_path
@@ -137,17 +162,13 @@ class TestBuildFilesetPath:
         path = build_fileset_path(era="RunIII2024Summer24", sample="Signal", unskimmed=False, dy=None)
         assert path.name == "RunIII2024Summer24_signal_fileset.json"
 
-    def test_dy_lo_inclusive(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="LO_inclusive")
+    def test_dy_lo_inc(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="lo_inc")
         assert "dy_lo_inc" in path.name
 
-    def test_dy_nlo_mll(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="NLO_mll_binned")
-        assert "dy_nlo_mll" in path.name
-
-    def test_dy_lo_ht(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="LO_HT")
-        assert "dy_lo_ht" in path.name
+    def test_dy_nlo_inc(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy="nlo_inc")
+        assert "dy_nlo_inc" in path.name
 
     def test_unskimmed_mc_path(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy=None)
@@ -165,7 +186,7 @@ class TestBuildFilesetPath:
         assert "unskimmed" in path.parts
 
     def test_unskimmed_dy_lo_path(self):
-        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy="LO_inclusive")
+        path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy="lo_inc")
         assert "dy_lo_inc" in path.name
         assert "unskimmed" in path.parts
 
@@ -176,6 +197,14 @@ class TestBuildFilesetPath:
 
     def test_non_dy_mc_uses_era_default(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="tt_tW", unskimmed=False, dy=None)
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+
+    def test_TTbar_subgroup_uses_parent_fileset(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="TTbar", unskimmed=False, dy=None)
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+
+    def test_tW_subgroup_uses_parent_fileset(self):
+        path = build_fileset_path(era="RunIII2024Summer24", sample="tW", unskimmed=False, dy=None)
         assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
 
     def test_ul18_default_mc_tag(self):

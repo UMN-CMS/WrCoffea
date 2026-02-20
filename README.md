@@ -8,6 +8,8 @@ This repository provides the main analysis framework for processing WR→Nℓ→
 
 ## Getting Started
 
+For first-time setup (cloning, creating the venv, Condor environment), see **[Getting Started](docs/getting_started.md)**.
+
 Activate the virtual environment before running any commands:
 ```bash
 source .venv/bin/activate
@@ -18,7 +20,6 @@ source .venv/bin/activate
 > cd /path/to/WrCoffea && source .venv/bin/activate && cd -
 > ```
 
-For first-time setup (cloning, creating the venv, Condor environment), see **[Getting Started](docs/getting_started.md)**.
 
 ## Table of Contents
 - [Quick Start](#quick-start) – Run the analyzer
@@ -33,20 +34,58 @@ For first-time setup (cloning, creating the venv, Condor environment), see **[Ge
 
 ## Quick Start
 
-Run the analyzer by specifying an era and sample:
+Run the analyzer by specifying an era and composite mode:
 
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # background
-python3 bin/run_analysis.py RunIII2024Summer24 EGamma                          # data
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      # signal
-bash bin/analyze_all.sh all RunIII2024Summer24                                 # everything
+python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything
+python3 bin/run_analysis.py RunIII2024Summer24 mc                              # backgrounds + signal
+python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # backgrounds only
+python3 bin/run_analysis.py RunIII2024Summer24 data                            # data only
+python3 bin/run_analysis.py RunIII2024Summer24 signal                          # signal only
 ```
+
+Composite modes process multiple samples sequentially (locally) or in parallel (on Condor with `--condor`). You can also run individual samples directly:
+
+| Mode | Samples |
+|------|---------|
+| `all` | EGamma, Muon, DYJets, tt_tW, Nonprompt, Other, Signal |
+| `data` | EGamma, Muon |
+| `bkg` | DYJets, tt_tW, Nonprompt, Other |
+| `signal` | Signal (default subset of mass points) |
+| `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
+| Single sample | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal` (with `--mass`) |
 
 Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
 
 > **Note:** Filesets for existing eras are already included in the repository. To create filesets for a new era, see [filesets.md](docs/filesets.md).
 
 See **[Running the Analyzer](docs/run_analysis.md)** for full details: all samples, output customization, region selection, systematics, and batch processing.
+
+### tmux
+
+Analysis jobs can run for a long time. Use `tmux` to keep your session alive after disconnecting from the LPC node. Note which node you are on (`hostname`), since tmux sessions are local to that node — you must SSH back to the same node to reattach.
+
+```bash
+# Check and note your hostname (e.g., cmslpc320.fnal.gov)
+hostname
+
+# Start a new named session
+tmux new -s analysis
+
+# Run your jobs as usual
+python bin/run_analysis.py RunIII2024Summer24 all --dir 20260217_skimmed
+```
+
+You can then detach from the session with `Ctrl-b` then `d` (press `Ctrl-b`, release, then press `d`) and safely log out. To reattach later, SSH to the **same node**:
+```bash
+ssh cmslpc320.fnal.gov   # replace with your node
+tmux attach -t analysis
+```
+
+Other useful tmux commands:
+- `tmux ls` — list active sessions
+- `Ctrl-b` then `d` — detach from current session
+- `tmux kill-session -t analysis` — kill a session
 
 ---
 
@@ -56,11 +95,10 @@ Scale out processing across many workers at FNAL LPC using HTCondor with the Das
 
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12           # enter container
-python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # run with Condor
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor              # run everything
+python bin/run_analysis.py RunIII2024Summer24 all --condor           # everything on Condor
 ```
 
-See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, log locations, and using tmux.
+See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, and log locations.
 
 ---
 
@@ -89,17 +127,26 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `sample` | `<sample_name>` | **Required positional.** Sample to analyze (e.g., DYJets, Signal, EGamma) |
 | `--mass` | `<mass_point>` | Signal mass point (e.g., WR4000_N2100). **Required for Signal sample** |
 | `--region` | `resolved\|boosted\|both` | Analysis region to run (default: both) |
-| `--dy` | `LO_inclusive\|NLO_mll_binned\|LO_HT` | Specific DY sample variant (only valid for DYJets) |
+| `--dy` | `lo_inc\|nlo_inc` | Specific DY sample variant (only valid for DYJets) |
 | `--dir` | `<directory>` | Create output subdirectory under rootfiles path |
 | `--name` | `<suffix>` | Append suffix to output ROOT filename |
 | `--debug` | | Run without saving histograms (for testing) |
 | `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
 | `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
-| `--max-workers` | `<int>` | Number of Dask workers (local default: 6, condor default: 50, analyze_all.sh: 50 skimmed / 400 unskimmed for data/bkg, 10 for signal) |
-| `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000, analyze_all.sh: 50000 for data/signal) |
+| `--fileset` | `<path>` | Override automatic fileset path with a custom fileset JSON |
+| `--max-workers` | `<int>` | Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 2000) |
+| `--worker-wait-timeout` | `<int>` | Seconds to wait for first Condor worker before failing (default: 1200) |
+| `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000) |
+| `--maxchunks` | `<int>` | Max chunks per file (default: all). Use `1` for quick testing |
+| `--maxfiles` | `<int>` | Max files per dataset (default: all). Use `1` for quick testing |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
 | `--systs` | `lumi` `pileup` `sf` | Enable systematic variations (see [Systematics](#systematics)) |
+| `--tf-study` | | Add transfer factor study regions (no mass cut) to the output |
+| `--xrd-fallback` | | Enable XRootD redirector fallback during unskimmed preprocess |
+| `--xrd-fallback-timeout` | `<int>` | Seconds per fallback probe (default: 10) |
+| `--xrd-fallback-retries-per-redirector` | `<int>` | Probe attempts per redirector during fallback (default: 10) |
+| `--xrd-fallback-sleep` | `<float>` | Seconds between fallback retries (default: 10.0) |
 | `--list-eras` | | Print available eras and exit |
 | `--list-samples` | | Print available samples and exit |
 | `--list-masses` | | Print available signal mass points and exit |
@@ -108,51 +155,37 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 ### Examples
 
 ```bash
-# Basic background processing
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets
+# Composite modes (run locally by default, sequential)
+python3 bin/run_analysis.py RunIII2024Summer24 all                   # everything
+python3 bin/run_analysis.py RunIII2024Summer24 bkg                   # all backgrounds
+python3 bin/run_analysis.py RunIII2024Summer24 data                  # all data
+python3 bin/run_analysis.py RunIII2024Summer24 mc                    # backgrounds + signal
+python3 bin/run_analysis.py RunIII2024Summer24 signal                # signal only
 
-# Signal with specific mass point
+# Composite mode with custom directory and systematics
+python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir my_study --name test
+python3 bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
+
+# Composite modes on Condor (parallel, must be inside Apptainer shell)
+python3 bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup sf
+python3 bin/run_analysis.py RunIII2024Summer24 bkg --condor
+
+# Single sample
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
 
-# Only process resolved region (faster)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
+# Single sample on Condor
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 
 # Custom output directory and filename
 python3 bin/run_analysis.py Run3Summer22EE DYJets --dir my_study --name test
 
-# Debug mode (no histogram output)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --debug
-
-# Process with systematics (all supported)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
-
-# Only pileup uncertainty
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs pileup
+# Only process resolved region
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
 
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only
-
-# Process all backgrounds
-bash bin/analyze_all.sh bkg RunIII2024Summer24
-
-# Process all data
-bash bin/analyze_all.sh data RunIII2024Summer24
-
-# Process signal mass points
-bash bin/analyze_all.sh signal RunIII2024Summer24
-
-# analyze_all.sh with custom directory
-bash bin/analyze_all.sh bkg RunIII2024Summer24 --dir my_study --name test
-
-# Run on Condor (must be inside Apptainer shell)
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 400
-
-# Run all samples on Condor (uses optimized worker/chunksize defaults)
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor
-
-# Run with systematics (applied to MC only, filtered for data)
-bash bin/analyze_all.sh all RunIII2024Summer24 --condor --systs lumi pileup sf
 ```
 
 ---
@@ -177,8 +210,7 @@ test/        # Development and validation scripts
 ### Key Directories
 
 **`bin/`** - Production Scripts
-- [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script
-- [`analyze_all.sh`](bin/analyze_all.sh) - Batch processing wrapper for multiple samples
+- [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script (single samples and composite modes)
 - [`skim.py`](bin/skim.py) - Skimming pipeline (`run`, `check`, `merge` subcommands)
 - [`skim_job.sh`](bin/skim_job.sh) - Condor worker shell script for skimming
 
@@ -195,6 +227,7 @@ test/        # Development and validation scripts
 - [`skimmer.py`](wrcoffea/skimmer.py) - Skim selection, Runs tree handling, single-file skimming
 - [`skim_merge.py`](wrcoffea/skim_merge.py) - Post-skim merging, HLT grouping, hadd, validation
 - [`das_utils.py`](wrcoffea/das_utils.py) - DAS dataset path validation, dasgoclient queries, XRootD URL construction
+- [`xrootd_fallback.py`](wrcoffea/xrootd_fallback.py) - XRootD redirector fallback for unskimmed file preprocessing
 
 **`data/`** - Configuration and Metadata
 - `configs/` - Per-era dataset configurations (JSON format, input to fileset scripts)

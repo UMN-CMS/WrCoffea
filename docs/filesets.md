@@ -24,7 +24,7 @@ data/filesets/Run3/2024/RunIII2024Summer24/unskimmed/RunIII2024Summer24_data_fil
 
 To run the analysis on unskimmed files, pass `--unskimmed`:
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy LO_inclusive
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy lo_inc
 ```
 
 ## Skimmed Filesets

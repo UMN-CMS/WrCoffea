@@ -476,14 +476,29 @@ def electron_reco_sf(tight_electrons, era):
     pt_low = np.clip(flat_pt, 10.001, pt_split - 0.001)
     pt_high = np.clip(flat_pt, pt_split + 0.001, 1e6)
 
-    # Evaluate both WPs on all electrons, then select per-electron.
-    sf_low_nom = corr.evaluate(sf_era_key, "sf", wp_low, flat_sc_eta, pt_low)
-    sf_low_up = corr.evaluate(sf_era_key, "sfup", wp_low, flat_sc_eta, pt_low)
-    sf_low_down = corr.evaluate(sf_era_key, "sfdown", wp_low, flat_sc_eta, pt_low)
+    # Check if correction requires phi (Run3Summer23+ format)
+    # Run3Summer22/22EE: 5 inputs (year, ValType, WorkingPoint, eta, pt)
+    # Run3Summer23+: 6 inputs (year, ValType, WorkingPoint, eta, pt, phi)
+    n_inputs = len(corr.inputs)
+    if n_inputs == 6:
+        # Need to include phi for Run3Summer23+
+        flat_phi = np.asarray(ak.flatten(tight_electrons.phi), dtype=np.float64)
+        sf_low_nom = corr.evaluate(sf_era_key, "sf", wp_low, flat_sc_eta, pt_low, flat_phi)
+        sf_low_up = corr.evaluate(sf_era_key, "sfup", wp_low, flat_sc_eta, pt_low, flat_phi)
+        sf_low_down = corr.evaluate(sf_era_key, "sfdown", wp_low, flat_sc_eta, pt_low, flat_phi)
 
-    sf_high_nom = corr.evaluate(sf_era_key, "sf", wp_high, flat_sc_eta, pt_high)
-    sf_high_up = corr.evaluate(sf_era_key, "sfup", wp_high, flat_sc_eta, pt_high)
-    sf_high_down = corr.evaluate(sf_era_key, "sfdown", wp_high, flat_sc_eta, pt_high)
+        sf_high_nom = corr.evaluate(sf_era_key, "sf", wp_high, flat_sc_eta, pt_high, flat_phi)
+        sf_high_up = corr.evaluate(sf_era_key, "sfup", wp_high, flat_sc_eta, pt_high, flat_phi)
+        sf_high_down = corr.evaluate(sf_era_key, "sfdown", wp_high, flat_sc_eta, pt_high, flat_phi)
+    else:
+        # Run3Summer22/22EE format (no phi)
+        sf_low_nom = corr.evaluate(sf_era_key, "sf", wp_low, flat_sc_eta, pt_low)
+        sf_low_up = corr.evaluate(sf_era_key, "sfup", wp_low, flat_sc_eta, pt_low)
+        sf_low_down = corr.evaluate(sf_era_key, "sfdown", wp_low, flat_sc_eta, pt_low)
+
+        sf_high_nom = corr.evaluate(sf_era_key, "sf", wp_high, flat_sc_eta, pt_high)
+        sf_high_up = corr.evaluate(sf_era_key, "sfup", wp_high, flat_sc_eta, pt_high)
+        sf_high_down = corr.evaluate(sf_era_key, "sfdown", wp_high, flat_sc_eta, pt_high)
 
     sf_nom = np.where(is_low_pt, sf_low_nom, sf_high_nom)
     sf_up = np.where(is_low_pt, sf_low_up, sf_high_up)

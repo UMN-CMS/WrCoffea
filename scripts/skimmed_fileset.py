@@ -40,6 +40,42 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 
+def deduplicate_by_dataset(fileset: dict) -> dict:
+    """Collapse fileset entries that share the same dataset name.
+
+    After skimming, multiple DAS path versions (e.g. v1, v2, v3, v4 of the
+    same run period) are merged into one set of part files.  The fileset
+    builder assigns those same files to every DAS path entry, which causes
+    the analyzer to process identical files multiple times.
+
+    This function keeps one entry per unique ``metadata.dataset`` value,
+    merging file lists (union) in case they somehow differ.
+    """
+    seen: dict[str, str] = {}  # dataset -> first DAS path key
+    deduped: dict[str, dict] = {}
+
+    for das_path, entry in fileset.items():
+        dataset = entry.get("metadata", {}).get("dataset", das_path)
+
+        if dataset not in seen:
+            seen[dataset] = das_path
+            deduped[das_path] = entry
+        else:
+            # Merge any files from this duplicate into the first entry
+            first_key = seen[dataset]
+            for fp, tree in entry.get("files", {}).items():
+                deduped[first_key]["files"].setdefault(fp, tree)
+
+    n_removed = len(fileset) - len(deduped)
+    if n_removed:
+        logging.info(
+            "Deduplicated fileset: %d entries -> %d (removed %d duplicates)",
+            len(fileset), len(deduped), n_removed,
+        )
+
+    return deduped
+
+
 def replace_files_in_json(data: dict, run: str, year: str, era: str, umn: bool, sample: str) -> dict:
     metadata_keys = (["das_name", "run", "year", "era", "dataset", "physics_group", "datatype"]
                      if sample == "data"
@@ -240,6 +276,7 @@ def main():
 
     fileset = load_json(str(input_path))
     fileset = replace_files_in_json(fileset, run, year, era, args.umn, sample)
+    fileset = deduplicate_by_dataset(fileset)
     fileset = rename_dataset_key_to_sample(fileset)
 
     out_dir_path = output_dir(data_root=data_root, run=run, year=year, era=era) / "skimmed"

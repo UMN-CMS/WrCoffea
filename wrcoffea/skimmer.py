@@ -21,6 +21,11 @@ import numpy as np
 import uproot
 from coffea.nanoevents import NanoAODSchema, NanoEventsFactory
 from dask import compute
+from wrcoffea.xrootd_fallback import (
+    DEFAULT_RETRIES_PER_REDIRECTOR,
+    DEFAULT_RETRY_SLEEP_SECONDS,
+    REDIRECTORS,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -187,12 +192,8 @@ XROOTD_TIMEOUT = 10  # seconds
 os.environ.setdefault("XRD_REQUESTTIMEOUT", str(XROOTD_TIMEOUT))
 os.environ.setdefault("XRD_CONNECTIONTIMEOUT", str(XROOTD_TIMEOUT))
 
-REDIRECTORS = [
-    "root://cmsxrootd.fnal.gov/",
-    "root://cms-xrd-global.cern.ch/",
-    "root://xrootd-cms.infn.it/",
-]
-MAX_RETRIES_PER_REDIRECTOR = 15
+MAX_RETRIES_PER_REDIRECTOR = DEFAULT_RETRIES_PER_REDIRECTOR
+RETRY_SLEEP_SECONDS = DEFAULT_RETRY_SLEEP_SECONDS
 
 # Skim cuts are intentionally looser than analysis cuts (analysis_config.CUTS)
 # so skimmed files remain usable as the analysis evolves.
@@ -247,6 +248,11 @@ class SkimResult:
     n_events_after: int
     file_size_bytes: int
     efficiency: float
+    status: str = "success"
+    attempts: int = 1
+    redirector: str | None = None
+    failure_category: str | None = None
+    failure_reason: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -481,6 +487,18 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
         logger.info("  Opened — %d events  [peak RSS: %.0f MB]", n_before, _mem_mb())
     _step("selecting")
 
+    if n_before == 0:
+        del events
+        gc.collect()
+        if use_log:
+            logger.info("  Empty file — skipping")
+        return SkimResult(
+            src_path=src_path, dest_path=dest_path,
+            n_events_before=0, n_events_after=0, file_size_bytes=0,
+            efficiency=0.0,
+            status="empty_input",
+        )
+
     if use_log:
         logger.info("  Computing selection mask...")
     _, event_mask, _ = apply_skim_selection(events)
@@ -605,15 +623,97 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
         n_events_after=n_after,
         file_size_bytes=file_size,
         efficiency=efficiency,
+        status="success",
     )
+
+
+def _classify_skim_error(exc: Exception) -> tuple[str, bool]:
+    """Classify skim errors and indicate whether retries are worthwhile.
+
+    Returns
+    -------
+    (category, retryable)
+        category: one of
+          - "empty_input"
+          - "corrupt_file"
+          - "schema_error"
+          - "network_error"
+          - "unknown_error"
+    """
+    msg = str(exc).lower()
+
+    # Empty-input patterns often show up as missing branch fields.
+    empty_patterns = [
+        "not in fields",
+        "keyerror: 'events'",
+        "keyerror: \"events\"",
+    ]
+    if any(p in msg for p in empty_patterns):
+        return "empty_input", False
+
+    # Corruption / unreadable object storage payloads.
+    corrupt_patterns = [
+        "received 0 bytes",
+        "corrupt",
+        "zlib",
+        "decompression",
+        "badseek",
+        "basket",
+    ]
+    if any(p in msg for p in corrupt_patterns):
+        return "corrupt_file", False
+
+    # Structural incompatibility with expected NanoAOD schema.
+    schema_patterns = [
+        "missing branch",
+        "cannot interpret",
+        "cannot cast",
+        "nanoevents",
+        "schema",
+    ]
+    if any(p in msg for p in schema_patterns):
+        return "schema_error", False
+
+    # Transient transport / service failures are usually retryable.
+    network_patterns = [
+        "timeout",
+        "timed out",
+        "operation expired",
+        "socket",
+        "xrootd",
+        "connection reset",
+        "connection refused",
+        "temporary failure",
+        "service unavailable",
+        "no servers are available",
+    ]
+    if any(p in msg for p in network_patterns):
+        return "network_error", True
+
+    # Keep unknown failures retryable to avoid false-negative hard failures.
+    return "unknown_error", True
+
+
+def _retry_sleep_seconds(_attempt: int) -> float:
+    """Return fixed sleep between retries.
+
+    The *attempt* index starts at 1.
+    """
+    return RETRY_SLEEP_SECONDS
 
 
 def skim_single_file(src_path: str, dest_path: str, progress=None) -> SkimResult:
     """Skim one NanoAOD file with XRootD retry and redirector fallback.
 
     For XRootD URLs: retries up to MAX_RETRIES_PER_REDIRECTOR times per
-    redirector, then falls back to the next redirector in REDIRECTORS.
+    redirector with a fixed RETRY_SLEEP_SECONDS delay between retries,
+    then falls back to the next redirector in REDIRECTORS.
     For local paths: calls the implementation directly with no retries.
+
+    Schema errors are treated as non-retryable and are raised immediately.
+    Empty-input and corrupt-read signatures trigger redirector failover; a
+    file is only declared ``empty_input``/``corrupt_file`` if that signature
+    is seen on every redirector.
 
     Parameters
     ----------
@@ -631,27 +731,74 @@ def skim_single_file(src_path: str, dest_path: str, progress=None) -> SkimResult
     """
     lfn = _extract_lfn(src_path)
     if lfn is None:
-        return _skim_impl(src_path, dest_path, progress=progress)
+        result = _skim_impl(src_path, dest_path, progress=progress)
+        result.attempts = 1
+        result.redirector = None
+        return result
 
+    total_attempts = 0
+    corrupt_failures = {}
+    empty_failures = {}
     for redir_idx, redirector in enumerate(REDIRECTORS):
         url = f"{redirector}{lfn}"
         for attempt in range(1, MAX_RETRIES_PER_REDIRECTOR + 1):
+            total_attempts += 1
             try:
                 logger.info(
                     "Attempt %d/%d via %s",
                     attempt, MAX_RETRIES_PER_REDIRECTOR, redirector,
                 )
-                return _skim_impl(url, dest_path, progress=progress)
+                result = _skim_impl(url, dest_path, progress=progress)
+                result.attempts = total_attempts
+                result.redirector = redirector
+                return result
             except Exception as exc:
+                category, retryable = _classify_skim_error(exc)
                 logger.warning(
-                    "Attempt %d/%d failed (%s): %s",
-                    attempt, MAX_RETRIES_PER_REDIRECTOR, redirector, exc,
+                    "Attempt %d/%d failed (%s, category=%s): %s",
+                    attempt, MAX_RETRIES_PER_REDIRECTOR, redirector, category, exc,
                 )
-                time.sleep(1)
+                # Empty/corrupt signatures can be redirector-specific.
+                # Try other redirectors before declaring a global failure.
+                if category in {"corrupt_file", "empty_input"}:
+                    if category == "corrupt_file":
+                        corrupt_failures[redirector] = str(exc)
+                    else:
+                        empty_failures[redirector] = str(exc)
+                    logger.info(
+                        "%s signature via %s; trying next redirector",
+                        category, redirector,
+                    )
+                    break
+                if not retryable:
+                    raise RuntimeError(
+                        f"Non-retryable [{category}] error for {lfn}: {exc}"
+                    ) from exc
+                if attempt < MAX_RETRIES_PER_REDIRECTOR:
+                    sleep_s = _retry_sleep_seconds(attempt)
+                    logger.info("Retrying in %.2f s", sleep_s)
+                    time.sleep(sleep_s)
         if redir_idx < len(REDIRECTORS) - 1:
             logger.info("Switching to redirector: %s", REDIRECTORS[redir_idx + 1])
+
+    if len(empty_failures) == len(REDIRECTORS):
+        details = "; ".join(
+            f"{redir}: {msg}" for redir, msg in empty_failures.items()
+        )
+        raise RuntimeError(
+            f"Non-retryable [empty_input] error for {lfn} across all "
+            f"{len(REDIRECTORS)} redirectors: {details}"
+        )
+
+    if len(corrupt_failures) == len(REDIRECTORS):
+        details = "; ".join(
+            f"{redir}: {msg}" for redir, msg in corrupt_failures.items()
+        )
+        raise RuntimeError(
+            f"Non-retryable [corrupt_file] error for {lfn} across all "
+            f"{len(REDIRECTORS)} redirectors: {details}"
+        )
 
     raise RuntimeError(
         f"All retries exhausted for {lfn} across {len(REDIRECTORS)} redirectors"
     )
-

@@ -104,14 +104,6 @@ jetveto_correction_names:
   Run3Summer23: Summer23_V1
 ```
 
-### Signal-only (if unskimmed signal filesets are unavailable on DAS)
-
-```yaml
-skimmed_only_signal:
-  - RunIISummer20UL18
-  # - Run3Summer23          # add here if needed
-```
-
 ---
 
 ## 3. Obtain POG JSON payloads
@@ -160,13 +152,18 @@ See `docs/filesets.md` for the expected JSON schema.
 
 ### 4b. Generate fileset JSONs
 
-Use the CLI to query DAS and produce the fileset JSONs that the analyzer
-reads at runtime:
+Use the fileset scripts to query DAS and produce the fileset JSONs that
+the analyzer reads at runtime (see `docs/filesets.md` for full details):
 
 ```bash
-python bin/run_analysis.py Run3Summer23 DYJets --build-fileset
-python bin/run_analysis.py Run3Summer23 Muon  --build-fileset
-# ... repeat for each process
+# Unskimmed filesets (from DAS)
+python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_data.json
+python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_signal.json
+python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_mc_dy_lo_inc.json
+
+# Skimmed filesets (from Wisconsin/UMN storage, after skimming)
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_data.json
+python3 scripts/skimmed_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_signal.json
 ```
 
 The resulting fileset JSONs land under:
@@ -198,8 +195,9 @@ WR,N
 ...
 ```
 
-`analyze_all.sh signal` reads this file to choose which signal points
-to process.
+`run_analysis.py` reads this file (via `select_default_signal_points()`)
+to choose which signal points to process in composite modes like `signal`
+or `all`.
 
 ---
 

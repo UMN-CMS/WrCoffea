@@ -5,7 +5,7 @@ from pathlib import Path
 from wrcoffea.analysis_config import (
     LUMIS, LUMI_UNC, LUMI_JSONS,
     MUON_JSONS, ELECTRON_JSONS, ELECTRON_SF_ERA_KEYS,
-    CUTS, SKIMMED_ONLY_SIGNAL, _CONFIG_PATH,
+    CUTS, _CONFIG_PATH,
 )
 
 
@@ -15,10 +15,6 @@ class TestYamlLoading:
 
     def test_config_lives_in_package_dir(self):
         assert _CONFIG_PATH.parent == Path(__file__).resolve().parent.parent / "wrcoffea"
-
-    def test_skimmed_only_signal_is_set(self):
-        """YAML lists are converted to a Python set."""
-        assert isinstance(SKIMMED_ONLY_SIGNAL, set)
 
     def test_cuts_loaded_from_yaml(self):
         assert "lepton_pt_min" in CUTS

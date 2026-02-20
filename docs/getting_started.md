@@ -27,7 +27,7 @@ pip install --upgrade pip setuptools
 pip install -e .
 ```
 
-> **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. The venv must be named `.venv` so that `analyze_all.sh` can auto-detect it. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
+> **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
 
 > **Troubleshooting XRootD:** The `xrootd` package is built from source during installation. If `pip install -e .` fails with `ERROR: Wheel 'xrootd' ... is invalid`, a corrupted wheel is cached from a previous attempt. Clear it and retry:
 > ```bash
@@ -50,10 +50,14 @@ Enter the container using a **pinned tag** (required before each Condor session)
 
 > **Important:** Always use a pinned container tag instead of `:latest`. The `:latest` tag may lag behind and ship older coffea versions, causing version mismatches between the container's system packages and `pip install -e .` dependencies.
 
-On first launch, the `.env` virtual environment is created automatically. Then install the analysis package:
+On first launch, the `.env` virtual environment is created automatically. Install the analysis package once:
 ```bash
 pip install -e .
 ```
+
+This is a one-time step — the `.env` venv persists between sessions, and editable mode picks up code changes automatically. You only need to re-run `pip install -e .` if:
+- You switch to a different container tag (which recreates `.env`)
+- You change dependencies in `pyproject.toml`
 
 To leave the container, type `exit`.
 

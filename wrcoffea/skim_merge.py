@@ -6,11 +6,12 @@ in unzip_files.sh with testable, importable Python.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import tarfile
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 import uproot
@@ -51,6 +52,22 @@ class MergeResult:
     events_match: bool
     sumw_match: bool
     output_paths: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        """Serialize to a JSON-friendly dict."""
+        return asdict(self)
+
+
+def save_merge_summary(result: MergeResult, output_dir: str | Path) -> Path:
+    """Write ``merge_summary.json`` next to the merged part files.
+
+    Returns the path to the written file.
+    """
+    output_dir = Path(output_dir)
+    summary_path = output_dir / "merge_summary.json"
+    summary_path.write_text(json.dumps(result.to_dict(), indent=2) + "\n")
+    logger.info("Wrote %s", summary_path)
+    return summary_path
 
 
 # ---------------------------------------------------------------------------
@@ -522,7 +539,7 @@ def merge_dataset(
             total_sumw_out / total_sumw_in if total_sumw_in else float("inf"),
         )
 
-    return MergeResult(
+    result = MergeResult(
         dataset=dataset_name,
         input_files=len(input_files),
         output_files=len(output_paths),
@@ -535,53 +552,8 @@ def merge_dataset(
         output_paths=output_paths,
     )
 
-
-def _flush_merge_batch(
-    batch: list[tuple[str, int]],
-    dataset_name: str,
-    output_dir: Path,
-    part: int,
-    hlt_aware: bool,
-    output_paths: list[str],
-) -> int:
-    """Merge a batch of skim files, delete originals, return next part number.
-
-    If any merge fails, original skim files are preserved for retry.
-    """
-    if not batch:
-        return part
-
-    batch_files = [f for f, _ in batch]
-
-    if hlt_aware:
-        groups = group_by_hlt(batch_files)
-    else:
-        groups = {(): list(batch)}
-
-    all_ok = True
-    for sig, members in groups.items():
-        member_files = [f for f, _ in members]
-        outpath = str(output_dir / f"{dataset_name}_part{part}.root")
-        if merge_files(member_files, outpath):
-            output_paths.append(outpath)
-        else:
-            all_ok = False
-        part += 1
-
-    if all_ok:
-        for f in batch_files:
-            try:
-                os.remove(f)
-            except OSError:
-                pass
-        logger.info("Cleaned up %d skim files", len(batch_files))
-    else:
-        logger.error(
-            "Some merge operations failed — keeping %d skim files for retry",
-            len(batch_files),
-        )
-
-    return part
+    save_merge_summary(result, output_dir)
+    return result
 
 
 def merge_dataset_incremental(
@@ -593,16 +565,16 @@ def merge_dataset_incremental(
     output_dir: str | Path | None = None,
     file_pattern: str = "*_skim.root",
 ) -> MergeResult:
-    """Incremental merge pipeline: extract tarballs one at a time, hadd in batches.
+    """Merge pipeline: extract all tarballs, group by HLT, chunk, merge.
 
-    Instead of extracting all tarballs up front, this function extracts
-    them one by one, accumulating skimmed ROOT files until *max_events*
-    is reached.  At that point the batch is hadded into a single merged
-    file, the individual skims are deleted, and extraction continues.
-    This keeps disk usage bounded.
-
-    Any pre-existing ROOT files matching *file_pattern* (e.g. from a
-    previous interrupted run) are included in the first batch.
+    1. Extract all ``{dataset_name}_*.tar.gz`` tarballs in *input_dir*.
+    2. Discover all ROOT files matching *file_pattern* (includes
+       pre-existing files from a previous interrupted run).
+    3. Group files by HLT branch signature.
+    4. Chunk each group by *max_events*.
+    5. Merge each chunk and validate.
+    6. Delete original skim files after all merges succeed.
+    7. Write ``merge_summary.json`` next to the merged part files.
 
     Returns a MergeResult summarizing the operation.
     """
@@ -613,10 +585,9 @@ def merge_dataset_incremental(
         output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # 1. Extract all tarballs
     tarball_pattern = f"{dataset_name}_*.tar.gz"
     tarballs = sorted(input_dir.glob(tarball_pattern))
-
-    # Seed batch with any pre-existing skim files (e.g. from an interrupted run)
     existing_skims = sorted(str(p) for p in input_dir.glob(file_pattern))
 
     if not tarballs and not existing_skims:
@@ -631,71 +602,69 @@ def merge_dataset_incremental(
             events_match=True, sumw_match=True,
         )
 
-    logger.info(
-        "Found %d tarballs and %d pre-existing skim files",
-        len(tarballs), len(existing_skims),
-    )
+    if tarballs:
+        logger.info("Extracting %d tarballs", len(tarballs))
+        extract_tarballs(input_dir, dataset_name)
 
+    # 2. Discover all skim files (pre-existing + freshly extracted)
+    input_files = sorted(str(p) for p in input_dir.glob(file_pattern))
+    if not input_files:
+        logger.warning("No skim files found after extraction in %s", input_dir)
+        return MergeResult(
+            dataset=dataset_name, input_files=0, output_files=0,
+            total_events_in=0, total_events_out=0,
+            total_sumw_in=0.0, total_sumw_out=0.0,
+            events_match=True, sumw_match=True,
+        )
+
+    # 3. Tally input totals
     total_events_in = 0
     total_sumw_in = 0.0
-    total_input_files = 0
+    for fpath in input_files:
+        total_events_in += count_events(fpath)
+        total_sumw_in += read_runs_sumw(fpath)
+
+    logger.info(
+        "Input: %d files, %d events, sumw=%.2f",
+        len(input_files), total_events_in, total_sumw_in,
+    )
+
+    # 4. Group by HLT signature
+    if hlt_aware:
+        groups = group_by_hlt(input_files)
+        logger.info("Found %d distinct HLT signature group(s)", len(groups))
+    else:
+        groups = {(): [(f, count_events(f)) for f in input_files]}
+
+    # 5. Chunk within each group and merge
     output_paths: list[str] = []
     part = 1
 
-    # Batch state
-    batch: list[tuple[str, int]] = []
-    batch_events = 0
+    for sig, members in groups.items():
+        members = sorted(members, key=lambda x: x[0])
+        chunk_files: list[str] = []
+        chunk_events = 0
 
-    def _add_file(fpath: str):
-        nonlocal total_events_in, total_sumw_in, total_input_files
-        nonlocal batch_events
-        nev = count_events(fpath)
-        sw = read_runs_sumw(fpath)
-        total_events_in += nev
-        total_sumw_in += sw
-        total_input_files += 1
-        batch.append((fpath, nev))
-        batch_events += nev
+        for fpath, nev in members:
+            if chunk_files and (chunk_events + nev > max_events):
+                outpath = str(output_dir / f"{dataset_name}_part{part}.root")
+                if merge_files(chunk_files, outpath):
+                    output_paths.append(outpath)
+                part += 1
+                chunk_files = []
+                chunk_events = 0
 
-    def _maybe_flush():
-        nonlocal part, batch, batch_events
-        if batch_events >= max_events:
-            logger.info(
-                "Batch reached %d events (>= %d) — merging %d files",
-                batch_events, max_events, len(batch),
-            )
-            part = _flush_merge_batch(
-                batch, dataset_name, output_dir, part, hlt_aware, output_paths,
-            )
-            batch = []
-            batch_events = 0
+            chunk_files.append(fpath)
+            chunk_events += nev
 
-    # 1. Seed with pre-existing skim files
-    for fpath in existing_skims:
-        _add_file(fpath)
-    _maybe_flush()
+        # Flush remaining files in this HLT group
+        if chunk_files:
+            outpath = str(output_dir / f"{dataset_name}_part{part}.root")
+            if merge_files(chunk_files, outpath):
+                output_paths.append(outpath)
+            part += 1
 
-    # 2. Extract tarballs one at a time
-    for i, tb in enumerate(tarballs):
-        extracted = extract_single_tarball(tb, input_dir)
-        for fpath in extracted:
-            _add_file(fpath)
-        _maybe_flush()
-
-        if (i + 1) % 20 == 0:
-            logger.info("Processed %d/%d tarballs", i + 1, len(tarballs))
-
-    # 3. Flush remaining
-    if batch:
-        logger.info(
-            "Flushing final batch: %d events in %d files",
-            batch_events, len(batch),
-        )
-        part = _flush_merge_batch(
-            batch, dataset_name, output_dir, part, hlt_aware, output_paths,
-        )
-
-    # 4. Validate
+    # 6. Validate
     total_events_out = 0
     total_sumw_out = 0.0
     for op in output_paths:
@@ -722,14 +691,28 @@ def merge_dataset_incremental(
             total_sumw_out / total_sumw_in if total_sumw_in else float("inf"),
         )
 
+    # 7. Clean up skim files if all merges succeeded
+    if events_match and sumw_match:
+        for f in input_files:
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+        logger.info("Cleaned up %d skim files", len(input_files))
+    else:
+        logger.error(
+            "Merge validation failed — keeping %d skim files for retry",
+            len(input_files),
+        )
+
     logger.info(
         "Merge complete: %d input files -> %d output files, %d events",
-        total_input_files, len(output_paths), total_events_out,
+        len(input_files), len(output_paths), total_events_out,
     )
 
-    return MergeResult(
+    result = MergeResult(
         dataset=dataset_name,
-        input_files=total_input_files,
+        input_files=len(input_files),
         output_files=len(output_paths),
         total_events_in=total_events_in,
         total_events_out=total_events_out,
@@ -739,6 +722,9 @@ def merge_dataset_incremental(
         sumw_match=sumw_match,
         output_paths=output_paths,
     )
+
+    save_merge_summary(result, output_dir)
+    return result
 
 
 def validate_merge(

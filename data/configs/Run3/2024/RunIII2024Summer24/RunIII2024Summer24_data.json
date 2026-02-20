@@ -8,7 +8,7 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-   "/Muon1/Run2024C-MINIv6NANOv15-v1/NANOAOD": {
+  "/Muon1/Run2024C-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/Muon1/Run2024C-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -26,7 +26,7 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-   "/EGamma1/Run2024C-MINIv6NANOv15-v1/NANOAOD": {
+  "/EGamma1/Run2024C-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/EGamma1/Run2024C-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -44,7 +44,7 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-   "/Muon1/Run2024D-MINIv6NANOv15-v1/NANOAOD": {
+  "/Muon1/Run2024D-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/Muon1/Run2024D-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -62,7 +62,7 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-   "/EGamma1/Run2024D-MINIv6NANOv15-v1/NANOAOD": {
+  "/EGamma1/Run2024D-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/EGamma1/Run2024D-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -80,7 +80,7 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-   "/Muon1/Run2024E-MINIv6NANOv15-v1/NANOAOD": {
+  "/Muon1/Run2024E-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/Muon1/Run2024E-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -98,7 +98,7 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-   "/EGamma1/Run2024E-MINIv6NANOv15-v1/NANOAOD": {
+  "/EGamma1/Run2024E-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/EGamma1/Run2024E-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -116,7 +116,7 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-   "/Muon1/Run2024F-MINIv6NANOv15-v1/NANOAOD": {
+  "/Muon1/Run2024F-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/Muon1/Run2024F-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -134,7 +134,7 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-   "/EGamma1/Run2024F-MINIv6NANOv15-v1/NANOAOD": {
+  "/EGamma1/Run2024F-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/EGamma1/Run2024F-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -152,7 +152,7 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-   "/Muon1/Run2024G-MINIv6NANOv15-v2/NANOAOD": {
+  "/Muon1/Run2024G-MINIv6NANOv15-v2/NANOAOD": {
     "das_name": "/Muon1/Run2024G-MINIv6NANOv15-v2/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -170,7 +170,7 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-   "/EGamma1/Run2024G-MINIv6NANOv15-v2/NANOAOD": {
+  "/EGamma1/Run2024G-MINIv6NANOv15-v2/NANOAOD": {
     "das_name": "/EGamma1/Run2024G-MINIv6NANOv15-v2/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -188,7 +188,7 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-   "/Muon1/Run2024H-MINIv6NANOv15-v2/NANOAOD": {
+  "/Muon1/Run2024H-MINIv6NANOv15-v2/NANOAOD": {
     "das_name": "/Muon1/Run2024H-MINIv6NANOv15-v2/NANOAOD",
     "run": "Run3",
     "year": "2024",
@@ -206,13 +206,22 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-   "/EGamma1/Run2024H-MINIv6NANOv15-v1/NANOAOD": {
+  "/EGamma1/Run2024H-MINIv6NANOv15-v1/NANOAOD": {
     "das_name": "/EGamma1/Run2024H-MINIv6NANOv15-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
     "era": "RunIII2024Summer24",
     "dataset": "EGamma1_Run2024H",
     "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/Muon0/Run2024I-MINIv6NANOv15-v1/NANOAOD": {
+    "das_name": "/Muon0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "Muon0_Run2024I",
+    "physics_group": "Muon",
     "datatype": "data"
   },
   "/Muon0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
@@ -224,13 +233,31 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-   "/Muon1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
+  "/Muon1/Run2024I-MINIv6NANOv15-v1/NANOAOD": {
+    "das_name": "/Muon1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "Muon1_Run2024I",
+    "physics_group": "Muon",
+    "datatype": "data"
+  },
+  "/Muon1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
     "das_name": "/Muon1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",
     "era": "RunIII2024Summer24",
     "dataset": "Muon1_Run2024I",
     "physics_group": "Muon",
+    "datatype": "data"
+  },
+  "/EGamma0/Run2024I-MINIv6NANOv15-v1/NANOAOD": {
+    "das_name": "/EGamma0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "EGamma0_Run2024I",
+    "physics_group": "EGamma",
     "datatype": "data"
   },
   "/EGamma0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
@@ -242,7 +269,16 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-   "/EGamma1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
+  "/EGamma1/Run2024I-MINIv6NANOv15-v1/NANOAOD": {
+    "das_name": "/EGamma1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "EGamma1_Run2024I",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
     "das_name": "/EGamma1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD",
     "run": "Run3",
     "year": "2024",

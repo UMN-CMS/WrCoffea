@@ -26,7 +26,6 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as _f:
 
 LUMIS = _cfg["lumis"]
 DEFAULT_MC_TAG = _cfg["default_mc_tag"]
-SKIMMED_ONLY_SIGNAL = set(_cfg["skimmed_only_signal"])
 
 LUMI_JSONS = _cfg["lumi_jsons"]
 JME_JSONS = _cfg["jme_jsons"]
@@ -68,6 +67,7 @@ SEL_EMU_TRIGGER = "emu_trigger"
 SEL_DR_ALL_PAIRS_GT0P4 = "dr_all_pairs_gt0p4"
 SEL_MLL_GT200 = "mll_gt200"
 SEL_MLLJJ_GT800 = "mlljj_gt800"
+SEL_MLLJJ_LT800 = "mlljj_lt800"
 SEL_MLL_GT400 = "mll_gt400"
 
 # Resolved region selection keys
@@ -92,3 +92,16 @@ SEL_EE_SR = "ee_sr"
 SEL_EMU_CR = "emu_cr"
 SEL_MUE_CR = "mue_cr"
 SEL_JET_VETO_MAP = "jet_veto_map"
+
+# Boosted cutflow intermediate selection keys
+SEL_LEAD_IS_ELECTRON = "lead_is_electron"
+SEL_LEAD_IS_MUON = "lead_is_muon"
+SEL_NO_DY_PAIR = "no_dy_pair"
+SEL_NO_EXTRA_TIGHT_SR = "no_extra_tight_sr"
+SEL_NO_EXTRA_TIGHT_CR = "no_extra_tight_cr"
+SEL_SF_LEPTON_IN_AK8 = "sf_lepton_in_ak8"
+SEL_NO_OF_LEPTON_IN_AK8 = "no_of_lepton_in_ak8"
+SEL_OF_LEPTON_IN_AK8 = "of_lepton_in_ak8"
+SEL_NO_SF_LEPTON_IN_AK8 = "no_sf_lepton_in_ak8"
+SEL_MLL_GT200_BOOSTED = "mll_gt200_boosted"
+SEL_MLJ_GT800_BOOSTED = "mlj_gt800_boosted"
