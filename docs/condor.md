@@ -39,6 +39,17 @@ python bin/run_analysis.py RunIII2024Summer24 mc --condor        # backgrounds +
 python bin/run_analysis.py RunIII2024Summer24 signal --condor    # signal only
 ```
 
+### Unskimmed Samples on Condor
+
+Use `--unskimmed` to run on the full NanoAOD files instead of the skimmed filesets:
+```bash
+python bin/run_analysis.py RunIII2024Summer24 all --condor --unskimmed
+python bin/run_analysis.py RunIII2024Summer24 bkg --condor --unskimmed
+python bin/run_analysis.py RunIII2024Summer24 data --condor --unskimmed
+```
+
+The default worker count for unskimmed composite runs is 2000. Override with `--max-workers` if needed.
+
 ### Single samples on Condor
 
 ```bash
@@ -57,6 +68,10 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 - **Composite unskimmed** (composite + `--unskimmed`): 2000 workers
 
 These defaults can be overridden with `--max-workers`.
+
+> **Tip:** More workers isn't always faster. Spinning up a large number of Condor jobs takes time, and for smaller samples a lower worker count may complete the analysis sooner overall. If a run feels slow to get started, try reducing `--max-workers`.
+
+> **Tip:** You do not need to wait for all workers to shut down after the analysis finishes. Once the histograms have been saved (you'll see the output path printed to the terminal), it is safe to exit — the remaining Condor jobs will clean up on their own.
 
 ### Systematics on Condor
 
@@ -96,17 +111,3 @@ condor_history        # recently completed jobs
 ### Skim job logs
 
 Skim Condor logs are written to `data/skims/logs/<primary_dataset>/`. See [Skimming](skimming.md) for details.
-
-## Processing Times
-
-Wall-clock times for `RunIII2024Summer24` on Condor (250k chunksize, 4 GB/worker).
-
-| Sample    | Skimmed (50 workers) | Unskimmed (400 workers) |
-|-----------|----------------------|-------------------------|
-| Muon      |     17.49 minutes    |       81.24 minutes     |
-| EGamma    |     9.91 minutes     |       80.12 minutes     |
-| DYJets    |     8.05 minutes     |       55.87 minutes     |
-| tt_tW     |     8.51 minutes     |       30.74 minutes     |
-| Nonprompt |     10.47 minutes    |       71.67 minutes     |
-| Other     |     7.05 minutes     |       64.50 minutes     |
-| Signal    |     Run locally      |       Run locally       |

@@ -38,9 +38,10 @@ Run the analyzer by specifying an era and composite mode:
 
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything
-python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # backgrounds
-python3 bin/run_analysis.py RunIII2024Summer24 data                            # data
-python3 bin/run_analysis.py RunIII2024Summer24 signal                          # signal
+python3 bin/run_analysis.py RunIII2024Summer24 mc                              # backgrounds + signal
+python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # backgrounds only
+python3 bin/run_analysis.py RunIII2024Summer24 data                            # data only
+python3 bin/run_analysis.py RunIII2024Summer24 signal                          # signal only
 ```
 
 Composite modes process multiple samples sequentially (locally) or in parallel (on Condor with `--condor`). You can also run individual samples directly:
@@ -95,7 +96,6 @@ Scale out processing across many workers at FNAL LPC using HTCondor with the Das
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12           # enter container
 python bin/run_analysis.py RunIII2024Summer24 all --condor           # everything on Condor
-python bin/run_analysis.py RunIII2024Summer24 DYJets --condor        # single sample on Condor
 ```
 
 See **[Running on Condor](docs/condor.md)** for full documentation: setup, worker/chunksize defaults, and log locations.

@@ -6,10 +6,10 @@ Run the analyzer by specifying an era and sample:
 
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything
-python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # all backgrounds
-python3 bin/run_analysis.py RunIII2024Summer24 data                            # all data
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets                          # single background
-python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100      # signal mass point
+python3 bin/run_analysis.py RunIII2024Summer24 mc                              # backgrounds + signal
+python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # backgrounds only
+python3 bin/run_analysis.py RunIII2024Summer24 data                            # data only
+python3 bin/run_analysis.py RunIII2024Summer24 signal                          # signal only
 ```
 
 By default, processing runs locally with 3 Dask workers. Use `--condor` for HTCondor at LPC (see [condor.md](condor.md)).
