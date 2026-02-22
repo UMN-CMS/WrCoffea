@@ -213,6 +213,15 @@ def cmd_run(args):
 
     scratch = getattr(args, "scratch", False)
     primary_ds, file_urls, default_outdir = _resolve_das(args.das_path, scratch=scratch)
+
+    exclude_lfns = getattr(args, "exclude_lfn", [])
+    if exclude_lfns:
+        before = len(file_urls)
+        file_urls = [u for u in file_urls if not any(exc in u for exc in exclude_lfns)]
+        n_excluded = before - len(file_urls)
+        if n_excluded:
+            logger.info("Excluded %d/%d files matching --exclude-lfn", n_excluded, before)
+
     num_files = len(file_urls)
     logger.info("Dataset '%s': %d files from DAS", primary_ds, num_files)
 
@@ -280,15 +289,47 @@ def cmd_run(args):
         (total_out / total_in * 100) if total_in else 0,
     )
 
-    # Overwrite stale Condor log files for successful jobs so that
-    # check-era's log validation passes after local resubmissions.
-    log_dir = infer_base_dir(args.das_path, scratch=scratch) / "logs" / primary_ds
-    if log_dir.is_dir():
-        for i, result in zip(range(start_idx, end_idx + 1), results):
-            if result.status not in ALLOWED_MERGE_JOB_STATUSES:
-                continue
-            out_file = log_dir / f"{primary_ds}_{i}.out"
-            err_file = log_dir / f"{primary_ds}_{i}.err"
+    # Overwrite stale Condor log/status files for successful jobs so that
+    # check-era's validation passes after local resubmissions.
+    # Use --era for explicit era resolution (needed for data datasets whose
+    # DAS campaign doesn't contain NanoAOD), otherwise fall back to inference.
+    era_override = getattr(args, "era", None)
+    if era_override:
+        base_dir = base_dir_for_era(era_override, scratch=scratch)
+    else:
+        base_dir = infer_base_dir(args.das_path, scratch=scratch)
+    sidecar_ds = getattr(args, "dataset_name", None) or primary_ds
+    log_dir = base_dir / "logs" / sidecar_ds
+    skim_dir = base_dir / "files" / sidecar_ds
+    for i, result in zip(range(start_idx, end_idx + 1), results):
+        if result.status not in ALLOWED_MERGE_JOB_STATUSES:
+            continue
+        # Overwrite status sidecar so check-era sees the new result.
+        status_path = skim_dir / f"{sidecar_ds}_skim{i}.status.json"
+        if status_path.exists():
+            _write_skim_status(
+                status_path,
+                {
+                    "das_path": args.das_path,
+                    "lfn": result.src_path.split("//", 1)[-1] if result.src_path else "",
+                    "status": result.status,
+                    "attempts": result.attempts,
+                    "redirector": result.redirector,
+                    "failure_category": result.failure_category,
+                    "failure_reason": result.failure_reason,
+                    "src_path": result.src_path,
+                    "dest_path": result.dest_path,
+                    "n_events_before": result.n_events_before,
+                    "n_events_after": result.n_events_after,
+                    "file_size_bytes": result.file_size_bytes,
+                    "efficiency": result.efficiency,
+                },
+            )
+            logger.info("Updated status sidecar for job %d", i)
+        # Overwrite Condor logs.
+        if log_dir.is_dir():
+            out_file = log_dir / f"{sidecar_ds}_{i}.out"
+            err_file = log_dir / f"{sidecar_ds}_{i}.err"
             done_line = (
                 f"Done in {elapsed / 60:.1f} min. "
                 f"{result.n_events_before} -> {result.n_events_after} events "
@@ -1045,8 +1086,9 @@ def _write_check_era_resubmit_script(path: Path, entries) -> int:
     Parameters
     ----------
     entries : iterable of tuples
-        Tuples are ``(das_path, local_file_index_1based, primary_ds, combined_idx_0based)``.
-    
+        Tuples are ``(das_path, local_file_index_1based, primary_ds,
+        combined_idx_0based, era)``.
+
     Returns
     -------
     int
@@ -1054,12 +1096,12 @@ def _write_check_era_resubmit_script(path: Path, entries) -> int:
     """
     unique = []
     seen = set()
-    for das_path, local_idx, primary_ds, combined_idx in entries:
+    for das_path, local_idx, primary_ds, combined_idx, era in entries:
         key = (das_path, local_idx)
         if key in seen:
             continue
         seen.add(key)
-        unique.append((das_path, local_idx, primary_ds, combined_idx))
+        unique.append((das_path, local_idx, primary_ds, combined_idx, era))
 
     lines = [
         "#!/usr/bin/env bash\n",
@@ -1069,12 +1111,17 @@ def _write_check_era_resubmit_script(path: Path, entries) -> int:
         f"# Resubmit entries: {len(unique)}\n",
         "\n",
     ]
-    for das_path, local_idx, primary_ds, combined_idx in unique:
+    for das_path, local_idx, primary_ds, combined_idx, era in unique:
         lines.append(f"# {primary_ds} combined_job_index={combined_idx}\n")
-        lines.append(
+        cmd = (
             f"python3 bin/skim.py run '{das_path}' --start {local_idx} "
-            f"--end {local_idx} --scratch\n"
+            f"--end {local_idx} --scratch"
         )
+        if era:
+            cmd += f" --era {era}"
+        if primary_ds != primary_dataset_from_das_path(das_path):
+            cmd += f" --dataset-name {primary_ds}"
+        lines.append(cmd + "\n")
 
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("".join(lines), encoding="utf-8")
@@ -1420,7 +1467,7 @@ def cmd_check_era(args):
         for idx0 in sorted(failed_indices):
             if 0 <= idx0 < len(combined_entries):
                 das_path_i, local_idx_i, _url_i = combined_entries[idx0]
-                resubmit_entries.append((das_path_i, local_idx_i, primary_ds, idx0))
+                resubmit_entries.append((das_path_i, local_idx_i, primary_ds, idx0, era))
             else:
                 logger.warning(
                     "Could not map failed job index %d for %s to a DAS file entry",
@@ -1875,6 +1922,12 @@ def main(argv=None):
                         help="Write per-file skim status JSON (for Condor worker bookkeeping)")
     p_run.add_argument("--scratch", action="store_true",
                         help="Write output to 3DayLifetime scratch space instead of data/skims/")
+    p_run.add_argument("--era", default=None,
+                        help="Era name for sidecar/log path resolution (e.g. RunIISummer20UL18)")
+    p_run.add_argument("--dataset-name", default=None,
+                        help="Override dataset name for sidecar/log filenames (e.g. EGamma_Run2018D)")
+    p_run.add_argument("--exclude-lfn", nargs="+", default=[],
+                        help="LFN(s) to exclude from skimming (substring match on filename)")
     p_run.set_defaults(func=cmd_run)
 
     # --- check ---

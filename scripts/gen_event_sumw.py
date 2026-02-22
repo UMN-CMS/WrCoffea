@@ -171,7 +171,11 @@ def file_genEventSumw_with_fallback(
         logger.debug("Trying redirector (%d/%d): %s", i, len(redirectors), redirector)
         result = file_genEventSumw(url, timeout=timeout, retries=retries, sleep_s=sleep_s)
         if not result.bad:
+            if i > 1:
+                logger.info("  Fallback succeeded on redirector %d/%d (%s) for: %s", i, len(redirectors), redirector, lfn)
             return result
+        if i < len(redirectors):
+            logger.info("  Redirector %d/%d failed (%s), falling back to next for: %s", i, len(redirectors), redirector, lfn)
         last_result = result
 
     # At least one redirector is guaranteed by argument validation in main().
@@ -185,6 +189,7 @@ def compute_dataset_genEventSumw(
     retries: int,
     sleep_s: float,
     max_files: int,
+    exclude_lfns: Optional[List[str]] = None,
 ) -> DatasetSumwResult:
     """
     Returns dataset-level sumw and file status counts.
@@ -193,6 +198,13 @@ def compute_dataset_genEventSumw(
     files = das_files_for_dataset(dataset)
     if not files:
         return DatasetSumwResult(sumw=0.0, nfiles_used=0, bad_files=0, zero_event_files=0)
+
+    if exclude_lfns:
+        before = len(files)
+        files = [f for f in files if not any(exc in f for exc in exclude_lfns)]
+        n_excluded = before - len(files)
+        if n_excluded:
+            logger.info("Excluded %d/%d files matching --exclude-lfn", n_excluded, before)
 
     if max_files > 0:
         files = files[:max_files]
@@ -270,6 +282,12 @@ def main() -> None:
         default=0,
         help="Maximum bad files allowed per dataset when --allow-file-failures is set",
     )
+    ap.add_argument(
+        "--exclude-lfn",
+        nargs="+",
+        default=[],
+        help="LFN(s) to exclude from the sumw calculation (substring match on filename)",
+    )
     ap.add_argument("--rel-tol", type=float, default=1e-6, help="Relative tolerance for comparing sums")
     ap.add_argument("--abs-tol", type=float, default=1e-3, help="Absolute tolerance for comparing sums")
     ap.add_argument("--dry-run", action="store_true", help="Do not write changes; still prints what would happen")
@@ -337,6 +355,7 @@ def main() -> None:
             retries=args.retries,
             sleep_s=args.sleep,
             max_files=args.max_files,
+            exclude_lfns=args.exclude_lfn or None,
         )
         computed = result.sumw
         nfiles = result.nfiles_used

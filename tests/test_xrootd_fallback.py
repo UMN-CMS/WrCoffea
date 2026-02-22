@@ -17,7 +17,7 @@ def test_extract_lfn_from_url():
         extract_lfn_from_url("root://cmsxrootd.fnal.gov//store/mc/a.root")
         == "/store/mc/a.root"
     )
-    assert extract_lfn_from_url("/store/mc/a.root") is None
+    assert extract_lfn_from_url("/store/mc/a.root") == "/store/mc/a.root"
     assert extract_lfn_from_url("file:///tmp/a.root") is None
 
 
@@ -36,6 +36,19 @@ def test_extract_root_url_from_error():
     assert (
         extract_root_url_from_error(exc)
         == "root://cmsxrootd.fnal.gov//store/mc/a.root"
+    )
+
+
+def test_extract_root_url_from_error_bare_lfn():
+    exc = OSError(
+        "expected Chunk of length 403, received 0 bytes from FSSpecSource\n"
+        "for file path /store/mc/Run3Summer22NanoAODv12/sample/NANOAODSIM/"
+        "130X_mcRun3_2022_realistic_v5-v2/40000/c517dbcb.root"
+    )
+    assert (
+        extract_root_url_from_error(exc)
+        == "/store/mc/Run3Summer22NanoAODv12/sample/NANOAODSIM/"
+        "130X_mcRun3_2022_realistic_v5-v2/40000/c517dbcb.root"
     )
 
 
