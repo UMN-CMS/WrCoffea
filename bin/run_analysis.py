@@ -13,6 +13,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from wrcoffea.era_utils import get_era_details
+from wrcoffea.analysis_config import DY_VARIANTS
 from wrcoffea.cli_utils import (
     COMPOSITE_SAMPLES,
     build_fileset_path,
@@ -29,6 +30,7 @@ from wrcoffea.xrootd_fallback import (
     DEFAULT_RETRIES_PER_REDIRECTOR,
     DEFAULT_RETRY_SLEEP_SECONDS,
     DEFAULT_TIMEOUT_SECONDS,
+    REDIRECTORS,
     extract_lfn_from_url,
     extract_root_url_from_error,
     resolve_url_with_redirectors,
@@ -151,6 +153,12 @@ def validate_arguments(args, sig_points):
             raise ValueError(
                 f"Trying to specify a DY sample for a non-DY background"
             )
+
+    if args.dy is not None and args.dy not in DY_VARIANTS.get(args.era, []):
+        raise ValueError(
+            f"--dy {args.dy} is not available for {args.era}. "
+            f"Valid choices: {DY_VARIANTS.get(args.era, [])}"
+        )
 
     if args.max_workers is not None and args.max_workers < 1:
         raise ValueError("--max-workers must be a positive integer")
@@ -363,11 +371,22 @@ def _preprocess_with_xrd_fallback(run, fileset: dict, *, treename: str, args):
                     f"{resolved_cache[failed_lfn]}"
                 ) from exc
 
+            # Skip the redirector already present in the failing URL so we
+            # always try a *different* route first.
+            skip_redirectors = set()
+            if failed_url:
+                for r in REDIRECTORS:
+                    if failed_url.startswith(r.rstrip("/") + "/"):
+                        skip_redirectors.add(r)
+                        break
+            remaining = [r for r in REDIRECTORS if r not in skip_redirectors]
+
             probe_result = resolve_url_with_redirectors(
                 failed_lfn,
                 timeout=timeout,
                 retries_per_redirector=retries,
                 sleep_seconds=sleep_seconds,
+                redirectors=remaining or None,
             )
 
             if (
@@ -384,16 +403,26 @@ def _preprocess_with_xrd_fallback(run, fileset: dict, *, treename: str, args):
             rewrites = _rewrite_fileset_lfn_url(
                 fileset, lfn=failed_lfn, new_url=probe_result.resolved_url
             )
-            if rewrites <= 0:
-                raise RuntimeError(
-                    f"Resolved fallback URL for {failed_lfn} but fileset rewrite found no matches"
-                ) from exc
 
             resolved_cache[failed_lfn] = probe_result.resolved_url
             rewrite_count += rewrites
             redirector_hits[probe_result.redirector] = (
                 redirector_hits.get(probe_result.redirector, 0) + 1
             )
+
+            if rewrites <= 0:
+                # Probe succeeded but the resolved URL matches the existing
+                # fileset key (same redirector routed to a different SE, or a
+                # transient issue cleared up).  Record and retry; the
+                # resolved_cache guard above will raise on the next failure.
+                logging.warning(
+                    "XRootD fallback: probe succeeded for %s at %s but no "
+                    "fileset rewrite needed (same URL); retrying preprocess.",
+                    failed_lfn,
+                    probe_result.redirector,
+                )
+                continue
+
             logging.warning(
                 "XRootD fallback: %s -> %s (attempts=%d, rewritten=%d)",
                 failed_lfn,
@@ -462,7 +491,7 @@ if __name__ == "__main__":
     SAMPLE_CHOICES = list_samples()
     COMPOSITE_CHOICES = list(COMPOSITE_SAMPLES.keys())
     ALL_SAMPLE_CHOICES = SAMPLE_CHOICES + COMPOSITE_CHOICES
-    DY_CHOICES = ["lo_inc", "nlo_inc"]
+    DY_CHOICES = sorted(set(v for variants in DY_VARIANTS.values() for v in variants))
 
     parser = argparse.ArgumentParser(description="Processing script for WR analysis.")
     parser.add_argument("era", nargs="?", default=None, type=str, choices=ERA_CHOICES, help="Campaign to analyze.")

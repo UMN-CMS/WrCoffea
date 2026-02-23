@@ -211,6 +211,10 @@ class TestBuildFilesetPath:
         path = build_fileset_path(era="RunIISummer20UL18", sample="DYJets", unskimmed=False, dy=None)
         assert path.name == "RunIISummer20UL18_mc_dy_lo_ht_fileset.json"
 
+    def test_dy_lo_ht_ul18(self):
+        path = build_fileset_path(era="RunIISummer20UL18", sample="DYJets", unskimmed=False, dy="lo_ht")
+        assert path.name == "RunIISummer20UL18_mc_dy_lo_ht_fileset.json"
+
     def test_ul18_unskimmed_signal_falls_back_to_skimmed(self):
         path = build_fileset_path(era="RunIISummer20UL18", sample="Signal", unskimmed=True, dy=None)
         assert path.name == "RunIISummer20UL18_signal_fileset.json"

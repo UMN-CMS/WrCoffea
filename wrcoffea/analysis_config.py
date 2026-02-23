@@ -26,6 +26,7 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as _f:
 
 LUMIS = _cfg["lumis"]
 DEFAULT_MC_TAG = _cfg["default_mc_tag"]
+DY_VARIANTS = _cfg["dy_variants"]
 
 LUMI_JSONS = _cfg["lumi_jsons"]
 JME_JSONS = _cfg["jme_jsons"]

@@ -37,7 +37,8 @@ source .venv/bin/activate
 Run the analyzer by specifying an era and composite mode:
 
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything
+python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything, LO inclusive DY
+python3 bin/run_analysis.py RunIII2024Summer24 all --dy nlo_inc                # everything, NLO inclusive DY
 python3 bin/run_analysis.py RunIII2024Summer24 mc                              # backgrounds + signal
 python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # backgrounds only
 python3 bin/run_analysis.py RunIII2024Summer24 data                            # data only
@@ -127,7 +128,7 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `sample` | `<sample_name>` | **Required positional.** Sample to analyze (e.g., DYJets, Signal, EGamma) |
 | `--mass` | `<mass_point>` | Signal mass point (e.g., WR4000_N2100). **Required for Signal sample** |
 | `--region` | `resolved\|boosted\|both` | Analysis region to run (default: both) |
-| `--dy` | `lo_inc\|nlo_inc` | Specific DY sample variant (only valid for DYJets) |
+| `--dy` | `VARIANT` | DY sample variant (only valid for DYJets). Variants are per-era; see `config.yaml` |
 | `--dir` | `<directory>` | Create output subdirectory under rootfiles path |
 | `--name` | `<suffix>` | Append suffix to output ROOT filename |
 | `--debug` | | Run without saving histograms (for testing) |
@@ -173,6 +174,9 @@ python3 bin/run_analysis.py RunIII2024Summer24 bkg --condor
 # Single sample
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100
+
+# Use NLO inclusive DY for all samples
+python3 bin/run_analysis.py RunIII2024Summer24 all --dy nlo_inc
 
 # Single sample on Condor
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --condor

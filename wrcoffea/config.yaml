@@ -22,6 +22,17 @@ default_mc_tag:
   Run3Summer23BPix: dy_lo_inc
   RunIII2024Summer24: dy_lo_inc
 
+# Available --dy variants per era.  To add a new DY fileset for an era,
+# create the JSON at data/filesets/.../{{era}}_mc_dy_{{variant}}_fileset.json
+# and add the variant name here.
+dy_variants:
+  RunIISummer20UL18: [lo_inc, nlo_inc, lo_ht]
+  Run3Summer22: [lo_inc, nlo_inc]
+  Run3Summer22EE: [lo_inc, nlo_inc]
+  Run3Summer23: [lo_inc, nlo_inc]
+  Run3Summer23BPix: [lo_inc, nlo_inc]
+  RunIII2024Summer24: [lo_inc, nlo_inc]
+
 
 # Golden JSON paths for data lumi masking
 lumi_jsons:
