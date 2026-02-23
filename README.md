@@ -136,7 +136,7 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
 | `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
 | `--fileset` | `<path>` | Override automatic fileset path with a custom fileset JSON |
-| `--max-workers` | `<int>` | Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 2000) |
+| `--max-workers` | `<int>` | Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 500) |
 | `--worker-wait-timeout` | `<int>` | Seconds to wait for first Condor worker before failing (default: 1200) |
 | `--chunksize` | `<int>` | Number of events per processing chunk (default: 250000) |
 | `--maxchunks` | `<int>` | Max chunks per file (default: all). Use `1` for quick testing |
