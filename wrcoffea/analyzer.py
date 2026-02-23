@@ -997,7 +997,8 @@ class WrAnalysis(processor.ProcessorABC):
                 else:
                     logger.info("Skipping boosted selections: missing FatJet/lsf3 branches")
             except Exception as e:
-                logger.warning(f"Boosted selections failed; skipping boosted histograms: {e}")
+                logger.error(f"Boosted selections failed: {e}", exc_info=True)
+                raise
 
         # Reconstruct tight lepton collections from events + masks for SF
         # evaluation.  Using short-lived NanoAOD slices (not carried from

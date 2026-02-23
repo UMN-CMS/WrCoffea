@@ -8,7 +8,7 @@ from pathlib import Path
 
 from wrcoffea.fileset_validation import validate_fileset_schema, validate_selection
 from wrcoffea.era_utils import ERA_MAPPING, get_era_details, load_json
-from wrcoffea.analysis_config import DEFAULT_MC_TAG
+from wrcoffea.analysis_config import DEFAULT_MC_TAG, DY_VARIANTS
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,10 @@ def signal_sample_matches_mass(sample_name: str, mass_wr_n: str) -> bool:
         f"MWR{wr}_N{n}",
         f"MWR{wr}_MN{n}",
     )
-    return any(x in sample_name for x in needles)
+    return any(
+        re.search(re.escape(x) + r"(?!\d)", sample_name)
+        for x in needles
+    )
 
 
 def load_masses_from_csv(file_path: Path) -> list[str]:
@@ -216,14 +219,12 @@ def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Pa
     # Resolve sub-samples (TTbar, tW) to their parent group for fileset lookup.
     effective_sample = _PHYSICS_SUBGROUPS[sample][0] if sample in _PHYSICS_SUBGROUPS else sample
 
-    if dy == "lo_inc":
-        filename = f"{era_name}_mc_dy_lo_inc_fileset.json"
-    elif dy == "nlo_inc":
-        filename = f"{era_name}_mc_dy_nlo_inc_fileset.json"
-    elif effective_sample in ["EGamma", "Muon"]:
+    if effective_sample in ["EGamma", "Muon"]:
         filename = f"{era_name}_data_fileset.json"
     elif effective_sample == "Signal":
         filename = f"{era_name}_signal_fileset.json"
+    elif dy is not None:
+        filename = f"{era_name}_mc_dy_{dy}_fileset.json"
     else:
         tag = DEFAULT_MC_TAG.get(era_name)
         if tag is None:

@@ -1,152 +1,21 @@
 {
-  "/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
+  "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part3.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_part1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_part2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_part3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_part4.root": "Events"
     },
     "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
+      "das_name": "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM",
       "datatype": "mc",
       "era": "RunIISummer20UL18",
-      "genEventSumw": 26202328.0,
+      "genEventSumw": 3323477295419.996,
       "physics_group": "DYJets",
       "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 1.249,
-      "xsec": 139.2,
-      "year": "2018"
-    }
-  },
-  "/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
-    "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part4.root": "Events"
-    },
-    "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
-      "datatype": "mc",
-      "era": "RunIISummer20UL18",
-      "genEventSumw": 5966661.0,
-      "physics_group": "DYJets",
-      "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 0.001241,
-      "xsec": 0.1305,
-      "year": "2018"
-    }
-  },
-  "/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
-    "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part4.root": "Events"
-    },
-    "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
-      "datatype": "mc",
-      "era": "RunIISummer20UL18",
-      "genEventSumw": 18455718.0,
-      "physics_group": "DYJets",
-      "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 0.3494,
-      "xsec": 38.4,
-      "year": "2018"
-    }
-  },
-  "/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
-    "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part2.root": "Events"
-    },
-    "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
-      "datatype": "mc",
-      "era": "RunIISummer20UL18",
-      "genEventSumw": 1978203.0,
-      "physics_group": "DYJets",
-      "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 2.837e-05,
-      "xsec": 0.002997,
-      "year": "2018"
-    }
-  },
-  "/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
-    "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part3.root": "Events"
-    },
-    "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
-      "datatype": "mc",
-      "era": "RunIISummer20UL18",
-      "genEventSumw": 8682257.0,
-      "physics_group": "DYJets",
-      "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 0.04871,
-      "xsec": 5.174,
-      "year": "2018"
-    }
-  },
-  "/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
-    "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part3.root": "Events"
-    },
-    "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
-      "datatype": "mc",
-      "era": "RunIISummer20UL18",
-      "genEventSumw": 7035971.0,
-      "physics_group": "DYJets",
-      "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 0.01194,
-      "xsec": 1.258,
-      "year": "2018"
-    }
-  },
-  "/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
-    "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events"
-    },
-    "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
-      "datatype": "mc",
-      "era": "RunIISummer20UL18",
-      "genEventSumw": 17004433.0,
-      "physics_group": "DYJets",
-      "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 1.255,
-      "xsec": 140.0,
-      "year": "2018"
-    }
-  },
-  "/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM": {
-    "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/backgrounds/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8_part3.root": "Events"
-    },
-    "metadata": {
-      "das_name": "/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
-      "datatype": "mc",
-      "era": "RunIISummer20UL18",
-      "genEventSumw": 6554679.0,
-      "physics_group": "DYJets",
-      "run": "RunII",
-      "sample": "DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8",
-      "total_uncertainty": 0.005237,
-      "xsec": 0.5598,
+      "sample": "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8",
+      "total_uncertainty": 14.78,
+      "xsec": 2025.74,
       "year": "2018"
     }
   },

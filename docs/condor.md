@@ -48,7 +48,7 @@ python bin/run_analysis.py RunIII2024Summer24 bkg --condor --unskimmed
 python bin/run_analysis.py RunIII2024Summer24 data --condor --unskimmed
 ```
 
-The default worker count for unskimmed composite runs is 2000. Override with `--max-workers` if needed.
+The default worker count for unskimmed composite runs is 500. Override with `--max-workers` if needed.
 
 ### Single samples on Condor
 
@@ -65,7 +65,7 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --condor --max-workers 100
 **Default Condor worker counts:**
 - **Single-sample** (`DYJets`, `EGamma`, etc.): 50 workers
 - **Composite skimmed** (`all`, `data`, `bkg`, `mc`, `signal`): 200 workers
-- **Composite unskimmed** (composite + `--unskimmed`): 2000 workers
+- **Composite unskimmed** (composite + `--unskimmed`): 500 workers
 
 These defaults can be overridden with `--max-workers`.
 

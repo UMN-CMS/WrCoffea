@@ -19,6 +19,7 @@ DEFAULT_RETRIES_PER_REDIRECTOR = 10
 DEFAULT_RETRY_SLEEP_SECONDS = 10.0
 
 _ROOT_URL_RE = re.compile(r"(root://[^\s'\"\\]+\.root)")
+_LFN_RE = re.compile(r"(/store/[^\s'\"\\]+\.root)")
 
 
 @dataclass
@@ -45,8 +46,12 @@ class RedirectorProbeResult:
 
 
 def extract_lfn_from_url(url: str) -> str | None:
-    """Extract ``/store/...`` LFN from an XRootD URL, or ``None``."""
-    if not isinstance(url, str) or not url.startswith("root://"):
+    """Extract ``/store/...`` LFN from an XRootD URL or bare LFN, or ``None``."""
+    if not isinstance(url, str):
+        return None
+    if url.startswith("/store/"):
+        return url
+    if not url.startswith("root://"):
         return None
     idx = url.find("//store/")
     if idx >= 0:
@@ -62,13 +67,16 @@ def build_xrootd_url(redirector: str, lfn: str) -> str:
 
 
 def extract_root_url_from_error(exc: Exception) -> str | None:
-    """Best-effort extraction of a failing ROOT URL from an exception."""
+    """Best-effort extraction of a failing ROOT URL or bare LFN from an exception."""
     if exc is None:
         return None
     for text in (str(exc), repr(exc)):
         if not text:
             continue
         match = _ROOT_URL_RE.search(text)
+        if match:
+            return match.group(1)
+        match = _LFN_RE.search(text)
         if match:
             return match.group(1)
     return None

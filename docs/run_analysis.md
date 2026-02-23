@@ -107,7 +107,7 @@ Each variation produces a separate histogram under `syst_<name>_<region>/` direc
 | Flag | Description |
 |------|-------------|
 | `--mass MASS` | Signal mass point (e.g., `WR4000_N2100`). **Required for Signal sample** |
-| `--dy {lo_inc,nlo_inc}` | Specific DY sample variant (only valid for DYJets) |
+| `--dy VARIANT` | DY sample variant (only valid for DYJets). Available variants are configured per era in `config.yaml`; use `lo_ht` for RunIISummer20UL18 HT-binned, `nlo_inc` for NLO inclusive |
 | `--region {resolved,boosted,both}` | Analysis region to run (default: `both`) |
 | `--unskimmed` | Use unskimmed filesets instead of default skimmed files |
 | `--fileset PATH` | Override automatic fileset path with a custom fileset JSON |
@@ -132,7 +132,7 @@ Each variation produces a separate histogram under `syst_<name>_<region>/` direc
 | Flag | Description |
 |------|-------------|
 | `--condor` | Submit to HTCondor at LPC (see [condor.md](condor.md)) |
-| `--max-workers N` | Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 2000) |
+| `--max-workers N` | Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 500) |
 | `--worker-wait-timeout N` | Seconds to wait for first Condor worker before failing (default: 1200) |
 | `--threads-per-worker N` | Threads per Dask worker for local runs |
 | `--chunksize N` | Events per processing chunk (default: 250000) |
@@ -188,6 +188,12 @@ python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf
 
 # Unskimmed files
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy lo_inc
+
+# Use NLO inclusive DY for all samples
+python3 bin/run_analysis.py RunIII2024Summer24 all --dy nlo_inc
+
+# Use HT-binned DY for UL18 (only available for this era)
+python3 bin/run_analysis.py RunIISummer20UL18 DYJets --dy lo_ht
 
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only

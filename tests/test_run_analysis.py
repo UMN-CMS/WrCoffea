@@ -142,7 +142,10 @@ def test_preprocess_with_xrd_fallback_rewrites_fileset_and_retries(monkeypatch):
                 )
             return {"preprocessed": True}
 
+    resolve_kwargs = {}
+
     def _fake_resolve(*args, **kwargs):
+        resolve_kwargs.update(kwargs)
         return RedirectorProbeResult(
             success=True,
             lfn="/store/mc/a.root",
@@ -176,6 +179,106 @@ def test_preprocess_with_xrd_fallback_rewrites_fileset_and_retries(monkeypatch):
         next(iter(fileset["dataset"]["files"].keys()))
         == "root://cms-xrd-global.cern.ch//store/mc/a.root"
     )
+    # The failing redirector (cmsxrootd.fnal.gov) should be excluded from the probe
+    redirectors_used = resolve_kwargs.get("redirectors")
+    assert redirectors_used is not None
+    assert "root://cmsxrootd.fnal.gov/" not in redirectors_used
+
+
+def test_preprocess_with_xrd_fallback_retries_when_same_redirector_resolves(monkeypatch):
+    """When probe succeeds at the same redirector, retry preprocess instead of raising."""
+    fileset = {
+        "dataset": {
+            "files": {
+                "root://cmsxrootd.fnal.gov//store/mc/a.root": "Events",
+            },
+            "metadata": {"sample": "Dummy"},
+        }
+    }
+
+    class FakeRun:
+        def __init__(self):
+            self.calls = 0
+
+        def preprocess(self, fileset, treename):
+            self.calls += 1
+            if self.calls == 1:
+                raise ValueError(
+                    "not a ROOT file: first four bytes are b'\\x00\\x00\\x00\\x00'\n"
+                    "in file root://cmsxrootd.fnal.gov//store/mc/a.root"
+                )
+            return {"preprocessed": True}
+
+    def _fake_resolve(*args, **kwargs):
+        # Same redirector resolves (e.g. routed to a different SE)
+        return RedirectorProbeResult(
+            success=True,
+            lfn="/store/mc/a.root",
+            resolved_url="root://cmsxrootd.fnal.gov//store/mc/a.root",
+            redirector="root://cmsxrootd.fnal.gov/",
+            total_attempts=1,
+        )
+
+    monkeypatch.setattr(run_analysis, "resolve_url_with_redirectors", _fake_resolve)
+    fake_run = FakeRun()
+    args = SimpleNamespace(
+        unskimmed=True,
+        xrd_fallback=True,
+        xrd_fallback_timeout=1,
+        xrd_fallback_retries_per_redirector=1,
+        xrd_fallback_sleep=0,
+    )
+
+    out = run_analysis._preprocess_with_xrd_fallback(
+        fake_run,
+        fileset,
+        treename="Events",
+        args=args,
+    )
+    assert out == {"preprocessed": True}
+    assert fake_run.calls == 2
+    # Fileset key should be unchanged (no rewrite needed)
+    assert next(iter(fileset["dataset"]["files"].keys())) == "root://cmsxrootd.fnal.gov//store/mc/a.root"
+
+
+def test_validate_dy_lo_ht_rejected_for_run3():
+    """--dy lo_ht should only be valid for RunIISummer20UL18."""
+    args = SimpleNamespace(
+        era="Run3Summer22",
+        sample="DYJets",
+        mass=None,
+        reweight=None,
+        dy="lo_ht",
+        max_workers=None,
+        threads_per_worker=None,
+        worker_wait_timeout=1200,
+        chunksize=250_000,
+        xrd_fallback_timeout=10,
+        xrd_fallback_retries_per_redirector=2,
+        xrd_fallback_sleep=1,
+    )
+    with pytest.raises(ValueError, match="--dy lo_ht is not available for Run3Summer22"):
+        run_analysis.validate_arguments(args, [])
+
+
+def test_validate_dy_lo_ht_accepted_for_ul18():
+    """--dy lo_ht should be accepted for RunIISummer20UL18."""
+    args = SimpleNamespace(
+        era="RunIISummer20UL18",
+        sample="DYJets",
+        mass=None,
+        reweight=None,
+        dy="lo_ht",
+        max_workers=None,
+        threads_per_worker=None,
+        worker_wait_timeout=1200,
+        chunksize=250_000,
+        xrd_fallback_timeout=10,
+        xrd_fallback_retries_per_redirector=2,
+        xrd_fallback_sleep=1,
+    )
+    # Should not raise
+    run_analysis.validate_arguments(args, [])
 
 
 def test_preprocess_with_xrd_fallback_raises_after_all_redirectors_fail(monkeypatch):
