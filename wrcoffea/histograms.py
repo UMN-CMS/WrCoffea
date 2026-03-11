@@ -21,7 +21,7 @@ from wrcoffea.analysis_config import (
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
-    SEL_JET_VETO_MAP,
+    #SEL_JET_VETO_MAP,
     # Boosted selections
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR,
@@ -33,7 +33,7 @@ from wrcoffea.analysis_config import (
 )
 
 logger = logging.getLogger(__name__)
-
+ 
 
 ResolvedGetter = Callable[[ak.Array, ak.Array, ak.Array, ak.Array], ak.Array]
 BoostedGetter = Callable[[ak.Array, ak.Array, ak.Array], ak.Array]
@@ -64,6 +64,17 @@ RESOLVED_HIST_SPECS: list[tuple[str, tuple[int, float, float], str, ResolvedGett
     ("mass_fourobject",             (800,   0, 8000), r"$m_{\\ell\\ell jj}$ [GeV]",                 lambda L, J, LL, JJ: (LL + JJ).mass),
     ("pt_fourobject",               (800,   0, 8000), r"$p_{T,\\ell\\ell jj}$ [GeV]",               lambda L, J, LL, JJ: (LL + JJ).pt),
 ]
+RESOLVED_2D_HIST_SPECS: list[
+    tuple[
+        str,               
+        str, tuple[int,float,float], str,   # x axis
+        str, tuple[int,float,float], str,   # y axis
+        ResolvedGetter,
+    ]
+] = [
+    ("etavsPhi_leadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", (80, -4, 4), r"$\\phi$"), lambda L, J, LL, JJ: (J[:, 0].eta,J[:, 0].phi),),
+    ("etavsPhi_subleadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", (80, -4, 4), r"$\\phi$"), lambda L, J, LL, JJ: (J[:, 1].eta,J[:, 1].phi),),
+]
 
 
 BOOSTED_HIST_SPECS: list[tuple[str, tuple[int, float, float], str, BoostedGetter]] = [
@@ -83,8 +94,16 @@ BOOSTED_HIST_SPECS: list[tuple[str, tuple[int, float, float], str, BoostedGetter
     ("LSF_leading_AK8Jets",             (200,   0, 1.1),  r"LSF of leading AK8Jets",                lambda lep, ak8, loose: ak8.lsf3),
     ("dPhi_leading_tightlepton_AK8Jet", (80,   -4,    4), r"$d\\phi$ (leading Tight lepton, AK8 Jet)", lambda lep, ak8, loose: abs(ak8.delta_phi(lep))),
 ]
+BOOSTED_2D_HIST_SPECS: list[
+    tuple[str,                  # histogram key                                                                                                     
+          str, tuple[int,float,float], str,   # x axis                                                                                              
+          str, tuple[int,float,float], str,   # y axis                                                                                              
+          BoostedGetter,        # returns (xvals, yvals)
+    ]
+] = [
 
-
+ ("etavsPhi_leadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", (80, -4, 4), r"$\\phi$"), lambda lep, ak8,loose: (ak8.eta, ak8.phi),),
+]
 def _booking_specs() -> dict[str, tuple[tuple[int, float, float], str]]:
     """Return histogram booking metadata keyed by canonical histogram name."""
     specs: dict[str, tuple[tuple[int, float, float], str]] = {}
@@ -107,8 +126,17 @@ def create_hist(name, bins, label):
         .Reg(*bins, name=name, label=label)
         .Weight()
     )
-
-
+def create_hist2D(name_x, bins_x, label_x,
+                  name_y, bins_y, label_y):
+    return (
+        hist.Hist.new
+        .StrCat([], name="process", label="Process", growth=True)
+        .StrCat([], name="region",  label="Analysis Region", growth=True)
+        .StrCat([], name="syst",    label="Systematic", growth=True)
+        .Reg(*bins_x, name=name_x, label=label_x)
+        .Reg(*bins_y, name=name_y, label=label_y)
+        .Weight()
+    )
 def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, weights, syst_weights):
     """Fill all resolved-region histograms for a given region selection mask."""
     leptons_cut = leptons[cut]
@@ -118,7 +146,7 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
     # Pre-compute common 4-vectors once per region instead of per histogram.
     dilepton = leptons_cut[:, 0] + leptons_cut[:, 1]
     dijet    = jets_cut[:, 0] + jets_cut[:, 1]
-
+    #print("Events entering histogram filling:", len(leptons_cut[:,0]))
     for hist_name, _bins, _label, expr in RESOLVED_HIST_SPECS:
         vals = expr(leptons_cut, jets_cut, dilepton, dijet)
         for syst_label, sw in syst_weights_cut.items():
@@ -130,7 +158,24 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
                 weight=sw,
             )
 
-
+    for hist_key, xinfo, yinfo, expr in RESOLVED_2D_HIST_SPECS:
+        xvals, yvals = expr(leptons_cut, jets_cut, dilepton, dijet)
+        
+        xname, _, _ = xinfo
+        yname, _, _ = yinfo
+        
+        for syst_label, sw in syst_weights_cut.items():
+            output[hist_key].fill(
+                process=process_name,
+                region=region,
+                syst=syst_label,
+                **{
+                    xname: xvals,
+                    yname: yvals,
+                },
+                weight=sw,
+            )
+            
 def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets, looseleptons, weights, syst_weights):
     """Fill all boosted-region histograms for a given region selection mask."""
     syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
@@ -167,7 +212,32 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
                 weight=sw,
             )
 
-
+    for (
+            hist_key,
+            xinfo,
+            yinfo,
+            expr
+    ) in BOOSTED_2D_HIST_SPECS:
+        xname, _, _ = xinfo
+        yname, _, _ = yinfo
+        # Evaluate full arrays first (same logic as 1D)
+        xvals_all, yvals_all = expr(leptons, ak8jets, looseleptons)
+        
+        # Apply region cut
+        xvals = xvals_all[cut]
+        yvals = yvals_all[cut]
+        
+        for syst_label, sw in syst_weights_cut.items():
+            output[hist_key].fill(
+                process=process_name,
+                region=region,
+                syst=syst_label,
+                **{
+                    xname: xvals,
+                    yname: yvals,
+                },
+                weight=sw,
+            )
 def _relabel_cutflow(h_raw, cut_names):
     """Convert an Integer-axis cutflow histogram to one with StrCategory axis.
 
@@ -196,7 +266,7 @@ def fill_cutflows(output, selections, weights):
     # --- Define cumulative chains per flavor
     chains = {
         "ee": [
-            SEL_JET_VETO_MAP,
+            #SEL_JET_VETO_MAP,
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_ELECTRONS,
@@ -208,7 +278,7 @@ def fill_cutflows(output, selections, weights):
             SEL_MLL_GT400,
         ],
         "mumu": [
-            SEL_JET_VETO_MAP,
+            #SEL_JET_VETO_MAP,
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_MUONS,
@@ -220,7 +290,7 @@ def fill_cutflows(output, selections, weights):
             SEL_MLL_GT400,
         ],
         "em": [
-            SEL_JET_VETO_MAP,
+            #SEL_JET_VETO_MAP,
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_EM,
@@ -267,7 +337,7 @@ def fill_boosted_cutflows(output, selections, weights):
     # Boosted cutflow chains - expanded SR progression for ee/mumu, flavor CR for em
     chains = {
         "ee": [
-            SEL_JET_VETO_MAP,
+            #SEL_JET_VETO_MAP,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_ELECTRON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
@@ -281,7 +351,7 @@ def fill_boosted_cutflows(output, selections, weights):
             SEL_MLJ_GT800_BOOSTED,
         ],
         "mumu": [
-            SEL_JET_VETO_MAP,
+            #SEL_JET_VETO_MAP,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_MUON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
@@ -295,7 +365,7 @@ def fill_boosted_cutflows(output, selections, weights):
             SEL_MLJ_GT800_BOOSTED,
         ],
         "em": [
-            SEL_JET_VETO_MAP,
+            #SEL_JET_VETO_MAP,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_ELECTRON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,

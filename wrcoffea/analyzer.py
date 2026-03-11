@@ -29,7 +29,6 @@ import numpy as np
 import os
 import logging
 from coffea.nanoevents.methods import vector
-
 from wrcoffea.analysis_config import (
     CUTS, ELECTRON_JSONS, JME_JSONS, LUMI_JSONS, LUMI_UNC, LUMIS, MUON_JSONS, PILEUP_JSONS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
@@ -43,7 +42,7 @@ from wrcoffea.analysis_config import (
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR,
-    SEL_EMU_CR, SEL_MUE_CR, SEL_JET_VETO_MAP,
+    SEL_EMU_CR, SEL_MUE_CR, #SEL_JET_VETO_MAP,
     SEL_LEAD_IS_ELECTRON, SEL_LEAD_IS_MUON,
     SEL_NO_DY_PAIR, SEL_NO_EXTRA_TIGHT_SR, SEL_NO_EXTRA_TIGHT_CR,
     SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
@@ -51,10 +50,10 @@ from wrcoffea.analysis_config import (
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 from wrcoffea.era_utils import ERA_MAPPING
-from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask
+from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
-    RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS,
-    _booking_specs, create_hist,
+    RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
+    _booking_specs, create_hist, create_hist2D,
     fill_resolved_histograms, fill_boosted_histograms, fill_cutflows, fill_boosted_cutflows,
 )
 
@@ -98,11 +97,31 @@ class WrAnalysis(processor.ProcessorABC):
         if self._region not in ("resolved", "boosted", "both"):
             raise ValueError(f"Invalid region '{region}'. Must be 'resolved', 'boosted', or 'both'.")
         booking = _booking_specs()
-        self.make_output = lambda: {
-            name: create_hist(name, bins, label)
-            for name, (bins, label) in booking.items()
-        }
+        def _make_output():
+            out = {}
+            
+            # --- 1D hists
+            for name, (bins, label) in booking.items():
+                out[name] = create_hist(name, bins, label)
+                
+            # --- 2D resolved hists
+            for hist_key, xinfo, yinfo, _ in RESOLVED_2D_HIST_SPECS:
+                xname, xbins, xlabel = xinfo
+                yname, ybins, ylabel = yinfo
+                
+                out[hist_key] = create_hist2D(
+                    xname, xbins, xlabel,
+                    yname, ybins, ylabel
+                )
+                
+            return out
 
+        self.make_output = _make_output
+        # self.make_output = lambda: {
+        #     name: create_hist(name, bins, label)
+        #     for name, (bins, label) in booking.items()
+        # }
+        
     def apply_lumi_mask(self, events, mc_campaign, is_data):
         """Apply golden-JSON lumi mask for data.
 
@@ -128,7 +147,52 @@ class WrAnalysis(processor.ProcessorABC):
             logger.warning(f"No lumi JSON found for era '{mc_campaign}'. Data left unmasked.")
 
         return events
+    def ecal_bad_calib_filter(self, events):
+        run_mask = (events.run >= 362433) & (events.run <= 367144)
+        dphi = np.abs(events.Jet.phi - events.MET.phi) # to be replaced with Puppi MET in the next iteration of skims for 2022 and 2023
+        dphi = ak.where(dphi > np.pi, 2*np.pi - dphi, dphi)
+        bad_jet = (
+            (events.Jet.pt > 50) &
+            (events.Jet.eta > -0.5) & (events.Jet.eta < -0.1) &
+            (events.Jet.phi > -2.1) & (events.Jet.phi < -1.8) &
+            ((events.Jet.neEmEF > 0.9) | (events.Jet.chEmEF > 0.9)) &
+            (dphi > 2.9)
+        )
 
+        reject = (events.MET.pt > 100) & ak.any(bad_jet, axis=1) & run_mask
+        return reject
+
+    def apply_noise_filter(self, events, mc_campaign, is_signal):
+        if is_signal :
+            logger.warning(f"Processign signal events. Noise filters are not applied.")
+            return events
+        common_flags = (
+            events.Flag.goodVertices &
+            events.Flag.globalSuperTightHalo2016Filter &
+            events.Flag.EcalDeadCellTriggerPrimitiveFilter &
+            events.Flag.BadPFMuonFilter &
+            events.Flag.BadPFMuonDzFilter &
+            events.Flag.hfNoisyHitsFilter &
+            events.Flag.eeBadScFilter
+        )
+        if mc_campaign in ("RunIISummer20UL18", "Run2Autumn18"):
+            mask = (
+                common_flags &
+                events.Flag.HBHENoiseFilter &
+                events.Flag.HBHENoiseIsoFilter &
+                events.Flag.ecalBadCalibFilter
+            )            
+        elif mc_campaign in ("Run3Summer22", "Run3Summer23BPix","Run3Summer22EE", "Run3Summer23"):
+            mask = common_flags & ~self.ecal_bad_calib_filter(events)
+            
+        elif (mc_campaign == "RunIII2024Summer24"):
+            mask = common_flags & events.Flag.ecalBadCalibFilter
+            
+        else:
+            logger.warning(f"No known Era {mc_campaign}. Noise filters are not applied.")
+            mask = ak.ones_like(events.event, dtype=bool)
+        return events[mask]
+    
     def select_leptons(self, events):
         """Build tight/loose lepton collections and bookkeeping masks.
 
@@ -213,7 +277,7 @@ class WrAnalysis(processor.ProcessorABC):
         ak4_pteta_mask = (events.Jet.pt > CUTS["ak4_pt_min"]) & (np.abs(events.Jet.eta) < CUTS["ak4_eta_max"])
         if era in JME_JSONS and (not is_signal):
             try:
-                ak4_id_mask = self.jetid_mask_ak4puppi_tlv(events.Jet, era)
+                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, era,jetid_name="AK4PUPPI_TightLeptonVeto")
             except AttributeError as e:
                 # Fallback for missing fields (shouldn't happen after config fix)
                 key = f"jetid_fallback::{era}"
@@ -251,7 +315,7 @@ class WrAnalysis(processor.ProcessorABC):
 
         return ak4_jets, ak8_jets, masks
 
-    def jetid_mask_ak4puppi_tlv(self, jets, era):
+    def jetid_mask_ak4puppi(self, jets, era,jetid_name="AK4PUPPI_TightLeptonVeto"):
         """
         Returns a jagged boolean mask aligned with `jets` for AK4 PUPPI TightLeptonVeto.
         """
@@ -263,7 +327,7 @@ class WrAnalysis(processor.ProcessorABC):
             ceval = correctionlib.CorrectionSet.from_file(json_path)
             _CORRECTIONSET_CACHE[json_path] = ceval
 
-        out = ceval["AK4PUPPI_TightLeptonVeto"].evaluate(
+        out = ceval[jetid_name].evaluate(
                 jets.eta,
                 jets.chHEF,
                 jets.neHEF,
@@ -466,14 +530,54 @@ class WrAnalysis(processor.ProcessorABC):
         loose_muons = (events.Muon.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Muon.eta) < CUTS["lepton_eta_max"]) & (events.Muon.highPtId == CUTS["muon_highPtId"])
         return events.Muon[loose_muons]
     
-    def selectAK8Jets(self,events):
+    def selectAK8Jets(self,events,era, is_signal: bool = False):
         """Baseline AK8 selection used in boosted categories."""
-        ak8_jets = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])  & (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"])
+        if era in JME_JSONS and (not is_signal):
+            try:
+                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era,jetid_name="AK8PUPPI_Tight")
+            except AttributeError as e:
+                # Fallback for missing fields (shouldn't happen after config fix)                                                                        
+                key = f"jetid_fallback::{era}"
+                if key not in _WARN_ONCE:
+                    _WARN_ONCE.add(key)
+                    logger.warning(
+                        "correctionlib puppi JetID requested for era '%s' but required jet fields "
+                        "are missing; falling back to Jet.jetId>=6 for this worker process. "
+                        "(example error: %s)", era, e
+                    )
+                ak8_id_mask = events.FatJet.isTight #jetId >= 6
+        else:
+            if hasattr(events.FatJet, 'isTight'):
+                ak8_id_mask = events.FatJet.isTight
+            else:
+                ak8_id_mask = events.FatJet.jetId >= 6
+
+        ak8_jets = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])  & (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"]) & ak8_id_mask
         return events.FatJet[ak8_jets]
 
-    def selectAK8Jets_withLSF(self,events):
+    def selectAK8Jets_withLSF(self,events,era, is_signal: bool = False):
         """AK8 selection with LSF requirement used for boosted SR/CR definitions."""
-        ak8_jets = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])  & (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"]) & (events.FatJet.lsf3 > CUTS["ak8_lsf3_min"])
+        if era in JME_JSONS and (not is_signal):
+            try:
+                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era,jetid_name="AK8PUPPI_Tight")
+            except AttributeError as e:
+                # Fallback for missing fields (shouldn't happen after config fix)                                                                                            
+                key = f"jetid_fallback::{era}"
+                if key not in _WARN_ONCE:
+                    _WARN_ONCE.add(key)
+                    logger.warning(
+                        "correctionlib puppi JetID requested for era '%s' but required jet fields "
+                        "are missing; falling back to Jet.jetId>=6 for this worker process. "
+                        "(example error: %s)", era, e
+                    )
+                ak8_id_mask = events.FatJet.isTight #jetId >= 6                                                                                                              
+        else:
+            if hasattr(events.FatJet, 'isTight'):
+                ak8_id_mask = events.FatJet.isTight
+            else:
+                ak8_id_mask = events.FatJet.jetId >= 6
+
+        ak8_jets = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])  & (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"]) & (events.FatJet.lsf3 > CUTS["ak8_lsf3_min"]) & ak8_id_mask
         return events.FatJet[ak8_jets]
 
     def _no_extra_tight_leptons(self, looseMuons, looseElectrons, tight_lep, sublead_lep):
@@ -517,9 +621,9 @@ class WrAnalysis(processor.ProcessorABC):
         # Object selections.
         looseElectrons = self.selectLooseElectrons(events)
         looseMuons = self.selectLooseMuons(events)
-        AK8Jets = self.selectAK8Jets(events)
-        AK8Jets_withLSF = self.selectAK8Jets_withLSF(events)
         is_signal = (getattr(events, "metadata", {}) or {}).get("physics_group") == "Signal"
+        AK8Jets = self.selectAK8Jets(events,era,is_signal=is_signal)
+        AK8Jets_withLSF = self.selectAK8Jets_withLSF(events,era,is_signal=is_signal)
         AK4Jets_inc, _, _ = self.select_jets(events, era, is_signal=is_signal)
         # define tight by querying loose
         tight_mask_e = (looseElectrons.cutBased_HEEP)
@@ -550,21 +654,38 @@ class WrAnalysis(processor.ProcessorABC):
         )
         # For jets
         jpad = ak.pad_none(AK4Jets_inc, 2)
-        j1, j2 = jpad[:, 0], jpad[:, 1] 
-        dr_j1j2   = ak.fill_none(j1.deltaR(j2) > CUTS["dr_min"], False)
+        j1, j2 = jpad[:, 0], jpad[:, 1]
+        dr_j1j2   = ak.fill_none(j1.deltaR(j2) > 0.4, False)
 
         has_two_jets = ak.num(AK4Jets_inc) >= 2
-
         # dr_jl_min: compute only if both jets and leptons exist.
         has_j_and_l = (ak.num(AK4Jets_inc) >= 1) & (ak.num(tightLeptons_inc) >= 1)
-        dr_jl_min = ak.where(has_j_and_l, ak.min(AK4Jets_inc[:, :2].nearest(tightLeptons_inc).deltaR(AK4Jets_inc[:, :2]), axis=1), np.nan)
-        # Build all 2 leptons × 2 jets pairs.
+        dr_jl_min = ak.where( has_j_and_l, ak.min(AK4Jets_inc[:, :2].nearest(tightLeptons_inc).deltaR(AK4Jets_inc[:, :2]), axis=1), ak.full_like(has_j_and_l, np.nan))
+        # Build all 2 leptons × 2 jets pairs.                                                                                                                               
         dr_lj = ak.cartesian({"lep": tightLeptons_inc[:,:2], "jet": AK4Jets_inc[:,:2]}, axis=1)
         dr_lj_vals = dr_lj["lep"].deltaR(dr_lj["jet"])
-        # Condition: all l-j separations > 0.4.
-        dr_lj_ok = ak.all(dr_lj_vals > CUTS["dr_min"], axis=1)
-        resolved = (((ak.num(tightElectrons_inc)  + (ak.num(tightMuons_inc))) == 2) & (ak.num(AK4Jets_inc) >= 2) & (dr_l1l2 > CUTS["dr_min"]) & (dr_j1j2 > CUTS["dr_min"]) & (dr_jl_min > CUTS["dr_min"])) #(dr_lj_ok))                                                                                                                                                                   
+        # Condition: all l-j separations > 0.4.                                                                                                                             
+        dr_lj_ok = ak.all(dr_lj_vals > 0.4, axis=1)
+        resolved = (((ak.num(tightElectrons_inc)  + (ak.num(tightMuons_inc))) == 2) & (ak.num(AK4Jets_inc) >= 2) & (dr_l1l2 > 0.4) & (dr_j1j2 > 0.4) & (dr_jl_min >0.4))
         boosted  = ~resolved
+        #selections.add("boostedtag",boosted)
+
+        # jpad = ak.pad_none(AK4Jets_inc, 2)
+        # j1, j2 = jpad[:, 0], jpad[:, 1] 
+        # dr_j1j2   = ak.fill_none(j1.deltaR(j2) > CUTS["dr_min"], False)
+
+        # has_two_jets = ak.num(AK4Jets_inc) >= 2
+
+        # # dr_jl_min: compute only if both jets and leptons exist.
+        # has_j_and_l = (ak.num(AK4Jets_inc) >= 1) & (ak.num(tightLeptons_inc) >= 1)
+        # dr_jl_min = ak.where(has_j_and_l, ak.min(AK4Jets_inc[:, :2].nearest(tightLeptons_inc).deltaR(AK4Jets_inc[:, :2]), axis=1), np.nan)
+        # # Build all 2 leptons × 2 jets pairs.
+        # dr_lj = ak.cartesian({"lep": tightLeptons_inc[:,:2], "jet": AK4Jets_inc[:,:2]}, axis=1)
+        # dr_lj_vals = dr_lj["lep"].deltaR(dr_lj["jet"])
+        # # Condition: all l-j separations > 0.4.
+        # dr_lj_ok = ak.all(dr_lj_vals > CUTS["dr_min"], axis=1)
+        # resolved = (((ak.num(tightElectrons_inc)  + (ak.num(tightMuons_inc))) == 2) & (ak.num(AK4Jets_inc) >= 2) & (dr_l1l2 > CUTS["dr_min"]) & (dr_j1j2 > CUTS["dr_min"]) & (dr_jl_min > CUTS["dr_min"])) #(dr_lj_ok))                                                                                                                                                                   
+        # boosted  = ~resolved
         selections.add(SEL_BOOSTEDTAG, boosted)
 
         # Leading tight lepton pT > 60.
@@ -751,13 +872,13 @@ class WrAnalysis(processor.ProcessorABC):
 
             weights.add("event_weight", event_weight)
 
-            # Pileup reweighting.
+            # # Pileup reweighting.
             era = metadata.get("era")
             if era in PILEUP_JSONS:
                 pu_nom, pu_up, pu_down = pileup_weight(events, era)
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
-            # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
+            # # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
             if tight_muons is not None and era in MUON_JSONS:
                 muon_sfs = muon_sf(tight_muons, era)
                 for component, (sf_nom, sf_up, sf_down) in muon_sfs.items():
@@ -766,7 +887,7 @@ class WrAnalysis(processor.ProcessorABC):
                 trig_nom, trig_up, trig_down = muon_trigger_sf(tight_muons, era)
                 weights.add("muon_trig_sf", trig_nom, weightUp=trig_up, weightDown=trig_down)
 
-            # Electron scale factors (Reco + ID + trigger).
+            # # Electron scale factors (Reco + ID + trigger).
             if tight_electrons is not None and era in ELECTRON_JSONS:
                 ele_nom, ele_up, ele_down = electron_reco_sf(tight_electrons, era)
                 weights.add("electron_reco_sf", ele_nom, weightUp=ele_up, weightDown=ele_down)
@@ -837,27 +958,27 @@ class WrAnalysis(processor.ProcessorABC):
             'wr_ee_resolved_dy_cr': resolved_selections.all(
                 SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_60_MLL_150, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
+                SEL_60_MLL_150, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_mumu_resolved_dy_cr': resolved_selections.all(
                 SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_60_MLL_150, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
+                SEL_60_MLL_150, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_resolved_flavor_cr': resolved_selections.all(
                 SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
+                SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_ee_resolved_sr': resolved_selections.all(
                 SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
+                SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_mumu_resolved_sr': resolved_selections.all(
                 SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800, SEL_JET_VETO_MAP,
+                SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
         }
 
@@ -866,17 +987,17 @@ class WrAnalysis(processor.ProcessorABC):
             resolved_regions['wr_ee_resolved_sr_tf_low'] = resolved_selections.all(
                 SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_LT800, SEL_JET_VETO_MAP,
+                SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
             )
             resolved_regions['wr_mumu_resolved_sr_tf_low'] = resolved_selections.all(
                 SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_LT800, SEL_JET_VETO_MAP,
+                SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
             )
             resolved_regions['wr_resolved_flavor_cr_tf_low'] = resolved_selections.all(
                 SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_LT800, SEL_JET_VETO_MAP,
+                SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
             )
 
         for region, cuts in resolved_regions.items():
@@ -884,10 +1005,10 @@ class WrAnalysis(processor.ProcessorABC):
 
         fill_cutflows(output, resolved_selections, weights)
 
-    def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights, jet_veto_pass):
+    def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights):#, jet_veto_pass):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
-        boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
+        #boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
 
         # Fill boosted cutflows
         fill_boosted_cutflows(output, boosted_sel, weights)
@@ -895,27 +1016,27 @@ class WrAnalysis(processor.ProcessorABC):
         boosted_regions = {
             'wr_mumu_boosted_dy_cr': boosted_sel.all(
                 SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
-                SEL_ATLEAST1AK8_DPHI_GT2, SEL_MUMU_DYCR, SEL_JET_VETO_MAP,
+                SEL_ATLEAST1AK8_DPHI_GT2, SEL_MUMU_DYCR, #SEL_JET_VETO_MAP,
             ),
             'wr_mumu_boosted_sr': boosted_sel.all(
                 SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUMU_SR, SEL_AK8JETS_WITH_LSF,
-                SEL_JET_VETO_MAP,
+                #SEL_JET_VETO_MAP,
             ),
             'wr_ee_boosted_dy_cr': boosted_sel.all(
                 SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
-                SEL_ATLEAST1AK8_DPHI_GT2, SEL_EE_DYCR, SEL_JET_VETO_MAP,
+                SEL_ATLEAST1AK8_DPHI_GT2, SEL_EE_DYCR, #SEL_JET_VETO_MAP,
             ),
             'wr_ee_boosted_sr': boosted_sel.all(
                 SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EE_SR, SEL_AK8JETS_WITH_LSF,
-                SEL_JET_VETO_MAP,
+                #SEL_JET_VETO_MAP,
             ),
             'wr_emu_boosted_flavor_cr': boosted_sel.all(
                 SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EMU_CR, SEL_AK8JETS_WITH_LSF,
-                SEL_JET_VETO_MAP,
+                #SEL_JET_VETO_MAP,
             ),
             'wr_mue_boosted_flavor_cr': boosted_sel.all(
                 SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUE_CR, SEL_AK8JETS_WITH_LSF,
-                SEL_JET_VETO_MAP,
+                #SEL_JET_VETO_MAP,
             ),
         }
         for region, cuts in boosted_regions.items():
@@ -931,19 +1052,19 @@ class WrAnalysis(processor.ProcessorABC):
             tf_boosted_regions = {
                 'wr_mumu_boosted_sr_tf_low': boosted_sel.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "mumu_sr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
                 ),
                 'wr_ee_boosted_sr_tf_low': boosted_sel.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "ee_sr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
                 ),
                 'wr_emu_boosted_flavor_cr_tf_low': boosted_sel.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "emu_cr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
                 ),
                 'wr_mue_boosted_flavor_cr_tf_low': boosted_sel.all(
                     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "mue_cr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, SEL_JET_VETO_MAP,
+                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
                 ),
             }
             for region, cuts in tf_boosted_regions.items():
@@ -956,7 +1077,7 @@ class WrAnalysis(processor.ProcessorABC):
         """Run analysis for one NanoEvents chunk and return a dataset-nested output dict."""
         output = self.make_output()
         metadata = events.metadata
-
+        #print('meta data', metadata)
         mc_campaign = metadata.get("era")
         process_name = metadata.get("physics_group")
         dataset = metadata.get("sample")
@@ -964,16 +1085,76 @@ class WrAnalysis(processor.ProcessorABC):
         datatype = (metadata.get("datatype") or "").strip().lower()
         is_mc = datatype == "mc"
         is_data = not is_mc
-
+        is_signal = (dataset == "Signal")
         # Apply lumi mask (data only).
         events = self.apply_lumi_mask(events, mc_campaign, is_data)
+        # Apply noise filters (data and MC, not on signal )
+        events = self.apply_noise_filter(events, mc_campaign, is_signal)
+        raw_pt = events.Jet.pt * (1 - events.Jet.rawFactor)
+        
+        events = apply_jet_corrections(events,mc_campaign,is_mc,"nominal")
+        corrected_pt = events.Jet.pt
+        #jec_factor = corrected_pt / raw_pt[events.Jet.rawFactor<=0.9]
 
-        # Build physics objects.
+        # print("--- JEC VERIFICATION (First 10 events) ---")
+        # print(f"Raw pT:       {raw_pt[0:10].to_list()}")
+        # print(f"Corrected pT: {corrected_pt[0:10].to_list()}")
+        # print(f"JEC Factor:   {jec_factor[0:10].to_list()}")
+        # print("-----------------------------------------")
+        #flat_factors = ak.flatten(jec_factor)
+
+        # print(f"Mean JEC factor: {np.mean(flat_factors):.3f}")
+        # print(f"Max JEC factor:  {np.max(flat_factors):.3f}")
+        # print(f"Min JEC factor:  {np.min(flat_factors):.3f}")
+        # apply jet veto
+        if mc_campaign in JME_JSONS and (not is_signal):
+            try:
+                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, mc_campaign,jetid_name="AK4PUPPI_TightLeptonVeto")
+            except AttributeError as e:
+                key = f"jetid_fallback::{mc_campaign}"
+                if key not in _WARN_ONCE:
+                    _WARN_ONCE.add(key)
+                    logger.warning(
+                        "correctionlib puppi JetID requested for era '%s' but required jet fields "
+                        "are missing; falling back to Jet.jetId>=6 for this worker process. "
+                        "(example error: %s)", mc_campaign, e
+                    )
+
+                ak4_id_mask = events.Jet.jetId >= 6
+        else:
+            if hasattr(events.Jet, 'isTightLeptonVeto'):
+                ak4_id_mask = events.Jet.isTightLeptonVeto
+            else:
+                ak4_id_mask = events.Jet.jetId >= 6
+        #print("Events before veto:", len(events))
+        events = jet_veto_event_mask(events,ak4_id_mask,mc_campaign)
+        #print("Events after veto in process:", len(events))
+
+        corrected_electrons = apply_electron_scale_smearing(events, mc_campaign, is_mc)
+        #verify_scale_smearing(events.Electron, corrected_electrons, is_mc)
+        if corrected_electrons:
+            # Overwrite nominal kinematics
+            events["Electron", "pt"] = corrected_electrons["pt"]
+            events["Electron", "energyErr"] = corrected_electrons["energyErr"]
+            
+            # Attach systematic variations if they exist (MC only)
+            for syst in ["pt_smear_up", "pt_smear_down", "pt_scale_up", "pt_scale_down"]:
+                if syst in corrected_electrons:
+                    events["Electron", syst] = corrected_electrons[syst]
+
+        corrected_muons = apply_muon_scale_smearing(events, mc_campaign, is_mc)
+        #verify_muon_scale_smearing(events.Muon, corrected_muons, is_mc)
+        if corrected_muons:
+            events["Muon", "pt"] = corrected_muons["pt"]
+            # Attach systematic variations if they exist (MC only)                                                                                                          
+            for syst in ["pt_smear_up", "pt_smear_down", "pt_scale_up", "pt_scale_down"]:
+                if syst in corrected_muons:
+                    events["Muon", syst] = corrected_muons[syst]
+        
         tight_leptons, loose_leptons, lepton_masks = self.select_leptons(events)
         ak4_jets, ak8_jets, jet_masks = self.select_jets(events, mc_campaign, is_signal=(process_name == "Signal"))
         triggers = self.build_trigger_masks(events, mc_campaign)
-        jet_veto_pass = jet_veto_event_mask(events, mc_campaign)
-
+        
         # Resolved selections (only if requested).
         resolved_selections = None
         if self._region in ("resolved", "both"):
@@ -984,7 +1165,6 @@ class WrAnalysis(processor.ProcessorABC):
                 jet_masks=jet_masks,
                 triggers=triggers,
             )
-            resolved_selections.add(SEL_JET_VETO_MAP, jet_veto_pass)
 
         # Boosted selections (skip gracefully if FatJet/lsf3 is absent).
         boosted_payload = None
@@ -1016,7 +1196,7 @@ class WrAnalysis(processor.ProcessorABC):
             self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons, weights, syst_weights)
 
         if boosted_payload is not None:
-            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights, jet_veto_pass)
+            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights)#, jet_veto_pass)
 
         nested_output = {dataset: {**output}}
 
