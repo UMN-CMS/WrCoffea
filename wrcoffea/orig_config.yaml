@@ -35,11 +35,11 @@ dy_variants:
 # Golden JSON paths for data lumi masking
 lumi_jsons:
   RunIISummer20UL18: data/lumis/RunII/2018/RunIISummer20UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt
-  Run3Summer22: data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.json
-  Run3Summer22EE: data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.json
+  Run3Summer22: data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt
+  Run3Summer22EE: data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.txt
   Run3Summer23: data/lumis/Run3/2023/Cert_Collisions2023_366442_370790_Golden.json
   Run3Summer23BPix: data/lumis/Run3/2023/Cert_Collisions2023_366442_370790_Golden.json
-  RunIII2024Summer24: data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.json
+  RunIII2024Summer24: data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.txt
 
 # JSON POG payloads — JME
 jme_jsons:
@@ -94,20 +94,12 @@ jerc_jsons:
       tag_Data: "Summer22_22Sep2023_RunCD_V3_DATA"
       algo: "AK4PFPuppi"
       JR_tag_MC: "Summer22_22Sep2023_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer22/fatJet_jerc.json.gz
       tag_MC: "Summer22_22Sep2023_V3_MC"
       tag_Data: "Summer22_22Sep2023_RunCD_V3_DATA"
       algo: "AK8PFPuppi"
-      JR_tag_MC: "Summer22_22Sep2023_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
+      JR_tag_MC: "Summer22_22Sep2023_JRV1_MC"   
   Run3Summer22EE:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/Run3Summer22EE/jet_jerc.json.gz
@@ -118,10 +110,6 @@ jerc_jsons:
         Run_G: "Summer22EE_22Sep2023_RunG_V3_DATA"
       algo: "AK4PFPuppi"
       JR_tag_MC: "Summer22EE_22Sep2023_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer22EE/fatJet_jerc.json.gz
       tag_MC: "Summer22EE_22Sep2023_V3_MC"
@@ -131,10 +119,6 @@ jerc_jsons:
         Run_G: "Summer22EE_22Sep2023_RunG_V3_DATA"
       algo: "AK8PFPuppi"
       JR_tag_MC: "Summer22EE_22Sep2023_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
   Run3Summer23:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/Run3Summer23/jet_jerc.json.gz
@@ -142,20 +126,12 @@ jerc_jsons:
       tag_Data: "Summer23Prompt23_V2_DATA"
       algo: "AK4PFPuppi"
       JR_tag_MC: "Summer23Prompt23_RunCv1234_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer23/fatJet_jerc.json.gz
       tag_MC: "Summer23Prompt23_V2_MC"
       tag_Data: "Summer23Prompt23_V2_DATA"
       algo: "AK8PFPuppi"
       JR_tag_MC: "Summer23Prompt23_RunCv1234_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
   Run3Summer23BPix:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/Run3Summer23BPix/jet_jerc.json.gz
@@ -163,95 +139,88 @@ jerc_jsons:
       tag_Data: "Summer23BPixPrompt23_V3_DATA"
       algo: "AK4PFPuppi"
       JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer23BPix/fatJet_jerc.json.gz
       tag_MC: "Summer23BPixPrompt23_V3_MC"
       tag_Data: "Summer23BPixPrompt23_V3_DATA"
       algo: "AK8PFPuppi"
       JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1_MC"
-      jes_unc_mapping:
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
   RunIII2024Summer24:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/RunIII2024Summer24/jet_jerc.json.gz
       tag_MC: "Summer24Prompt24_V2_MC"
       tag_Data: "Summer24Prompt24_V2_DATA"
+        nibs:
+          - tag: Summer24Prompt24_RunCnib1_V2_DATA
+            first_run: 379412
+            last_run: 380252
+          - tag: Summer24Prompt24_RunDnib1_V2_DATA
+            first_run: 380253
+            last_run: 380947
+          - tag: Summer24Prompt24_RunEnib1_V2_DATA
+            first_run: 380948
+            last_run: 381943
+          - tag: Summer24Prompt24_RunFnib1_V2_DATA
+            first_run: 381944
+            last_run: 382297
+          - tag: Summer24Prompt24_RunFnib2_V2_DATA
+            first_run: 382298
+            last_run: 383246
+          - tag: Summer24Prompt24_RunFnib3_V2_DATA
+            first_run: 383247
+            last_run: 383779
+          - tag: Summer24Prompt24_RunGnib1_V2_DATA
+            first_run: 383780
+            last_run: 384932
+          - tag: Summer24Prompt24_RunGnib2_V2_DATA
+            first_run: 384933
+            last_run: 385813
+          - tag: Summer24Prompt24_RunHnib1_V2_DATA
+            first_run: 385814
+            last_run: 386408
+          - tag: Summer24Prompt24_RunInib1_V2_DATA
+            first_run: 386409
+            last_run: 387121      
       algo: "AK4PFPuppi"
       JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1"
-      jes_unc_mapping:
-        CMS_scale_j_AbsoluteMPFBias: "AbsoluteMPFBias"
-        CMS_scale_j_AbsoluteScale: "AbsoluteScale"
-        CMS_scale_j_AbsoluteStat_2024: "AbsoluteStat"
-        CMS_scale_j_FlavorQCD: "FlavorQCD"
-        CMS_scale_j_Fragmentation: "Fragmentation"
-        CMS_scale_j_PileUpDataMC: "PileUpDataMC"
-        CMS_scale_j_PileUpPtBB: "PileUpPtBB"
-        CMS_scale_j_PileUpPtEC1: "PileUpPtEC1"
-        CMS_scale_j_PileUpPtEC2: "PileUpPtEC2"
-        CMS_scale_j_PileUpPtHF: "PileUpPtHF"
-        CMS_scale_j_PileUpPtRef: "PileUpPtRef"
-        CMS_scale_j_RelativeFSR: "RelativeFSR"
-        CMS_scale_j_RelativeJEREC1_2024: "RelativeJEREC1"
-        CMS_scale_j_RelativeJEREC2_2024: "RelativeJEREC2"
-        CMS_scale_j_RelativeJERHF: "RelativeJERHF"
-        CMS_scale_j_RelativePtBB: "RelativePtBB"
-        CMS_scale_j_RelativePtEC1_2024: "RelativePtEC1"
-        CMS_scale_j_RelativePtEC2_2024: "RelativePtEC2"
-        CMS_scale_j_RelativePtHF: "RelativePtHF"
-        CMS_scale_j_RelativeBal: "RelativeBal"
-        CMS_scale_j_RelativeSample_2024: "RelativeSample"
-        CMS_scale_j_RelativeStatEC_2024: "RelativeStatEC"
-        CMS_scale_j_RelativeStatFSR_2024: "RelativeStatFSR"
-        CMS_scale_j_RelativeStatHF_2024: "RelativeStatHF"
-        CMS_scale_j_SinglePionECAL: "SinglePionECAL"
-        CMS_scale_j_SinglePionHCAL: "SinglePionHCAL"
-        CMS_scale_j_TimePtEta_2024: "TimePtEta"
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/RunIII2024Summer24/fatJet_jerc.json.gz
       tag_MC: "Summer24Prompt24_V2_MC"
-      tag_Data: "Summer24Prompt24_V2_DATA"
+      tag_Data:
+        key_tag : "Summer24Prompt24_V2_DATA"
+        nibs:
+          - tag: Summer24Prompt24_RunCnib1_V2_DATA
+            first_run: 379412
+            last_run: 380252
+          - tag: Summer24Prompt24_RunDnib1_V2_DATA
+            first_run: 380253
+            last_run: 380947
+          - tag: Summer24Prompt24_RunEnib1_V2_DATA
+            first_run: 380948
+            last_run: 381943
+          - tag: Summer24Prompt24_RunFnib1_V2_DATA
+            first_run: 381944
+            last_run: 382297
+          - tag: Summer24Prompt24_RunFnib2_V2_DATA
+            first_run: 382298
+            last_run: 383246
+          - tag: Summer24Prompt24_RunFnib3_V2_DATA
+            first_run: 383247
+            last_run: 383779
+          - tag: Summer24Prompt24_RunGnib1_V2_DATA
+            first_run: 383780
+            last_run: 384932
+          - tag: Summer24Prompt24_RunGnib2_V2_DATA
+            first_run: 384933
+            last_run: 385813
+          - tag: Summer24Prompt24_RunHnib1_V2_DATA
+            first_run: 385814
+            last_run: 386408
+          - tag: Summer24Prompt24_RunInib1_V2_DATA
+            first_run: 386409
+            last_run: 387121
       algo: "AK8PFPuppi"
       JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1"
-      jes_unc_mapping:
-        CMS_scale_j_AbsoluteMPFBias: "AbsoluteMPFBias"
-        CMS_scale_j_AbsoluteScale: "AbsoluteScale"
-        CMS_scale_j_AbsoluteStat_2024: "AbsoluteStat"
-        CMS_scale_j_FlavorQCD: "FlavorQCD"
-        CMS_scale_j_Fragmentation: "Fragmentation"
-        CMS_scale_j_PileUpDataMC: "PileUpDataMC"
-        CMS_scale_j_PileUpPtBB: "PileUpPtBB"
-        CMS_scale_j_PileUpPtEC1: "PileUpPtEC1"
-        CMS_scale_j_PileUpPtEC2: "PileUpPtEC2"
-        CMS_scale_j_PileUpPtHF: "PileUpPtHF"
-        CMS_scale_j_PileUpPtRef: "PileUpPtRef"
-        CMS_scale_j_RelativeFSR: "RelativeFSR"
-        CMS_scale_j_RelativeJEREC1_2024: "RelativeJEREC1"
-        CMS_scale_j_RelativeJEREC2_2024: "RelativeJEREC2"
-        CMS_scale_j_RelativeJERHF: "RelativeJERHF"
-        CMS_scale_j_RelativePtBB: "RelativePtBB"
-        CMS_scale_j_RelativePtEC1_2024: "RelativePtEC1"
-        CMS_scale_j_RelativePtEC2_2024: "RelativePtEC2"
-        CMS_scale_j_RelativePtHF: "RelativePtHF"
-        CMS_scale_j_RelativeBal: "RelativeBal"
-        CMS_scale_j_RelativeSample_2024: "RelativeSample"
-        CMS_scale_j_RelativeStatEC_2024: "RelativeStatEC"
-        CMS_scale_j_RelativeStatFSR_2024: "RelativeStatFSR"
-        CMS_scale_j_RelativeStatHF_2024: "RelativeStatHF"
-        CMS_scale_j_SinglePionECAL: "SinglePionECAL"
-        CMS_scale_j_SinglePionHCAL: "SinglePionHCAL"
-        CMS_scale_j_TimePtEta_2024: "TimePtEta"
-        CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
 # JSON POG payloads — Muon
 muon_jsons:
   RunIISummer20UL18:
@@ -259,23 +228,18 @@ muon_jsons:
   Run3Summer22:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22/muon_HighPt.json.gz
     TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
-    ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22/muon_scalesmearing.json.gz
   Run3Summer22EE:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_HighPt.json.gz
     TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
-    ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_scalesmearing.json.gz
   Run3Summer23:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23/muon_HighPt.json.gz
     TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
-    ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23/muon_scalesmearing.json.gz
   Run3Summer23BPix:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_HighPt.json.gz
     TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
-    ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_scalesmearing.json.gz
   RunIII2024Summer24:
     RECO: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json.gz
     TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
-    ScaleNSmear: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_scalesmearing.json.gz
 
 # JSON POG payloads — Pileup
 pileup_jsons:
@@ -301,23 +265,18 @@ electron_jsons:
   Run3Summer22:
     RECO: data/jsonpog/EGM/Run3/Run3Summer22/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/Run3Summer22/electronHlt.json.gz
-    ScaleNSmear: data/jsonpog/EGM/Run3/Run3Summer22/electronSS_EtDependent.json.gz
   Run3Summer22EE:
     RECO: data/jsonpog/EGM/Run3/Run3Summer22EE/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/Run3Summer22EE/electronHlt.json.gz
-    ScaleNSmear: data/jsonpog/EGM/Run3/Run3Summer22EE/electronSS_EtDependent.json.gz
   Run3Summer23:
     RECO: data/jsonpog/EGM/Run3/Run3Summer23/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/Run3Summer23/electronHlt.json.gz
-    ScaleNSmear: data/jsonpog/EGM/Run3/Run3Summer23/electronSS_EtDependent.json.gz
   Run3Summer23BPix:
     RECO: data/jsonpog/EGM/Run3/Run3Summer23BPix/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/Run3Summer23BPix/electronHlt.json.gz
-    ScaleNSmear: data/jsonpog/EGM/Run3/Run3Summer23BPix/electronSS_EtDependent.json.gz
   RunIII2024Summer24:
     RECO: data/jsonpog/EGM/Run3/RunIII2024Summer24/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronHlt.json.gz
-    ScaleNSmear: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronSS_EtDependent.json.gz
 
 # correctionlib era key used inside EGM JSON payloads (differs from analysis era name)
 electron_sf_era_keys:

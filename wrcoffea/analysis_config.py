@@ -30,7 +30,7 @@ DY_VARIANTS = _cfg["dy_variants"]
 
 LUMI_JSONS = _cfg["lumi_jsons"]
 JME_JSONS = _cfg["jme_jsons"]
-
+JERC_JSONS = _cfg["jerc_jsons"]
 JETVETO_JSONS = _cfg["jetveto_jsons"]
 JETVETO_CORRECTION_NAMES = _cfg["jetveto_correction_names"]
 
