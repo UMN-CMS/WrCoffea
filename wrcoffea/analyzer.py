@@ -1092,16 +1092,16 @@ class WrAnalysis(processor.ProcessorABC):
         events = self.apply_noise_filter(events, mc_campaign, is_signal)
         raw_pt = events.Jet.pt * (1 - events.Jet.rawFactor)
         
-        events = apply_jet_corrections(events,mc_campaign,is_mc,"nominal")
+        events = apply_jet_corrections(events,mc_campaign,is_mc,True )
         corrected_pt = events.Jet.pt
-        #jec_factor = corrected_pt / raw_pt[events.Jet.rawFactor<=0.9]
+        # jec_factor = corrected_pt / raw_pt[events.Jet.rawFactor<=0.9]
 
         # print("--- JEC VERIFICATION (First 10 events) ---")
         # print(f"Raw pT:       {raw_pt[0:10].to_list()}")
         # print(f"Corrected pT: {corrected_pt[0:10].to_list()}")
         # print(f"JEC Factor:   {jec_factor[0:10].to_list()}")
         # print("-----------------------------------------")
-        #flat_factors = ak.flatten(jec_factor)
+        # flat_factors = ak.flatten(jec_factor)
 
         # print(f"Mean JEC factor: {np.mean(flat_factors):.3f}")
         # print(f"Max JEC factor:  {np.max(flat_factors):.3f}")

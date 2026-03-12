@@ -1074,26 +1074,22 @@ def _apply_jec(jets, events, ceval, tag, algo, isMC):
     jets = ak.with_field(jets, mass_final, "mass")
     return jets
 
-def _apply_jer(jets, genpt,matched, events, ceval, tag, algo):
+def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, events, ceval, tag, algo, sys_var="nom"):
+    """Returns smeared pt and mass without modifying the original jet collection"""
     if "Rho" in events.fields:
-        rho = events.Rho.fixedGridRhoFastjetAll    # Run 3 schema                                                                                                           
+        rho = events.Rho.fixedGridRhoFastjetAll
     elif "fixedGridRhoFastjetAll" in events.fields:
         rho = events.fixedGridRhoFastjetAll
     else:
-        return jets
-
-    #rho = events.Rho.fixedGridRhoFastjetAll
-
+        return pt_to_smear, mass_to_smear
     res = ceval[f"{tag}_MC_PtResolution_{algo}"]
     sf  = ceval[f"{tag}_MC_ScaleFactor_{algo}"]
 
-    sigma = res.evaluate(jets.eta, jets.pt, rho)
-    sf_val = sf.evaluate(jets.eta, jets.pt, "nom")
+    sigma = res.evaluate(jets.eta, pt_to_smear, rho)
+    sf_val = sf.evaluate(jets.eta, pt_to_smear, sys_var)
 
-    # matched jets
-    cjer_match = 1 + (sf_val - 1) * (jets.pt - genpt) / jets.pt
+    cjer_match = 1 + (sf_val - 1) * (pt_to_smear - genpt) / pt_to_smear
 
-    # unmatched jets
     counts = ak.num(jets, axis=1)
     rand = np.random.normal(0, 1, size=int(ak.sum(counts)))
     rand = ak.unflatten(rand, counts)
@@ -1101,9 +1097,57 @@ def _apply_jer(jets, genpt,matched, events, ceval, tag, algo):
 
     cjer = ak.where(matched, cjer_match, cjer_unmatch)
 
-    jets = ak.with_field(jets, jets.pt * cjer, "pt")
-    jets = ak.with_field(jets, jets.mass * cjer, "mass")
+    return pt_to_smear * cjer, mass_to_smear * cjer
 
+def _apply_jec(jets, events, ceval, tag, algo, isMC):
+    if "Rho" in events.fields:
+        rho = events.Rho.fixedGridRhoFastjetAll
+    elif "fixedGridRhoFastjetAll" in events.fields:
+        rho = events.fixedGridRhoFastjetAll
+    else:
+        return jets
+
+    good_jet_mask = jets.rawFactor <= 0.9
+    jets = jets[good_jet_mask]
+
+    pt_raw = jets.pt * (1 - jets.rawFactor)
+    mass_raw = jets.mass * (1 - jets.rawFactor)
+    
+    pt_final = pt_raw
+    mass_final = mass_raw
+
+    unique_tags = set(ak.to_list(tag)) if not isMC else [tag if isinstance(tag, str) else tag[0]]
+    valid_tags = [t for t in unique_tags if t not in ["", "none"]]
+
+    if len(valid_tags) > 0:
+        for t in valid_tags:            
+            l1_key = f"{t}_L1FastJet_{algo}"
+            c1 = _safe_eval(ceval[l1_key], jets, events, pt_raw, rho) if l1_key in ceval else 1.0
+            pt1 = pt_raw * c1
+            m1 = mass_raw * c1
+
+            l2_key = f"{t}_L2Relative_{algo}"
+            c2 = _safe_eval(ceval[l2_key], jets, events, pt1, rho) if l2_key in ceval else 1.0
+            pt2 = pt1 * c2
+            m2 = m1 * c2
+            
+            res_key = f"{t}_L2L3Residual_{algo}"
+            c4 = _safe_eval(ceval[res_key], jets, events, pt2, rho) if (not isMC and res_key in ceval) else 1.0
+
+            pt_out = pt2 * c4
+            m_out = m2 * c4
+            
+            if isMC:
+                pt_final, mass_final = pt_out, m_out
+            else:
+                jet_mask = (tag == t) & ak.ones_like(jets.pt, dtype=bool)
+                pt_final = ak.where(jet_mask, pt_out, pt_final)
+                mass_final = ak.where(jet_mask, m_out, mass_final)
+    else:
+        pt_final, mass_final = pt_raw, mass_raw
+
+    jets = ak.with_field(jets, pt_final, "pt")
+    jets = ak.with_field(jets, mass_final, "mass")
     return jets
 
 def _correct_subjets(subjets, events, ceval, tag, algo, isMC):
@@ -1243,67 +1287,119 @@ def _recompute_softdrop(events):
     # Return the updated fatjets record
     return ak.with_field(fatjets, updated_msoftdrop, "msoftdrop")
 
-def apply_jet_corrections(events, era, isMC, variation="nominal"):
-
+def apply_jet_corrections(events, era, isMC,save_all_variations=False):
     cfgAK4 = JERC_JSONS[era]["JERC_AK4"]
     cfgAK8 = JERC_JSONS[era]["JERC_AK8"]
 
     cevalAK4 = _get_ceval(cfgAK4["json"])
     cevalAK8 = _get_ceval(cfgAK8["json"])
 
-    algoAK4 = cfgAK4["algo"]
-    algoAK8 = cfgAK8["algo"]
-    # # jagged array of gen jet indices
-    
-    jets = events.Jet
-    fatjets = events.FatJet
+    algoAK4, algoAK8 = cfgAK4["algo"], cfgAK8["algo"]
+    jets, fatjets = events.Jet, events.FatJet
 
     if isMC:
-
-        tagAK4 = cfgAK4["tag_MC"]
-        tagAK8 = cfgAK8["tag_MC"]
-
+        tagAK4, tagAK8 = cfgAK4["tag_MC"], cfgAK8["tag_MC"]
     else:
-        #print("cfg",cfgAK4["tag_Data"],cfgAK8["tag_Data"])
         tagAK4 = _select_data_tag(cfgAK4["tag_Data"], events.run)
         tagAK8 = _select_data_tag(cfgAK8["tag_Data"], events.run)
 
-        #print("taggggs " ,tagAK4, tagAK8)
+    # ==========================================
+    # STEP 1: Compute Nominal JEC
+    # ==========================================
     jets = _apply_jec(jets, events, cevalAK4, tagAK4, algoAK4, isMC)
     fatjets = _apply_jec(fatjets, events, cevalAK8, tagAK8, algoAK8, isMC)
 
     if isMC:
+        # --- AK4 GEN MATCHING ---
         gen_idx = jets.genJetIdx
         valid_match = gen_idx >= 0
-        zero_idx = ak.zeros_like(gen_idx)
-        safe_idx = ak.where(valid_match, gen_idx, zero_idx)
-        genpt = events.GenJet.pt
-        genpt = ak.pad_none(genpt, 1, axis=1)
-        genpt = genpt[safe_idx]
-        genpt = ak.where(valid_match, genpt, 0)
-        jets = _apply_jer(jets, genpt,valid_match, events, cevalAK4, cfgAK4["JR_tag_MC"], algoAK4)
-        gen_idx = fatjets.genJetAK8Idx
-        valid_match = gen_idx >= 0
-        zero_idx = ak.zeros_like(gen_idx)
-        safe_idx = ak.where(valid_match, gen_idx, zero_idx)
-        genpt = events.GenJetAK8.pt
-        genpt = ak.pad_none(genpt, 1, axis=1)
-        genpt = genpt[safe_idx]
-        genpt = ak.where(valid_match, genpt, 0)
+        safe_idx = ak.where(valid_match, gen_idx, ak.zeros_like(gen_idx))
+        genpt = ak.where(valid_match, ak.pad_none(events.GenJet.pt, 1, axis=1)[safe_idx], 0)
         
-        fatjets = _apply_jer(fatjets, genpt,valid_match, events, cevalAK8, cfgAK8["JR_tag_MC"], algoAK8)
+        # Save baseline JEC-only kinematics
+        pt_jec_ak4, mass_jec_ak4 = jets.pt, jets.mass
 
-    # Apply them all at once to a new events reference
+        # ==========================================
+        # STEP 2: Compute Nominal JER
+        # ==========================================
+        pt_nom_ak4, mass_nom_ak4 = _get_smeared_kinematics(
+            jets, pt_jec_ak4, mass_jec_ak4, genpt, valid_match, events, cevalAK4, cfgAK4["JR_tag_MC"], algoAK4, sys_var="nom"
+        )
+        jets = ak.with_field(jets, pt_nom_ak4, "pt")
+        jets = ak.with_field(jets, mass_nom_ak4, "mass")
+
+        # --- AK8 GEN MATCHING & SMEARING ---
+        gen_idx8 = fatjets.genJetAK8Idx
+        valid_match8 = gen_idx8 >= 0
+        safe_idx8 = ak.where(valid_match8, gen_idx8, ak.zeros_like(gen_idx8))
+        genpt8 = ak.where(valid_match8, ak.pad_none(events.GenJetAK8.pt, 1, axis=1)[safe_idx8], 0)
+
+        pt_jec_ak8, mass_jec_ak8 = fatjets.pt, fatjets.mass
+
+        pt_nom_ak8, mass_nom_ak8 = _get_smeared_kinematics(
+            fatjets, pt_jec_ak8, mass_jec_ak8, genpt8, valid_match8, events, cevalAK8, cfgAK8["JR_tag_MC"], algoAK8, sys_var="nom"
+        )
+        fatjets = ak.with_field(fatjets, pt_nom_ak8, "pt")
+        fatjets = ak.with_field(fatjets, mass_nom_ak8, "mass")
+
+        # ==========================================
+        # STEP 4: Save All Variations (if flagged)
+        # ==========================================
+        if era == "RunIISummer20UL18":
+            save_all_variations = False
+        if save_all_variations:
+            # --- JER SYSTEMATICS (AK4) ---
+            for jer_dir in ["up", "down"]:
+                pt_jer, mass_jer = _get_smeared_kinematics(
+                    jets, pt_jec_ak4, mass_jec_ak4, genpt, valid_match, events, cevalAK4, cfgAK4["JR_tag_MC"], algoAK4, sys_var=jer_dir
+                )
+                jets = ak.with_field(jets, pt_jer, f"pt_jer_{jer_dir}")
+                jets = ak.with_field(jets, mass_jer, f"mass_jer_{jer_dir}")
+
+            # --- JES SYSTEMATICS (AK4) ---
+            for cat_name, source_name in cfgAK4.get("jes_unc_mapping", {}).items():
+                exact_json_key = f"{tagAK4}_{source_name}_{algoAK4}"
+                if exact_json_key in cevalAK4:
+                    shift = cevalAK4[exact_json_key].evaluate(jets.eta, pt_jec_ak4)
+                    for jes_dir in ["up", "down"]:
+                        c_jes = 1.0 + shift if jes_dir == "up" else 1.0 - shift
+                        pt_final, mass_final = _get_smeared_kinematics(
+                            jets, pt_jec_ak4 * c_jes, mass_jec_ak4 * c_jes, genpt, valid_match, events, cevalAK4, cfgAK4["JR_tag_MC"], algoAK4, sys_var="nom"
+                        )
+                        jets = ak.with_field(jets, pt_final, f"pt_{cat_name}_{jes_dir}")
+                        jets = ak.with_field(jets, mass_final, f"mass_{cat_name}_{jes_dir}")
+
+            # --- JER SYSTEMATICS (AK8) ---
+            for jer_dir in ["up", "down"]:
+                pt_jer, mass_jer = _get_smeared_kinematics(
+                    fatjets, pt_jec_ak8, mass_jec_ak8, genpt8, valid_match8, events, cevalAK8, cfgAK8["JR_tag_MC"], algoAK8, sys_var=jer_dir
+                )
+                fatjets = ak.with_field(fatjets, pt_jer, f"pt_jer_{jer_dir}")
+                fatjets = ak.with_field(fatjets, mass_jer, f"mass_jer_{jer_dir}")
+
+            # --- JES SYSTEMATICS (AK8) ---
+            for cat_name, source_name in cfgAK8.get("jes_unc_mapping", {}).items():
+                exact_json_key = f"{tagAK8}_{source_name}_{algoAK8}"
+                if exact_json_key in cevalAK8:
+                    shift = cevalAK8[exact_json_key].evaluate(fatjets.eta, pt_jec_ak8)
+                    for jes_dir in ["up", "down"]:
+                        c_jes = 1.0 + shift if jes_dir == "up" else 1.0 - shift
+                        pt_final, mass_final = _get_smeared_kinematics(
+                            fatjets, pt_jec_ak8 * c_jes, mass_jec_ak8 * c_jes, genpt8, valid_match8, events, cevalAK8, cfgAK8["JR_tag_MC"], algoAK8, sys_var="nom"
+                        )
+                        fatjets = ak.with_field(fatjets, pt_final, f"pt_{cat_name}_{jes_dir}")
+                        fatjets = ak.with_field(fatjets, mass_final, f"mass_{cat_name}_{jes_dir}")
+
+    # ==========================================
+    # STEP 3: Correct Subjets
+    # ==========================================
     events = ak.with_field(events, jets, "Jet")
     events = ak.with_field(events, fatjets, "FatJet")
+    
     if "SubJet" in events.fields and "area" in events.SubJet.fields:
         subjets = _correct_subjets(events.SubJet, events, cevalAK8, tagAK8, algoAK8, isMC)
         events = ak.with_field(events, subjets, "SubJet")
         fatjets = _recompute_softdrop(events)
         events = ak.with_field(events, fatjets, "FatJet")
-    else:
-        # skip JEC for subjets
-        subjets = events.SubJet  # just keep raw subjets
-
+        
     return events
-
