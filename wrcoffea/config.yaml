@@ -74,7 +74,7 @@ jerc_jsons:
         Run_C: "Summer19UL18_RunC_V5_DATA"
         Run_D: "Summer19UL18_RunD_V5_DATA"
       algo: "AK4PFchs"
-      JR_tag_MC: "Summer19UL18_JRV2_MC"
+      JR_tag_MC: "Summer19UL18_JRV2"
     JERC_AK8:
       json: data/jsonpog/JME/RunII/RunIISummer20UL18/fatJet_jerc.json.gz
       tag_MC: "Summer19UL18_V5_MC"
@@ -84,30 +84,25 @@ jerc_jsons:
         Run_C: "Summer19UL18_RunC_V5_DATA"
         Run_D: "Summer19UL18_RunD_V5_DATA"
       algo: "AK8PFPuppi"
-      JR_tag_MC: "Summer19UL18_JRV2_MC"
-    JMAR: data/jsonpog/JME/RunII/RunIISummer20UL18/jmar.json.gz
-    
+      JR_tag_MC: "Summer19UL18_JRV2"
+    JMAR: data/jsonpog/JME/RunII/RunIISummer20UL18/jmar.json.gz    
   Run3Summer22:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/Run3Summer22/jet_jerc.json.gz
       tag_MC: "Summer22_22Sep2023_V3_MC"
       tag_Data: "Summer22_22Sep2023_RunCD_V3_DATA"
       algo: "AK4PFPuppi"
-      JR_tag_MC: "Summer22_22Sep2023_JRV1_MC"
+      JR_tag_MC: "Summer22_22Sep2023_JRV1"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer22/fatJet_jerc.json.gz
       tag_MC: "Summer22_22Sep2023_V3_MC"
       tag_Data: "Summer22_22Sep2023_RunCD_V3_DATA"
       algo: "AK8PFPuppi"
-      JR_tag_MC: "Summer22_22Sep2023_JRV1_MC"
+      JR_tag_MC: "Summer22_22Sep2023_JRV1"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
   Run3Summer22EE:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/Run3Summer22EE/jet_jerc.json.gz
@@ -117,11 +112,9 @@ jerc_jsons:
         Run_F: "Summer22EE_22Sep2023_RunF_V3_DATA"
         Run_G: "Summer22EE_22Sep2023_RunG_V3_DATA"
       algo: "AK4PFPuppi"
-      JR_tag_MC: "Summer22EE_22Sep2023_JRV1_MC"
+      JR_tag_MC: "Summer22EE_22Sep2023_JRV1"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer22EE/fatJet_jerc.json.gz
       tag_MC: "Summer22EE_22Sep2023_V3_MC"
@@ -130,43 +123,35 @@ jerc_jsons:
         Run_F: "Summer22EE_22Sep2023_RunF_V3_DATA"
         Run_G: "Summer22EE_22Sep2023_RunG_V3_DATA"
       algo: "AK8PFPuppi"
-      JR_tag_MC: "Summer22EE_22Sep2023_JRV1_MC"
+      JR_tag_MC: "Summer22EE_22Sep2023_JRV1"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
   Run3Summer23:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/Run3Summer23/jet_jerc.json.gz
       tag_MC: "Summer23Prompt23_V2_MC"
       tag_Data: "Summer23Prompt23_V2_DATA"
       algo: "AK4PFPuppi"
-      JR_tag_MC: "Summer23Prompt23_RunCv1234_JRV1_MC"
+      JR_tag_MC: "Summer23Prompt23_RunCv1234_JRV1"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer23/fatJet_jerc.json.gz
       tag_MC: "Summer23Prompt23_V2_MC"
       tag_Data: "Summer23Prompt23_V2_DATA"
       algo: "AK8PFPuppi"
-      JR_tag_MC: "Summer23Prompt23_RunCv1234_JRV1_MC"
+      JR_tag_MC: "Summer23Prompt23_RunCv1234_JRV1"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
   Run3Summer23BPix:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/Run3Summer23BPix/jet_jerc.json.gz
       tag_MC: "Summer23BPixPrompt23_V3_MC"
       tag_Data: "Summer23BPixPrompt23_V3_DATA"
       algo: "AK4PFPuppi"
-      JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1_MC"
+      JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/Run3Summer23BPix/fatJet_jerc.json.gz
       tag_MC: "Summer23BPixPrompt23_V3_MC"
@@ -175,8 +160,6 @@ jerc_jsons:
       JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1_MC"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
   RunIII2024Summer24:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/RunIII2024Summer24/jet_jerc.json.gz
@@ -185,36 +168,7 @@ jerc_jsons:
       algo: "AK4PFPuppi"
       JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1"
       jes_unc_mapping:
-        CMS_scale_j_AbsoluteMPFBias: "AbsoluteMPFBias"
-        CMS_scale_j_AbsoluteScale: "AbsoluteScale"
-        CMS_scale_j_AbsoluteStat_2024: "AbsoluteStat"
-        CMS_scale_j_FlavorQCD: "FlavorQCD"
-        CMS_scale_j_Fragmentation: "Fragmentation"
-        CMS_scale_j_PileUpDataMC: "PileUpDataMC"
-        CMS_scale_j_PileUpPtBB: "PileUpPtBB"
-        CMS_scale_j_PileUpPtEC1: "PileUpPtEC1"
-        CMS_scale_j_PileUpPtEC2: "PileUpPtEC2"
-        CMS_scale_j_PileUpPtHF: "PileUpPtHF"
-        CMS_scale_j_PileUpPtRef: "PileUpPtRef"
-        CMS_scale_j_RelativeFSR: "RelativeFSR"
-        CMS_scale_j_RelativeJEREC1_2024: "RelativeJEREC1"
-        CMS_scale_j_RelativeJEREC2_2024: "RelativeJEREC2"
-        CMS_scale_j_RelativeJERHF: "RelativeJERHF"
-        CMS_scale_j_RelativePtBB: "RelativePtBB"
-        CMS_scale_j_RelativePtEC1_2024: "RelativePtEC1"
-        CMS_scale_j_RelativePtEC2_2024: "RelativePtEC2"
-        CMS_scale_j_RelativePtHF: "RelativePtHF"
-        CMS_scale_j_RelativeBal: "RelativeBal"
-        CMS_scale_j_RelativeSample_2024: "RelativeSample"
-        CMS_scale_j_RelativeStatEC_2024: "RelativeStatEC"
-        CMS_scale_j_RelativeStatFSR_2024: "RelativeStatFSR"
-        CMS_scale_j_RelativeStatHF_2024: "RelativeStatHF"
-        CMS_scale_j_SinglePionECAL: "SinglePionECAL"
-        CMS_scale_j_SinglePionHCAL: "SinglePionHCAL"
-        CMS_scale_j_TimePtEta_2024: "TimePtEta"
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/RunIII2024Summer24/fatJet_jerc.json.gz
       tag_MC: "Summer24Prompt24_V2_MC"
@@ -222,36 +176,7 @@ jerc_jsons:
       algo: "AK8PFPuppi"
       JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1"
       jes_unc_mapping:
-        CMS_scale_j_AbsoluteMPFBias: "AbsoluteMPFBias"
-        CMS_scale_j_AbsoluteScale: "AbsoluteScale"
-        CMS_scale_j_AbsoluteStat_2024: "AbsoluteStat"
-        CMS_scale_j_FlavorQCD: "FlavorQCD"
-        CMS_scale_j_Fragmentation: "Fragmentation"
-        CMS_scale_j_PileUpDataMC: "PileUpDataMC"
-        CMS_scale_j_PileUpPtBB: "PileUpPtBB"
-        CMS_scale_j_PileUpPtEC1: "PileUpPtEC1"
-        CMS_scale_j_PileUpPtEC2: "PileUpPtEC2"
-        CMS_scale_j_PileUpPtHF: "PileUpPtHF"
-        CMS_scale_j_PileUpPtRef: "PileUpPtRef"
-        CMS_scale_j_RelativeFSR: "RelativeFSR"
-        CMS_scale_j_RelativeJEREC1_2024: "RelativeJEREC1"
-        CMS_scale_j_RelativeJEREC2_2024: "RelativeJEREC2"
-        CMS_scale_j_RelativeJERHF: "RelativeJERHF"
-        CMS_scale_j_RelativePtBB: "RelativePtBB"
-        CMS_scale_j_RelativePtEC1_2024: "RelativePtEC1"
-        CMS_scale_j_RelativePtEC2_2024: "RelativePtEC2"
-        CMS_scale_j_RelativePtHF: "RelativePtHF"
-        CMS_scale_j_RelativeBal: "RelativeBal"
-        CMS_scale_j_RelativeSample_2024: "RelativeSample"
-        CMS_scale_j_RelativeStatEC_2024: "RelativeStatEC"
-        CMS_scale_j_RelativeStatFSR_2024: "RelativeStatFSR"
-        CMS_scale_j_RelativeStatHF_2024: "RelativeStatHF"
-        CMS_scale_j_SinglePionECAL: "SinglePionECAL"
-        CMS_scale_j_SinglePionHCAL: "SinglePionHCAL"
-        CMS_scale_j_TimePtEta_2024: "TimePtEta"
         CMS_scale_j_Total: "Total"
-        CMS_scale_j_FlavorQCD: "Regrouped_FlavorQCD"
-        CMS_scale_j_Absolute: "Regrouped Absolute"
 # JSON POG payloads — Muon
 muon_jsons:
   RunIISummer20UL18:
