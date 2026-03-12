@@ -1091,8 +1091,24 @@ def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, ev
     cjer_match = 1 + (sf_val - 1) * (pt_to_smear - genpt) / pt_to_smear
 
     counts = ak.num(jets, axis=1)
-    rand = np.random.normal(0, 1, size=int(ak.sum(counts)))
-    rand = ak.unflatten(rand, counts)
+    # Broadcast event IDs to match the number of jets
+    flat_event = np.asarray(ak.flatten(ak.broadcast_arrays(events.event, jets.pt)[0]), dtype=np.uint64)
+    # Use phi to distinguish jets within the same event
+    flat_phi = np.asarray(ak.flatten(jets.phi), dtype=np.float32).view(np.uint32)
+
+    # 2. Vectorized Hash (Deterministic "Randomness")
+    # Using the same prime you used for electrons: 2654435761
+    hash_val = (flat_event * np.uint64(2654435761)) ^ flat_phi
+    
+    # 3. Map to Standard Normal N(0, 1)
+    uniform_random = (hash_val % np.uint64(2**31 - 1)) / float(2**31 - 1)
+    uniform_random = np.clip(uniform_random, 1e-8, 1.0 - 1e-8)
+    rand_flat = ndtri(uniform_random)
+    
+    # 4. Unflatten to match jet structure
+    rand = ak.unflatten(rand_flat, counts)
+    # rand = np.random.normal(0, 1, size=int(ak.sum(counts)))
+    # rand = ak.unflatten(rand, counts)
     cjer_unmatch = 1 + rand * sigma * np.sqrt(np.maximum(sf_val**2 - 1, 0))
 
     cjer = ak.where(matched, cjer_match, cjer_unmatch)
