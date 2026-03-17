@@ -192,7 +192,7 @@ def muon_sf(tight_muons, era):
     # ID SF
     id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
     # ISO SF
-    iso = _eval_component(ceval["NUM_probe_TightRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
+    iso = _eval_component(ceval["NUM_probe_LooseRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
 
     return {"reco": reco, "id": id_sf, "iso": iso}
 
@@ -221,8 +221,8 @@ def muon_trigger_sf(tight_muons, era):
 
     ceval = _get_muon_ceval(era, "TRIGGER")
 
-    data_eff_corr = ceval["NUM_HLT_DEN_TrkHighPtTightRelIsoProbes_DATAeff"]
-    mc_eff_corr   = ceval["NUM_HLT_DEN_TrkHighPtTightRelIsoProbes_MCeff"]
+    data_eff_corr = ceval["NUM_HLT_DEN_HighPtLooseRelIsoProbes_DATAeff"]
+    mc_eff_corr   = ceval["NUM_HLT_DEN_HighPtLooseRelIsoProbes_MCeff"]
 
     counts = ak.num(tight_muons)
 
