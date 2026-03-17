@@ -50,7 +50,7 @@ from wrcoffea.analysis_config import (
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 from wrcoffea.era_utils import ERA_MAPPING
-from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
+from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
@@ -208,8 +208,8 @@ class WrAnalysis(processor.ProcessorABC):
         - Loose = (pT/eta) AND (loose-ID), with tight leptons excluded.
         """
         # Split pT/eta (kinematics) and ID components.
-        ele_pteta_mask = (events.Electron.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Electron.eta) < CUTS["lepton_eta_max"])
-        mu_pteta_mask  = (events.Muon.pt > CUTS["lepton_pt_min"])     & (np.abs(events.Muon.eta) < CUTS["lepton_eta_max"])
+        ele_pteta_mask = (events.Electron.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Electron.eta) < CUTS["electron_eta_max"])
+        mu_pteta_mask  = (events.Muon.pt > CUTS["lepton_pt_min"])     & (np.abs(events.Muon.eta) < CUTS["muon_eta_max"])
 
         ele_id_mask = events.Electron.cutBased_HEEP
         mu_id_mask  = (events.Muon.highPtId == CUTS["muon_highPtId"]) & (events.Muon.tkRelIso < CUTS["muon_iso_max"])
@@ -523,13 +523,13 @@ class WrAnalysis(processor.ProcessorABC):
 
         loose_electrons = (
             (events.Electron.pt > CUTS["lepton_pt_min"])
-            & (np.abs(events.Electron.eta) < CUTS["lepton_eta_max"])
+            & (np.abs(events.Electron.eta) < CUTS["electron_eta_max"])
             & (heep_flag | loose_noIso_mask)
         )
         return events.Electron[loose_electrons]
 
     def selectLooseMuons(self, events):
-        loose_muons = (events.Muon.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Muon.eta) < CUTS["lepton_eta_max"]) & (events.Muon.highPtId == CUTS["muon_highPtId"])
+        loose_muons = (events.Muon.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Muon.eta) < CUTS["muon_eta_max"]) & (events.Muon.highPtId == CUTS["muon_highPtId"])
         return events.Muon[loose_muons]
     
     def selectAK8Jets(self,events,era, is_signal: bool = False):
@@ -843,14 +843,11 @@ class WrAnalysis(processor.ProcessorABC):
 
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate
 
-    def build_event_weights(self, events, metadata, is_mc, tight_muons=None, tight_electrons=None):
+    def build_event_weights(self, events, metadata, is_mc):
         """
-        Minimal weights:
-          - MC: xsec/nevts normalization (+ optional DY UL18 scale) + lumi Up/Down
-                + muon RECO×ID×ISO SF + muon trigger SF
-                + electron Reco SF
+        Base event weights (no lepton SFs — those are applied per-region):
+          - MC: genWeight × xsec × lumi / sumw + pileup + lumi syst
           - Data: unit weights
-        NO genWeight, NO L1 prefire, NO pileup.
         """
         n = len(events)
         weights = Weights(n)
@@ -874,36 +871,11 @@ class WrAnalysis(processor.ProcessorABC):
 
             weights.add("event_weight", event_weight)
 
-            # # Pileup reweighting.
+            # Pileup reweighting.
             era = metadata.get("era")
             if era in PILEUP_JSONS:
                 pu_nom, pu_up, pu_down = pileup_weight(events, era)
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
-
-            # # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
-            muon_trig_sf_tuple = None
-            electron_trig_sf_tuple = None
-
-            if tight_muons is not None and era in MUON_JSONS:
-                muon_sfs = muon_sf(tight_muons, era)
-                for component, (sf_nom, sf_up, sf_down) in muon_sfs.items():
-                    weights.add(f"muon_{component}_sf", sf_nom, weightUp=sf_up, weightDown=sf_down)
-
-                muon_trig_sf_tuple = muon_trigger_sf(tight_muons, era)
-                trig_nom, trig_up, trig_down = muon_trig_sf_tuple
-                weights.add("muon_trig_sf", trig_nom, weightUp=trig_up, weightDown=trig_down)
-
-            # # Electron scale factors (Reco + ID + trigger).
-            if tight_electrons is not None and era in ELECTRON_JSONS:
-                ele_nom, ele_up, ele_down = electron_reco_sf(tight_electrons, era)
-                weights.add("electron_reco_sf", ele_nom, weightUp=ele_up, weightDown=ele_down)
-
-                ele_id_nom, ele_id_up, ele_id_down = electron_id_sf(tight_electrons, era)
-                weights.add("electron_id_sf", ele_id_nom, weightUp=ele_id_up, weightDown=ele_id_down)
-
-                electron_trig_sf_tuple = electron_trigger_sf(tight_electrons, era)
-                ele_trig_nom, ele_trig_up, ele_trig_down = electron_trig_sf_tuple
-                weights.add("electron_trig_sf", ele_trig_nom, weightUp=ele_trig_up, weightDown=ele_trig_down)
 
             syst_weights = {"Nominal": weights.weight()}
 
@@ -935,64 +907,57 @@ class WrAnalysis(processor.ProcessorABC):
                     syst_weights["PileupUp"] = weights.weight(modifier="pileupUp")
                     syst_weights["PileupDown"] = weights.weight(modifier="pileupDown")
 
-            # Optional scale-factor uncertainties (muon + electron SFs).
-            if "sf" in self._enabled_systs:
-                era_key = metadata.get("era")
-                if tight_muons is not None and era_key in MUON_JSONS:
-                    for comp in ["reco", "id", "iso"]:
-                        camel = f"Muon{comp.capitalize()}Sf"
-                        syst_weights[f"{camel}Up"] = weights.weight(modifier=f"muon_{comp}_sfUp")
-                        syst_weights[f"{camel}Down"] = weights.weight(modifier=f"muon_{comp}_sfDown")
-                    syst_weights["MuonTrigSfUp"] = weights.weight(modifier="muon_trig_sfUp")
-                    syst_weights["MuonTrigSfDown"] = weights.weight(modifier="muon_trig_sfDown")
-                if tight_electrons is not None and era_key in ELECTRON_JSONS:
-                    for comp in ["reco", "id", "trig"]:
-                        camel = f"Electron{comp.capitalize()}Sf"
-                        syst_weights[f"{camel}Up"] = weights.weight(modifier=f"electron_{comp}_sfUp")
-                        syst_weights[f"{camel}Down"] = weights.weight(modifier=f"electron_{comp}_sfDown")
-
         else:  # is_data
-            muon_trig_sf_tuple = None
-            electron_trig_sf_tuple = None
             weights.add("data", np.ones(n, dtype=np.float32))
             syst_weights = {
                 "Nominal":  weights.weight(),
             }
 
-        return weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple
+        return weights, syst_weights
 
     @staticmethod
-    def _trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple):
-        """Return syst_weights with only the correct trigger SF for a region.
+    def _lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons):
+        """Multiply per-region lepton SFs into the base syst_weights.
 
-        Both trigger SFs are baked into the Weights object (and thus into every
-        entry of *syst_weights*).  This helper divides out the *wrong* trigger
-        SF nominal and drops its systematic entries so that each region carries
-        only the trigger SF matching its trigger path:
-            - 'ee' regions  → keep electron trigger SF, remove muon trigger SF
-            - all others    → keep muon trigger SF, remove electron trigger SF
+        Computes only the SFs relevant for each region:
+          - 'ee' regions  → electron RECO + ID SFs (no trigger SF)
+          - 'mumu' regions → muon RECO + ID + ISO + trigger SFs
+          - flavor CR (emu/mue) → electron RECO + ID + muon RECO + ID + ISO + muon trigger SFs
+
+        Returns a new syst_weights dict with lepton SFs multiplied in.
         """
-        if "ee" in region:
-            remove_tuple = muon_trig_sf_tuple
-            remove_label = "MuonTrigSf"
-        else:  # mumu, flavor_cr, emu, mue — all fire on muon trigger
-            remove_tuple = electron_trig_sf_tuple
-            remove_label = "ElectronTrigSf"
+        n = len(syst_weights["Nominal"])
 
-        if remove_tuple is None:
-            return syst_weights
+        # Determine which lepton SFs to apply based on region name.
+        apply_muon = "mumu" in region or "flavor_cr" in region or "mue" in region or "emu" in region
+        apply_electron = "ee" in region or "flavor_cr" in region or "mue" in region or "emu" in region
+        apply_muon_trig = apply_muon  # muon trigger for any region with muons
 
-        remove_nom = remove_tuple[0]
-        safe_denom = np.where(remove_nom > 0, remove_nom, 1.0)
+        sf_nom = np.ones(n, dtype=np.float64)
 
-        return {
-            k: v / safe_denom
-            for k, v in syst_weights.items()
-            if remove_label not in k
-        }
+        # Muon RECO, ID, ISO SFs.
+        if apply_muon and tight_muons is not None and era in MUON_JSONS:
+            muon_sfs = muon_sf(tight_muons, era)
+            for _comp, (comp_nom, _comp_up, _comp_down) in muon_sfs.items():
+                sf_nom *= comp_nom
+
+            # Muon trigger SF.
+            if apply_muon_trig:
+                trig_nom, _trig_up, _trig_down = muon_trigger_sf(tight_muons, era)
+                sf_nom *= trig_nom
+
+        # Electron RECO + ID SFs.
+        if apply_electron and tight_electrons is not None and era in ELECTRON_JSONS:
+            ele_reco_nom, _ele_reco_up, _ele_reco_down = electron_reco_sf(tight_electrons, era)
+            sf_nom *= ele_reco_nom
+
+            ele_id_nom, _ele_id_up, _ele_id_down = electron_id_sf(tight_electrons, era)
+            sf_nom *= ele_id_nom
+
+        return {k: v * sf_nom for k, v in syst_weights.items()}
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
-                       weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple):
+                       weights, syst_weights, era, tight_muons, tight_electrons):
         """Build resolved region masks and fill histograms + cutflows."""
         resolved_regions = {
             'wr_ee_resolved_dy_cr': resolved_selections.all(
@@ -1041,13 +1006,13 @@ class WrAnalysis(processor.ProcessorABC):
             )
 
         for region, cuts in resolved_regions.items():
-            region_syst = self._trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
+            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons)
             fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst)
 
         fill_cutflows(output, resolved_selections, weights)
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
-                      muon_trig_sf_tuple, electron_trig_sf_tuple):#, jet_veto_pass):
+                      era, tight_muons, tight_electrons):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
         #boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
@@ -1082,7 +1047,7 @@ class WrAnalysis(processor.ProcessorABC):
             ),
         }
         for region, cuts in boosted_regions.items():
-            region_syst = self._trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
+            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons)
             if "dy_cr" in region:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, region_syst)
             elif "flavor_cr" in region:
@@ -1111,7 +1076,7 @@ class WrAnalysis(processor.ProcessorABC):
                 ),
             }
             for region, cuts in tf_boosted_regions.items():
-                region_syst = self._trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
+                region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons)
                 if "flavor_cr" in region:
                     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
                 else:
@@ -1229,20 +1194,17 @@ class WrAnalysis(processor.ProcessorABC):
         # select_leptons) so the full column cache is freed promptly.
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
-        weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple = self.build_event_weights(
-            events, metadata, is_mc,
-            tight_muons=tight_muons, tight_electrons=tight_electrons,
-        )
-        del tight_electrons, tight_muons
+        weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
+        era = metadata.get("era")
 
         # Fill histograms.
         if resolved_selections is not None:
             self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons,
-                                weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
+                                weights, syst_weights, era, tight_muons, tight_electrons)
 
         if boosted_payload is not None:
             self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               muon_trig_sf_tuple, electron_trig_sf_tuple)#, jet_veto_pass)
+                               era, tight_muons, tight_electrons)
 
         nested_output = {dataset: {**output}}
 

@@ -298,7 +298,8 @@ lumi_unc:
 # Physics thresholds (single source of truth for analysis cuts)
 cuts:
   lepton_pt_min: 53
-  lepton_eta_max: 2.4
+  electron_eta_max: 2.5
+  muon_eta_max: 2.4
   muon_highPtId: 2
   muon_iso_max: 0.1
   ak4_pt_min: 40
