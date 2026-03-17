@@ -500,7 +500,7 @@
     "physics_group": "DYJets",
     "xsec": 0.0001247,
     "total_uncertainty": 0.0,
-    "genEventSumw": 0.0,
+    "genEventSumw": 5473.372512582702,
     "datatype": "mc",
     "note": "Version updated - needs re-skim"
   },
@@ -513,7 +513,7 @@
     "physics_group": "DYJets",
     "xsec": 0.00346,
     "total_uncertainty": 0.0,
-    "genEventSumw": 0.0,
+    "genEventSumw": 154863.42024450997,
     "datatype": "mc",
     "note": "Version updated - needs re-skim"
   }

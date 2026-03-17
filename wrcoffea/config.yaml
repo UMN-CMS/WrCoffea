@@ -10,7 +10,7 @@ lumis:
   Run3Summer22EE: 26.68
   Run3Summer23: 17.96
   Run3Summer23BPix: 9.68
-  RunIII2024Summer24: 109.95
+  RunIII2024Summer24: 109.82
 
 # Default MC fileset tag per era.  Controls which DY variant is used
 # when --dy is not explicitly given on the command line.
@@ -27,10 +27,10 @@ default_mc_tag:
 # and add the variant name here.
 dy_variants:
   RunIISummer20UL18: [lo_inc, nlo_inc, lo_ht]
-  Run3Summer22: [lo_inc, nlo_inc]
-  Run3Summer22EE: [lo_inc, nlo_inc]
-  Run3Summer23: [lo_inc, nlo_inc]
-  Run3Summer23BPix: [lo_inc, nlo_inc]
+  Run3Summer22: [lo_inc, nlo_inc, lo_ht]
+  Run3Summer22EE: [lo_inc, nlo_inc, lo_ht]
+  Run3Summer23: [lo_inc, nlo_inc, lo_ht]
+  Run3Summer23BPix: [lo_inc, nlo_inc, lo_ht]
   RunIII2024Summer24: [lo_inc, nlo_inc]
 # Golden JSON paths for data lumi masking
 lumi_jsons:

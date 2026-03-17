@@ -171,10 +171,12 @@ class WrAnalysis(processor.ProcessorABC):
             events.Flag.globalSuperTightHalo2016Filter &
             events.Flag.EcalDeadCellTriggerPrimitiveFilter &
             events.Flag.BadPFMuonFilter &
-            events.Flag.BadPFMuonDzFilter &
-            events.Flag.hfNoisyHitsFilter &
             events.Flag.eeBadScFilter
         )
+        if hasattr(events.Flag, "BadPFMuonDzFilter"):
+            common_flags = common_flags & events.Flag.BadPFMuonDzFilter
+        if hasattr(events.Flag, "hfNoisyHitsFilter"):
+            common_flags = common_flags & events.Flag.hfNoisyHitsFilter
         if mc_campaign in ("RunIISummer20UL18", "Run2Autumn18"):
             mask = (
                 common_flags &
@@ -879,12 +881,16 @@ class WrAnalysis(processor.ProcessorABC):
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
             # # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
+            muon_trig_sf_tuple = None
+            electron_trig_sf_tuple = None
+
             if tight_muons is not None and era in MUON_JSONS:
                 muon_sfs = muon_sf(tight_muons, era)
                 for component, (sf_nom, sf_up, sf_down) in muon_sfs.items():
                     weights.add(f"muon_{component}_sf", sf_nom, weightUp=sf_up, weightDown=sf_down)
 
-                trig_nom, trig_up, trig_down = muon_trigger_sf(tight_muons, era)
+                muon_trig_sf_tuple = muon_trigger_sf(tight_muons, era)
+                trig_nom, trig_up, trig_down = muon_trig_sf_tuple
                 weights.add("muon_trig_sf", trig_nom, weightUp=trig_up, weightDown=trig_down)
 
             # # Electron scale factors (Reco + ID + trigger).
@@ -895,7 +901,8 @@ class WrAnalysis(processor.ProcessorABC):
                 ele_id_nom, ele_id_up, ele_id_down = electron_id_sf(tight_electrons, era)
                 weights.add("electron_id_sf", ele_id_nom, weightUp=ele_id_up, weightDown=ele_id_down)
 
-                ele_trig_nom, ele_trig_up, ele_trig_down = electron_trigger_sf(tight_electrons, era)
+                electron_trig_sf_tuple = electron_trigger_sf(tight_electrons, era)
+                ele_trig_nom, ele_trig_up, ele_trig_down = electron_trig_sf_tuple
                 weights.add("electron_trig_sf", ele_trig_nom, weightUp=ele_trig_up, weightDown=ele_trig_down)
 
             syst_weights = {"Nominal": weights.weight()}
@@ -943,16 +950,49 @@ class WrAnalysis(processor.ProcessorABC):
                         camel = f"Electron{comp.capitalize()}Sf"
                         syst_weights[f"{camel}Up"] = weights.weight(modifier=f"electron_{comp}_sfUp")
                         syst_weights[f"{camel}Down"] = weights.weight(modifier=f"electron_{comp}_sfDown")
-        
+
         else:  # is_data
+            muon_trig_sf_tuple = None
+            electron_trig_sf_tuple = None
             weights.add("data", np.ones(n, dtype=np.float32))
-            syst_weights = { 
+            syst_weights = {
                 "Nominal":  weights.weight(),
             }
 
-        return weights, syst_weights
+        return weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple
 
-    def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons, weights, syst_weights):
+    @staticmethod
+    def _trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple):
+        """Return syst_weights with only the correct trigger SF for a region.
+
+        Both trigger SFs are baked into the Weights object (and thus into every
+        entry of *syst_weights*).  This helper divides out the *wrong* trigger
+        SF nominal and drops its systematic entries so that each region carries
+        only the trigger SF matching its trigger path:
+            - 'ee' regions  → keep electron trigger SF, remove muon trigger SF
+            - all others    → keep muon trigger SF, remove electron trigger SF
+        """
+        if "ee" in region:
+            remove_tuple = muon_trig_sf_tuple
+            remove_label = "MuonTrigSf"
+        else:  # mumu, flavor_cr, emu, mue — all fire on muon trigger
+            remove_tuple = electron_trig_sf_tuple
+            remove_label = "ElectronTrigSf"
+
+        if remove_tuple is None:
+            return syst_weights
+
+        remove_nom = remove_tuple[0]
+        safe_denom = np.where(remove_nom > 0, remove_nom, 1.0)
+
+        return {
+            k: v / safe_denom
+            for k, v in syst_weights.items()
+            if remove_label not in k
+        }
+
+    def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
+                       weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple):
         """Build resolved region masks and fill histograms + cutflows."""
         resolved_regions = {
             'wr_ee_resolved_dy_cr': resolved_selections.all(
@@ -1001,11 +1041,13 @@ class WrAnalysis(processor.ProcessorABC):
             )
 
         for region, cuts in resolved_regions.items():
-            fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
+            region_syst = self._trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
+            fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst)
 
         fill_cutflows(output, resolved_selections, weights)
 
-    def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights):#, jet_veto_pass):
+    def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
+                      muon_trig_sf_tuple, electron_trig_sf_tuple):#, jet_veto_pass):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
         #boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
@@ -1040,12 +1082,13 @@ class WrAnalysis(processor.ProcessorABC):
             ),
         }
         for region, cuts in boosted_regions.items():
+            region_syst = self._trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
             if "dy_cr" in region:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, syst_weights)
+                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, region_syst)
             elif "flavor_cr" in region:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, syst_weights)
+                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
             else:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, syst_weights)
+                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, region_syst)
 
         # Transfer factor study: boosted low-mass regions with mlj < 800 GeV.
         if self._tf_study:
@@ -1068,10 +1111,11 @@ class WrAnalysis(processor.ProcessorABC):
                 ),
             }
             for region, cuts in tf_boosted_regions.items():
+                region_syst = self._trigger_sf_for_region(region, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
                 if "flavor_cr" in region:
-                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, syst_weights)
+                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
                 else:
-                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, syst_weights)
+                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, region_syst)
 
     def process(self, events):
         """Run analysis for one NanoEvents chunk and return a dataset-nested output dict."""
@@ -1085,7 +1129,7 @@ class WrAnalysis(processor.ProcessorABC):
         datatype = (metadata.get("datatype") or "").strip().lower()
         is_mc = datatype == "mc"
         is_data = not is_mc
-        is_signal = (dataset == "Signal")
+        is_signal = (metadata.get("physics_group") == "Signal")
         # Apply lumi mask (data only).
         events = self.apply_lumi_mask(events, mc_campaign, is_data)
         # Apply noise filters (data and MC, not on signal )
@@ -1185,7 +1229,7 @@ class WrAnalysis(processor.ProcessorABC):
         # select_leptons) so the full column cache is freed promptly.
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
-        weights, syst_weights = self.build_event_weights(
+        weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple = self.build_event_weights(
             events, metadata, is_mc,
             tight_muons=tight_muons, tight_electrons=tight_electrons,
         )
@@ -1193,10 +1237,12 @@ class WrAnalysis(processor.ProcessorABC):
 
         # Fill histograms.
         if resolved_selections is not None:
-            self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons, weights, syst_weights)
+            self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons,
+                                weights, syst_weights, muon_trig_sf_tuple, electron_trig_sf_tuple)
 
         if boosted_payload is not None:
-            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights)#, jet_veto_pass)
+            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
+                               muon_trig_sf_tuple, electron_trig_sf_tuple)#, jet_veto_pass)
 
         nested_output = {dataset: {**output}}
 

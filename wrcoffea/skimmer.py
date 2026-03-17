@@ -659,6 +659,7 @@ def _classify_skim_error(exc: Exception) -> tuple[str, bool]:
         "decompression",
         "badseek",
         "basket",
+        "not a root file",
     ]
     if any(p in msg for p in corrupt_patterns):
         return "corrupt_file", False

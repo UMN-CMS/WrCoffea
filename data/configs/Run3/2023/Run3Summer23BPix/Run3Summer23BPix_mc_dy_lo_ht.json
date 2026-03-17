@@ -488,7 +488,7 @@
     "physics_group": "DYJets",
     "xsec": 0.0001247,
     "total_uncertainty": 0.0,
-    "genEventSumw": 0.0,
+    "genEventSumw": 2945.968689751401,
     "datatype": "mc",
     "note": "Version updated - needs re-skim"
   },
@@ -501,7 +501,7 @@
     "physics_group": "DYJets",
     "xsec": 0.05047,
     "total_uncertainty": 0.0,
-    "genEventSumw": 0.0,
+    "genEventSumw": 1111688.7896284203,
     "datatype": "mc",
     "note": "Version updated - needs re-skim"
   },
@@ -514,7 +514,7 @@
     "physics_group": "DYJets",
     "xsec": 0.693,
     "total_uncertainty": 0.0,
-    "genEventSumw": 0.0,
+    "genEventSumw": 14422286.726429997,
     "datatype": "mc",
     "note": "Version updated - needs re-skim"
   }
