@@ -50,7 +50,7 @@ from wrcoffea.analysis_config import (
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 from wrcoffea.era_utils import ERA_MAPPING
-from wrcoffea.scale_factors import muon_sf, muon_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
+from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
@@ -263,6 +263,7 @@ class WrAnalysis(processor.ProcessorABC):
             "mu_pteta": mu_pteta_mask,
             "ele_id": ele_id_mask,
             "mu_id": mu_id_mask,
+            "mu_loose": muon_loose_mask,
         }
 
         return tight_leps, loose_leps, masks
@@ -915,14 +916,18 @@ class WrAnalysis(processor.ProcessorABC):
 
         return weights, syst_weights
 
-    @staticmethod
-    def _lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons):
+    def _lepton_sfs_for_region(self, region, syst_weights, era, tight_muons, tight_electrons,
+                              loose_muons=None):
         """Multiply per-region lepton SFs into the base syst_weights.
 
         Computes only the SFs relevant for each region:
-          - 'ee' regions  → electron RECO + ID SFs (no trigger SF)
+          - 'ee' regions  → electron RECO SF
           - 'mumu' regions → muon RECO + ID + ISO + trigger SFs
-          - flavor CR (emu/mue) → electron RECO + ID + muon RECO + ID + ISO + muon trigger SFs
+          - flavor CR (emu/mue) → electron RECO + muon RECO + ID + ISO + muon trigger SFs
+          - boosted regions additionally get loose muon RECO + ID SFs (no ISO)
+
+        When ``"sf"`` is in ``_enabled_systs``, per-component up/down
+        variations are added to the returned dict.
 
         Returns a new syst_weights dict with lepton SFs multiplied in.
         """
@@ -931,30 +936,48 @@ class WrAnalysis(processor.ProcessorABC):
         # Determine which lepton SFs to apply based on region name.
         apply_muon = "mumu" in region or "flavor_cr" in region or "mue" in region or "emu" in region
         apply_electron = "ee" in region or "flavor_cr" in region or "mue" in region or "emu" in region
-        apply_muon_trig = apply_muon  # muon trigger for any region with muons
+        apply_muon_trig = apply_muon
 
-        sf_nom = np.ones(n, dtype=np.float64)
+        # Collect all SF components as {label: (nom, up, down)}.
+        components = {}
 
-        # Muon RECO, ID, ISO SFs.
+        # Tight muon RECO, ID, ISO SFs.
         if apply_muon and tight_muons is not None and era in MUON_JSONS:
             muon_sfs = muon_sf(tight_muons, era)
-            for _comp, (comp_nom, _comp_up, _comp_down) in muon_sfs.items():
-                sf_nom *= comp_nom
+            for comp, vals in muon_sfs.items():
+                components[f"Muon{comp.capitalize()}Sf"] = vals
 
-            # Muon trigger SF.
             if apply_muon_trig:
-                trig_nom, _trig_up, _trig_down = muon_trigger_sf(tight_muons, era)
-                sf_nom *= trig_nom
+                components["MuonTrigSf"] = muon_trigger_sf(tight_muons, era)
 
-        # Electron RECO + ID SFs.
+        # Loose muon RECO + ID SFs (no ISO, no trigger).
+        if apply_muon and loose_muons is not None and era in MUON_JSONS:
+            loose_sfs = muon_sf_loose(loose_muons, era)
+            for comp, vals in loose_sfs.items():
+                components[f"LooseMuon{comp.capitalize()}Sf"] = vals
+
+        # Electron RECO SF.
         if apply_electron and tight_electrons is not None and era in ELECTRON_JSONS:
-            ele_reco_nom, _ele_reco_up, _ele_reco_down = electron_reco_sf(tight_electrons, era)
-            sf_nom *= ele_reco_nom
+            components["ElectronRecoSf"] = electron_reco_sf(tight_electrons, era)
 
-            ele_id_nom, _ele_id_up, _ele_id_down = electron_id_sf(tight_electrons, era)
-            sf_nom *= ele_id_nom
+        # Build combined nominal SF.
+        sf_nom = np.ones(n, dtype=np.float64)
+        for _label, (comp_nom, _comp_up, _comp_down) in components.items():
+            sf_nom *= comp_nom
 
-        return {k: v * sf_nom for k, v in syst_weights.items()}
+        result = {k: v * sf_nom for k, v in syst_weights.items()}
+
+        # Add per-component up/down variations.
+        if "sf" in self._enabled_systs and len(components) > 0:
+            for vary_label, (vary_nom, vary_up, vary_down) in components.items():
+                # Ratio to swap nominal → varied for this component.
+                safe_nom = np.where(vary_nom > 0, vary_nom, 1.0)
+                ratio_up = vary_up / safe_nom
+                ratio_down = vary_down / safe_nom
+                result[f"{vary_label}Up"] = result["Nominal"] * ratio_up
+                result[f"{vary_label}Down"] = result["Nominal"] * ratio_down
+
+        return result
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons):
@@ -1012,7 +1035,7 @@ class WrAnalysis(processor.ProcessorABC):
         fill_cutflows(output, resolved_selections, weights)
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
-                      era, tight_muons, tight_electrons):
+                      era, tight_muons, tight_electrons, loose_muons):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
         #boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
@@ -1047,7 +1070,7 @@ class WrAnalysis(processor.ProcessorABC):
             ),
         }
         for region, cuts in boosted_regions.items():
-            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons)
+            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons, loose_muons)
             if "dy_cr" in region:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, region_syst)
             elif "flavor_cr" in region:
@@ -1076,7 +1099,7 @@ class WrAnalysis(processor.ProcessorABC):
                 ),
             }
             for region, cuts in tf_boosted_regions.items():
-                region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons)
+                region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons, loose_muons)
                 if "flavor_cr" in region:
                     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
                 else:
@@ -1194,6 +1217,7 @@ class WrAnalysis(processor.ProcessorABC):
         # select_leptons) so the full column cache is freed promptly.
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
+        loose_muons = events.Muon[lepton_masks["mu_loose"]]
         weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
         era = metadata.get("era")
 
@@ -1204,7 +1228,7 @@ class WrAnalysis(processor.ProcessorABC):
 
         if boosted_payload is not None:
             self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               era, tight_muons, tight_electrons)
+                               era, tight_muons, tight_electrons, loose_muons)
 
         nested_output = {dataset: {**output}}
 
