@@ -196,6 +196,44 @@ def muon_sf(tight_muons, era):
 
     return {"reco": reco, "id": id_sf, "iso": iso}
 
+
+def muon_sf_loose(loose_muons, era):
+    """Compute per-event muon RECO and ID SFs for loose muons (no ISO)."""
+    n_events = len(loose_muons)
+    ones = np.ones(n_events, dtype=np.float64)
+    identity = (ones, ones.copy(), ones.copy())
+
+    if era not in MUON_JSONS:
+        return {"reco": identity, "id": identity}
+
+    ceval = _get_muon_ceval(era, "RECO")
+
+    counts = ak.num(loose_muons)
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(loose_muons.eta, 0.0)), dtype=np.float64)
+    flat_pt = np.asarray(ak.flatten(ak.fill_none(loose_muons.pt, 0.0)), dtype=np.float64)
+
+    if len(flat_pt) == 0:
+        return {"reco": identity, "id": identity}
+
+    flat_p = flat_pt * np.cosh(flat_eta)
+
+    reco_eta = np.clip(flat_eta, -2.399, 2.399)
+    reco_p = np.clip(flat_p, 50.001, 1e9)
+    idiso_eta = np.clip(flat_eta, -2.399, 2.399)
+    idiso_pt = np.clip(flat_pt, 50.001, 1e9)
+
+    def _eval_component(corr, eta, pt_or_p):
+        nom = corr.evaluate(eta, pt_or_p, "nominal")
+        up = corr.evaluate(eta, pt_or_p, "systup")
+        down = corr.evaluate(eta, pt_or_p, "systdown")
+        return _unflatten_and_product(nom, up, down, counts)
+
+    reco = _eval_component(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_eta, reco_p)
+    id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
+
+    return {"reco": reco, "id": id_sf}
+
+
 def muon_trigger_sf(tight_muons, era):
     """Compute per-event muon trigger SF using dilepton efficiency formula.
 
