@@ -1076,6 +1076,9 @@ def _apply_jec(jets, events, ceval, tag, algo, isMC):
 
 def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, events, ceval, tag, algo, sys_var="nom"):
     """Returns smeared pt and mass without modifying the original jet collection"""
+    if ak.sum(ak.num(jets)) == 0:
+        return pt_to_smear, mass_to_smear
+
     if "Rho" in events.fields:
         rho = events.Rho.fixedGridRhoFastjetAll
     elif "fixedGridRhoFastjetAll" in events.fields:
@@ -1086,7 +1089,10 @@ def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, ev
     sf  = ceval[f"{tag}_MC_ScaleFactor_{algo}"]
 
     sigma = res.evaluate(jets.eta, pt_to_smear, rho)
-    sf_val = sf.evaluate(jets.eta, pt_to_smear, sys_var)
+    if len(sf.inputs) == 3:
+        sf_val = sf.evaluate(jets.eta, pt_to_smear, sys_var)
+    else:
+        sf_val = sf.evaluate(jets.eta, sys_var)
 
     cjer_match = 1 + (sf_val - 1) * (pt_to_smear - genpt) / pt_to_smear
 
@@ -1125,6 +1131,9 @@ def _apply_jec(jets, events, ceval, tag, algo, isMC):
 
     good_jet_mask = jets.rawFactor <= 0.9
     jets = jets[good_jet_mask]
+
+    if ak.sum(ak.num(jets)) == 0:
+        return jets
 
     pt_raw = jets.pt * (1 - jets.rawFactor)
     mass_raw = jets.mass * (1 - jets.rawFactor)
@@ -1328,7 +1337,8 @@ def apply_jet_corrections(events, era, isMC,save_all_variations=False):
     if isMC:
         # --- AK4 GEN MATCHING ---
         gen_idx = jets.genJetIdx
-        valid_match = gen_idx >= 0
+        ngenjet = ak.num(events.GenJet.pt)
+        valid_match = (gen_idx >= 0) & (gen_idx < ngenjet)
         safe_idx = ak.where(valid_match, gen_idx, ak.zeros_like(gen_idx))
         genpt = ak.where(valid_match, ak.pad_none(events.GenJet.pt, 1, axis=1)[safe_idx], 0)
         
@@ -1346,7 +1356,8 @@ def apply_jet_corrections(events, era, isMC,save_all_variations=False):
 
         # --- AK8 GEN MATCHING & SMEARING ---
         gen_idx8 = fatjets.genJetAK8Idx
-        valid_match8 = gen_idx8 >= 0
+        ngenjet8 = ak.num(events.GenJetAK8.pt)
+        valid_match8 = (gen_idx8 >= 0) & (gen_idx8 < ngenjet8)
         safe_idx8 = ak.where(valid_match8, gen_idx8, ak.zeros_like(gen_idx8))
         genpt8 = ak.where(valid_match8, ak.pad_none(events.GenJetAK8.pt, 1, axis=1)[safe_idx8], 0)
 

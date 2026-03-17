@@ -10,7 +10,7 @@ lumis:
   Run3Summer22EE: 26.68
   Run3Summer23: 17.96
   Run3Summer23BPix: 9.68
-  RunIII2024Summer24: 109.95
+  RunIII2024Summer24: 109.82
 
 # Default MC fileset tag per era.  Controls which DY variant is used
 # when --dy is not explicitly given on the command line.

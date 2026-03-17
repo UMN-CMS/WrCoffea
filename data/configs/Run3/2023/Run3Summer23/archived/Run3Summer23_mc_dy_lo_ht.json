@@ -71,18 +71,6 @@
     "genEventSumw": 2330000.91876326,
     "datatype": "mc"
   },
-  "/DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM": {
-    "das_name": "/DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM",
-    "run": "Run3",
-    "year": "2023",
-    "era": "Run3Summer23",
-    "dataset": "DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
-    "physics_group": "DYJets",
-    "xsec": 0.00346,
-    "total_uncertainty": 0.0,
-    "genEventSumw": 143368.64962301802,
-    "datatype": "mc"
-  },
   "/DYto2L-4Jets_MLL-120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM": {
     "das_name": "/DYto2L-4Jets_MLL-120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM",
     "run": "Run3",
@@ -153,18 +141,6 @@
     "xsec": 0.001697,
     "total_uncertainty": 0.0,
     "genEventSumw": 75276.74041935006,
-    "datatype": "mc"
-  },
-  "/DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM": {
-    "das_name": "/DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM",
-    "run": "Run3",
-    "year": "2023",
-    "era": "Run3Summer23",
-    "dataset": "DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
-    "physics_group": "DYJets",
-    "xsec": 0.0001247,
-    "total_uncertainty": 0.0,
-    "genEventSumw": 5647.551846246498,
     "datatype": "mc"
   },
   "/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM": {
@@ -514,5 +490,31 @@
     "total_uncertainty": 0.0,
     "genEventSumw": 2517000.0,
     "datatype": "mc"
+  },
+  "/DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM": {
+    "das_name": "/DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM",
+    "run": "Run3",
+    "year": "2023",
+    "era": "Run3Summer23",
+    "dataset": "DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+    "physics_group": "DYJets",
+    "xsec": 0.0001247,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 0.0,
+    "datatype": "mc",
+    "note": "Version updated - needs re-skim"
+  },
+  "/DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM": {
+    "das_name": "/DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM",
+    "run": "Run3",
+    "year": "2023",
+    "era": "Run3Summer23",
+    "dataset": "DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+    "physics_group": "DYJets",
+    "xsec": 0.00346,
+    "total_uncertainty": 0.0,
+    "genEventSumw": 0.0,
+    "datatype": "mc",
+    "note": "Version updated - needs re-skim"
   }
 }

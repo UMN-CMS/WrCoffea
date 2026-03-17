@@ -22,7 +22,7 @@
     "total_uncertainty": 0.4065,
     "genEventSumw": 26181566459.208275,
     "datatype": "mc",
-    "note": "Dataset no longer available in DAS"
+    "note": "v1 is the only version with events (v2-v5 have 0 events)"
   },
   "/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM": {
     "das_name": "/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM",

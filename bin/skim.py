@@ -1049,11 +1049,13 @@ def _group_by_primary_ds(all_datasets):
     return groups
 
 
-def _load_datasets_from_configs(config_paths):
+def _load_datasets_from_configs(config_paths, physics_group=None):
     """Load DAS paths + metadata from one or more config JSONs.
 
     Skips datasets whose ``"note"`` field contains "no longer available".
     Deduplicates by DAS path (first occurrence wins).
+    If *physics_group* is given, only datasets whose ``"physics_group"``
+    matches (case-insensitive) are included.
     Returns list of ``(das_path, metadata, config_path)`` tuples.
     """
     all_datasets = []
@@ -1065,6 +1067,8 @@ def _load_datasets_from_configs(config_paths):
             note = meta.get("note", "").lower()
             if "no longer available" in note:
                 logger.info("Skipping %s (marked unavailable)", das_path.split("/")[1])
+                continue
+            if physics_group and meta.get("physics_group", "").lower() != physics_group.lower():
                 continue
             if das_path in seen:
                 logger.debug("Skipping duplicate %s", das_path.split("/")[1])
@@ -1172,7 +1176,7 @@ def _retry_failed_submissions(args):
     and resubmits just those job directories.
     """
     _resolve_era_configs(args)
-    all_datasets = _load_datasets_from_configs(args.config)
+    all_datasets = _load_datasets_from_configs(args.config, getattr(args, "physics_group", None))
     if not all_datasets:
         logger.error("No datasets to process.")
         raise SystemExit(1)
@@ -1254,7 +1258,7 @@ def cmd_run_era(args):
     check_grid_proxy()
     _resolve_era_configs(args)
 
-    all_datasets = _load_datasets_from_configs(args.config)
+    all_datasets = _load_datasets_from_configs(args.config, getattr(args, "physics_group", None))
     logger.info("Found %d datasets across %d config(s)", len(all_datasets), len(args.config))
 
     if not all_datasets:
@@ -1373,7 +1377,7 @@ def cmd_check_era(args):
     artifact_tag, default_resubmit_script, state_path = _check_era_artifact_paths(args)
     resubmit_script_path = args.resubmit_script or default_resubmit_script
 
-    all_datasets = _load_datasets_from_configs(args.config)
+    all_datasets = _load_datasets_from_configs(args.config, getattr(args, "physics_group", None))
     groups = _group_by_primary_ds(all_datasets)
 
     # Track per-dataset outcomes for the summary.
@@ -1644,7 +1648,7 @@ def cmd_merge_era(args):
     from concurrent.futures import ProcessPoolExecutor, as_completed
     _resolve_era_configs(args)
 
-    all_datasets = _load_datasets_from_configs(args.config)
+    all_datasets = _load_datasets_from_configs(args.config, getattr(args, "physics_group", None))
     groups = _group_by_primary_ds(all_datasets)
 
     # Build a deduplicated task list: one merge per unique (era, primary_ds).
@@ -1846,7 +1850,7 @@ def cmd_upload(args):
         return
 
     # Era mode: upload all datasets from config(s), deduplicated by (era, primary_ds).
-    all_datasets = _load_datasets_from_configs(args.config)
+    all_datasets = _load_datasets_from_configs(args.config, getattr(args, "physics_group", None))
     groups = _group_by_primary_ds(all_datasets)
 
     # --retry-failed: check all datasets, relying on per-file size comparison
@@ -1963,6 +1967,8 @@ def main(argv=None):
                               help="One or more analysis config JSON files")
     run_era_src.add_argument("--era", metavar="ERA",
                               help="Era name (e.g. Run3Summer23) — auto-discovers all configs")
+    p_run_era.add_argument("--physics-group", metavar="GROUP",
+                            help="Only process datasets matching this physics_group (e.g. DYJets)")
     p_run_era.add_argument("--dry-run", action="store_true",
                             help="Generate Condor files without submitting")
     p_run_era.add_argument("--retry-failed", action="store_true",
@@ -1977,6 +1983,8 @@ def main(argv=None):
                                 help="One or more analysis config JSON files")
     check_era_src.add_argument("--era", metavar="ERA",
                                 help="Era name (e.g. Run3Summer23) — auto-discovers all configs")
+    p_check_era.add_argument("--physics-group", metavar="GROUP",
+                             help="Only process datasets matching this physics_group (e.g. DYJets)")
     p_check_era.add_argument("--resubmit-script", type=Path, default=None, metavar="SH",
                              help="Override output path for failed-job resubmit script")
     p_check_era.set_defaults(func=cmd_check_era)
@@ -2004,6 +2012,8 @@ def main(argv=None):
                                 help="One or more analysis config JSON files")
     merge_era_src.add_argument("--era", metavar="ERA",
                                 help="Era name (e.g. Run3Summer23) — auto-discovers all configs")
+    p_merge_era.add_argument("--physics-group", metavar="GROUP",
+                              help="Only process datasets matching this physics_group (e.g. DYJets)")
     p_merge_era.add_argument("--max-events", type=int, default=1_000_000,
                               help="Max events per merged file (default: 1000000)")
     p_merge_era.add_argument("--skip-check", action="store_true",
@@ -2022,6 +2032,8 @@ def main(argv=None):
                                 help="Config JSON(s) for era-level upload")
     upload_target.add_argument("--era", metavar="ERA",
                                 help="Era name (e.g. Run3Summer23) — auto-discovers all configs")
+    p_upload.add_argument("--physics-group", metavar="GROUP",
+                           help="Only process datasets matching this physics_group (e.g. DYJets)")
     p_upload.add_argument("--scratch", action="store_true",
                            help="Read from scratch space (implied for --config mode)")
     p_upload.add_argument("--remote-user", default=WISC_DEFAULT_USER,
