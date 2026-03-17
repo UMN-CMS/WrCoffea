@@ -221,8 +221,8 @@ def muon_trigger_sf(tight_muons, era):
 
     ceval = _get_muon_ceval(era, "TRIGGER")
 
-    data_eff_corr = ceval["NUM_HLT_DEN_TrkHighPtTightRelIsoProbes_DATAeff"]
-    mc_eff_corr   = ceval["NUM_HLT_DEN_TrkHighPtTightRelIsoProbes_MCeff"]
+    data_eff_corr = ceval["NUM_HLT_DEN_HighPtTightRelIsoProbes_DATAeff"]
+    mc_eff_corr   = ceval["NUM_HLT_DEN_HighPtTightRelIsoProbes_MCeff"]
 
     counts = ak.num(tight_muons)
 
