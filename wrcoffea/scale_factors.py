@@ -142,7 +142,7 @@ def _get_muon_ceval(era,key):
     return ceval
 
 
-def muon_sf(tight_muons, era):
+def muon_sf(tight_muons, era, is_loose=False):
     """Compute per-event muon RECO, ID, and ISO scale factors independently.
 
     Returns a dict of three independent components, each a (nominal, up, down) tuple
@@ -192,8 +192,14 @@ def muon_sf(tight_muons, era):
     # ID SF
     id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
     # ISO SF
-    iso = _eval_component(ceval["NUM_probe_TightRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
-
+    if is_loose:
+        # Create arrays of 1.0 with the exact same jagged shape as the muons
+        ones = ak.ones_like(idiso_pt)
+        # Return a tuple of (nominal, up, down) to match the expected format
+        iso = (ones, ones, ones)
+    else:
+        iso = _eval_component(ceval["NUM_probe_LooseRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)   
+    #iso = _eval_component(ceval["NUM_probe_LooseRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
     return {"reco": reco, "id": id_sf, "iso": iso}
 
 def muon_trigger_sf(tight_muons, era):
@@ -221,8 +227,8 @@ def muon_trigger_sf(tight_muons, era):
 
     ceval = _get_muon_ceval(era, "TRIGGER")
 
-    data_eff_corr = ceval["NUM_HLT_DEN_HighPtTightRelIsoProbes_DATAeff"]
-    mc_eff_corr   = ceval["NUM_HLT_DEN_HighPtTightRelIsoProbes_MCeff"]
+    data_eff_corr = ceval["NUM_HLT_DEN_HighPtLooseRelIsoProbes_DATAeff"]
+    mc_eff_corr   = ceval["NUM_HLT_DEN_HighPtLooseRelIsoProbes_MCeff"]
 
     counts = ak.num(tight_muons)
 
