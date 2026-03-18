@@ -56,6 +56,7 @@ from wrcoffea.histograms import (
     _booking_specs, create_hist, create_hist2D,
     fill_resolved_histograms, fill_boosted_histograms, fill_cutflows, fill_boosted_cutflows,
 )
+import gc
 
 ak.behavior.update(vector.behavior)
 logger = logging.getLogger(__name__)
@@ -240,12 +241,21 @@ class WrAnalysis(processor.ProcessorABC):
         # Slim to common fields before concatenating so awkward creates a
         # regular record (not a union), avoiding field-access issues.
         def _to_candidate(col):
+            # If the collection has deltaEtaSC (Electrons), use it. Otherwise (Muons), fill with 0s.
+            d_eta_sc = col.deltaEtaSC if hasattr(col, "deltaEtaSC") else ak.zeros_like(col.eta)           
             return ak.zip(
-                {"pt": col.pt, "eta": col.eta, "phi": col.phi,
-                 "mass": col.mass, "charge": col.charge, "flavor": col.flavor},
+                {
+                    "pt": col.pt, 
+                    "eta": col.eta, 
+                    "phi": col.phi,
+                    "mass": col.mass, 
+                    "charge": col.charge, 
+                    "flavor": col.flavor,
+                    "pdgId" : col.pdgId,
+                    "deltaEtaSC": d_eta_sc
+                },
                 with_name="PtEtaPhiMCandidate",
             )
-
         tight_leptons = ak.concatenate(
             [_to_candidate(tight_electrons), _to_candidate(tight_muons)], axis=1,
         )
@@ -621,6 +631,8 @@ class WrAnalysis(processor.ProcessorABC):
         # Object selections.
         looseElectrons = self.selectLooseElectrons(events)
         looseMuons = self.selectLooseMuons(events)
+        looseElectrons = ak.with_field(looseElectrons, "electron", "flavor")
+        looseMuons = ak.with_field(looseMuons, "muon", "flavor")
         is_signal = (getattr(events, "metadata", {}) or {}).get("physics_group") == "Signal"
         AK8Jets = self.selectAK8Jets(events,era,is_signal=is_signal)
         AK8Jets_withLSF = self.selectAK8Jets_withLSF(events,era,is_signal=is_signal)
@@ -638,11 +650,27 @@ class WrAnalysis(processor.ProcessorABC):
         tightMuons_inc = looseMuons[tight_mask_mu]
         tightMuons_inc = tightMuons_inc[ak.argsort(tightMuons_inc.pt, axis=1, ascending=False)]
 
-        looseLeptons = ak.with_name(ak.concatenate((looseElectrons, looseMuons), axis=1), 'PtEtaPhiMCandidate')
+        # Slim to common fields before concatenating to avoid UnionArrays
+        def _to_candidate(col):
+            d_eta_sc = col.deltaEtaSC if hasattr(col, "deltaEtaSC") else ak.zeros_like(col.eta)            
+            return ak.zip(
+                {
+                    "pt": col.pt, 
+                    "eta": col.eta, 
+                    "phi": col.phi,
+                    "mass": col.mass, 
+                    "charge": col.charge, 
+                    "flavor": col.flavor,
+                    "pdgId" : col.pdgId,
+                    "deltaEtaSC": d_eta_sc
+                },
+                with_name="PtEtaPhiMCandidate",
+            )
+        looseLeptons = ak.concatenate((_to_candidate(looseElectrons), _to_candidate(looseMuons)), axis=1)
         looseLeptons = looseLeptons[ak.argsort(looseLeptons.pt, axis=1, ascending=False)]
-        tightLeptons_inc = ak.with_name(ak.concatenate((tightElectrons_inc, tightMuons_inc), axis=1), 'PtEtaPhiMCandidate')
+        
+        tightLeptons_inc = ak.concatenate((_to_candidate(tightElectrons_inc), _to_candidate(tightMuons_inc)), axis=1)
         tightLeptons_inc = tightLeptons_inc[ak.argsort(tightLeptons_inc.pt, axis=1, ascending=False)]
-
         # Define a resolved-like tag and take boosted as the complement.
         has_two_leptons = ak.num(tightLeptons_inc) >= 2
         muons_padded = ak.pad_none(tightLeptons_inc, 2, axis=1)
@@ -841,65 +869,64 @@ class WrAnalysis(processor.ProcessorABC):
 
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate
 
-    def build_event_weights(self, events, metadata, is_mc, tight_muons=None, tight_electrons=None):
-        """
-        Minimal weights:
-          - MC: xsec/nevts normalization (+ optional DY UL18 scale) + lumi Up/Down
-                + muon RECO×ID×ISO SF + muon trigger SF
-                + electron Reco SF
-          - Data: unit weights
-        NO genWeight, NO L1 prefire, NO pileup.
-        """
+    def build_event_weights(
+        self, events, metadata, is_mc, 
+        tight_muons=None, tight_electrons=None,
+        loose_muons=None, loose_electrons=None
+    ):
+        """Builds weights for a specific slice of events based on provided lepton collections."""
         n = len(events)
         weights = Weights(n)
 
         if is_mc:
-            # Cross-section normalization
+            # --- Base Weights ---
             lumi = float(LUMIS[metadata.get("era")])
             xsec = float(metadata.get("xsec"))
 
             if self._compute_sumw:
-                # Defer /sumw normalization — caller will divide by accumulated _sumw.
                 event_weight = events.genWeight * xsec * lumi * 1000.0
             else:
-                # IMPORTANT: use signed genEventSumw (do NOT abs) for NLO samples.
                 sumw = float(metadata.get("genEventSumw"))
-                if sumw == 0.0:
-                    raise ZeroDivisionError(
-                        f"genEventSumw is zero for dataset '{metadata.get('sample')}'."
-                    )
                 event_weight = events.genWeight * xsec * lumi * 1000.0 / sumw
 
             weights.add("event_weight", event_weight)
 
-            # # Pileup reweighting.
             era = metadata.get("era")
             if era in PILEUP_JSONS:
                 pu_nom, pu_up, pu_down = pileup_weight(events, era)
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
-            # # Muon scale factors (RECO, ID, ISO as independent weights + trigger).
-            if tight_muons is not None and era in MUON_JSONS:
-                muon_sfs = muon_sf(tight_muons, era)
-                for component, (sf_nom, sf_up, sf_down) in muon_sfs.items():
-                    weights.add(f"muon_{component}_sf", sf_nom, weightUp=sf_up, weightDown=sf_down)
+            # --- Muon Scale Factors ---
+            if era in MUON_JSONS:
+                if tight_muons is not None:
+                    mu_sfs = muon_sf(tight_muons, era)
+                    for comp, (nom, up, down) in mu_sfs.items():
+                        weights.add(f"muon_tight_{comp}_sf", nom, weightUp=up, weightDown=down)
+                    t_nom, t_up, t_down = muon_trigger_sf(tight_muons, era)
+                    weights.add("muon_trig_sf", t_nom, weightUp=t_up, weightDown=t_down)
+                
+                if loose_muons is not None:
+                    l_mu_sfs = muon_sf(loose_muons, era, True)
+                    for comp, (nom, up, down) in l_mu_sfs.items():
+                        weights.add(f"muon_loose_{comp}_sf", nom, weightUp=up, weightDown=down)
 
-                trig_nom, trig_up, trig_down = muon_trigger_sf(tight_muons, era)
-                weights.add("muon_trig_sf", trig_nom, weightUp=trig_up, weightDown=trig_down)
+            # --- Electron Scale Factors ---
+            if era in ELECTRON_JSONS:
+                if tight_electrons is not None:
+                    e_reco = electron_reco_sf(tight_electrons, era)
+                    weights.add("electron_tight_reco_sf", e_reco[0], weightUp=e_reco[1], weightDown=e_reco[2])
+                    # e_id = electron_id_sf(tight_electrons, era)
+                    # weights.add("electron_tight_id_sf", e_id[0], weightUp=e_id[1], weightDown=e_id[2])
+                    # e_trig = electron_trigger_sf(tight_electrons, era)
+                    # weights.add("electron_trig_sf", e_trig[0], weightUp=e_trig[1], weightDown=e_trig[2])
 
-            # # Electron scale factors (Reco + ID + trigger).
-            if tight_electrons is not None and era in ELECTRON_JSONS:
-                ele_nom, ele_up, ele_down = electron_reco_sf(tight_electrons, era)
-                weights.add("electron_reco_sf", ele_nom, weightUp=ele_up, weightDown=ele_down)
-
-                ele_id_nom, ele_id_up, ele_id_down = electron_id_sf(tight_electrons, era)
-                weights.add("electron_id_sf", ele_id_nom, weightUp=ele_id_up, weightDown=ele_id_down)
-
-                ele_trig_nom, ele_trig_up, ele_trig_down = electron_trigger_sf(tight_electrons, era)
-                weights.add("electron_trig_sf", ele_trig_nom, weightUp=ele_trig_up, weightDown=ele_trig_down)
+                if loose_electrons is not None:
+                    e_l_reco = electron_reco_sf(loose_electrons, era)
+                    weights.add("electron_loose_reco_sf", e_l_reco[0], weightUp=e_l_reco[1], weightDown=e_l_reco[2])
+                    # e_l_id = electron_id_sf(loose_electrons, era)
+                    # weights.add("electron_loose_id_sf", e_l_id[0], weightUp=e_l_id[1], weightDown=e_l_id[2])
 
             syst_weights = {"Nominal": weights.weight()}
-
             # Optional lumi uncertainty (produces syst histograms only if enabled).
             if "lumi" in self._enabled_systs:
                 era_key = metadata.get("era")
@@ -927,8 +954,8 @@ class WrAnalysis(processor.ProcessorABC):
                 if era_key in PILEUP_JSONS:
                     syst_weights["PileupUp"] = weights.weight(modifier="pileupUp")
                     syst_weights["PileupDown"] = weights.weight(modifier="pileupDown")
-
-            # Optional scale-factor uncertainties (muon + electron SFs).
+            # Optional scale-factor uncertainties (muon + electron SFs.
+            
             if "sf" in self._enabled_systs:
                 era_key = metadata.get("era")
                 if tight_muons is not None and era_key in MUON_JSONS:
@@ -938,21 +965,19 @@ class WrAnalysis(processor.ProcessorABC):
                         syst_weights[f"{camel}Down"] = weights.weight(modifier=f"muon_{comp}_sfDown")
                     syst_weights["MuonTrigSfUp"] = weights.weight(modifier="muon_trig_sfUp")
                     syst_weights["MuonTrigSfDown"] = weights.weight(modifier="muon_trig_sfDown")
-                if tight_electrons is not None and era_key in ELECTRON_JSONS:
-                    for comp in ["reco", "id", "trig"]:
-                        camel = f"Electron{comp.capitalize()}Sf"
-                        syst_weights[f"{camel}Up"] = weights.weight(modifier=f"electron_{comp}_sfUp")
-                        syst_weights[f"{camel}Down"] = weights.weight(modifier=f"electron_{comp}_sfDown")
-        
+                # if tight_electrons is not None and era_key in ELECTRON_JSONS:
+                #     for comp in ["reco", "id", "trig"]:
+                #         camel = f"Electron{comp.capitalize()}Sf"
+                #         syst_weights[f"{camel}Up"] = weights.weight(modifier=f"electron_{comp}_sfUp")
+                #         syst_weights[f"{camel}Down"] = weights.weight(modifier=f"electron_{comp}_sfDown")
+                        
         else:  # is_data
             weights.add("data", np.ones(n, dtype=np.float32))
-            syst_weights = { 
-                "Nominal":  weights.weight(),
-            }
+            syst_weights = {"Nominal": weights.weight()}
 
         return weights, syst_weights
-
-    def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons, weights, syst_weights):
+    
+    def _fill_resolved(self, events, output, resolved_selections, process_name, ak4_jets, tight_leptons, weights, syst_weights, metadata, is_mc):
         """Build resolved region masks and fill histograms + cutflows."""
         resolved_regions = {
             'wr_ee_resolved_dy_cr': resolved_selections.all(
@@ -1000,16 +1025,31 @@ class WrAnalysis(processor.ProcessorABC):
                 SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
             )
 
-        for region, cuts in resolved_regions.items():
-            fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
+        for region, cut in resolved_regions.items():
+            ev_cut = events[cut]
+            jets_cut = ak4_jets[cut]
+            lep_cut = tight_leptons[cut] 
+            muons_cut = lep_cut[lep_cut.flavor == "muon"]
+            electrons_cut = lep_cut[lep_cut.flavor == "electron"]
+
+            # 3. Build weights for ONLY the events that pass this region
+            w, syst_w = self.build_event_weights(
+                ev_cut, metadata, is_mc, 
+                tight_muons=muons_cut, tight_electrons=electrons_cut
+            )
+            # 4. Fill Histograms (Pass a mask of 'True' since arrays are already sliced)
+            all_true = np.ones(len(ev_cut), dtype=bool)
+            fill_resolved_histograms(output, region, all_true, process_name, jets_cut, lep_cut, w, syst_w)
+            del ev_cut, jets_cut, lep_cut, muons_cut, electrons_cut, w, syst_w, all_true
+            gc.collect()
+            #fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, syst_weights)
 
         fill_cutflows(output, resolved_selections, weights)
 
-    def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights):#, jet_veto_pass):
+    def _fill_boosted(self, events,output, boosted_payload, process_name, weights, syst_weights, metadata, is_mc):#, jet_veto_pass):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
-        #boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
-
+        
         # Fill boosted cutflows
         fill_boosted_cutflows(output, boosted_sel, weights)
 
@@ -1039,13 +1079,41 @@ class WrAnalysis(processor.ProcessorABC):
                 #SEL_JET_VETO_MAP,
             ),
         }
-        for region, cuts in boosted_regions.items():
+        for region, cut in boosted_regions.items():
+            ev_cut = events[cut]
+            t_lep_cut = tight_lep[cut]
+            
+            # Select the correct loose lepton / AK8 based on the region
             if "dy_cr" in region:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, syst_weights)
+                ak8_cut, l_lep_cut = AK8_cand_dy[cut], DY_loose_lep[cut]
             elif "flavor_cr" in region:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, syst_weights)
+                ak8_cut, l_lep_cut = AK8_cand[cut], of_candidate[cut]
             else:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, syst_weights)
+                ak8_cut, l_lep_cut = AK8_cand[cut], sf_candidate[cut]
+
+            # Format for the SF evaluators (wrap in length-1 lists)
+            t_lep_list = ak.singletons(t_lep_cut)
+            l_lep_list = ak.singletons(l_lep_cut)
+            b_t_mu = t_lep_list[t_lep_list.flavor == "muon"]
+            b_t_e  = t_lep_list[t_lep_list.flavor == "electron"]
+            b_l_mu = l_lep_list[l_lep_list.flavor == "muon"]
+            b_l_e  = l_lep_list[l_lep_list.flavor == "electron"]
+            w, syst_w = self.build_event_weights(
+                ev_cut, metadata, is_mc, 
+                tight_muons=b_t_mu, tight_electrons=b_t_e,
+                loose_muons=b_l_mu, loose_electrons=b_l_e
+            )
+
+            all_true = np.ones(len(ev_cut), dtype=bool)
+            fill_boosted_histograms(output, region, all_true, process_name, t_lep_cut, ak8_cut, l_lep_cut, w, syst_w)
+            del ev_cut, t_lep_cut,l_lep_list, l_lep_cut,t_lep_list,b_t_mu,b_t_e,b_l_mu,b_l_e, all_true
+            gc.collect()
+            # if "dy_cr" in region:
+            #     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, syst_weights)
+            # elif "flavor_cr" in region:
+            #     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, syst_weights)
+            # else:
+            #     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, syst_weights)
 
         # Transfer factor study: boosted low-mass regions with mlj < 800 GeV.
         if self._tf_study:
@@ -1077,7 +1145,6 @@ class WrAnalysis(processor.ProcessorABC):
         """Run analysis for one NanoEvents chunk and return a dataset-nested output dict."""
         output = self.make_output()
         metadata = events.metadata
-        #print('meta data', metadata)
         mc_campaign = metadata.get("era")
         process_name = metadata.get("physics_group")
         dataset = metadata.get("sample")
@@ -1092,11 +1159,12 @@ class WrAnalysis(processor.ProcessorABC):
         events = self.apply_noise_filter(events, mc_campaign, is_signal)
         raw_pt = events.Jet.pt * (1 - events.Jet.rawFactor)
         
-        events = apply_jet_corrections(events,mc_campaign,is_mc,True )
-        corrected_pt = events.Jet.pt
-        # jec_factor = corrected_pt / raw_pt[events.Jet.rawFactor<=0.9]
+        events = apply_jet_corrections(events,mc_campaign,is_mc,True)
 
         # print("--- JEC VERIFICATION (First 10 events) ---")
+        #corrected_pt = events.Jet.pt
+        # jec_factor = corrected_pt / raw_pt[events.Jet.rawFactor<=0.9]
+
         # print(f"Raw pT:       {raw_pt[0:10].to_list()}")
         # print(f"Corrected pT: {corrected_pt[0:10].to_list()}")
         # print(f"JEC Factor:   {jec_factor[0:10].to_list()}")
@@ -1106,6 +1174,8 @@ class WrAnalysis(processor.ProcessorABC):
         # print(f"Mean JEC factor: {np.mean(flat_factors):.3f}")
         # print(f"Max JEC factor:  {np.max(flat_factors):.3f}")
         # print(f"Min JEC factor:  {np.min(flat_factors):.3f}")
+
+
         # apply jet veto
         if mc_campaign in JME_JSONS and (not is_signal):
             try:
@@ -1126,27 +1196,24 @@ class WrAnalysis(processor.ProcessorABC):
                 ak4_id_mask = events.Jet.isTightLeptonVeto
             else:
                 ak4_id_mask = events.Jet.jetId >= 6
-        #print("Events before veto:", len(events))
         events = jet_veto_event_mask(events,ak4_id_mask,mc_campaign)
-        #print("Events after veto in process:", len(events))
 
-        corrected_electrons = apply_electron_scale_smearing(events, mc_campaign, is_mc)
-        #verify_scale_smearing(events.Electron, corrected_electrons, is_mc)
-        if corrected_electrons:
-            # Overwrite nominal kinematics
-            events["Electron", "pt"] = corrected_electrons["pt"]
-            events["Electron", "energyErr"] = corrected_electrons["energyErr"]
+        # corrected_electrons = apply_electron_scale_smearing(events, mc_campaign, is_mc)
+        # #verify_scale_smearing(events.Electron, corrected_electrons, is_mc)
+
+        # if corrected_electrons:
+        #     events["Electron", "pt"] = corrected_electrons["pt"]
+        #     events["Electron", "energyErr"] = corrected_electrons["energyErr"]
             
-            # Attach systematic variations if they exist (MC only)
-            for syst in ["pt_smear_up", "pt_smear_down", "pt_scale_up", "pt_scale_down"]:
-                if syst in corrected_electrons:
-                    events["Electron", syst] = corrected_electrons[syst]
+        #     # Attach systematic variations if they exist (MC only)
+        #     for syst in ["pt_smear_up", "pt_smear_down", "pt_scale_up", "pt_scale_down"]:
+        #         if syst in corrected_electrons:
+        #             events["Electron", syst] = corrected_electrons[syst]
 
         corrected_muons = apply_muon_scale_smearing(events, mc_campaign, is_mc)
-        #verify_muon_scale_smearing(events.Muon, corrected_muons, is_mc)
         if corrected_muons:
             events["Muon", "pt"] = corrected_muons["pt"]
-            # Attach systematic variations if they exist (MC only)                                                                                                          
+            # Attach systematic variations if they exist (MC only)                  
             for syst in ["pt_smear_up", "pt_smear_down", "pt_scale_up", "pt_scale_down"]:
                 if syst in corrected_muons:
                     events["Muon", syst] = corrected_muons[syst]
@@ -1185,18 +1252,15 @@ class WrAnalysis(processor.ProcessorABC):
         # select_leptons) so the full column cache is freed promptly.
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
-        weights, syst_weights = self.build_event_weights(
-            events, metadata, is_mc,
-            tight_muons=tight_muons, tight_electrons=tight_electrons,
-        )
+        weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
         del tight_electrons, tight_muons
 
         # Fill histograms.
         if resolved_selections is not None:
-            self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons, weights, syst_weights)
+            self._fill_resolved(events, output, resolved_selections, process_name, ak4_jets, tight_leptons, weights, syst_weights,metadata, is_mc)
 
         if boosted_payload is not None:
-            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights)#, jet_veto_pass)
+            self._fill_boosted(events, output, boosted_payload, process_name, weights, syst_weights,metadata, is_mc)#, jet_veto_pass)
 
         nested_output = {dataset: {**output}}
 
