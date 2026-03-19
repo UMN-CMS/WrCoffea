@@ -20,12 +20,12 @@ MC_OPTIONS=(
   DYJets
   TTbar
   # TW
-  # WJets
-  # TTbarSemileptonic
-  # SingleTop
+  WJets
+  TTbarSemileptonic
+  SingleTop
   # TTV
-  # Diboson
-  # Triboson
+  Diboson
+  Triboson
 )
 
 # Validate mandatory arguments: mode and era

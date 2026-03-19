@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../pyth
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from analyzer_3j import WrAnalysis as WrAnalysis_3j
-from analyzer import WrAnalysis
+from analyser_btag import WrAnalysis
 from dask.distributed import Client
 from dask.diagnostics import ProgressBar
 import dask

@@ -55,6 +55,24 @@ class WrAnalysis(processor.ProcessorABC):
 
             'mass_fourobject':        self.create_hist('mass_fourobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':          self.create_hist('pt_fourobject',          'process', 'region', (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
+            'bjet_multiplicity':      self.create_hist('bjet_multiplicity', 'process', 'region', (3, 0, 3), r'Number of b-tagged jets'),
+            'bjet0_pt':              self.create_hist('bjet0_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of leading b-tagged jet [GeV]'),
+            'bjet1_pt':              self.create_hist('bjet1_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of subleading b-tagged jet [GeV]'),
+            'bjet0veto_pt':         self.create_hist('bjet0veto_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of leading b-tagged jet [GeV]'),
+            'bjet1veto_pt':         self.create_hist('bjet1veto_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of subleading b-tagged jet [GeV]'), 
+            'WRMass_DeltaRbb': dah.hist.Hist(
+                hist.axis.StrCategory([], name="process", label="Process", growth=True),
+                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
+                hist.axis.Regular(30, 0, 6, name='deltaR_bb', label=r'\Delta R(b_{1}, b_{2})'),
+                hist.storage.Weight(),
+            ),
+            'btag_reco_pt': self.create_hist('btag_reco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of bjets, b-tagged jet [GeV]'),
+            'nobtag_reco_pt': self.create_hist('nobtag_reco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of bjets, non b-tagged jet [GeV]'),
+            'btag_noreco_pt': self.create_hist('btag_noreco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of non-bjets, b-tagged jet [GeV]'),
+            'nobtag_noreco_pt': self.create_hist('nobtag_noreco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of non-bjets, non b-tagged jet [GeV]'),
+            'jetidxbtag': self.create_hist('jetidxbtag','process','region',(3, 0, 3),r'Index of b-tagged jet (pT ordered)'),
+            'jetidxnobtag': self.create_hist('jetidxnobtag','process','region',(3, 0, 3),r'Index of non-b-tagged jet (pT ordered)'),
         }
 
         # ——— Load SF lookup if provided ———
@@ -124,14 +142,10 @@ class WrAnalysis(processor.ProcessorABC):
 
     def add_resolved_selections(self, selections, tightElectrons, tightMuons, AK4Jets, mlljj, dr_jl_min, dr_j1j2, dr_l1l2):
         selections.add("twoTightLeptons", (ak.num(tightElectrons) + ak.num(tightMuons)) == 2)
-        if self.exc:
-            selections.add("minTwoAK4Jets", ak.num(AK4Jets) == 2)
-        else:
-            selections.add("minTwoAK4Jets", ak.num(AK4Jets) >= 2)
+        selections.add("minTwoAK4Jets", ak.num(AK4Jets) >= 2)
         selections.add("leadTightLeptonPt60", (ak.any(tightElectrons.pt > 60, axis=1) | ak.any(tightMuons.pt > 60, axis=1)))
         selections.add("mlljj>800", mlljj > 800)
         selections.add("dr>0.4", (dr_jl_min > 0.4) & (dr_j1j2 > 0.4) & (dr_l1l2 > 0.4))
-        #selections.add("btagVeto",ak.sum(ak.fill_none(AK4Jets.btagDeepFlavB > 0.049, False),axis=1) < 2)
 
     def fill_basic_histograms(self, output, region, cut,  process, jets, leptons, weights):
         """Helper function to fill histograms dynamically."""
@@ -238,6 +252,54 @@ class WrAnalysis(processor.ProcessorABC):
         dr_j1j2 = ak.fill_none(AK4Jets[:,0].delta_r(AK4Jets[:,1]), False)
         dr_l1l2 = ak.fill_none(tightLeptons[:,0].delta_r(tightLeptons[:,1]), False)
 
+        high_wp  = 0.049
+        low_wp = 0.049
+
+        jets = AK4Jets[ak.argsort(AK4Jets.pt, axis=1, ascending=False)]
+        jets = ak.pad_none(jets, 3, axis=1)
+
+        j1 = jets[:,0]
+        j2 = jets[:,1]
+        j3 = jets[:,2]
+
+        j1_high  = ak.fill_none(j1.btagDeepFlavB > high_wp, False)
+        j2_high  = ak.fill_none(j2.btagDeepFlavB > high_wp, False)
+        j3_high  = ak.fill_none(j3.btagDeepFlavB > high_wp, False)
+
+        j1_low = ak.fill_none(j1.btagDeepFlavB > low_wp, False)
+        j2_low = ak.fill_none(j2.btagDeepFlavB > low_wp, False)
+        j3_low = ak.fill_none(j3.btagDeepFlavB > low_wp, False)
+
+        pass_btag = ((j1_high & j2_low) |(j2_high & j1_low))
+
+        deltaR_bb = ak.fill_none(ak.where(pass_btag, j1.delta_r(j2), 0),0)
+        bjet_mult = ak.where(j1_high, 1, 0) + ak.where(j2_high, 1, 0)+0.5
+        bjet0_pt = ak.fill_none(ak.where(j1_high, j1.pt, 0), 0)
+        bjet1_pt = ak.fill_none(ak.where(j2_high, j2.pt, 0), 0)
+        bjetveto0_pt = ak.fill_none(ak.where(j1_high, 0, j1.pt), 0)
+        bjetveto1_pt = ak.fill_none(ak.where(j2_high, 0, j2.pt), 0)
+
+        btag_mask = ak.fill_none(jets.btagDeepFlavB > high_wp, False)
+        jet_indices = ak.local_index(jets, axis=1)
+        jetidxbtag = jet_indices[btag_mask]
+
+        nobtag_mask = ak.fill_none(jets.btagDeepFlavB <= high_wp, False)
+        jetidxnobtag = jet_indices[nobtag_mask]
+
+        jets1 = AK4Jets
+        true_b = abs(jets1.partonFlavour) == 5
+        tagged = jets1.btagDeepFlavB > high_wp
+
+        btag_reco_jets     = jets1[ true_b  &  tagged]
+        nobtag_reco_jets   = jets1[ true_b  & ~tagged]
+        btag_noreco_jets   = jets1[~true_b  &  tagged]
+        nobtag_noreco_jets = jets1[~true_b  & ~tagged]
+
+        btag_reco_pt     = btag_reco_jets.pt
+        nobtag_reco_pt   = nobtag_reco_jets.pt
+        btag_noreco_pt   = btag_noreco_jets.pt
+        nobtag_noreco_pt = nobtag_noreco_jets.pt
+
         # Event selections
         selections = PackedSelection()
         self.add_resolved_selections(selections, tightElectrons, tightMuons, AK4Jets, mlljj, dr_jl_min, dr_j1j2, dr_l1l2)
@@ -291,19 +353,45 @@ class WrAnalysis(processor.ProcessorABC):
         # Define analysis regions
         regions = {
             # Drell-Yan Control Regions
-            'wr_ee_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'eejj'],# 'btagVeto'],
-            'wr_mumu_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'mumujj'],# 'btagVeto'],
+            'wr_ee_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'eejj'],
+            'wr_mumu_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'mumujj'],
             #EMu Sideband Control Region
-            'wr_resolved_flavor_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'emuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'emujj'],# 'btagVeto'],
+            'wr_resolved_flavor_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'emuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'emujj'],
             # Signal Regions
-            'wr_ee_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'eejj'],# 'btagVeto'],
-            'wr_mumu_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'mumujj'],# 'btagVeto'],
+            'wr_ee_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'eejj'],
+            'wr_mumu_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'mumujj'],
         }
 
         # Fill histogram
         for region, cuts in regions.items():
             cut = selections.all(*cuts)
             self.fill_basic_histograms(output, region, cut, process, AK4Jets, tightLeptons, weights)
+            output['WRMass_DeltaRbb'].fill(process=process,region=region,mass_fourobject=mlljj[cut],deltaR_bb=deltaR_bb[cut],weight=weights.weight()[cut])
+            output['bjet_multiplicity'].fill(process=process,region=region,bjet_multiplicity=bjet_mult[cut],weight=weights.weight()[cut],)
+            output['bjet0_pt'].fill(process=process,region=region,bjet0_pt=bjet0_pt[cut],weight=weights.weight()[cut],)
+            output['bjet1_pt'].fill(process=process,region=region,bjet1_pt=bjet1_pt[cut],weight=weights.weight()[cut],)
+            output['bjet0veto_pt'].fill(process=process,region=region,bjet0veto_pt=bjetveto0_pt[cut],weight=weights.weight()[cut],)
+            output['bjet1veto_pt'].fill(process=process,region=region,bjet1veto_pt=bjetveto1_pt[cut],weight=weights.weight()[cut],)
+
+
+
+            output['btag_reco_pt'].fill(process=process,region=region,btag_reco_pt=ak.flatten(btag_reco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], btag_reco_pt[cut])[0]))
+
+            output['nobtag_reco_pt'].fill(process=process,region=region,nobtag_reco_pt=ak.flatten(nobtag_reco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], nobtag_reco_pt[cut])[0]))
+
+            output['btag_noreco_pt'].fill(process=process,region=region,btag_noreco_pt=ak.flatten(btag_noreco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], btag_noreco_pt[cut])[0]))
+
+            output['nobtag_noreco_pt'].fill(process=process,region=region,nobtag_noreco_pt=ak.flatten(nobtag_noreco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], nobtag_noreco_pt[cut])[0]))
+
+
+            vals = ak.flatten(jetidxbtag[cut])
+            w = ak.flatten(ak.broadcast_arrays(weights.weight()[cut], jetidxbtag[cut])[0])
+            output['jetidxbtag'].fill(process=process,region=region,jetidxbtag=vals,weight=w)
+
+            valsnon = ak.flatten(jetidxnobtag[cut])
+            wnon = ak.flatten(ak.broadcast_arrays(weights.weight()[cut], jetidxnobtag[cut])[0])
+            output['jetidxnobtag'].fill(process=process,region=region,jetidxnobtag=valsnon,weight=wnon)
+
             # if process == "Signal":
             #     wr_pdg_id = 34
             #     gen = events.GenPart
