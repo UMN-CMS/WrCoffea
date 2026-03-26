@@ -18,6 +18,7 @@ scripts/download_and_patch_datasets.py
 scripts/merge_das_datasets.py
 *~
 __pycache__
+*.tex
 *.pyc
 *.root
 *.tgz

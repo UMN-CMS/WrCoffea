@@ -73,6 +73,21 @@ class WrAnalysis(processor.ProcessorABC):
             'nobtag_noreco_pt': self.create_hist('nobtag_noreco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of non-bjets, non b-tagged jet [GeV]'),
             'jetidxbtag': self.create_hist('jetidxbtag','process','region',(3, 0, 3),r'Index of b-tagged jet (pT ordered)'),
             'jetidxnobtag': self.create_hist('jetidxnobtag','process','region',(3, 0, 3),r'Index of non-b-tagged jet (pT ordered)'),
+            'case_vs_j3': dah.hist.Hist(
+                hist.axis.StrCategory([], name="process", label="Process", growth=True),
+                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+                hist.axis.Regular(4, 0, 4, name='case', label='b-tag case (0=00,1=01,2=10,3=11)'),
+                hist.axis.Regular(3, 0, 3, name='j3cat', label='j3 category (0=no j3,1=no btag,2=btag)'),
+                hist.storage.Weight(),
+            ),
+            'case_vs_j3_vs_mlljj': dah.hist.Hist(
+                hist.axis.StrCategory([], name="process", label="Process", growth=True),
+                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+                hist.axis.Regular(4, 0, 4, name='case', label='b-tag case (0=00,1=01,2=10,3=11)'),
+                hist.axis.Regular(3, 0, 3, name='j3cat', label='j3 category (0=no j3,1=no btag,2=btag)'),
+                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'$m_{\ell\ell jj}$ [GeV]'),
+                hist.storage.Weight(),
+            ),
         }
 
         # ——— Load SF lookup if provided ———
@@ -270,6 +285,17 @@ class WrAnalysis(processor.ProcessorABC):
         j2_low = ak.fill_none(j2.btagDeepFlavB > low_wp, False)
         j3_low = ak.fill_none(j3.btagDeepFlavB > low_wp, False)
 
+
+        # case_00 = (~j1_high) & (~j2_high)   # neither tagged
+        # case_10 = ( j1_high) & (~j2_high)   # j1 tagged only
+        # case_01 = (~j1_high) & ( j2_high)   # j2 tagged only
+        # case_11 = ( j1_high) & ( j2_high)   # both tagged
+
+        j3_exists = ~ak.is_none(j3)
+
+        j3_cat = ak.where(~j3_exists,0,ak.where(j3_high, 2, 1))
+        case_idx = ak.where(j1_high,2,0) + ak.where(j2_high,1,0)
+
         pass_btag = ((j1_high & j2_low) |(j2_high & j1_low))
 
         deltaR_bb = ak.fill_none(ak.where(pass_btag, j1.delta_r(j2), 0),0)
@@ -391,28 +417,23 @@ class WrAnalysis(processor.ProcessorABC):
             valsnon = ak.flatten(jetidxnobtag[cut])
             wnon = ak.flatten(ak.broadcast_arrays(weights.weight()[cut], jetidxnobtag[cut])[0])
             output['jetidxnobtag'].fill(process=process,region=region,jetidxnobtag=valsnon,weight=wnon)
+            output['case_vs_j3'].fill(
+                process=process,
+                region=region,
+                case=case_idx[cut],
+                j3cat=j3_cat[cut],
+                weight=weights.weight()[cut],
+            )
 
-            # if process == "Signal":
-            #     wr_pdg_id = 34
-            #     gen = events.GenPart
+            output['case_vs_j3_vs_mlljj'].fill(
+                process=process,
+                region=region,
+                case=case_idx[cut],
+                j3cat=j3_cat[cut],
+                mass_fourobject=mlljj[cut],
+                weight=weights.weight()[cut],
+            )
 
-            #     # boolean jagged mask: [nEvents][nGenPart] 
-            #     is_wr = abs(gen.pdgId) == wr_pdg_id
-
-            #     # 1) broadcast your 1D event-weights to the same shape as gen.mass
-            #     weights_arr       = weights.weight()                               # [nEvents]
-            #     weights_per_part, _ = ak.broadcast_arrays(weights_arr, gen.mass)   # both now [nEvents][nGenPart]
-
-            #     # 2) mask & flatten masses and weights
-            #     wr_masses  = ak.flatten(gen.mass[is_wr])         
-            #     wr_weights = ak.flatten(weights_per_part[is_wr])
-
-            #     output['mass_WR'].fill(
-            #         process = process,
-            #         region  = "gen",         # or whatever label you like
-            #         mass_WR = wr_masses,
-            #         weight  = wr_weights
-            #     )
 
         output["weightStats"] = weights.weightStatistics
         return output
