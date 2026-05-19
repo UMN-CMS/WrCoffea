@@ -20,6 +20,62 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class WrAnalysis(processor.ProcessorABC):
+
+    def dotprod_T(self,p1, p2):
+        return p1.x * p2.x + p1.y * p2.y
+    
+    def compute_s1_s2(self,lW, lN, j1, j2):
+
+        # ========================================================
+        # TRANSVERSE MOMENTA
+        # ========================================================
+
+        pT1 = np.sqrt(self.dotprod_T(j1, j1))
+
+        pT2 = np.sqrt(self.dotprod_T(j2, j2))
+
+        pTlW = np.sqrt(self.dotprod_T(lW, lW))
+
+        # ========================================================
+        # JET RESOLUTION
+        # ========================================================
+
+        S = 0.92
+
+        C = 0.04
+
+        sig1 = pT1 * np.sqrt(S**2 / pT1 + C**2)
+
+        sig2 = pT2 * np.sqrt(S**2 / pT2 + C**2)
+
+        # ========================================================
+        # MATRIX COEFFICIENTS
+        # ========================================================
+
+        a11 = self.dotprod_T(j1, lW)
+
+        a12 = self.dotprod_T(j2, lW)
+
+        a21 = pT1**2 / sig1**2
+
+        a22 = -(pT2**2 / sig2**2) * (self.dotprod_T(j1, lW) / self.dotprod_T(j2, lW))
+
+        d1 = -pTlW**2 - self.dotprod_T(lW, lN)
+
+        d2 = pT1**2 / sig1**2 - (pT2**2 / sig2**2) * (self.dotprod_T(j1, lW) / self.dotprod_T(j2, lW))
+
+        # ========================================================
+        # SOLVE FOR s1, s2
+        # ========================================================
+
+        denom = a11 * a22 - a12 * a21
+
+        s1 = (a22 * d1 - a12 * d2) / denom
+
+        s2 = (a11 * d2 - a21 * d1) / denom
+
+        return s1, s2
+    
     def __init__(self, mass_point=None,exclusive=False, sf_file=None):
         self._signal_sample = mass_point
         self.exc=exclusive
@@ -55,47 +111,7 @@ class WrAnalysis(processor.ProcessorABC):
 
             'mass_fourobject':        self.create_hist('mass_fourobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':          self.create_hist('pt_fourobject',          'process', 'region', (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
-            'bjet_multiplicity':      self.create_hist('bjet_multiplicity', 'process', 'region', (3, 0, 3), r'Number of b-tagged jets'),
-            'bjet0_pt':              self.create_hist('bjet0_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of leading b-tagged jet [GeV]'),
-            'bjet1_pt':              self.create_hist('bjet1_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of subleading b-tagged jet [GeV]'),
-            'bjet0veto_pt':         self.create_hist('bjet0veto_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of leading b-tagged jet [GeV]'),
-            'bjet1veto_pt':         self.create_hist('bjet1veto_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of subleading b-tagged jet [GeV]'), 
-            'WRMass_DeltaRbb': dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'm_{lljj} [GeV]'),
-                hist.axis.Regular(30, 0, 6, name='deltaR_bb', label=r'\Delta R(b_{1}, b_{2})'),
-                hist.storage.Weight(),
-            ),
-            'btag_reco_pt': self.create_hist('btag_reco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of bjets, b-tagged jet [GeV]'),
-            'nobtag_reco_pt': self.create_hist('nobtag_reco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of bjets, non b-tagged jet [GeV]'),
-            'btag_noreco_pt': self.create_hist('btag_noreco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of non-bjets, b-tagged jet [GeV]'),
-            'nobtag_noreco_pt': self.create_hist('nobtag_noreco_pt', 'process', 'region', (200, 0, 2000), r'$p_{T}$ of non-bjets, non b-tagged jet [GeV]'),
-            'jetidxbtag': self.create_hist('jetidxbtag','process','region',(3, 0, 3),r'Index of b-tagged jet (pT ordered)'),
-            'jetidxnobtag': self.create_hist('jetidxnobtag','process','region',(3, 0, 3),r'Index of non-b-tagged jet (pT ordered)'),
-            'case_vs_j3': dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(4, 0, 4, name='case', label='b-tag case (0=00,1=01,2=10,3=11)'),
-                hist.axis.Regular(3, 0, 3, name='j3cat', label='j3 category (0=no j3,1=no btag,2=btag)'),
-                hist.storage.Weight(),
-            ),
-            'case_vs_j3_vs_mlljj': dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(4, 0, 4, name='case', label='b-tag case (0=00,1=01,2=10,3=11)'),
-                hist.axis.Regular(3, 0, 3, name='j3cat', label='j3 category (0=no j3,1=no btag,2=btag)'),
-                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'$m_{\ell\ell jj}$ [GeV]'),
-                hist.storage.Weight(),
-            ),
-            'case_vs_j3_vs_mlljjj': dah.hist.Hist(
-                hist.axis.StrCategory([], name="process", label="Process", growth=True),
-                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
-                hist.axis.Regular(4, 0, 4, name='case', label='b-tag case (0=00,1=01,2=10,3=11)'),
-                hist.axis.Regular(3, 0, 3, name='j3cat', label='j3 category (0=no j3,1=no btag,2=btag)'),
-                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'$m_{\ell\ell jjj}$ [GeV]'),
-                hist.storage.Weight(),
-            ),
+            'mass_lljj_corrected':    self.create_hist('mass_lljj_corrected',    'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}^{corr}$ [GeV]'),
         }
 
         # ——— Load SF lookup if provided ———
@@ -165,10 +181,14 @@ class WrAnalysis(processor.ProcessorABC):
 
     def add_resolved_selections(self, selections, tightElectrons, tightMuons, AK4Jets, mlljj, dr_jl_min, dr_j1j2, dr_l1l2):
         selections.add("twoTightLeptons", (ak.num(tightElectrons) + ak.num(tightMuons)) == 2)
-        selections.add("minTwoAK4Jets", ak.num(AK4Jets) >= 2)
+        if self.exc:
+            selections.add("minTwoAK4Jets", ak.num(AK4Jets) == 2)
+        else:
+            selections.add("minTwoAK4Jets", ak.num(AK4Jets) >= 2)
         selections.add("leadTightLeptonPt60", (ak.any(tightElectrons.pt > 60, axis=1) | ak.any(tightMuons.pt > 60, axis=1)))
         selections.add("mlljj>800", mlljj > 800)
         selections.add("dr>0.4", (dr_jl_min > 0.4) & (dr_j1j2 > 0.4) & (dr_l1l2 > 0.4))
+        #selections.add("btagVeto",ak.sum(ak.fill_none(AK4Jets.btagDeepFlavB > 0.049, False),axis=1) < 2)
 
     def fill_basic_histograms(self, output, region, cut,  process, jets, leptons, weights):
         """Helper function to fill histograms dynamically."""
@@ -196,6 +216,8 @@ class WrAnalysis(processor.ProcessorABC):
             ('mass_fourobject',         (leptons[:,0] + leptons[:,1] + jets[:,0] + jets[:,1]).mass, 'mass_fourobject'),
             ('pt_fourobject',           (leptons[:,0] + leptons[:,1] + jets[:,0] + jets[:,1]).pt,   'pt_fourobject'),
         ]
+        
+        # Note: mass_lljj_corrected will be added separately if s1, s2 are available
 
         if self.variable is not None:
             for _, vals_array, axis_name in variables:
@@ -275,67 +297,6 @@ class WrAnalysis(processor.ProcessorABC):
         dr_j1j2 = ak.fill_none(AK4Jets[:,0].delta_r(AK4Jets[:,1]), False)
         dr_l1l2 = ak.fill_none(tightLeptons[:,0].delta_r(tightLeptons[:,1]), False)
 
-        high_wp  = 0.049
-        low_wp = 0.049
-
-        jets = AK4Jets[ak.argsort(AK4Jets.pt, axis=1, ascending=False)]
-        jets = ak.pad_none(jets, 3, axis=1)
-
-        j1 = jets[:,0]
-        j2 = jets[:,1]
-        j3 = jets[:,2]
-
-        j1_high  = ak.fill_none(j1.btagDeepFlavB > high_wp, False)
-        j2_high  = ak.fill_none(j2.btagDeepFlavB > high_wp, False)
-        j3_high  = ak.fill_none(j3.btagDeepFlavB > high_wp, False)
-
-        j1_low = ak.fill_none(j1.btagDeepFlavB > low_wp, False)
-        j2_low = ak.fill_none(j2.btagDeepFlavB > low_wp, False)
-        j3_low = ak.fill_none(j3.btagDeepFlavB > low_wp, False)
-
-
-        # case_00 = (~j1_high) & (~j2_high)   # neither tagged
-        # case_10 = ( j1_high) & (~j2_high)   # j1 tagged only
-        # case_01 = (~j1_high) & ( j2_high)   # j2 tagged only
-        # case_11 = ( j1_high) & ( j2_high)   # both tagged
-
-        j3_exists = ~ak.is_none(j3)
-
-        mjjj=ak.where(j3_exists, (j1 + j2 + j3).mass, 0)
-        
-        j3_cat = ak.where(~j3_exists,0,ak.where(j3_high, 2, 1))
-        case_idx = ak.where(j1_high,2,0) + ak.where(j2_high,1,0)
-
-        pass_btag = ((j1_high & j2_low) |(j2_high & j1_low))
-
-        deltaR_bb = ak.fill_none(ak.where(pass_btag, j1.delta_r(j2), 0),0)
-        bjet_mult = ak.where(j1_high, 1, 0) + ak.where(j2_high, 1, 0)+0.5
-        bjet0_pt = ak.fill_none(ak.where(j1_high, j1.pt, 0), 0)
-        bjet1_pt = ak.fill_none(ak.where(j2_high, j2.pt, 0), 0)
-        bjetveto0_pt = ak.fill_none(ak.where(j1_high, 0, j1.pt), 0)
-        bjetveto1_pt = ak.fill_none(ak.where(j2_high, 0, j2.pt), 0)
-
-        btag_mask = ak.fill_none(jets.btagDeepFlavB > high_wp, False)
-        jet_indices = ak.local_index(jets, axis=1)
-        jetidxbtag = jet_indices[btag_mask]
-
-        nobtag_mask = ak.fill_none(jets.btagDeepFlavB <= high_wp, False)
-        jetidxnobtag = jet_indices[nobtag_mask]
-
-        jets1 = AK4Jets
-        true_b = abs(jets1.partonFlavour) == 5
-        tagged = jets1.btagDeepFlavB > high_wp
-
-        btag_reco_jets     = jets1[ true_b  &  tagged]
-        nobtag_reco_jets   = jets1[ true_b  & ~tagged]
-        btag_noreco_jets   = jets1[~true_b  &  tagged]
-        nobtag_noreco_jets = jets1[~true_b  & ~tagged]
-
-        btag_reco_pt     = btag_reco_jets.pt
-        nobtag_reco_pt   = nobtag_reco_jets.pt
-        btag_noreco_pt   = btag_noreco_jets.pt
-        nobtag_noreco_pt = nobtag_noreco_jets.pt
-
         # Event selections
         selections = PackedSelection()
         self.add_resolved_selections(selections, tightElectrons, tightMuons, AK4Jets, mlljj, dr_jl_min, dr_j1j2, dr_l1l2)
@@ -353,14 +314,6 @@ class WrAnalysis(processor.ProcessorABC):
             selections.add("eeTrigger", (eTrig & (nTightElectrons == 2) & (nTightMuons == 0)))
             selections.add("mumuTrigger", (muTrig & (nTightElectrons == 0) & (nTightMuons == 2)))
             selections.add("emuTrigger", ((eTrig | muTrig) & (nTightElectrons == 1) & (nTightMuons == 1))) #Delete etrig
-
-        mlljjj = ak.where(
-            j3_exists,
-            (tightLeptons[:, 0] + tightLeptons[:, 1] + j1 + j2 + j3).mass,
-            (tightLeptons[:, 0] + tightLeptons[:, 1] + j1 + j2).mass
-        )
-
-        mlljjj = ak.fill_none(mlljjj, 0)
 
         # Event Weights
         weights = Weights(size=None, storeIndividual=True)
@@ -397,70 +350,38 @@ class WrAnalysis(processor.ProcessorABC):
         # Define analysis regions
         regions = {
             # Drell-Yan Control Regions
-            'wr_ee_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'eejj'],
-            'wr_mumu_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'mumujj'],
+            'wr_ee_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'eejj'],# 'btagVeto'],
+            'wr_mumu_resolved_dy_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '60mll150', 'mumujj'],# 'btagVeto'],
             #EMu Sideband Control Region
-            'wr_resolved_flavor_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'emuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'emujj'],
+            'wr_resolved_flavor_cr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'emuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'emujj'],# 'btagVeto'],
             # Signal Regions
-            'wr_ee_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'eejj'],
-            'wr_mumu_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'mumujj'],
+            'wr_ee_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'eeTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'eejj'],# 'btagVeto'],
+            'wr_mumu_resolved_sr': ['twoTightLeptons', 'minTwoAK4Jets', 'leadTightLeptonPt60', 'mumuTrigger', 'mlljj>800', 'dr>0.4', '400mll', 'mumujj'],# 'btagVeto'],
         }
 
+        # Calculate corrected m_lljj with scaled jets (s1, s2)
+        # Calculate s1, s2 event-wise
+        s1, s2 = self.compute_s1_s2(tightLeptons[:, 0], tightLeptons[:, 1], 
+                                    AK4Jets[:, 0], AK4Jets[:, 1])
+        
+        # Scale jet momenta: multiply by s1 and s2
+        j1_scaled = AK4Jets[:, 0] * s1
+        j2_scaled = AK4Jets[:, 1] * s2
+        mlljj_corrected = ak.fill_none((tightLeptons[:, 0] + tightLeptons[:, 1] + j1_scaled + j2_scaled).mass, False)
+        
         # Fill histogram
         for region, cuts in regions.items():
             cut = selections.all(*cuts)
             self.fill_basic_histograms(output, region, cut, process, AK4Jets, tightLeptons, weights)
-            output['WRMass_DeltaRbb'].fill(process=process,region=region,mass_fourobject=mlljj[cut],deltaR_bb=deltaR_bb[cut],weight=weights.weight()[cut])
-            output['bjet_multiplicity'].fill(process=process,region=region,bjet_multiplicity=bjet_mult[cut],weight=weights.weight()[cut],)
-            output['bjet0_pt'].fill(process=process,region=region,bjet0_pt=bjet0_pt[cut],weight=weights.weight()[cut],)
-            output['bjet1_pt'].fill(process=process,region=region,bjet1_pt=bjet1_pt[cut],weight=weights.weight()[cut],)
-            output['bjet0veto_pt'].fill(process=process,region=region,bjet0veto_pt=bjetveto0_pt[cut],weight=weights.weight()[cut],)
-            output['bjet1veto_pt'].fill(process=process,region=region,bjet1veto_pt=bjetveto1_pt[cut],weight=weights.weight()[cut],)
-
-
-
-            output['btag_reco_pt'].fill(process=process,region=region,btag_reco_pt=ak.flatten(btag_reco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], btag_reco_pt[cut])[0]))
-
-            output['nobtag_reco_pt'].fill(process=process,region=region,nobtag_reco_pt=ak.flatten(nobtag_reco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], nobtag_reco_pt[cut])[0]))
-
-            output['btag_noreco_pt'].fill(process=process,region=region,btag_noreco_pt=ak.flatten(btag_noreco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], btag_noreco_pt[cut])[0]))
-
-            output['nobtag_noreco_pt'].fill(process=process,region=region,nobtag_noreco_pt=ak.flatten(nobtag_noreco_pt[cut]),weight=ak.flatten(ak.broadcast_arrays(weights.weight()[cut], nobtag_noreco_pt[cut])[0]))
-
-
-            vals = ak.flatten(jetidxbtag[cut])
-            w = ak.flatten(ak.broadcast_arrays(weights.weight()[cut], jetidxbtag[cut])[0])
-            output['jetidxbtag'].fill(process=process,region=region,jetidxbtag=vals,weight=w)
-
-            valsnon = ak.flatten(jetidxnobtag[cut])
-            wnon = ak.flatten(ak.broadcast_arrays(weights.weight()[cut], jetidxnobtag[cut])[0])
-            output['jetidxnobtag'].fill(process=process,region=region,jetidxnobtag=valsnon,weight=wnon)
-            output['case_vs_j3'].fill(
+            
+            # Fill corrected m_lljj histogram
+            vals_corrected = mlljj_corrected[cut]
+            w = weights.weight()[cut]
+            output['mass_lljj_corrected'].fill(
                 process=process,
                 region=region,
-                case=case_idx[cut],
-                j3cat=j3_cat[cut],
-                weight=weights.weight()[cut],
-            )
-
-            output['case_vs_j3_vs_mlljj'].fill(
-                process=process,
-                region=region,
-                case=case_idx[cut],
-                j3cat=j3_cat[cut],
-                mass_fourobject=mlljj[cut],
-                # pseudomass=mjjj[cut],
-                weight=weights.weight()[cut],
-            )
-
-            output['case_vs_j3_vs_mlljjj'].fill(
-                process=process,
-                region=region,
-                case=case_idx[cut],
-                j3cat=j3_cat[cut],
-                mass_fiveobject=mlljjj[cut],
-                # pseudomass=mjjj[cut],
-                weight=weights.weight()[cut],
+                mass_lljj_corrected=vals_corrected,
+                weight=w
             )
 
         output["weightStats"] = weights.weightStatistics

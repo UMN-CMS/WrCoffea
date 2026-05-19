@@ -57,7 +57,7 @@ class WrAnalysis(processor.ProcessorABC):
             'mass_fourobject':        self.create_hist('mass_fourobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             'pt_fourobject':          self.create_hist('pt_fourobject',          'process', 'region', (800,   0, 8000), r'$p_{T,\ell\ell jj}$ [GeV]'),
 
-            'best_fiveobject':        self.create_hist('best_fiveobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
+            # 'best_fiveobject':        self.create_hist('best_fiveobject',        'process', 'region', (800,   0, 8000), r'$m_{\ell\ell jj}$ [GeV]'),
             
             # 'WRMass4_DeltaR':dah.hist.Hist(
             #     hist.axis.StrCategory([], name="process", label="Process", growth=True),
@@ -84,6 +84,22 @@ class WrAnalysis(processor.ProcessorABC):
                 hist.axis.StrCategory([], name="process", label="Process", growth=True),
                 hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
                 hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'm_{lljjj} [GeV]'),
+                hist.axis.Regular(50, 0, 600, name='pTrel', label=r'pT_{min}^{rel} [GeV]'),
+                hist.storage.Weight(),
+            ),
+            'case_vs_j3_vs_mlljj': dah.hist.Hist(
+                hist.axis.StrCategory([], name="process", label="Process", growth=True),
+                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+                hist.axis.Regular(8, 0, 8, name='case', label='b-tag case (0=000,1=001,2=010,3=011,4=100,5=101,6=110,7=111)'),
+                hist.axis.Regular(100, 0, 8000, name='mass_fourobject', label=r'$m_{\ell\ell jj}$ [GeV]'),
+                hist.axis.Regular(50, 0, 600, name='pTrel', label=r'pT_{min}^{rel} [GeV]'),
+                hist.storage.Weight(),
+            ),
+            'case_vs_j3_vs_mlljjj': dah.hist.Hist(
+                hist.axis.StrCategory([], name="process", label="Process", growth=True),
+                hist.axis.StrCategory([], name="region", label="Analysis Region", growth=True),
+                hist.axis.Regular(8, 0, 8, name='case', label='b-tag case (0=000,1=001,2=010,3=011,4=100,5=101,6=110,7=111)'),
+                hist.axis.Regular(100, 0, 8000, name='mass_fiveobject', label=r'$m_{\ell\ell jjj}$ [GeV]'),
                 hist.axis.Regular(50, 0, 600, name='pTrel', label=r'pT_{min}^{rel} [GeV]'),
                 hist.storage.Weight(),
             ),
@@ -424,6 +440,14 @@ class WrAnalysis(processor.ProcessorABC):
         dr_j2j3 = ak.fill_none(AK4Jets[:,1].delta_r(AK4Jets[:,2]), False)
         dr_l1l2 = ak.fill_none(tightLeptons[:,0].delta_r(tightLeptons[:,1]), False)
 
+        working_point = 0.049
+
+        j1_high  = ak.fill_none(AK4Jets[:,0].btagDeepFlavB > working_point, False)
+        j2_high  = ak.fill_none(AK4Jets[:,1].btagDeepFlavB > working_point, False)
+        j3_high  = ak.fill_none(AK4Jets[:,2].btagDeepFlavB > working_point, False)
+
+        case_idx = ak.where(j1_high,4,0) + ak.where(j2_high,2,0) + ak.where(j3_high,1,0)
+
         # Event selections
         selections = PackedSelection()
         self.add_resolved_selections(selections, tightElectrons, tightMuons, AK4Jets, mlljj, dr_jl_min, dr_j1j2, dr_j1j3,dr_j2j3, dr_l1l2)
@@ -526,9 +550,9 @@ class WrAnalysis(processor.ProcessorABC):
             # pseudomagic3=pt_min/mjjj
             # pseudomagic=pt_min/mjj
             
-            cutoff=0.2*int(self._signal_sample[8:])-100
+            # cutoff=0.2*int(self._signal_sample[8:])-100
             
-            best_mlljjj=ak.where(pt_min>cutoff,mlljj1,mlljjj)
+            # best_mlljjj=ak.where(pt_min>cutoff,mlljj1,mlljjj)
             
             # count= ak.num(mlljj1, axis=0).compute()
             # j1tb=ak.where(AK4Jets[cut][:, 0].partonFlavour==5,1,0)
@@ -568,12 +592,31 @@ class WrAnalysis(processor.ProcessorABC):
             # output['WRMass4_pseudo'].fill(process=process,region=region,mass_fourobject=mlljj1,pseudomass=mjj,weight=weights.weight()[cut])
             # output['WRMass5_pseudo'].fill(process=process,region=region,mass_fiveobject=mlljjj,pseudomass=mjj,weight=weights.weight()[cut])
 
-            output['best_fiveobject'].fill(process=process,region=region,best_fiveobject=best_mlljjj,weight=weights.weight()[cut])
+            # output['best_fiveobject'].fill(process=process,region=region,best_fiveobject=best_mlljjj,weight=weights.weight()[cut])
             
             # wrcand=(tightLeptons[cut][:, 0] + tightLeptons[cut][:, 1] + AK4Jets[cut][:, 0] + AK4Jets[cut][:, 1]).boostvec
             # restdr_j3_min = ak.min(AK4Jets[cut][:,2].boost(-wrcand).delta_r(AK4Jets[cut][:,:2].boost(-wrcand)),axis=1)
             # output['WRMass4_restDeltaR'].fill(process=process,region=region,mass_fourobject=mlljj1,del_r=restdr_j3_min,weight=weights.weight()[cut])
             # output['WRMass5_restDeltaR'].fill(process=process,region=region,mass_fiveobject=mlljjj,del_r=restdr_j3_min,weight=weights.weight()[cut])
+
+            output['case_vs_j3_vs_mlljj'].fill(
+                process=process,
+                region=region,
+                case=case_idx[cut],
+                pTrel=pt_min,
+                mass_fourobject=mlljj1,
+                weight=weights.weight()[cut],
+            )
+
+            output['case_vs_j3_vs_mlljjj'].fill(
+                process=process,
+                region=region,
+                case=case_idx[cut],
+                pTrel=pt_min,
+                mass_fiveobject=mlljjj,
+                weight=weights.weight()[cut],
+            )
+
 
 
             # if region == 'wr_ee_resolved_sr':

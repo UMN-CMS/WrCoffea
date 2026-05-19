@@ -304,27 +304,6 @@ class WrAnalysis(processor.ProcessorABC):
         for region, cuts in regions.items():
             cut = selections.all(*cuts)
             self.fill_basic_histograms(output, region, cut, process, AK4Jets, tightLeptons, weights)
-            # if process == "Signal":
-            #     wr_pdg_id = 34
-            #     gen = events.GenPart
-
-            #     # boolean jagged mask: [nEvents][nGenPart] 
-            #     is_wr = abs(gen.pdgId) == wr_pdg_id
-
-            #     # 1) broadcast your 1D event-weights to the same shape as gen.mass
-            #     weights_arr       = weights.weight()                               # [nEvents]
-            #     weights_per_part, _ = ak.broadcast_arrays(weights_arr, gen.mass)   # both now [nEvents][nGenPart]
-
-            #     # 2) mask & flatten masses and weights
-            #     wr_masses  = ak.flatten(gen.mass[is_wr])         
-            #     wr_weights = ak.flatten(weights_per_part[is_wr])
-
-            #     output['mass_WR'].fill(
-            #         process = process,
-            #         region  = "gen",         # or whatever label you like
-            #         mass_WR = wr_masses,
-            #         weight  = wr_weights
-            #     )
 
         output["weightStats"] = weights.weightStatistics
         return output
