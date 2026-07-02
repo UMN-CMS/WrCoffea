@@ -17,8 +17,11 @@ _BEHAVIOR = vector.backends.awkward.behavior
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS,
     BOOSTED_HIST_SPECS,
+    RESOLVED_2D_HIST_SPECS,
+    BOOSTED_2D_HIST_SPECS,
     _booking_specs,
     create_hist,
+    create_hist2D,
     fill_resolved_histograms,
     fill_boosted_histograms,
 )
@@ -30,6 +33,26 @@ def _vec_array(pts, etas, phis, masses, extra_fields=None):
     if extra_fields:
         fields.update(extra_fields)
     return ak.zip(fields, with_name="Momentum4D", behavior=_BEHAVIOR)
+
+
+def _make_test_output():
+    """Book histograms the same way analyzer._make_output does.
+
+    1D hists come from _booking_specs(); 2D hists are booked via create_hist2D.
+    Note: analyzer._make_output books only RESOLVED_2D_HIST_SPECS -- the boosted
+    2D table currently piggybacks on that booking because its histogram key and
+    axis definitions coincide with a resolved 2D spec. We book both tables here
+    and pin the coincidence in TestBookingFillingConsistency.
+    """
+    output = {
+        name: create_hist(name, bins, label)
+        for name, (bins, label) in _booking_specs().items()
+    }
+    for hist_key, xinfo, yinfo, _ in (*RESOLVED_2D_HIST_SPECS, *BOOSTED_2D_HIST_SPECS):
+        xname, xbins, xlabel = xinfo
+        yname, ybins, ylabel = yinfo
+        output[hist_key] = create_hist2D(xname, xbins, xlabel, yname, ybins, ylabel)
+    return output
 
 
 class TestBookingSpecs:
@@ -77,8 +100,7 @@ class TestFillResolvedHistograms:
     def setup(self):
         """Build mock objects for a 3-event chunk with 2 leptons and 2 jets each."""
         n = 3
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         leptons = _vec_array(
             pts=[[200.0, 100.0], [150.0, 80.0], [300.0, 60.0]],
@@ -122,7 +144,7 @@ class TestFillResolvedHistograms:
         fill_resolved_histograms(output, "r1", partial_cut, "DYJets", jets, leptons, weights, syst_weights)
         h_partial = output["pt_leading_lepton"].sum().value
 
-        output2 = {name: create_hist(name, bins, label) for name, (bins, label) in _booking_specs().items()}
+        output2 = _make_test_output()
         fill_resolved_histograms(output2, "r1", cut, "DYJets", jets, leptons, weights, syst_weights)
         h_full = output2["pt_leading_lepton"].sum().value
 
@@ -135,8 +157,7 @@ class TestFillBoostedHistograms:
     @pytest.fixture
     def setup(self):
         n = 3
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         leptons = _vec_array(
             pts=[200.0, 150.0, 300.0],
@@ -195,8 +216,7 @@ class TestResolvedHistogramValues:
 
     def test_mass_dilepton_calculation(self):
         """Test that mass_dilepton histogram contains correct invariant masses."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         # Create leptons with known kinematics
         leptons = _vec_array(
@@ -237,8 +257,7 @@ class TestResolvedHistogramValues:
 
     def test_pt_leading_lepton_sorting(self):
         """Test that pt_leading_lepton uses the highest pT lepton."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         # Create leptons where second has higher pT (should be sorted)
         leptons = _vec_array(
@@ -268,8 +287,7 @@ class TestResolvedHistogramValues:
 
     def test_mass_fourobject_calculation(self):
         """Test that mass_fourobject = (l1 + l2 + j1 + j2).mass."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         # Create simple kinematics for easy validation
         leptons = _vec_array(
@@ -300,8 +318,7 @@ class TestResolvedHistogramValues:
 
     def test_empty_cut_produces_empty_histograms(self):
         """Test that cut=all False results in empty histograms."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         leptons = _vec_array(
             pts=[[100.0, 80.0]],
@@ -330,8 +347,7 @@ class TestResolvedHistogramValues:
 
     def test_weight_propagation_to_histograms(self):
         """Test that event weights are correctly applied to histogram bins."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         leptons = _vec_array(
             pts=[[100.0, 80.0], [120.0, 90.0]],  # 2 events
@@ -361,8 +377,7 @@ class TestResolvedHistogramValues:
 
     def test_multiple_systematics_produce_separate_bins(self):
         """Test that multiple systematic variations are stored separately."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         leptons = _vec_array(
             pts=[[100.0, 80.0]],
@@ -409,8 +424,7 @@ class TestBoostedHistogramValues:
 
     def test_mass_dilepton_boosted(self):
         """Test boosted mass_dilepton = (tight_lep + loose_lep).mass."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         tight_lep = _vec_array(
             pts=[150.0],  # Single event, per-event objects (not jagged)
@@ -450,8 +464,7 @@ class TestBoostedHistogramValues:
 
     def test_lsf3_histogram_values(self):
         """Test that LSF_leading_AK8Jets histogram contains correct LSF values."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         tight_lep = _vec_array(pts=[150.0], etas=[0.5], phis=[0.0], masses=[0.105])
         ak8jet = _vec_array(
@@ -482,8 +495,7 @@ class TestBoostedHistogramValues:
         When dR < 0.8: mass = (tight_lep + AK8).mass
         When dR >= 0.8: mass = (tight_lep + AK8 + loose_lep).mass
         """
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         # Event 1: dR < 0.8 (loose lep close to AK8)
         tight_lep_1 = _vec_array(pts=[150.0], etas=[0.0], phis=[0.0], masses=[0.105])
@@ -511,8 +523,7 @@ class TestBoostedHistogramValues:
 
     def test_boosted_multiple_events_different_weights(self):
         """Test that boosted histograms correctly handle multiple events with different weights."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         tight_lep = _vec_array(
             pts=[150.0, 200.0, 120.0],  # 3 events
@@ -552,8 +563,7 @@ class TestBoostedHistogramValues:
 
     def test_boosted_partial_cut(self):
         """Test that partial event selection works correctly for boosted."""
-        specs = _booking_specs()
-        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+        output = _make_test_output()
 
         tight_lep = _vec_array(
             pts=[150.0, 200.0, 120.0],
@@ -590,3 +600,101 @@ class TestBoostedHistogramValues:
         h = output["pt_leading_lepton"]
         h_proj = h[{"process": "DYJets", "region": "sr", "syst": "Nominal"}]
         assert h_proj.sum().value == pytest.approx(2.0, rel=1e-5)
+
+
+# ---------------------------------------------------------------------------
+# Booking / Filling Consistency Tests
+# ---------------------------------------------------------------------------
+
+
+class _RecordingOutput(dict):
+    """Dict that records every histogram key the fill functions look up."""
+
+    def __init__(self, base):
+        super().__init__(base)
+        self.accessed = set()
+
+    def __getitem__(self, key):
+        self.accessed.add(key)
+        return super().__getitem__(key)
+
+
+class TestBookingFillingConsistency:
+    """Guard against booking/filling divergence.
+
+    analyzer._make_output books 1D hists from _booking_specs() and 2D hists
+    from RESOLVED_2D_HIST_SPECS only. The boosted 2D table currently relies on
+    its histogram key/axes coinciding with a resolved 2D spec to be booked at
+    all. These tests pin that every name the fill functions touch exists in
+    the union of _booking_specs() + the 2D spec tables, so a new spec that is
+    filled but never booked fails here instead of KeyError-ing in production.
+    """
+
+    @staticmethod
+    def _booked_names():
+        names = set(_booking_specs())
+        names.update(key for key, *_ in RESOLVED_2D_HIST_SPECS)
+        names.update(key for key, *_ in BOOSTED_2D_HIST_SPECS)
+        return names
+
+    def test_resolved_fill_names_are_all_booked(self):
+        output = _RecordingOutput(_make_test_output())
+        leptons = _vec_array(
+            pts=[[100.0, 80.0]], etas=[[0.0, 0.0]],
+            phis=[[0.0, 1.0]], masses=[[0.105, 0.105]],
+        )
+        jets = _vec_array(
+            pts=[[150.0, 100.0]], etas=[[1.0, -1.0]],
+            phis=[[2.0, 3.0]], masses=[[10.0, 10.0]],
+        )
+        weights = Weights(1)
+        weights.add("test", np.ones(1))
+        syst_weights = {"Nominal": weights.weight()}
+        cut = np.array([True])
+
+        fill_resolved_histograms(output, "sr", cut, "DYJets", jets, leptons, weights, syst_weights)
+
+        expected = {name for name, *_ in RESOLVED_HIST_SPECS}
+        expected |= {key for key, *_ in RESOLVED_2D_HIST_SPECS}
+        assert output.accessed == expected
+        assert output.accessed <= self._booked_names()
+
+    def test_boosted_fill_names_are_all_booked(self):
+        output = _RecordingOutput(_make_test_output())
+        tight_lep = _vec_array(pts=[150.0], etas=[0.5], phis=[0.0], masses=[0.105])
+        ak8jet = _vec_array(
+            pts=[500.0], etas=[1.0], phis=[3.0], masses=[80.0],
+            extra_fields={"lsf3": [0.9]},
+        )
+        loose_lep = _vec_array(
+            pts=[80.0], etas=[-0.5], phis=[1.0], masses=[0.105],
+            extra_fields={"pdgId": [13]},
+        )
+        weights = Weights(1)
+        weights.add("test", np.ones(1))
+        syst_weights = {"Nominal": weights.weight()}
+        cut = np.array([True])
+
+        fill_boosted_histograms(output, "wr_mumu_boosted_sr", cut, "DYJets",
+                                tight_lep, ak8jet, loose_lep, weights, syst_weights)
+
+        expected = {name for name, *_ in BOOSTED_HIST_SPECS}
+        expected |= {key for key, *_ in BOOSTED_2D_HIST_SPECS}
+        assert output.accessed == expected
+        assert output.accessed <= self._booked_names()
+
+    def test_boosted_2d_specs_are_covered_by_resolved_booking(self):
+        # analyzer._make_output books only RESOLVED_2D_HIST_SPECS, so every
+        # boosted 2D spec must reuse a resolved 2D key with identical axis
+        # names and binning -- otherwise the analyzer would KeyError (or fill
+        # with mismatched axes) at runtime.
+        resolved_2d = {key: (xinfo, yinfo) for key, xinfo, yinfo, _ in RESOLVED_2D_HIST_SPECS}
+        for key, xinfo, yinfo, _ in BOOSTED_2D_HIST_SPECS:
+            assert key in resolved_2d, (
+                f"Boosted 2D hist '{key}' is not booked by analyzer._make_output "
+                "(which only books RESOLVED_2D_HIST_SPECS)"
+            )
+            rxinfo, ryinfo = resolved_2d[key]
+            # Axis name and binning must match; labels may differ.
+            assert (xinfo[0], xinfo[1]) == (rxinfo[0], rxinfo[1])
+            assert (yinfo[0], yinfo[1]) == (ryinfo[0], ryinfo[1])

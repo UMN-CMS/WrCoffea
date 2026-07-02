@@ -24,15 +24,17 @@ Requires Python 3.12 (available on FNAL LPC via CVMFS, since the system Python i
 /cvmfs/sft.cern.ch/lcg/releases/Python/3.12.11-531c6/x86_64-el9-gcc13-opt/bin/python3 -m venv --system-site-packages .venv
 source .venv/bin/activate
 pip install --upgrade pip setuptools
-pip install -e .
+pip install -e ".[xrootd]"
 ```
 
-> **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e .`.
+> **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e ".[xrootd]"`.
 
-> **Troubleshooting XRootD:** The `xrootd` package is built from source during installation. If `pip install -e .` fails with `ERROR: Wheel 'xrootd' ... is invalid`, a corrupted wheel is cached from a previous attempt. Clear it and retry:
+> **Note:** The `[xrootd]` extra installs the `xrootd`/`fsspec-xrootd` packages needed to open `root://` URLs. It is optional where XRootD bindings are already provided (CVMFS system site-packages, the coffea container) and is skipped in CI, where the tests run fully offline.
+
+> **Troubleshooting XRootD:** The `xrootd` package is built from source during installation. If installation fails with `ERROR: Wheel 'xrootd' ... is invalid`, a corrupted wheel is cached from a previous attempt. Clear it and retry:
 > ```bash
 > pip cache remove xrootd
-> pip install -e .
+> pip install -e ".[xrootd]"
 > ```
 
 ### Option B: Condor runs at FNAL LPC (recommended for production)
@@ -84,7 +86,7 @@ If you switch to a different container version:
    rm -rf .venv
    python3 -m venv .venv
    source .venv/bin/activate
-   pip install -e .
+   pip install -e ".[xrootd]"
    ```
 
 This ensures your local development environment matches the production container exactly.

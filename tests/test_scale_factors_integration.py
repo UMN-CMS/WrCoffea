@@ -5,7 +5,7 @@ Critical functionality:
 - Pileup weight evaluation
 - Muon SF components (RECO, ID, ISO, trigger)
 - Electron SF components (Reco, ID, trigger)
-- Jet veto map evaluation
+- Jet veto map evaluation (event filtering on the main path)
 - Pt/eta clipping to valid bin edges
 - Era fallback handling
 
@@ -78,30 +78,40 @@ def _make_events(n_events, nTrueInt_values=None):
     return ev
 
 
-def _make_events_with_jets(jet_pt, jet_eta, jet_phi):
-    """Build a mock *events* object whose ``Jet`` field is a proper
-    awkward record so that ``ak.num()``, boolean masking, and
-    ``ak.flatten()`` work.
+def _make_events_with_jets(jet_pt, jet_eta, jet_phi, jet_chEmEF=None, jet_neEmEF=None):
+    """Build an awkward *events* array whose ``Jet`` field is a proper
+    jagged record, supporting ``events.Jet``, ``len(events)``, and boolean
+    event indexing ``events[mask]`` (jet_veto_event_mask filters events on
+    its main path).
 
     Parameters
     ----------
     jet_pt, jet_eta, jet_phi : list of lists
         Jagged arrays of jet kinematics (one inner list per event).
+    jet_chEmEF, jet_neEmEF : list of lists, optional
+        Charged/neutral EM energy fractions; default to zeros (which pass
+        the jet-veto EM-fraction preselection chEmEF + neEmEF < 0.9).
     """
+    pt = ak.Array(jet_pt)
+    if jet_chEmEF is None:
+        jet_chEmEF = ak.zeros_like(pt)
+    if jet_neEmEF is None:
+        jet_neEmEF = ak.zeros_like(pt)
+
     jets = ak.zip({
-        "pt": ak.Array(jet_pt),
+        "pt": pt,
         "eta": ak.Array(jet_eta),
         "phi": ak.Array(jet_phi),
+        "chEmEF": ak.Array(jet_chEmEF),
+        "neEmEF": ak.Array(jet_neEmEF),
     })
+    return ak.zip({"Jet": jets}, depth_limit=1)
 
-    class MockEvents:
-        pass
 
-    n_events = len(jet_pt)
-    ev = MockEvents()
-    type(ev).__len__ = lambda self: n_events
-    ev.Jet = jets
-    return ev
+def _all_true_ak4_id_mask(events):
+    """Per-jet boolean ID mask, shaped like the analyzer's ``ak4_id_mask``
+    (e.g. ``events.Jet.jetId >= 6``) but passing every jet."""
+    return events.Jet.pt > -1.0
 
 
 def _make_tight_leptons(pt_lists, eta_lists, deltaEtaSC_lists=None):
@@ -488,34 +498,48 @@ class TestElectronScaleFactors:
 # ---------------------------------------------------------------------------
 
 class TestJetVetoMap:
-    """Test jet veto map evaluation."""
+    """Test jet veto map evaluation.
+
+    Current contract of ``jet_veto_event_mask(events, ak4_id_mask, era)``:
+
+    - Main path (era configured AND >= 1 preselected jet): returns the
+      FILTERED events array (``events[~any_vetoed]``).
+    - Early exits (era not configured, or zero preselected jets): returns
+      an all-True boolean mask of length ``len(events)`` instead.
+
+    NOTE: this dual return-type contract (filtered events vs. boolean mask)
+    is a known, reviewed inconsistency; these tests pin the current behavior.
+    """
 
     def test_jet_veto_event_mask(self):
-        """jet_veto_event_mask returns a per-event boolean mask."""
+        """Main path with no vetoed jets returns all events (filtered array)."""
         n_events = 20
         events = _make_events_with_jets(
             jet_pt=[[100.0, 80.0]] * n_events,
             jet_eta=[[2.0, -2.2]] * n_events,
             jet_phi=[[1.5, -1.0]] * n_events,
         )
+        ak4_id_mask = _all_true_ak4_id_mask(events)
 
         # All jets pass (veto value = 0 means not vetoed).
         ctx, _, _ = _patch_correctionlib(_mock_correction_evaluate_factory(0.0))
         with ctx:
-            veto_mask = sf.jet_veto_event_mask(events, TEST_ERA)
+            result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        assert len(veto_mask) == n_events
-        assert veto_mask.dtype == bool
-        assert np.all(veto_mask)
+        # Main path returns filtered events, not a boolean mask.
+        assert isinstance(result, ak.Array)
+        assert len(result) == n_events
+        assert ak.to_list(result.Jet.pt) == ak.to_list(events.Jet.pt)
 
     def test_jet_veto_some_vetoed(self):
-        """Events with vetoed jets should be flagged False."""
+        """Events containing a vetoed jet are removed from the returned events."""
         # 3 events, each with 1 jet.
         events = _make_events_with_jets(
             jet_pt=[[100.0], [200.0], [150.0]],
             jet_eta=[[2.0], [3.0], [1.0]],
             jet_phi=[[1.5], [-1.0], [0.5]],
         )
+        ak4_id_mask = _all_true_ak4_id_mask(events)
 
         def evaluate_fn(*args):
             # args: ("jetvetomap", eta_array, phi_array)
@@ -527,28 +551,49 @@ class TestJetVetoMap:
 
         ctx, _, _ = _patch_correctionlib(evaluate_fn)
         with ctx:
-            veto_mask = sf.jet_veto_event_mask(events, TEST_ERA)
+            result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        assert len(veto_mask) == 3
-        assert veto_mask[0] == True   # eta=2.0 passes
-        assert veto_mask[1] == False  # eta=3.0 vetoed
-        assert veto_mask[2] == True   # eta=1.0 passes
+        # eta=3.0 event is vetoed; eta=2.0 and eta=1.0 events survive.
+        assert len(result) == 2
+        assert ak.to_list(result.Jet.eta) == [[2.0], [1.0]]
+        assert ak.to_list(result.Jet.pt) == [[100.0], [150.0]]
 
     def test_jet_veto_empty_events(self):
-        """Events with no jets should pass the veto."""
+        """Events with no jets should survive the veto (main path is taken
+        because another event has a preselected jet)."""
         events = _make_events_with_jets(
             jet_pt=[[], [100.0], []],
             jet_eta=[[], [2.0], []],
             jet_phi=[[], [1.5], []],
         )
+        ak4_id_mask = _all_true_ak4_id_mask(events)
 
         ctx, _, _ = _patch_correctionlib(_mock_correction_evaluate_factory(0.0))
         with ctx:
-            veto_mask = sf.jet_veto_event_mask(events, TEST_ERA)
+            result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        assert len(veto_mask) == 3
-        assert veto_mask[0] == True
-        assert veto_mask[2] == True
+        # All 3 events survive, including the jet-less ones.
+        assert len(result) == 3
+        assert ak.to_list(result.Jet.pt) == [[], [100.0], []]
+
+    def test_jet_veto_no_preselected_jets_returns_bool_mask(self):
+        """Early exit: when ZERO jets pass preselection, the function returns
+        an all-True boolean mask rather than filtered events (known reviewed
+        contract inconsistency with the main path)."""
+        events = _make_events_with_jets(
+            jet_pt=[[5.0], [10.0]],  # all below jet_veto_pt_min = 15
+            jet_eta=[[2.0], [1.0]],
+            jet_phi=[[1.5], [0.5]],
+        )
+        ak4_id_mask = _all_true_ak4_id_mask(events)
+
+        ctx, _, _ = _patch_correctionlib(_mock_correction_evaluate_factory(0.0))
+        with ctx:
+            result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
+
+        assert isinstance(result, np.ndarray)
+        assert result.dtype == bool
+        np.testing.assert_array_equal(result, np.ones(2, dtype=bool))
 
     def test_jet_veto_low_pt_jets_excluded(self):
         """Jets below the veto map pT threshold should not be evaluated."""
@@ -557,6 +602,7 @@ class TestJetVetoMap:
             jet_eta=[[2.0, 3.5]],   # Second would be vetoed if evaluated
             jet_phi=[[1.5, -1.0]],
         )
+        ak4_id_mask = _all_true_ak4_id_mask(events)
 
         calls = []
         def evaluate_fn(*args):
@@ -566,24 +612,53 @@ class TestJetVetoMap:
 
         ctx, _, _ = _patch_correctionlib(evaluate_fn)
         with ctx:
-            veto_mask = sf.jet_veto_event_mask(events, TEST_ERA)
+            result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        assert len(veto_mask) == 1
+        # Main path: event survives (its evaluated jet is not vetoed).
+        assert len(result) == 1
         # Only 1 jet should have been evaluated (the one above threshold).
         assert calls[0] == 1
 
+    def test_jet_veto_ak4_id_mask_respected(self):
+        """Jets failing the per-jet ID mask are excluded from evaluation, so
+        a would-be-vetoed jet that fails ID cannot veto its event."""
+        events = _make_events_with_jets(
+            jet_pt=[[100.0, 90.0]],
+            jet_eta=[[2.0, 3.0]],  # second jet would be vetoed if evaluated
+            jet_phi=[[1.5, -1.0]],
+        )
+        # Only the first jet passes the ID mask.
+        ak4_id_mask = ak.Array([[True, False]])
+
+        def evaluate_fn(*args):
+            eta = args[1]
+            result = np.zeros(len(eta), dtype=np.float64)
+            result[np.abs(eta) > 2.5] = 1.0
+            return result
+
+        ctx, _, _ = _patch_correctionlib(evaluate_fn)
+        with ctx:
+            result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
+
+        # The event survives because the bad-eta jet failed ID preselection.
+        assert len(result) == 1
+
     def test_jet_veto_unconfigured_era(self):
-        """When era is not in JETVETO_JSONS, all events pass."""
+        """Early exit: when era is not in JETVETO_JSONS, an all-True boolean
+        mask is returned (not filtered events -- known reviewed contract
+        inconsistency with the main path)."""
         events = _make_events_with_jets(
             jet_pt=[[100.0]],
             jet_eta=[[2.0]],
             jet_phi=[[1.5]],
         )
+        ak4_id_mask = _all_true_ak4_id_mask(events)
 
-        veto_mask = sf.jet_veto_event_mask(events, "FakeEra9999")
+        result = sf.jet_veto_event_mask(events, ak4_id_mask, "FakeEra9999")
 
-        assert len(veto_mask) == 1
-        assert veto_mask[0] == True
+        assert isinstance(result, np.ndarray)
+        assert result.dtype == bool
+        np.testing.assert_array_equal(result, np.ones(1, dtype=bool))
 
 
 # ---------------------------------------------------------------------------
@@ -722,6 +797,9 @@ class TestEraFallback:
         nom, _, _ = sf.electron_trigger_sf(tight_leptons, fake_era)
         np.testing.assert_array_equal(nom, np.ones(n_events))
 
-        # jet_veto_event_mask
-        mask = sf.jet_veto_event_mask(events_with_jets, fake_era)
+        # jet_veto_event_mask: unconfigured era takes the early exit, which
+        # returns an all-True boolean mask (NOT filtered events as on the
+        # main path -- known reviewed contract inconsistency).
+        ak4_id_mask = _all_true_ak4_id_mask(events_with_jets)
+        mask = sf.jet_veto_event_mask(events_with_jets, ak4_id_mask, fake_era)
         np.testing.assert_array_equal(mask, np.ones(n_events, dtype=bool))
