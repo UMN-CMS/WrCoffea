@@ -29,7 +29,12 @@ class TestSkimCuts:
         assert SKIM_CUTS["lepton_pt_min"] <= CUTS["lepton_pt_min"]
 
     def test_lepton_eta(self):
-        assert SKIM_CUTS["lepton_eta_max"] >= CUTS["lepton_eta_max"]
+        # Analysis cuts split lepton eta into electron (2.5) and muon (2.4);
+        # the skim keeps a single flavor-agnostic cut, so it must be looser
+        # than (or equal to) the loosest analysis-level lepton eta cut.
+        assert SKIM_CUTS["lepton_eta_max"] >= max(
+            CUTS["electron_eta_max"], CUTS["muon_eta_max"]
+        )
 
     def test_ak4_pt(self):
         assert SKIM_CUTS["ak4_pt_min"] <= CUTS["ak4_pt_min"]
@@ -236,6 +241,23 @@ class TestRetryClassification:
 
     def test_classify_corrupt_error_nonretryable(self):
         cat, retryable = skimmer._classify_skim_error(RuntimeError("received 0 bytes from server"))
+        assert cat == "corrupt_file"
+        assert retryable is False
+
+    def test_classify_corrupt_pattern_with_network_signature_is_retryable(self):
+        # A transport error surfacing mid-read matches broad corrupt patterns
+        # (e.g. "basket"), but a strong network signature takes precedence and
+        # keeps the failure retryable as network_error.
+        cat, retryable = skimmer._classify_skim_error(
+            RuntimeError("failed to read basket: operation timed out")
+        )
+        assert cat == "network_error"
+        assert retryable is True
+
+    def test_classify_corrupt_pattern_without_network_signature_stays_corrupt(self):
+        cat, retryable = skimmer._classify_skim_error(
+            RuntimeError("zlib decompression failure in basket 12")
+        )
         assert cat == "corrupt_file"
         assert retryable is False
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 import gc
 import logging
 import os
+import random
 import resource
 import time
 from dataclasses import dataclass
@@ -21,11 +22,7 @@ import numpy as np
 import uproot
 from coffea.nanoevents import NanoAODSchema, NanoEventsFactory
 from dask import compute
-from wrcoffea.xrootd_fallback import (
-    DEFAULT_RETRIES_PER_REDIRECTOR,
-    DEFAULT_RETRY_SLEEP_SECONDS,
-    REDIRECTORS,
-)
+from wrcoffea.xrootd_fallback import REDIRECTORS
 
 
 logger = logging.getLogger(__name__)
@@ -192,8 +189,10 @@ XROOTD_TIMEOUT = 10  # seconds
 os.environ.setdefault("XRD_REQUESTTIMEOUT", str(XROOTD_TIMEOUT))
 os.environ.setdefault("XRD_CONNECTIONTIMEOUT", str(XROOTD_TIMEOUT))
 
-MAX_RETRIES_PER_REDIRECTOR = DEFAULT_RETRIES_PER_REDIRECTOR
-RETRY_SLEEP_SECONDS = DEFAULT_RETRY_SLEEP_SECONDS
+# Retries within one redirector before failing over to the next; a
+# seconds-long site/network blip must not permanently mark a file failed.
+MAX_RETRIES_PER_REDIRECTOR = 3
+RETRY_BACKOFF_CAP_SECONDS = 30.0
 
 # Skim cuts are intentionally looser than analysis cuts (analysis_config.CUTS)
 # so skimmed files remain usable as the analysis evolves.
@@ -651,7 +650,10 @@ def _classify_skim_error(exc: Exception) -> tuple[str, bool]:
     if any(p in msg for p in empty_patterns):
         return "empty_input", False
 
-    # Corruption / unreadable object storage payloads.
+    # Corruption / unreadable object storage payloads. A transport error
+    # that surfaces mid-read (e.g. "failed to read basket ... socket
+    # timeout") also matches these broad patterns, so a clear network
+    # signature takes precedence and keeps the failure retryable.
     corrupt_patterns = [
         "received 0 bytes",
         "corrupt",
@@ -661,7 +663,16 @@ def _classify_skim_error(exc: Exception) -> tuple[str, bool]:
         "basket",
         "not a root file",
     ]
+    strong_network_patterns = [
+        "timeout",
+        "timed out",
+        "operation expired",
+        "connection reset",
+        "connection refused",
+    ]
     if any(p in msg for p in corrupt_patterns):
+        if any(p in msg for p in strong_network_patterns):
+            return "network_error", True
         return "corrupt_file", False
 
     # Structural incompatibility with expected NanoAOD schema.
@@ -695,20 +706,23 @@ def _classify_skim_error(exc: Exception) -> tuple[str, bool]:
     return "unknown_error", True
 
 
-def _retry_sleep_seconds(_attempt: int) -> float:
-    """Return fixed sleep between retries.
+def _retry_sleep_seconds(attempt: int) -> float:
+    """Return exponential-backoff sleep with jitter between retries.
 
-    The *attempt* index starts at 1.
+    The *attempt* index starts at 1: 1 s, 2 s, 4 s, ... capped at
+    RETRY_BACKOFF_CAP_SECONDS, plus up to 1 s of jitter so many
+    concurrent Condor workers do not retry in lockstep.
     """
-    return RETRY_SLEEP_SECONDS
+    base = min(2.0 ** (attempt - 1), RETRY_BACKOFF_CAP_SECONDS)
+    return base + random.uniform(0.0, 1.0)
 
 
 def skim_single_file(src_path: str, dest_path: str, progress=None) -> SkimResult:
     """Skim one NanoAOD file with XRootD retry and redirector fallback.
 
     For XRootD URLs: retries up to MAX_RETRIES_PER_REDIRECTOR times per
-    redirector with a fixed RETRY_SLEEP_SECONDS delay between retries,
-    then falls back to the next redirector in REDIRECTORS.
+    redirector with exponential-backoff sleeps between retries, then
+    falls back to the next redirector in REDIRECTORS.
     For local paths: calls the implementation directly with no retries.
 
     Schema errors are treated as non-retryable and are raised immediately.
@@ -781,6 +795,7 @@ def skim_single_file(src_path: str, dest_path: str, progress=None) -> SkimResult
                     time.sleep(sleep_s)
         if redir_idx < len(REDIRECTORS) - 1:
             logger.info("Switching to redirector: %s", REDIRECTORS[redir_idx + 1])
+            time.sleep(_retry_sleep_seconds(1))
 
     if len(empty_failures) == len(REDIRECTORS):
         details = "; ".join(
