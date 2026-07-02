@@ -215,11 +215,13 @@ class TestBuildFilesetPath:
         path = build_fileset_path(era="RunIISummer20UL18", sample="DYJets", unskimmed=False, dy="lo_ht")
         assert path.name == "RunIISummer20UL18_mc_dy_lo_ht_fileset.json"
 
-    def test_ul18_unskimmed_signal_falls_back_to_skimmed(self):
+    def test_ul18_unskimmed_signal_stays_unskimmed(self):
+        # The old UL18 Signal unskimmed->skimmed fallback was removed:
+        # build_fileset_path now honors the unskimmed flag for every era/sample.
         path = build_fileset_path(era="RunIISummer20UL18", sample="Signal", unskimmed=True, dy=None)
         assert path.name == "RunIISummer20UL18_signal_fileset.json"
-        assert "skimmed" in path.parts
-        assert "unskimmed" not in path.parts
+        assert "unskimmed" in path.parts
+        assert path.parts[-2] == "unskimmed"
 
     def test_2024_unskimmed_signal_stays_unskimmed(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="Signal", unskimmed=True, dy=None)

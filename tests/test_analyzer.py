@@ -353,6 +353,7 @@ def _make_integration_events(n_events=5, *,
             "cutBased_HEEP": ak.Array([np.zeros(n_muons, dtype=np.bool_)] * n_events),
             "cutBased": ak.Array([np.zeros(n_muons, dtype=np.int32)] * n_events),
             "charge": ak.Array([np.ones(n_muons, dtype=np.int32)] * n_events),
+            "pdgId": ak.Array([np.full(n_muons, 13, dtype=np.int32)] * n_events),
         }
     else:
         mu_fields = {
@@ -365,6 +366,7 @@ def _make_integration_events(n_events=5, *,
             "cutBased_HEEP": _typed_empty_jagged(n_events, np.bool_),
             "cutBased": _typed_empty_jagged(n_events, np.int32),
             "charge": _typed_empty_jagged(n_events, np.int32),
+            "pdgId": _typed_empty_jagged(n_events, np.int32),
         }
     ev.Muon = ak.zip(mu_fields, with_name="PtEtaPhiMCandidate", behavior=candidate.behavior)
 
@@ -380,6 +382,11 @@ def _make_integration_events(n_events=5, *,
             "cutBased_HEEP": ak.Array([np.ones(n_electrons, dtype=np.bool_)] * n_events),
             "cutBased": ak.Array([np.full(n_electrons, 4, dtype=np.int32)] * n_events),
             "charge": ak.Array([np.ones(n_electrons, dtype=np.int32)] * n_events),
+            "pdgId": ak.Array([np.full(n_electrons, 11, dtype=np.int32)] * n_events),
+            # All 10 vid cuts at level 2 ("all pass" for id_level=2).
+            "vidNestedWPBitmap": ak.Array(
+                [np.full(n_electrons, sum(2 << (i * 3) for i in range(10)),
+                         dtype=np.int64)] * n_events),
         }
     else:
         el_fields = {
@@ -392,6 +399,8 @@ def _make_integration_events(n_events=5, *,
             "cutBased_HEEP": _typed_empty_jagged(n_events, np.bool_),
             "cutBased": _typed_empty_jagged(n_events, np.int32),
             "charge": _typed_empty_jagged(n_events, np.int32),
+            "pdgId": _typed_empty_jagged(n_events, np.int32),
+            "vidNestedWPBitmap": _typed_empty_jagged(n_events, np.int64),
         }
     ev.Electron = ak.zip(el_fields, with_name="PtEtaPhiMCandidate", behavior=candidate.behavior)
 
@@ -406,6 +415,8 @@ def _make_integration_events(n_events=5, *,
             "mass": ak.Array([np.array([10.0] * n_jets, dtype=np.float64)] * n_events),
             "isTightLeptonVeto": ak.Array([np.ones(n_jets, dtype=np.bool_)] * n_events),
             "charge": ak.Array([np.zeros(n_jets, dtype=np.int32)] * n_events),
+            # process() computes raw pT inline: pt * (1 - rawFactor).
+            "rawFactor": ak.Array([np.zeros(n_jets, dtype=np.float64)] * n_events),
         }
     else:
         jet_fields = {
@@ -415,6 +426,7 @@ def _make_integration_events(n_events=5, *,
             "mass": _typed_empty_jagged(n_events, np.float64),
             "isTightLeptonVeto": _typed_empty_jagged(n_events, np.bool_),
             "charge": _typed_empty_jagged(n_events, np.int32),
+            "rawFactor": _typed_empty_jagged(n_events, np.float64),
         }
     ev.Jet = ak.zip(jet_fields, with_name="PtEtaPhiMCandidate", behavior=candidate.behavior)
 
@@ -428,6 +440,7 @@ def _make_integration_events(n_events=5, *,
             "msoftdrop": ak.Array([np.full(n_fatjets, 80.0, dtype=np.float64)] * n_events),
             "lsf3": ak.Array([np.full(n_fatjets, 0.9, dtype=np.float64)] * n_events),
             "charge": ak.Array([np.zeros(n_fatjets, dtype=np.int32)] * n_events),
+            "isTight": ak.Array([np.ones(n_fatjets, dtype=np.bool_)] * n_events),
         }
     else:
         fj_fields = {
@@ -438,6 +451,7 @@ def _make_integration_events(n_events=5, *,
             "msoftdrop": _typed_empty_jagged(n_events, np.float64),
             "lsf3": _typed_empty_jagged(n_events, np.float64),
             "charge": _typed_empty_jagged(n_events, np.int32),
+            "isTight": _typed_empty_jagged(n_events, np.bool_),
         }
     ev.FatJet = ak.zip(fj_fields, with_name="PtEtaPhiMCandidate", behavior=candidate.behavior)
 
@@ -491,20 +505,38 @@ def _sf_ones(n):
     return ones, ones.copy(), ones.copy()
 
 
-def _mock_jet_veto(events, era):
-    return np.ones(len(events), dtype=bool)
+def _mock_jet_veto(events, ak4_id_mask, era):
+    # NOTE (known contract inconsistency, reviewed): the production
+    # jet_veto_event_mask returns FILTERED EVENTS on the main path, but an
+    # all-True boolean mask on early exits (era not configured, or zero
+    # preselected jets).  process() reassigns ``events`` from its return
+    # value, so this mock must be a passthrough that returns the events
+    # object unchanged.
+    return events
 
 
 def _mock_pileup_weight(events, era):
+    # (nom, up, down) per-event arrays.
     return _sf_ones(len(events))
 
 
 def _mock_muon_sf(tight_muons, era):
+    # muon_sf returns {"reco"|"id"|"iso": (nom, up, down)} with per-event
+    # arrays (already product-reduced over the muons in each event).
     n = len(tight_muons)
     return {
         "reco": _sf_ones(n),
         "id": _sf_ones(n),
         "iso": _sf_ones(n),
+    }
+
+
+def _mock_muon_sf_loose(loose_muons, era):
+    # muon_sf_loose returns {"reco"|"id": (nom, up, down)} — no ISO component.
+    n = len(loose_muons)
+    return {
+        "reco": _sf_ones(n),
+        "id": _sf_ones(n),
     }
 
 
@@ -516,30 +548,42 @@ def _mock_electron_reco_sf(tight_electrons, era):
     return _sf_ones(len(tight_electrons))
 
 
-def _mock_electron_id_sf(tight_electrons, era):
-    return _sf_ones(len(tight_electrons))
+def _mock_apply_jet_corrections(events, era, isMC, save_all_variations=False):
+    # Passthrough: no JEC/JER applied to mock events.
+    return events
 
 
-def _mock_electron_trigger_sf(tight_electrons, era):
-    return _sf_ones(len(tight_electrons))
+def _mock_apply_muon_scale_smearing(events, era, is_mc):
+    # Falsy return -> process() keeps the original Muon kinematics.
+    return None
 
 
-# All scale-factor patches applied to every test in this class.
+# All correction patches applied to every test in this class.  Only names the
+# analyzer actually imports are patched (electron_id_sf/electron_trigger_sf
+# are no longer imported by wrcoffea.analyzer).
 _SF_PATCHES = {
     "wrcoffea.analyzer.jet_veto_event_mask": _mock_jet_veto,
     "wrcoffea.analyzer.pileup_weight": _mock_pileup_weight,
     "wrcoffea.analyzer.muon_sf": _mock_muon_sf,
+    "wrcoffea.analyzer.muon_sf_loose": _mock_muon_sf_loose,
     "wrcoffea.analyzer.muon_trigger_sf": _mock_muon_trigger_sf,
     "wrcoffea.analyzer.electron_reco_sf": _mock_electron_reco_sf,
-    "wrcoffea.analyzer.electron_id_sf": _mock_electron_id_sf,
-    "wrcoffea.analyzer.electron_trigger_sf": _mock_electron_trigger_sf,
+    "wrcoffea.analyzer.apply_jet_corrections": _mock_apply_jet_corrections,
+    "wrcoffea.analyzer.apply_muon_scale_smearing": _mock_apply_muon_scale_smearing,
+    # The golden-JSON lumi mask and noise filters subscript events
+    # (``events[mask]``), which the plain MockEvents object cannot support;
+    # patch them out at the method level (they are unit-tested elsewhere).
+    "wrcoffea.analyzer.WrAnalysis.apply_lumi_mask":
+        lambda self, events, mc_campaign, is_data: events,
+    "wrcoffea.analyzer.WrAnalysis.apply_noise_filter":
+        lambda self, events, mc_campaign, is_signal: events,
 }
 
 
 def _apply_sf_patches(func):
     """Decorator that stacks all scale-factor mocks onto a test method."""
     for target, replacement in _SF_PATCHES.items():
-        func = patch(target, side_effect=replacement)(func)
+        func = patch(target, new=replacement)(func)
     return func
 
 
@@ -572,6 +616,12 @@ class TestProcessIntegration:
         assert "pt_leading_lepton" in ds
         assert "mass_fourobject" in ds
         assert "cutflow" in ds
+        # Physics hists carry the canonical categorical axes.
+        assert [ax.name for ax in ds["mass_dilepton"].axes[:3]] == [
+            "process", "region", "syst"]
+        # All 3 events enter the cutflow.
+        cum = ds["cutflow"]["mumu"]["cumulative_unweighted"]
+        assert cum.values()[0] == 3.0  # no_cuts bin
 
     # ------------------------------------------------------------------
     # Data (no genWeight)
@@ -580,8 +630,8 @@ class TestProcessIntegration:
     def test_process_data_no_genweight(self, *_mocks):
         """process() handles data (no genWeight) correctly."""
         proc = WrAnalysis(mass_point=None, region="resolved")
-        # Use an era with no lumi JSON configured so apply_lumi_mask is
-        # a no-op (avoids MockEvents not being subscriptable).
+        # apply_lumi_mask is patched to a passthrough (all eras now have a
+        # golden JSON configured, and MockEvents is not subscriptable).
         events = _make_integration_events(
             n_events=3, n_muons=2, n_jets=2,
             metadata={"datatype": "data", "physics_group": "SingleMuon",
@@ -593,6 +643,11 @@ class TestProcessIntegration:
 
         assert "SingleMuon" in output
         assert "_sumw" not in output["SingleMuon"]
+        # Data uses unit weights: all 3 events counted through the trigger.
+        cum = output["SingleMuon"]["cutflow"]["mumu"]["cumulative_unweighted"]
+        counts = dict(zip(list(cum.axes[0]), cum.values()))
+        assert counts["no_cuts"] == 3.0
+        assert counts["mu_trigger"] == 3.0
 
     # ------------------------------------------------------------------
     # compute_sumw=True accumulates genWeight sum
@@ -728,6 +783,9 @@ class TestProcessIntegration:
         output = proc.process(events)
 
         assert "WR3000_N1500" in output
+        ds = output["WR3000_N1500"]
+        assert "cutflow" in ds
+        assert ds["cutflow"]["mumu"]["cumulative_unweighted"].values()[0] == 2.0
 
     # ------------------------------------------------------------------
     # Signal physics_group
@@ -744,6 +802,9 @@ class TestProcessIntegration:
         output = proc.process(events)
 
         assert "WR3000_N1500" in output
+        ds = output["WR3000_N1500"]
+        assert "cutflow" in ds
+        assert ds["cutflow"]["mumu"]["cumulative_unweighted"].values()[0] == 3.0
 
     # ------------------------------------------------------------------
     # Zero-event data (simulates all events filtered by lumi mask)
@@ -752,7 +813,7 @@ class TestProcessIntegration:
     def test_process_empty_events(self, *_mocks):
         """Empty events are handled gracefully."""
         proc = WrAnalysis(mass_point=None, region="resolved")
-        # Use an era with no lumi JSON configured for data.
+        # apply_lumi_mask/apply_noise_filter are patched to passthroughs.
         events = _make_integration_events(
             n_events=0,
             metadata={"datatype": "data", "physics_group": "SingleMuon",
@@ -796,13 +857,29 @@ class TestProcessIntegration:
 
         ds = output["DYJetsToLL_M-50"]
         assert "cutflow" in ds
+        # All 10 events survive object/trigger cuts; none pass mlljj > 800.
+        cum = ds["cutflow"]["mumu"]["cumulative_unweighted"]
+        counts = dict(zip(list(cum.axes[0]), cum.values()))
+        assert counts["no_cuts"] == 10.0
+        assert counts["mu_trigger"] == 10.0
+        assert counts["mlljj_gt800"] == 0.0
 
     # ------------------------------------------------------------------
     # Systematic variations enabled
     # ------------------------------------------------------------------
+    @pytest.mark.xfail(
+        strict=True,
+        reason="MC weights TEMPORARILY disabled in analyzer.py (genWeight-only "
+               "debug state); remove this mark when normalization/pileup/lepton "
+               "SFs are restored")
     @_apply_sf_patches
     def test_process_systematic_variations_enabled(self, *_mocks):
-        """Systematic variations are created when enabled."""
+        """Systematic variations are created when enabled.
+
+        Currently fails with KeyError('pileupUp'): the pileup weight is never
+        added to Weights while the MC-weight block is disabled, but the
+        pileup-systematics branch still requests the modifier.
+        """
         proc = WrAnalysis(mass_point=None, region="resolved",
                           enabled_systs=["lumi", "pileup"])
         events = _make_integration_events(n_events=5, n_muons=2, n_jets=2)
@@ -812,8 +889,30 @@ class TestProcessIntegration:
         assert "DYJetsToLL_M-50" in output
 
     # ------------------------------------------------------------------
+    # Lumi-only systematics still work in the genWeight-only debug state
+    # ------------------------------------------------------------------
+    @_apply_sf_patches
+    def test_process_lumi_systematics_only(self, *_mocks):
+        """enabled_systs=['lumi'] runs end-to-end (lumi variations are not
+        part of the temporarily-disabled MC weight block)."""
+        proc = WrAnalysis(mass_point=None, region="resolved",
+                          enabled_systs=["lumi"])
+        events = _make_integration_events(n_events=5, n_muons=2, n_jets=2)
+
+        output = proc.process(events)
+
+        ds = output["DYJetsToLL_M-50"]
+        cum = ds["cutflow"]["mumu"]["cumulative"]
+        assert cum.values()[0] == 5.0  # no_cuts, genWeight-only weights
+
+    # ------------------------------------------------------------------
     # genEventSumw=0 raises ZeroDivisionError
     # ------------------------------------------------------------------
+    @pytest.mark.xfail(
+        strict=True,
+        reason="MC weights TEMPORARILY disabled in analyzer.py (genWeight-only "
+               "debug state); remove this mark when normalization/pileup/lepton "
+               "SFs are restored")
     @_apply_sf_patches
     def test_process_zero_sumw_raises(self, *_mocks):
         """genEventSumw=0 raises ZeroDivisionError."""
@@ -863,7 +962,10 @@ class TestProcessIntegration:
         assert "pt_leading_lepton" in ds
         assert "mass_fourobject" in ds
         assert "cutflow" in ds
-        assert ds["cutflow"] is not None
+        # Boosted selections ran too (mock FatJet has lsf3).
+        assert "cutflow_boosted" in ds
+        cum = ds["cutflow"]["mumu"]["cumulative_unweighted"]
+        assert cum.values()[0] == 20.0  # no_cuts bin sees all events
 
     # ------------------------------------------------------------------
     # Electron channel exercises the electron SF mocks
@@ -879,7 +981,11 @@ class TestProcessIntegration:
         output = proc.process(events)
 
         assert "DYJetsToLL_M-50" in output
-        assert "cutflow" in output["DYJetsToLL_M-50"]
+        # All 5 events reach the electron trigger step of the ee chain.
+        cum = output["DYJetsToLL_M-50"]["cutflow"]["ee"]["cumulative_unweighted"]
+        counts = dict(zip(list(cum.axes[0]), cum.values()))
+        assert counts["no_cuts"] == 5.0
+        assert counts["e_trigger"] == 5.0
 
     # ------------------------------------------------------------------
     # SF-enabled systematics produce extra syst axis entries

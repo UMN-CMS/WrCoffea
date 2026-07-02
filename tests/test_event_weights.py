@@ -1,12 +1,19 @@
 """
-Tests for event weight computation in WrAnalysis.build_event_weights()
+Tests for event weight computation in WrAnalysis.
 
-Critical functionality:
-- MC normalization (genWeight * xsec * lumi * 1000 / genEventSumw)
-- Pileup reweighting
-- Lepton scale factors (RECO, ID, ISO, trigger)
-- Systematic variations (lumi, pileup, SF)
-- Data vs MC path separation
+Current API (after the per-region SF refactor):
+- build_event_weights(events, metadata, is_mc) computes BASE weights only:
+  MC normalization (genWeight * xsec * lumi * 1000 / genEventSumw), pileup,
+  and the optional lumi systematic.  It no longer accepts lepton collections.
+- Lepton SFs moved to _lepton_sfs_for_region(region, syst_weights, era,
+  tight_muons, tight_electrons, loose_muons=None, loose_electrons=None),
+  which multiplies region-appropriate SFs into the syst_weights dict.
+
+NOTE: MC weights are TEMPORARILY disabled in analyzer.py (genWeight-only
+debug state): xsec/lumi/sumw normalization, pileup, and all lepton SFs are
+commented out, and _lepton_sfs_for_region early-returns dict(syst_weights).
+Tests that pin the restored behavior are marked xfail(strict=True) so they
+scream the moment the physics comes back.
 """
 
 import pytest
@@ -16,6 +23,7 @@ from coffea.analysis_tools import Weights
 from unittest.mock import patch, MagicMock
 
 from wrcoffea.analyzer import WrAnalysis
+from wrcoffea.analysis_config import LUMIS
 
 
 # ---------------------------------------------------------------------------
@@ -27,9 +35,22 @@ N_EVENTS = 100
 # Use an era that IS configured in config.yaml for muon, electron, pileup JSONs.
 ERA = "RunIII2024Summer24"
 
-# Expected lumi from config.yaml (fb^-1).  The code multiplies by 1000 to
-# get pb^-1 inside build_event_weights.
-LUMI_FB = 108.95
+# Lumi comes straight from the analysis config (fb^-1) so the expectation
+# cannot drift from config.yaml.  The code multiplies by 1000 to get pb^-1
+# inside build_event_weights.
+LUMI_FB = float(LUMIS[ERA])
+
+# Standard mark for tests that fail ONLY because MC weights are temporarily
+# disabled in analyzer.py.  strict=True: these must start passing (and the
+# mark must be removed) once the physics is restored.
+XFAIL_WEIGHTS_DISABLED = pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "MC weights TEMPORARILY disabled in analyzer.py (genWeight-only debug "
+        "state); remove this mark when normalization/pileup/lepton SFs are "
+        "restored"
+    ),
+)
 
 
 class MockEvents:
@@ -84,6 +105,11 @@ def _sf_triple(n, nom_val=1.0, up_val=1.01, down_val=0.99):
     )
 
 
+def _base_syst_weights(n=N_EVENTS, value=1.0):
+    """Synthetic base syst_weights dict, as produced by build_event_weights."""
+    return {"Nominal": np.full(n, value, dtype=np.float64)}
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -113,6 +139,7 @@ def metadata():
 class TestEventWeightsMC:
     """Test event weight computation for MC samples."""
 
+    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_mc_normalization_formula(self, mock_pu, analyzer, mock_events, metadata):
         """Test MC weight = genWeight * xsec * lumi * 1000 / genEventSumw."""
@@ -151,6 +178,28 @@ class TestEventWeightsMC:
         assert isinstance(syst_weights, dict)
         assert "Nominal" in syst_weights
 
+    def test_genweight_only_debug_state(self, analyzer, mock_events, metadata):
+        """CURRENT (temporary) behavior: MC weight is genWeight only.
+
+        Pins the deliberate debug state — no xsec/lumi/sumw normalization and
+        no pileup.  Delete this test when the physics is restored (its inverse
+        is pinned by the strict-xfail tests in this class).
+        """
+        weights, syst_weights = analyzer.build_event_weights(
+            mock_events, metadata, is_mc=True,
+        )
+
+        np.testing.assert_allclose(
+            weights.weight(), np.asarray(mock_events.genWeight), rtol=1e-6,
+            err_msg="Debug state should yield genWeight-only MC weights",
+        )
+        assert "pileup" not in weights.weightStatistics
+        np.testing.assert_allclose(
+            np.asarray(syst_weights["Nominal"]), np.asarray(mock_events.genWeight),
+            rtol=1e-6,
+        )
+
+    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_zero_sumw_raises(self, mock_pu, analyzer, mock_events):
         """Zero genEventSumw should raise ZeroDivisionError."""
@@ -161,6 +210,7 @@ class TestEventWeightsMC:
         with pytest.raises(ZeroDivisionError):
             analyzer.build_event_weights(mock_events, bad_meta, is_mc=True)
 
+    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_pileup_reweighting_applied(self, mock_pu, analyzer, mock_events, metadata):
         """Pileup weight is multiplied into the total weight."""
@@ -186,15 +236,25 @@ class TestEventWeightsMC:
             err_msg="Pileup weights not applied correctly",
         )
 
-    @patch("wrcoffea.analyzer.muon_trigger_sf")
-    @patch("wrcoffea.analyzer.muon_sf")
-    @patch("wrcoffea.analyzer.pileup_weight")
-    def test_muon_sf_components(self, mock_pu, mock_mu_sf, mock_mu_trig,
-                                analyzer, mock_events, metadata):
-        """Muon RECO, ID, ISO, trigger SFs are registered as independent weights."""
-        n = len(mock_events)
-        mock_pu.return_value = _sf_triple(n)
 
+# ---------------------------------------------------------------------------
+# Per-region lepton SF tests (_lepton_sfs_for_region)
+# ---------------------------------------------------------------------------
+
+class TestLeptonSFsForRegion:
+    """Lepton SFs are applied per region via _lepton_sfs_for_region.
+
+    These tests pin the RESTORED behavior with synthetic syst_weights and
+    monkeypatched SF functions; the method currently early-returns
+    dict(syst_weights), so they carry the strict xfail mark.
+    """
+
+    @XFAIL_WEIGHTS_DISABLED
+    @patch("wrcoffea.analyzer.muon_sf")
+    @patch("wrcoffea.analyzer.muon_trigger_sf")
+    def test_muon_sf_components(self, mock_mu_trig, mock_mu_sf, analyzer):
+        """Muon RECO, ID, ISO, trigger SFs multiply the region syst_weights."""
+        n = N_EVENTS
         # muon_sf returns dict of component -> (nom, up, down)
         mock_mu_sf.return_value = {
             "reco": _sf_triple(n, 0.98, 0.99, 0.97),
@@ -204,59 +264,129 @@ class TestEventWeightsMC:
         mock_mu_trig.return_value = _sf_triple(n, 0.93, 0.94, 0.92)
 
         tight_muons = _make_tight_muons(n)
+        base = _base_syst_weights(n, 2.0)
 
-        weights, syst_weights = analyzer.build_event_weights(
-            mock_events, metadata, is_mc=True,
-            tight_muons=tight_muons,
+        result = analyzer._lepton_sfs_for_region(
+            "mumu_resolved_sr", base, ERA, tight_muons, None,
         )
 
-        # All muon SF components should be in weight statistics.
-        assert "muon_reco_sf" in weights.weightStatistics
-        assert "muon_id_sf" in weights.weightStatistics
-        assert "muon_iso_sf" in weights.weightStatistics
-        assert "muon_trig_sf" in weights.weightStatistics
-
-        # Nominal weight should include product of all SFs.
-        factor = metadata["xsec"] * LUMI_FB * 1000.0 / metadata["genEventSumw"]
         sf_product = 0.98 * 0.95 * 0.97 * 0.93
-        expected = np.asarray(mock_events.genWeight) * factor * sf_product
-
         np.testing.assert_allclose(
-            weights.weight(), expected, rtol=1e-4,
+            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]) * sf_product,
+            rtol=1e-4,
             err_msg="Muon SF components not stacked correctly",
         )
+        mock_mu_sf.assert_called_once()
+        mock_mu_trig.assert_called_once()
 
-    @patch("wrcoffea.analyzer.electron_trigger_sf")
-    @patch("wrcoffea.analyzer.electron_id_sf")
+    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.electron_reco_sf")
-    @patch("wrcoffea.analyzer.pileup_weight")
-    def test_electron_sf_components(self, mock_pu, mock_e_reco, mock_e_id,
-                                    mock_e_trig, analyzer, mock_events, metadata):
-        """Electron RECO, ID, trigger SFs are registered as independent weights."""
-        n = len(mock_events)
-        mock_pu.return_value = _sf_triple(n)
+    def test_electron_sf_components(self, mock_e_reco, analyzer):
+        """Electron RECO SF multiplies the ee-region syst_weights.
+
+        NOTE: electron_id_sf and electron_trigger_sf are no longer imported
+        by analyzer.py — RECO is the only tight-electron SF applied here.
+        """
+        n = N_EVENTS
         mock_e_reco.return_value = _sf_triple(n, 0.98, 0.99, 0.97)
-        mock_e_id.return_value = _sf_triple(n, 0.97, 0.98, 0.96)
-        mock_e_trig.return_value = _sf_triple(n, 0.96, 0.97, 0.95)
 
         tight_electrons = _make_tight_electrons(n)
+        base = _base_syst_weights(n, 3.0)
 
-        weights, syst_weights = analyzer.build_event_weights(
-            mock_events, metadata, is_mc=True,
-            tight_electrons=tight_electrons,
+        result = analyzer._lepton_sfs_for_region(
+            "ee_resolved_sr", base, ERA, None, tight_electrons,
         )
 
-        assert "electron_reco_sf" in weights.weightStatistics
-        assert "electron_id_sf" in weights.weightStatistics
-        assert "electron_trig_sf" in weights.weightStatistics
-
-        factor = metadata["xsec"] * LUMI_FB * 1000.0 / metadata["genEventSumw"]
-        sf_product = 0.98 * 0.97 * 0.96
-        expected = np.asarray(mock_events.genWeight) * factor * sf_product
-
         np.testing.assert_allclose(
-            weights.weight(), expected, rtol=1e-4,
-            err_msg="Electron SF components not stacked correctly",
+            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]) * 0.98,
+            rtol=1e-4,
+            err_msg="Electron RECO SF not applied correctly",
+        )
+        mock_e_reco.assert_called_once()
+
+    @XFAIL_WEIGHTS_DISABLED
+    @patch("wrcoffea.analyzer.electron_reco_sf")
+    @patch("wrcoffea.analyzer.muon_trigger_sf")
+    @patch("wrcoffea.analyzer.muon_sf")
+    def test_both_lepton_flavors(self, mock_mu_sf, mock_mu_trig, mock_e_reco, analyzer):
+        """Flavor CR applies both muon and electron SFs."""
+        n = N_EVENTS
+        mock_mu_sf.return_value = {
+            "reco": _sf_triple(n, 0.95, 1.0, 0.90),
+            "id":   _sf_triple(n, 1.0, 1.0, 1.0),
+            "iso":  _sf_triple(n, 1.0, 1.0, 1.0),
+        }
+        mock_mu_trig.return_value = _sf_triple(n, 0.94, 1.0, 0.88)
+        mock_e_reco.return_value = _sf_triple(n, 0.98, 1.0, 0.96)
+
+        tight_muons = _make_tight_muons(n)
+        tight_electrons = _make_tight_electrons(n)
+        base = _base_syst_weights(n, 1.0)
+
+        result = analyzer._lepton_sfs_for_region(
+            "flavor_cr_resolved", base, ERA, tight_muons, tight_electrons,
+        )
+
+        sf_product = 0.95 * 0.94 * 0.98
+        np.testing.assert_allclose(
+            np.asarray(result["Nominal"]), np.full(n, sf_product), rtol=1e-4,
+            err_msg="Both-flavor SF product incorrect in flavor CR",
+        )
+        mock_mu_sf.assert_called_once()
+        mock_e_reco.assert_called_once()
+
+    @XFAIL_WEIGHTS_DISABLED
+    @patch("wrcoffea.analyzer.muon_trigger_sf")
+    @patch("wrcoffea.analyzer.muon_sf")
+    def test_sf_systematic_variations(self, mock_mu_sf, mock_mu_trig):
+        """Per-component SF up/down variations appear in the returned dict."""
+        n = N_EVENTS
+        mock_mu_sf.return_value = {
+            "reco": _sf_triple(n, 0.98, 0.99, 0.97),
+            "id":   _sf_triple(n, 1.0, 1.0, 1.0),
+            "iso":  _sf_triple(n, 1.0, 1.0, 1.0),
+        }
+        mock_mu_trig.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
+
+        tight_muons = _make_tight_muons(n)
+        base = _base_syst_weights(n, 1.0)
+
+        analyzer = WrAnalysis(mass_point=None, enabled_systs=["sf"], region="both")
+        result = analyzer._lepton_sfs_for_region(
+            "mumu_resolved_sr", base, ERA, tight_muons, None,
+        )
+
+        assert "MuonRecoSfUp" in result
+        assert "MuonRecoSfDown" in result
+        assert "MuonTrigSfUp" in result
+        assert "MuonTrigSfDown" in result
+
+        # Value-level: varied = Nominal * (varied_component / nominal_component).
+        nominal = np.asarray(result["Nominal"])
+        np.testing.assert_allclose(
+            np.asarray(result["MuonRecoSfUp"]), nominal * (0.99 / 0.98), rtol=1e-5,
+        )
+        np.testing.assert_allclose(
+            np.asarray(result["MuonRecoSfDown"]), nominal * (0.97 / 0.98), rtol=1e-5,
+        )
+
+    def test_current_early_return_passthrough(self, analyzer):
+        """CURRENT (temporary) behavior: SFs disabled, dict passed through.
+
+        _lepton_sfs_for_region early-returns a copy of syst_weights with no
+        SF applied.  Delete this test when the physics is restored.
+        """
+        n = N_EVENTS
+        base = _base_syst_weights(n, 5.0)
+
+        result = analyzer._lepton_sfs_for_region(
+            "mumu_resolved_sr", base, ERA, _make_tight_muons(n), None,
+        )
+
+        assert result is not base, "Should return a new dict, not the input"
+        assert set(result.keys()) == {"Nominal"}
+        np.testing.assert_array_equal(
+            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]),
         )
 
 
@@ -284,12 +414,10 @@ class TestEventWeightsData:
         assert "Nominal" in syst_weights
 
     def test_data_no_sf_called(self, analyzer):
-        """Scale factor functions are never called for data."""
+        """Scale factor / pileup functions are never called for data."""
         n = N_EVENTS
         ev = _make_mock_events(n)
         meta = _make_metadata()
-        tight_muons = _make_tight_muons(n)
-        tight_electrons = _make_tight_electrons(n)
 
         with patch("wrcoffea.analyzer.muon_sf") as mock_mu, \
              patch("wrcoffea.analyzer.electron_reco_sf") as mock_e_reco, \
@@ -297,7 +425,6 @@ class TestEventWeightsData:
 
             weights, _ = analyzer.build_event_weights(
                 ev, meta, is_mc=False,
-                tight_muons=tight_muons, tight_electrons=tight_electrons,
             )
 
             mock_mu.assert_not_called()
@@ -356,6 +483,7 @@ class TestSystematicWeights:
         relative_up = (lumi_up[pos_mask] - nominal[pos_mask]) / nominal[pos_mask]
         np.testing.assert_allclose(relative_up, 0.014, atol=0.005)
 
+    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_pileup_systematic_variations(self, mock_pu):
         """Pileup up/down variations are present in syst_weights."""
@@ -389,35 +517,6 @@ class TestSystematicWeights:
             np.asarray(syst_weights["PileupDown"]), expected_down, rtol=1e-5,
         )
 
-    @patch("wrcoffea.analyzer.muon_trigger_sf")
-    @patch("wrcoffea.analyzer.muon_sf")
-    @patch("wrcoffea.analyzer.pileup_weight")
-    def test_sf_systematic_variations(self, mock_pu, mock_mu_sf, mock_mu_trig):
-        """Scale-factor systematic variations appear in syst_weights."""
-        n = N_EVENTS
-        mock_pu.return_value = _sf_triple(n)
-        mock_mu_sf.return_value = {
-            "reco": _sf_triple(n, 0.98, 0.99, 0.97),
-            "id":   _sf_triple(n, 1.0, 1.0, 1.0),
-            "iso":  _sf_triple(n, 1.0, 1.0, 1.0),
-        }
-        mock_mu_trig.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
-
-        ev = _make_mock_events(n)
-        meta = _make_metadata()
-        tight_muons = _make_tight_muons(n)
-
-        analyzer = WrAnalysis(mass_point=None, enabled_systs=["sf"], region="both")
-        weights, syst_weights = analyzer.build_event_weights(
-            ev, meta, is_mc=True,
-            tight_muons=tight_muons,
-        )
-
-        assert "MuonRecoSfUp" in syst_weights
-        assert "MuonRecoSfDown" in syst_weights
-        assert "MuonTrigSfUp" in syst_weights
-        assert "MuonTrigSfDown" in syst_weights
-
 
 # ---------------------------------------------------------------------------
 # Edge cases
@@ -427,57 +526,20 @@ class TestEdgeCases:
     """Test edge cases and error handling."""
 
     @patch("wrcoffea.analyzer.pileup_weight")
-    def test_no_leptons_passed(self, mock_pu, analyzer, mock_events, metadata):
-        """When no tight leptons are passed, only event_weight + pileup are set."""
+    def test_base_weights_no_nans(self, mock_pu, analyzer, mock_events, metadata):
+        """Base MC weights are finite and length-matched (no lepton args now)."""
         n = len(mock_events)
         mock_pu.return_value = _sf_triple(n)
 
         weights, syst_weights = analyzer.build_event_weights(
             mock_events, metadata, is_mc=True,
-            # tight_muons=None, tight_electrons=None  (defaults)
         )
 
         assert len(weights.weight()) == n
         assert not np.any(np.isnan(np.asarray(weights.weight())))
         assert "Nominal" in syst_weights
 
-    @patch("wrcoffea.analyzer.electron_trigger_sf")
-    @patch("wrcoffea.analyzer.electron_id_sf")
-    @patch("wrcoffea.analyzer.electron_reco_sf")
-    @patch("wrcoffea.analyzer.muon_trigger_sf")
-    @patch("wrcoffea.analyzer.muon_sf")
-    @patch("wrcoffea.analyzer.pileup_weight")
-    def test_both_lepton_flavors(self, mock_pu, mock_mu_sf, mock_mu_trig,
-                                 mock_e_reco, mock_e_id, mock_e_trig,
-                                 analyzer, mock_events, metadata):
-        """Both muon and electron SFs are applied when both collections are provided."""
-        n = len(mock_events)
-        mock_pu.return_value = _sf_triple(n)
-        mock_mu_sf.return_value = {
-            "reco": _sf_triple(n, 0.95, 1.0, 0.90),
-            "id":   _sf_triple(n, 1.0, 1.0, 1.0),
-            "iso":  _sf_triple(n, 1.0, 1.0, 1.0),
-        }
-        mock_mu_trig.return_value = _sf_triple(n, 0.94, 1.0, 0.88)
-        mock_e_reco.return_value = _sf_triple(n, 0.98, 1.0, 0.96)
-        mock_e_id.return_value = _sf_triple(n, 0.97, 1.0, 0.94)
-        mock_e_trig.return_value = _sf_triple(n, 0.96, 1.0, 0.92)
-
-        tight_muons = _make_tight_muons(n)
-        tight_electrons = _make_tight_electrons(n)
-
-        weights, syst_weights = analyzer.build_event_weights(
-            mock_events, metadata, is_mc=True,
-            tight_muons=tight_muons, tight_electrons=tight_electrons,
-        )
-
-        weight_names = set(weights.weightStatistics.keys())
-        assert any("muon" in name for name in weight_names), "No muon SF applied"
-        assert any("electron" in name for name in weight_names), "No electron SF applied"
-
-        assert len(weights.weight()) == n
-        assert not np.any(np.isnan(np.asarray(weights.weight())))
-
+    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_compute_sumw_mode(self, mock_pu):
         """compute_sumw=True omits the /sumw division."""

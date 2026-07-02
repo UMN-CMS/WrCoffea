@@ -5,7 +5,6 @@ import sys
 from types import SimpleNamespace
 
 import pytest
-import uproot
 
 import coffea.processor as coffea_processor
 import wrcoffea.analyzer as analyzer_mod
@@ -22,8 +21,14 @@ import run_analysis
 from wrcoffea.xrootd_fallback import RedirectorProbeResult
 
 
-def test_process_fileset_skipbadfiles_includes_missing_events_exceptions(monkeypatch):
-    """Ensure missing Events-tree files are skippable in preprocess/processing."""
+def test_process_fileset_runner_config(monkeypatch):
+    """Pin the Runner configuration built by _process_fileset.
+
+    Since the virtual-arrays migration (c10ebe5), skipbadfiles is
+    intentionally False: bad-file errors must propagate so
+    _preprocess_with_xrd_fallback can rewrite the URL and retry instead
+    of silently dropping files.
+    """
 
     captured = {}
 
@@ -50,6 +55,7 @@ def test_process_fileset_skipbadfiles_includes_missing_events_exceptions(monkeyp
     monkeypatch.setattr(analyzer_mod, "WrAnalysis", FakeWrAnalysis)
 
     args = SimpleNamespace(
+        sample="DYJets",  # _process_fileset reads args.sample for its log label
         mass=None,
         systs=[],
         region="both",
@@ -61,13 +67,12 @@ def test_process_fileset_skipbadfiles_includes_missing_events_exceptions(monkeyp
 
     run_analysis._process_fileset(args, fileset={}, client=object(), condor=False)
 
-    skipbadfiles = captured["skipbadfiles"]
-    if skipbadfiles is not True:
-        assert OSError in skipbadfiles
-        assert ValueError in skipbadfiles
-        assert any(
-            issubclass(exc, uproot.exceptions.KeyInFileError) for exc in skipbadfiles
-        )
+    # Bad files are NOT skipped; failures surface to the xrd fallback layer.
+    assert captured["skipbadfiles"] is False
+    assert captured["chunksize"] == 1000
+    assert captured["maxchunks"] is None
+    assert captured["savemetrics"] is True
+    assert captured["xrootdtimeout"] == 10  # condor=False path
 
 
 def test_dump_dask_diagnostics_writes_file(tmp_path):
@@ -241,14 +246,13 @@ def test_preprocess_with_xrd_fallback_retries_when_same_redirector_resolves(monk
     assert next(iter(fileset["dataset"]["files"].keys())) == "root://cmsxrootd.fnal.gov//store/mc/a.root"
 
 
-def test_validate_dy_lo_ht_rejected_for_run3():
-    """--dy lo_ht should only be valid for RunIISummer20UL18."""
-    args = SimpleNamespace(
-        era="Run3Summer22",
+def _dy_args(era, dy):
+    return SimpleNamespace(
+        era=era,
         sample="DYJets",
         mass=None,
         reweight=None,
-        dy="lo_ht",
+        dy=dy,
         max_workers=None,
         threads_per_worker=None,
         worker_wait_timeout=1200,
@@ -257,28 +261,30 @@ def test_validate_dy_lo_ht_rejected_for_run3():
         xrd_fallback_retries_per_redirector=2,
         xrd_fallback_sleep=1,
     )
-    with pytest.raises(ValueError, match="--dy lo_ht is not available for Run3Summer22"):
-        run_analysis.validate_arguments(args, [])
+
+
+@pytest.mark.parametrize(
+    "era",
+    ["Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix"],
+)
+def test_validate_dy_lo_ht_accepted_for_run3(era):
+    """--dy lo_ht is now valid for Run3 eras (dy_variants in config.yaml)."""
+    # Should not raise: Run3 DY LO HT configs/filesets exist now.
+    run_analysis.validate_arguments(_dy_args(era, "lo_ht"), [])
+
+
+def test_validate_dy_unknown_variant_rejected():
+    """A DY variant not listed in DY_VARIANTS for the era must still raise."""
+    with pytest.raises(
+        ValueError, match="--dy nlo_ht is not available for Run3Summer22"
+    ):
+        run_analysis.validate_arguments(_dy_args("Run3Summer22", "nlo_ht"), [])
 
 
 def test_validate_dy_lo_ht_accepted_for_ul18():
     """--dy lo_ht should be accepted for RunIISummer20UL18."""
-    args = SimpleNamespace(
-        era="RunIISummer20UL18",
-        sample="DYJets",
-        mass=None,
-        reweight=None,
-        dy="lo_ht",
-        max_workers=None,
-        threads_per_worker=None,
-        worker_wait_timeout=1200,
-        chunksize=250_000,
-        xrd_fallback_timeout=10,
-        xrd_fallback_retries_per_redirector=2,
-        xrd_fallback_sleep=1,
-    )
     # Should not raise
-    run_analysis.validate_arguments(args, [])
+    run_analysis.validate_arguments(_dy_args("RunIISummer20UL18", "lo_ht"), [])
 
 
 def test_preprocess_with_xrd_fallback_raises_after_all_redirectors_fail(monkeypatch):

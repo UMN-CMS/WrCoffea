@@ -19,12 +19,13 @@ dependencies = [
     "dask-awkward>=2025.5,<2026",
     "uproot==5.7.1",
     "pyyaml==6.0.3",
-    "xrootd",
-    "fsspec-xrootd",
-    "pytest>=7",
 ]
 
 [project.optional-dependencies]
+# XRootD bindings build from source and are only needed to open root:// URLs
+# (LPC provides them via CVMFS/the coffea container); kept out of core deps
+# so CI and non-LPC installs stay fast.
+xrootd = ["xrootd", "fsspec-xrootd"]
 test = ["pytest>=7"]
 
 [tool.setuptools.package-data]
