@@ -21,6 +21,27 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as _f:
     _cfg = yaml.safe_load(_f)
 
 # ---------------------------------------------------------------------------
+# Resolve repo-relative data paths against the repo root, so lumi masks and
+# correctionlib payloads load regardless of the current working directory.
+# ---------------------------------------------------------------------------
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _resolve_data_paths(node):
+    """Recursively rewrite ``data/...`` path strings to absolute paths."""
+    if isinstance(node, dict):
+        return {k: _resolve_data_paths(v) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_resolve_data_paths(v) for v in node]
+    if isinstance(node, str) and node.startswith("data/"):
+        return str(REPO_ROOT / node)
+    return node
+
+
+_cfg = _resolve_data_paths(_cfg)
+
+# ---------------------------------------------------------------------------
 # Expose config sections as module-level constants (preserves existing API).
 # ---------------------------------------------------------------------------
 
