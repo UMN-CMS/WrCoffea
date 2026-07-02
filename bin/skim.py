@@ -243,7 +243,23 @@ def cmd_run(args):
     start_idx = start_1 - 1
     end_idx = end_1 - 1
 
-    outdir = default_outdir
+    # Use --era for explicit era resolution (needed for data datasets whose
+    # DAS campaign doesn't contain NanoAOD), otherwise fall back to inference.
+    era_override = getattr(args, "era", None)
+    if era_override:
+        base_dir = base_dir_for_era(era_override, scratch=scratch)
+    else:
+        base_dir = infer_base_dir(args.das_path, scratch=scratch)
+    sidecar_ds = getattr(args, "dataset_name", None) or primary_ds
+
+    # Grouped data submissions (multiple DAS sub-eras under one dataset
+    # name) store outputs under files/<group name>, not files/<DAS primary>.
+    # Honor --dataset-name/--era so resubmitted skims land where check-era
+    # and merge look for them.
+    if getattr(args, "dataset_name", None) or era_override:
+        outdir = base_dir / "files" / sidecar_ds
+    else:
+        outdir = default_outdir
     outdir.mkdir(parents=True, exist_ok=True)
 
     t0 = time.monotonic()
@@ -291,22 +307,22 @@ def cmd_run(args):
 
     # Overwrite stale Condor log/status files for successful jobs so that
     # check-era's validation passes after local resubmissions.
-    # Use --era for explicit era resolution (needed for data datasets whose
-    # DAS campaign doesn't contain NanoAOD), otherwise fall back to inference.
-    era_override = getattr(args, "era", None)
-    if era_override:
-        base_dir = base_dir_for_era(era_override, scratch=scratch)
-    else:
-        base_dir = infer_base_dir(args.das_path, scratch=scratch)
-    sidecar_ds = getattr(args, "dataset_name", None) or primary_ds
     log_dir = base_dir / "logs" / sidecar_ds
     skim_dir = base_dir / "files" / sidecar_ds
+    job_index_base = getattr(args, "job_index", None)
     for i, result in zip(range(start_idx, end_idx + 1), results):
         if result.status not in ALLOWED_MERGE_JOB_STATUSES:
             continue
+        # Combined (multi-sub-era) submissions name sidecars/logs by the
+        # continuous job index across all sub-eras, not the file's index
+        # within this DAS path; --job-index carries that offset.
+        if job_index_base is not None:
+            sidecar_idx = job_index_base + (i - start_idx)
+        else:
+            sidecar_idx = i
         # Overwrite status sidecar so check-era sees the new result.
-        status_path = skim_dir / f"{sidecar_ds}_skim{i}.status.json"
-        if status_path.exists():
+        status_path = skim_dir / f"{sidecar_ds}_skim{sidecar_idx}.status.json"
+        if status_path.exists() or job_index_base is not None:
             _write_skim_status(
                 status_path,
                 {
@@ -325,11 +341,11 @@ def cmd_run(args):
                     "efficiency": result.efficiency,
                 },
             )
-            logger.info("Updated status sidecar for job %d", i)
+            logger.info("Updated status sidecar for job %d", sidecar_idx)
         # Overwrite Condor logs.
         if log_dir.is_dir():
-            out_file = log_dir / f"{sidecar_ds}_{i}.out"
-            err_file = log_dir / f"{sidecar_ds}_{i}.err"
+            out_file = log_dir / f"{sidecar_ds}_{sidecar_idx}.out"
+            err_file = log_dir / f"{sidecar_ds}_{sidecar_idx}.err"
             done_line = (
                 f"Done in {elapsed / 60:.1f} min. "
                 f"{result.n_events_before} -> {result.n_events_after} events "
@@ -338,7 +354,7 @@ def cmd_run(args):
             )
             out_file.write_text("Job completed successfully\n")
             err_file.write_text(done_line + "\n")
-            logger.info("Updated Condor logs for job %d", i)
+            logger.info("Updated Condor logs for job %d", sidecar_idx)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -1119,7 +1135,7 @@ def _write_check_era_resubmit_script(path: Path, entries) -> int:
         lines.append(f"# {primary_ds} combined_job_index={combined_idx}\n")
         cmd = (
             f"python3 bin/skim.py run '{das_path}' --start {local_idx} "
-            f"--end {local_idx} --scratch"
+            f"--end {local_idx} --scratch --job-index {combined_idx}"
         )
         if era:
             cmd += f" --era {era}"
@@ -1930,6 +1946,10 @@ def main(argv=None):
                         help="Era name for sidecar/log path resolution (e.g. RunIISummer20UL18)")
     p_run.add_argument("--dataset-name", default=None,
                         help="Override dataset name for sidecar/log filenames (e.g. EGamma_Run2018D)")
+    p_run.add_argument("--job-index", type=int, default=None,
+                       help="0-based combined job index of the first file in --start/--end. "
+                            "Used by check-era resubmits for grouped multi-DAS datasets so "
+                            "status sidecars and logs are named by the combined submission index.")
     p_run.add_argument("--exclude-lfn", nargs="+", default=[],
                         help="LFN(s) to exclude from skimming (substring match on filename)")
     p_run.set_defaults(func=cmd_run)
