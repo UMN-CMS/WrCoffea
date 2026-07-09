@@ -563,17 +563,11 @@ def electron_trigger_sf(tight_electrons, era):
 
     return trig_sf_nom, trig_sf_up, trig_sf_down
 
-
 def electron_id_sf(tight_electrons, era):
-    """Compute per-event HEEP electron ID scale factor.
+    """Compute per-event HEEP electron ID scale factor using JSON POG payloads.
 
-    Uses flat barrel/endcap SFs from the Run2 UL2018 HEEP V7.0 measurement
-    as a proxy for Run3, per EGamma POG recommendation (Run3 HEEP SFs not
-    yet available).
-
-    Source: EGamma POG twiki – "HEEP ID Scale Factor for UL"
-      Barrel (|eta_SC| < 1.4442): 0.973 +/- 0.001 (stat) +/- 0.004 (syst)
-      Endcap (1.566 < |eta_SC| < 2.5): 0.980 +/- 0.002 (stat) +/- 0.011 (syst)
+    Extracts nominal, up, and down scale factors directly from the official EGamma 
+    correctionlib JSON files configured in analysis_config.
 
     Returns (nominal, up, down) arrays of shape (n_events,).
     Events with no tight electrons get SF = 1.0.
@@ -581,6 +575,7 @@ def electron_id_sf(tight_electrons, era):
     n_events = len(tight_electrons)
     ones = np.ones(n_events, dtype=np.float64)
 
+    # 1. Check if the era is configured at all
     if era not in ELECTRON_JSONS:
         key = f"electron_id_sf_unconfigured::{era}"
         if key not in _WARN_ONCE:
@@ -589,13 +584,17 @@ def electron_id_sf(tight_electrons, era):
         return ones, ones.copy(), ones.copy()
 
     counts = ak.num(tight_electrons)
-
     if ak.sum(counts) == 0:
         return ones, ones.copy(), ones.copy()
 
-    # Supercluster eta = eta + deltaEtaSC.
+    # 2. Extract flat pT and eta
+    flat_pt = np.asarray(ak.flatten(ak.fill_none(tight_electrons.pt, 0.0)), dtype=np.float64)
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_electrons.eta, 0.0)), dtype=np.float64)
+
+    # 3. Supercluster eta = eta + deltaEtaSC.
     try:
-        delta_eta_sc = tight_electrons.deltaEtaSC
+        flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(tight_electrons.deltaEtaSC, 0.0)), dtype=np.float64)
+        flat_sc_eta = flat_eta + flat_deltaEtaSC
     except AttributeError:
         key = f"missing_deltaEtaSC_id::{era}"
         if key not in _WARN_ONCE:
@@ -603,25 +602,101 @@ def electron_id_sf(tight_electrons, era):
             logger.warning(
                 "Electron `deltaEtaSC` branch missing; using eta as fallback for HEEP ID SF."
             )
-        delta_eta_sc = ak.zeros_like(tight_electrons.eta)
+        flat_sc_eta = flat_eta
 
-    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_electrons.eta, 0.0)), dtype=np.float64)
-    flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(delta_eta_sc, 0.0)), dtype=np.float64)
-    flat_sc_eta = np.abs(flat_eta + flat_deltaEtaSC)
+    # The HEEP ID JSON bins start at 35.0 GeV and flow is set to "error".
+    # Clip to prevent correctionlib from throwing out-of-bounds exceptions.
+    safe_pt = np.maximum(flat_pt, 35.01)
 
-    # UL2018 HEEP V7.0 SFs (stat + syst added in quadrature).
-    barrel_sf, barrel_unc = 0.973, np.sqrt(0.001**2 + 0.004**2)  # 0.00412
-    endcap_sf, endcap_unc = 0.980, np.sqrt(0.002**2 + 0.011**2)  # 0.01118
+    # 4. Fetch lookup keys using your imported config dictionaries
+    sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
+    if sf_era_key is None:
+        logger.warning("No electron ID SF era key for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
 
-    is_barrel = flat_sc_eta < 1.4442
+    reco_cfg = ELECTRON_RECO_CONFIG.get(era)
+    if reco_cfg is None:
+        logger.warning("No ELECTRON_RECO_CONFIG for '%s'; returning SF=1.", era)
+        return ones, ones.copy(), ones.copy()
 
-    sf_nom = np.where(is_barrel, barrel_sf, endcap_sf)
-    sf_unc = np.where(is_barrel, barrel_unc, endcap_unc)
+    correction_name = reco_cfg["correction"]
+    
+    # 5. Load ceval using the existing helper function in your file
+    ceval = _get_electron_ceval(era, "RECO")
+    
+    if correction_name not in ceval:
+        key = f"missing_correction_name::{era}_{correction_name}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.error("Correction '%s' not found in ceval for era %s. Using SF=1.", correction_name, era)
+        return ones, ones.copy(), ones.copy()
+        
+    evaluator = ceval[correction_name]
 
-    sf_up = sf_nom + sf_unc
-    sf_down = sf_nom - sf_unc
+    # 6. Evaluate SFs using the correctionlib signature: [year, ValType, WorkingPoint, eta, pt]
+    sf_nom = evaluator.evaluate(sf_era_key, "sf", "HEEPID", flat_sc_eta, safe_pt)
+    sf_up = evaluator.evaluate(sf_era_key, "sfup", "HEEPID", flat_sc_eta, safe_pt)
+    sf_down = evaluator.evaluate(sf_era_key, "sfdown", "HEEPID", flat_sc_eta, safe_pt)
 
     return _unflatten_and_product(sf_nom, sf_up, sf_down, counts)
+# def electron_id_sf(tight_electrons, era):
+#     """Compute per-event HEEP electron ID scale factor.
+
+#     Uses flat barrel/endcap SFs from the Run2 UL2018 HEEP V7.0 measurement
+#     as a proxy for Run3, per EGamma POG recommendation (Run3 HEEP SFs not
+#     yet available).
+
+#     Source: EGamma POG twiki – "HEEP ID Scale Factor for UL"
+#       Barrel (|eta_SC| < 1.4442): 0.973 +/- 0.001 (stat) +/- 0.004 (syst)
+#       Endcap (1.566 < |eta_SC| < 2.5): 0.980 +/- 0.002 (stat) +/- 0.011 (syst)
+
+#     Returns (nominal, up, down) arrays of shape (n_events,).
+#     Events with no tight electrons get SF = 1.0.
+#     """
+#     n_events = len(tight_electrons)
+#     ones = np.ones(n_events, dtype=np.float64)
+
+#     if era not in ELECTRON_JSONS:
+#         key = f"electron_id_sf_unconfigured::{era}"
+#         if key not in _WARN_ONCE:
+#             _WARN_ONCE.add(key)
+#             logger.info("No electron ID SF JSON configured for era '%s'; using SF=1.", era)
+#         return ones, ones.copy(), ones.copy()
+
+#     counts = ak.num(tight_electrons)
+
+#     if ak.sum(counts) == 0:
+#         return ones, ones.copy(), ones.copy()
+
+#     # Supercluster eta = eta + deltaEtaSC.
+#     try:
+#         delta_eta_sc = tight_electrons.deltaEtaSC
+#     except AttributeError:
+#         key = f"missing_deltaEtaSC_id::{era}"
+#         if key not in _WARN_ONCE:
+#             _WARN_ONCE.add(key)
+#             logger.warning(
+#                 "Electron `deltaEtaSC` branch missing; using eta as fallback for HEEP ID SF."
+#             )
+#         delta_eta_sc = ak.zeros_like(tight_electrons.eta)
+
+#     flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_electrons.eta, 0.0)), dtype=np.float64)
+#     flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(delta_eta_sc, 0.0)), dtype=np.float64)
+#     flat_sc_eta = np.abs(flat_eta + flat_deltaEtaSC)
+
+#     # UL2018 HEEP V7.0 SFs (stat + syst added in quadrature).
+#     barrel_sf, barrel_unc = 0.973, np.sqrt(0.001**2 + 0.004**2)  # 0.00412
+#     endcap_sf, endcap_unc = 0.980, np.sqrt(0.002**2 + 0.011**2)  # 0.01118
+
+#     is_barrel = flat_sc_eta < 1.4442
+
+#     sf_nom = np.where(is_barrel, barrel_sf, endcap_sf)
+#     sf_unc = np.where(is_barrel, barrel_unc, endcap_unc)
+
+#     sf_up = sf_nom + sf_unc
+#     sf_down = sf_nom - sf_unc
+
+#     return _unflatten_and_product(sf_nom, sf_up, sf_down, counts)
 
 
 def electron_reco_sf(tight_electrons, era):

@@ -206,8 +206,17 @@ class WrAnalysis(processor.ProcessorABC):
         - Tight = (pT/eta) AND (ID).
         - Loose = (pT/eta) AND (loose-ID), with tight leptons excluded.
         """
+        # --- Supercluster Eta & Crack Veto ---
+        if "deltaEtaSC" in events.Electron.fields:
+            ele_sc_eta = events.Electron.eta + events.Electron.deltaEtaSC
+        else:
+            ele_sc_eta = events.Electron.eta
+            
+        abs_ele_sc_eta = np.abs(ele_sc_eta)
+        ele_not_in_crack = (abs_ele_sc_eta <= 1.4442) | (abs_ele_sc_eta >= 1.566)
+        
         # Split pT/eta (kinematics) and ID components.
-        ele_pteta_mask = (events.Electron.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Electron.eta) < CUTS["lepton_eta_max"])
+        ele_pteta_mask = (events.Electron.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Electron.eta) < CUTS["lepton_eta_max"]) & ele_not_in_crack
         mu_pteta_mask  = (events.Muon.pt > CUTS["lepton_pt_min"])     & (np.abs(events.Muon.eta) < CUTS["lepton_eta_max"])
 
         ele_id_mask = events.Electron.cutBased_HEEP
@@ -528,10 +537,18 @@ class WrAnalysis(processor.ProcessorABC):
         # Ensure the HEEP flag is a true boolean array before bitwise ops.
         heep_flag = ak.fill_none(events.Electron.cutBased_HEEP, 0)
         heep_flag = heep_flag != 0
-
+        # --- Supercluster Eta & Crack Veto ---
+        if "deltaEtaSC" in events.Electron.fields:
+            ele_sc_eta = events.Electron.eta + events.Electron.deltaEtaSC
+        else:
+            ele_sc_eta = events.Electron.eta
+        abs_ele_sc_eta = np.abs(ele_sc_eta)
+        ele_not_in_crack = (abs_ele_sc_eta <= 1.4442) | (abs_ele_sc_eta >= 1.566)
+        
         loose_electrons = (
             (events.Electron.pt > CUTS["lepton_pt_min"])
             & (np.abs(events.Electron.eta) < CUTS["lepton_eta_max"])
+            & ele_not_in_crack
             & (heep_flag | loose_noIso_mask)
         )
         return events.Electron[loose_electrons]
@@ -915,8 +932,8 @@ class WrAnalysis(processor.ProcessorABC):
                 if tight_electrons is not None:
                     e_reco = electron_reco_sf(tight_electrons, era)
                     weights.add("electron_tight_reco_sf", e_reco[0], weightUp=e_reco[1], weightDown=e_reco[2])
-                    # e_id = electron_id_sf(tight_electrons, era)
-                    # weights.add("electron_tight_id_sf", e_id[0], weightUp=e_id[1], weightDown=e_id[2])
+                    e_id = electron_id_sf(tight_electrons, era)
+                    weights.add("electron_tight_id_sf", e_id[0], weightUp=e_id[1], weightDown=e_id[2])
                     # e_trig = electron_trigger_sf(tight_electrons, era)
                     # weights.add("electron_trig_sf", e_trig[0], weightUp=e_trig[1], weightDown=e_trig[2])
 
