@@ -21,6 +21,7 @@ from wrcoffea.histograms import (
     create_hist,
     fill_resolved_histograms,
     fill_boosted_histograms,
+    getsigma,
 )
 
 
@@ -53,6 +54,16 @@ class TestBookingSpecs:
         for name, (bins, label) in specs.items():
             assert len(bins) == 3, f"{name}: bins tuple should have 3 elements"
             assert isinstance(label, str)
+
+
+class TestMuonResolutionHelpers:
+    def test_getsigma_handles_array_inputs(self):
+        pT = np.array([100.0, 200.0, 1000.0])
+        eta = np.array([0.5, 1.5, 0.0])
+        values = getsigma(pT, eta)
+        assert values.shape == pT.shape
+        assert np.all(np.isfinite(values))
+        assert np.all(values > 0)
 
 
 class TestCreateHist:
@@ -297,6 +308,38 @@ class TestResolvedHistogramValues:
         h = output["mass_fourobject"]
         h_proj = h[{"process": "Signal", "region": "sr", "syst": "Nominal"}]
         assert h_proj.sum().value > 0
+
+    def test_exact4_muon_corr_histograms_fill(self):
+        """Test that the exact-4-object muon-corrected histograms are booked and fill."""
+        specs = _booking_specs()
+        output = {name: create_hist(name, bins, label) for name, (bins, label) in specs.items()}
+
+        leptons = _vec_array(
+            pts=[[100.0, 80.0]],
+            etas=[[0.0, 0.0]],
+            phis=[[0.0, 1.0]],
+            masses=[[0.105, 0.105]],
+            extra_fields={"flavor": [["muon", "muon"]]},
+        )
+
+        jets = _vec_array(
+            pts=[[150.0, 100.0]],
+            etas=[[0.0, 0.0]],
+            phis=[[2.0, 3.0]],
+            masses=[[10.0, 10.0]],
+        )
+
+        weights = Weights(1)
+        weights.add("test", np.ones(1))
+        syst_weights = {"Nominal": weights.weight()}
+        cut = np.array([True])
+
+        fill_resolved_histograms(output, "sr", cut, "Signal", jets, leptons, weights, syst_weights)
+
+        for hist_name in ["mass_fourobj_muon_corr_exact4", "pt_total_fourobj_muon_corr_exact4", "s1_correction_exact4"]:
+            h = output[hist_name]
+            h_proj = h[{"process": "Signal", "region": "sr", "syst": "Nominal"}]
+            assert h_proj.sum().value >= 0
 
     def test_empty_cut_produces_empty_histograms(self):
         """Test that cut=all False results in empty histograms."""

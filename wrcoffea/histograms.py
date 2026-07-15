@@ -13,6 +13,7 @@ from typing import Callable
 
 import awkward as ak
 import hist
+import numpy as np
 
 from wrcoffea.analysis_config import (
     CUTS,
@@ -64,6 +65,339 @@ RESOLVED_HIST_SPECS: list[tuple[str, tuple[int, float, float], str, ResolvedGett
     ("mass_fourobject",             (800,   0, 8000), r"$m_{\\ell\\ell jj}$ [GeV]",                 lambda L, J, LL, JJ: (LL + JJ).mass),
     ("pt_fourobject",               (800,   0, 8000), r"$p_{T,\\ell\\ell jj}$ [GeV]",               lambda L, J, LL, JJ: (LL + JJ).pt),
 ]
+
+
+smallneta = [
+    (0.996101364522417, -2.07703281027104),
+    (1.69785575048733, -1.97432239657632),
+    (1.99805068226121, -1.83737517831669),
+    (2.30214424951267, -1.64621968616262),
+    (2.69980506822612, -1.38944365192582),
+    (3.00389863547758, -1.28958630527817),
+    (3.30409356725146, -1.20970042796006),
+    (3.47953216374269, -1.16690442225392),
+    (3.70175438596491, -1.07275320970043),
+]
+
+largeneta = [
+    (1.00334448160535, -1.77714285714286),
+    (1.70234113712375, -1.66),
+    (2.00334448160535, -1.54285714285714),
+    (2.30434782608696, -1.35714285714286),
+    (2.7056856187291, -1.09142857142857),
+    (3.00334448160535, -0.937142857142857),
+    (3.30434782608696, -0.791428571428571),
+]
+
+def _interpolate_muon_resolution(pT, points):
+    pT_values, res_values = zip(*points)
+    pT_values = np.array(pT_values, dtype=float)
+    res_values = np.array(res_values, dtype=float)
+
+    pT_array = np.asarray(pT, dtype=float)
+    pT_flat = pT_array.ravel()
+    out = np.empty_like(pT_flat, dtype=float)
+
+    for idx, pT_value in enumerate(pT_flat):
+        if pT_value <= pT_values[0]:
+            slope = (res_values[1] - res_values[0]) / (pT_values[1] - pT_values[0])
+            out[idx] = res_values[0] + slope * (pT_value - pT_values[0])
+        elif pT_value >= pT_values[-1]:
+            slope = (res_values[-1] - res_values[-2]) / (pT_values[-1] - pT_values[-2])
+            out[idx] = res_values[-1] + slope * (pT_value - pT_values[-1])
+        else:
+            out[idx] = np.interp(pT_value, pT_values, res_values)
+
+    out = out.reshape(pT_array.shape)
+    if pT_array.ndim == 0:
+        return float(out[()])
+    return out
+
+
+def getsigma(pT, eta):
+    pT_array = np.asarray(pT, dtype=float)
+    pT_safe = np.where(pT_array > 0, pT_array, 1e-6)
+    x = np.log10(pT_safe)
+
+    eta_array = np.asarray(eta, dtype=float)
+    if eta_array.ndim == 0:
+        if abs(float(eta_array)) < 1:
+            return np.power(10, _interpolate_muon_resolution(x, smallneta))
+        return np.power(10, _interpolate_muon_resolution(x, largeneta))
+
+    result = np.empty_like(pT_safe, dtype=float)
+    small_mask = np.abs(eta_array) < 1.0
+    result[small_mask] = np.power(10, _interpolate_muon_resolution(x[small_mask], smallneta))
+    result[~small_mask] = np.power(10, _interpolate_muon_resolution(x[~small_mask], largeneta))
+    return result
+
+
+def dotprod_T(p1, p2):
+    return p1.x * p2.x + p1.y * p2.y
+
+
+def compute_s1_s2_modchi(l1, l2, j1, j2, x=0.5):
+
+    # ========================================================
+    # TRANSVERSE MOMENTA
+    # ========================================================
+
+    pT1 = np.sqrt(dotprod_T(l1, l1))
+    pT2 = np.sqrt(dotprod_T(l2, l2))
+    pT3 = np.sqrt(dotprod_T(j1, j1))
+    pT4 = np.sqrt(dotprod_T(j2, j2))
+
+    pT1 = np.atleast_1d(np.asarray(pT1, dtype=float)).astype(float)
+    pT2 = np.atleast_1d(np.asarray(pT2, dtype=float)).astype(float)
+    pT3 = np.atleast_1d(np.asarray(pT3, dtype=float)).astype(float)
+    pT4 = np.atleast_1d(np.asarray(pT4, dtype=float)).astype(float)
+
+    pTt = np.sqrt(dotprod_T(l1 + l2 + j1 + j2, l1 + l2 + j1 + j2))
+    pTt = np.atleast_1d(np.asarray(pTt, dtype=float)).astype(float)
+    pTt = np.where(pTt > 1e-12, pTt, 1e-12)
+
+    # ========================================================
+    # JET RESOLUTION
+    # ========================================================
+
+    S = 0.92
+    C = 0.04
+
+    sig1 = pT1 * getsigma(pT1, np.asarray(l1.eta, dtype=float).astype(float))
+    sig2 = pT2 * getsigma(pT2, np.asarray(l2.eta, dtype=float).astype(float))
+    sig3 = pT3 * np.sqrt(S * S / pT3 + C * C)
+    sig4 = pT4 * np.sqrt(S * S / pT4 + C * C)
+
+    sigt = np.sqrt(
+        np.asarray(
+            dotprod_T(
+                (l1 + l2 + j1 + j2) / pTt,
+                sig1 * l1 / pT1 + sig2 * l2 / pT2 + sig3 * j1 / pT3 + sig4 * j2 / pT4,
+            ),
+            dtype=float,
+        )
+    )
+    sigt = np.atleast_1d(np.asarray(sigt, dtype=float)).astype(float)
+
+    # ========================================================
+    # MATRIX COEFFICIENTS
+    # ========================================================
+
+    n_events = max(pT1.shape[0], pT2.shape[0], pT3.shape[0], pT4.shape[0])
+    matrix = np.zeros((n_events, 4, 4), dtype=float)
+    rhs = np.zeros((n_events, 4), dtype=float)
+
+    matrix[:, 0, 0] = np.asarray(x * pT1**2 / sig1**2 + (1 - x) * dotprod_T(l1, l1) / sigt**2, dtype=float)
+    matrix[:, 1, 1] = np.asarray(x * pT2**2 / sig2**2 + (1 - x) * dotprod_T(l2, l2) / sigt**2, dtype=float)
+    matrix[:, 2, 2] = np.asarray(x * pT3**2 / sig3**2 + (1 - x) * dotprod_T(j1, j1) / sigt**2, dtype=float)
+    matrix[:, 3, 3] = np.asarray(x * pT4**2 / sig4**2 + (1 - x) * dotprod_T(j2, j2) / sigt**2, dtype=float)
+
+    matrix[:, 0, 1] = np.asarray((1 - x) * dotprod_T(l1, l2) / sigt**2, dtype=float)
+    matrix[:, 0, 2] = np.asarray((1 - x) * dotprod_T(l1, j1) / sigt**2, dtype=float)
+    matrix[:, 0, 3] = np.asarray((1 - x) * dotprod_T(l1, j2) / sigt**2, dtype=float)
+    matrix[:, 1, 0] = np.asarray((1 - x) * dotprod_T(l2, l1) / sigt**2, dtype=float)
+    matrix[:, 1, 2] = np.asarray((1 - x) * dotprod_T(l2, j1) / sigt**2, dtype=float)
+    matrix[:, 1, 3] = np.asarray((1 - x) * dotprod_T(l2, j2) / sigt**2, dtype=float)
+    matrix[:, 2, 0] = np.asarray((1 - x) * dotprod_T(j1, l1) / sigt**2, dtype=float)
+    matrix[:, 2, 1] = np.asarray((1 - x) * dotprod_T(j1, l2) / sigt**2, dtype=float)
+    matrix[:, 2, 3] = np.asarray((1 - x) * dotprod_T(j1, j2) / sigt**2, dtype=float)
+    matrix[:, 3, 0] = np.asarray((1 - x) * dotprod_T(j2, l1) / sigt**2, dtype=float)
+    matrix[:, 3, 1] = np.asarray((1 - x) * dotprod_T(j2, l2) / sigt**2, dtype=float)
+    matrix[:, 3, 2] = np.asarray((1 - x) * dotprod_T(j2, j1) / sigt**2, dtype=float)
+
+    rhs[:, 0] = np.asarray(x * pT1**2 / sig1**2, dtype=float)
+    rhs[:, 1] = np.asarray(x * pT2**2 / sig2**2, dtype=float)
+    rhs[:, 2] = np.asarray(x * pT3**2 / sig3**2, dtype=float)
+    rhs[:, 3] = np.asarray(x * pT4**2 / sig4**2, dtype=float)
+
+    # ========================================================
+    # SOLVE FOR s1, s2, s3, s4
+    # ========================================================
+
+    solutions = np.empty((matrix.shape[0], 4), dtype=matrix.dtype)
+
+    for i in range(matrix.shape[0]):
+        try:
+            solutions[i] = np.linalg.solve(matrix[i], rhs[i])
+        except np.linalg.LinAlgError:
+            solutions[i] = np.linalg.lstsq(matrix[i], rhs[i], rcond=None)[0]
+
+    s1 = solutions[:, 0]
+    s2 = solutions[:, 1]
+    s3 = solutions[:, 2]
+    s4 = solutions[:, 3]
+
+    if n_events == 1:
+        return float(s1[0]), float(s2[0]), float(s3[0]), float(s4[0])
+
+    return s1, s2, s3, s4
+
+def _default_muon_scale_factors(l1, l2, jets):
+    j1 = jets[:, 0]
+    j2 = jets[:, 1]
+    s1, s2, s3, s4 = compute_s1_s2_modchi(l1, l2, j1, j2)
+    return s1, s2, s3, s4
+
+
+def _get_muon_and_exact4_mask(L, J):
+    l1 = L[:, 0]
+    l2 = L[:, 1]
+    both_mu = (l1.flavor == "muon") & (l2.flavor == "muon")
+    object_count = ak.num(L, axis=1) + ak.num(J, axis=1)
+    return both_mu & (object_count == 4)
+
+
+def _make_muon_scaled_fourobj_getter(scale_factor_fn, attr):
+    def getter(L, J, LL, JJ):
+        l1 = L[:, 0]
+        l2 = L[:, 1]
+
+        both_mu = (l1.flavor == "muon") & (l2.flavor == "muon")
+        if not ak.any(both_mu):
+            return getattr(LL + JJ, attr)
+
+        l1_sf, l2_sf, j1_sf, j2_sf = scale_factor_fn(l1, l2, J)
+
+        l1_scaled = ak.zip({
+            "pt": l1.pt * l1_sf,
+            "eta": l1.eta,
+            "phi": l1.phi,
+            "mass": l1.mass,
+            "charge": l1.charge if hasattr(l1, "charge") else (ak.where(l1.pdgId > 0, -1, 1) if "pdgId" in getattr(l1, "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        l2_scaled = ak.zip({
+            "pt": l2.pt * l2_sf,
+            "eta": l2.eta,
+            "phi": l2.phi,
+            "mass": l2.mass,
+            "charge": l2.charge if hasattr(l2, "charge") else (ak.where(l2.pdgId > 0, -1, 1) if "pdgId" in getattr(l2, "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        j1_scaled = ak.zip({
+            "pt": J[:, 0].pt * j1_sf,
+            "eta": J[:, 0].eta,
+            "phi": J[:, 0].phi,
+            "mass": J[:, 0].mass,
+            "charge": J[:, 0].charge if hasattr(J[:, 0], "charge") else (ak.where(J[:, 0].pdgId > 0, -1, 1) if "pdgId" in getattr(J[:, 0], "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        j2_scaled = ak.zip({
+            "pt": J[:, 1].pt * j2_sf,
+            "eta": J[:, 1].eta,
+            "phi": J[:, 1].phi,
+            "mass": J[:, 1].mass,
+            "charge": J[:, 1].charge if hasattr(J[:, 1], "charge") else (ak.where(J[:, 1].pdgId > 0, -1, 1) if "pdgId" in getattr(J[:, 1], "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        scaled_obj = l1_scaled + l2_scaled + j1_scaled + j2_scaled
+        nominal_obj = LL + JJ
+        return ak.where(both_mu, getattr(scaled_obj, attr), getattr(nominal_obj, attr))
+
+    return getter
+
+
+def _make_muon_exact4_scaled_fourobj_getter(scale_factor_fn, attr):
+    def getter(L, J, LL, JJ):
+        mask = _get_muon_and_exact4_mask(L, J)
+        if not ak.any(mask):
+            return getattr(LL + JJ, attr)
+
+        l1 = L[:, 0]
+        l2 = L[:, 1]
+        l1_sf, l2_sf, j1_sf, j2_sf = scale_factor_fn(l1, l2, J)
+
+        l1_scaled = ak.zip({
+            "pt": l1.pt * l1_sf,
+            "eta": l1.eta,
+            "phi": l1.phi,
+            "mass": l1.mass,
+            "charge": l1.charge if hasattr(l1, "charge") else (ak.where(l1.pdgId > 0, -1, 1) if "pdgId" in getattr(l1, "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        l2_scaled = ak.zip({
+            "pt": l2.pt * l2_sf,
+            "eta": l2.eta,
+            "phi": l2.phi,
+            "mass": l2.mass,
+            "charge": l2.charge if hasattr(l2, "charge") else (ak.where(l2.pdgId > 0, -1, 1) if "pdgId" in getattr(l2, "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        j1_scaled = ak.zip({
+            "pt": J[:, 0].pt * j1_sf,
+            "eta": J[:, 0].eta,
+            "phi": J[:, 0].phi,
+            "mass": J[:, 0].mass,
+            "charge": J[:, 0].charge if hasattr(J[:, 0], "charge") else (ak.where(J[:, 0].pdgId > 0, -1, 1) if "pdgId" in getattr(J[:, 0], "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        j2_scaled = ak.zip({
+            "pt": J[:, 1].pt * j2_sf,
+            "eta": J[:, 1].eta,
+            "phi": J[:, 1].phi,
+            "mass": J[:, 1].mass,
+            "charge": J[:, 1].charge if hasattr(J[:, 1], "charge") else (ak.where(J[:, 1].pdgId > 0, -1, 1) if "pdgId" in getattr(J[:, 1], "fields", []) else 0),
+        }, with_name="PtEtaPhiMCandidate")
+        scaled_obj = l1_scaled + l2_scaled + j1_scaled + j2_scaled
+        nominal_obj = LL + JJ
+        return ak.where(mask, getattr(scaled_obj, attr), getattr(nominal_obj, attr))
+
+    return getter
+
+
+muon_scaled_fourobj_getter = _make_muon_scaled_fourobj_getter(_default_muon_scale_factors, "mass")
+muon_scaled_fourobj_pt_getter = _make_muon_scaled_fourobj_getter(_default_muon_scale_factors, "pt")
+muon_exact4_scaled_fourobj_getter = _make_muon_exact4_scaled_fourobj_getter(_default_muon_scale_factors, "mass")
+muon_exact4_scaled_fourobj_pt_getter = _make_muon_exact4_scaled_fourobj_getter(_default_muon_scale_factors, "pt")
+
+RESOLVED_HIST_SPECS.append(
+    (
+        "mass_fourobj_muon_corr",
+        (800, 0, 8000),
+        r"$m_{\\ell\\ell jj}$ (muon-scaled pt)",
+        muon_scaled_fourobj_getter,
+    )
+)
+RESOLVED_HIST_SPECS.append(
+    (
+        "pt_total_fourobj_muon_corr",
+        (800, 0, 8000),
+        r"$p_{T}^{\mathrm{tot}}$ (muon-scaled pt) [GeV]",
+        muon_scaled_fourobj_pt_getter,
+    )
+)
+RESOLVED_HIST_SPECS.append(
+    (
+        "mass_fourobj_muon_corr_exact4",
+        (800, 0, 8000),
+        r"$m_{\ell\ell jj}$ (muon-scaled pt, exact 4 objects)",
+        muon_exact4_scaled_fourobj_getter,
+    )
+)
+RESOLVED_HIST_SPECS.append(
+    (
+        "pt_total_fourobj_muon_corr_exact4",
+        (800, 0, 8000),
+        r"$p_{T}^{\mathrm{tot}}$ (muon-scaled pt, exact 4 objects) [GeV]",
+        muon_exact4_scaled_fourobj_pt_getter,
+    )
+)
+
+for idx, name in enumerate(["s1", "s2", "s3", "s4"], start=1):
+    RESOLVED_HIST_SPECS.append(
+        (
+            f"{name}_correction",
+            (400, 0, 2),
+            rf"${name}$ correction factor",
+            lambda L, J, LL, JJ, idx=idx: _default_muon_scale_factors(L[:, 0], L[:, 1], J)[idx - 1],
+        )
+    )
+    RESOLVED_HIST_SPECS.append(
+        (
+            f"{name}_correction_exact4",
+            (400, 0, 2),
+            rf"${name}$ correction factor (exact 4 objects)",
+            lambda L, J, LL, JJ, idx=idx: ak.where(
+                _get_muon_and_exact4_mask(L, J),
+                _default_muon_scale_factors(L[:, 0], L[:, 1], J)[idx - 1],
+                0.0,
+            ),
+        )
+    )
+
 RESOLVED_2D_HIST_SPECS: list[
     tuple[
         str,               
