@@ -429,14 +429,13 @@ class TestElectronScaleFactors:
         # With eff_data=0.90, eff_mc=0.88, SF should be > 1.0 for each event.
         assert np.all(nom > 0.5), "Trigger SF should be reasonable"
 
-    def test_electron_id_sf_no_correctionlib_needed(self):
-        """electron_id_sf uses hardcoded HEEP SFs, no correctionlib loading.
+    def test_electron_id_sf_json_payload(self):
+        """electron_id_sf evaluates HEEPID from the official EGamma JSON.
 
-        It only needs the era to be in ELECTRON_JSONS to proceed, and uses
-        hardcoded barrel/endcap values rather than correctionlib evaluate.
+        The RunIII2024Summer24 electron JSON provides a HEEPID working point;
+        up/down variations must bracket the nominal value.
         """
         n_events = 5
-        # Barrel electrons (|sc_eta| < 1.4442): SF = 0.973
         tight_electrons = _make_tight_leptons(
             [[50.0]] * n_events,
             [[0.5]] * n_events,
@@ -448,9 +447,8 @@ class TestElectronScaleFactors:
         assert isinstance(result, tuple) and len(result) == 3
         nom, up, down = result
         assert len(nom) == n_events
-        # Barrel SF = 0.973.
-        np.testing.assert_allclose(nom, 0.973, atol=1e-4)
-        # Up = 0.973 + sqrt(0.001^2 + 0.004^2) ~ 0.973 + 0.00412.
+        # Barrel HEEPID SF from the 2024 EGamma JSON.
+        np.testing.assert_allclose(nom, 0.945079, atol=1e-4)
         assert np.all(up > nom)
         assert np.all(down < nom)
 
@@ -464,9 +462,26 @@ class TestElectronScaleFactors:
 
         nom, up, down = sf.electron_id_sf(tight_electrons, TEST_ERA)
 
-        # Barrel: 0.973, Endcap: 0.980.
+        # 2024 EGamma JSON: barrel 0.945079, endcap 0.961394.
+        assert nom[0] == pytest.approx(0.945079, abs=1e-4)
+        assert nom[1] == pytest.approx(0.961394, abs=1e-4)
+        assert nom[0] != nom[1]
+
+    def test_electron_id_sf_flat_fallback_era(self):
+        """Eras whose JSON lacks the HEEPID WP fall back to flat UL2018 SFs."""
+        tight_electrons = _make_tight_leptons(
+            [[50.0], [50.0]],
+            [[0.5], [2.0]],
+            deltaEtaSC_lists=[[0.0], [0.0]],
+        )
+
+        nom, up, down = sf.electron_id_sf(tight_electrons, "RunIISummer20UL18")
+
+        # Flat UL2018 HEEP V7.0 values: barrel 0.973, endcap 0.980.
         assert nom[0] == pytest.approx(0.973, abs=1e-4)
         assert nom[1] == pytest.approx(0.980, abs=1e-4)
+        assert np.all(up > nom)
+        assert np.all(down < nom)
 
     def test_electron_id_sf_unconfigured_era(self):
         """When era is not in ELECTRON_JSONS, return unity."""

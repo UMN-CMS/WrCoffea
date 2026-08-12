@@ -50,7 +50,7 @@ from wrcoffea.analysis_config import (
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 from wrcoffea.era_utils import ERA_MAPPING
-from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
+from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
@@ -207,8 +207,17 @@ class WrAnalysis(processor.ProcessorABC):
         - Tight = (pT/eta) AND (ID).
         - Loose = (pT/eta) AND (loose-ID), with tight leptons excluded.
         """
+        # --- Supercluster Eta & Crack Veto ---
+        if "deltaEtaSC" in events.Electron.fields:
+            ele_sc_eta = events.Electron.eta + events.Electron.deltaEtaSC
+        else:
+            ele_sc_eta = events.Electron.eta
+            
+        abs_ele_sc_eta = np.abs(ele_sc_eta)
+        ele_not_in_crack = (abs_ele_sc_eta <= 1.4442) | (abs_ele_sc_eta >= 1.566)
+        
         # Split pT/eta (kinematics) and ID components.
-        ele_pteta_mask = (events.Electron.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Electron.eta) < CUTS["electron_eta_max"])
+        ele_pteta_mask = (events.Electron.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Electron.eta) < CUTS["electron_eta_max"]) & ele_not_in_crack
         mu_pteta_mask  = (events.Muon.pt > CUTS["lepton_pt_min"])     & (np.abs(events.Muon.eta) < CUTS["muon_eta_max"])
 
         ele_id_mask = events.Electron.cutBased_HEEP
@@ -242,12 +251,21 @@ class WrAnalysis(processor.ProcessorABC):
         # Slim to common fields before concatenating so awkward creates a
         # regular record (not a union), avoiding field-access issues.
         def _to_candidate(col):
+            # If the collection has deltaEtaSC (Electrons), use it. Otherwise (Muons), fill with 0s.
+            d_eta_sc = col.deltaEtaSC if hasattr(col, "deltaEtaSC") else ak.zeros_like(col.eta)           
             return ak.zip(
-                {"pt": col.pt, "eta": col.eta, "phi": col.phi,
-                 "mass": col.mass, "charge": col.charge, "flavor": col.flavor},
+                {
+                    "pt": col.pt, 
+                    "eta": col.eta, 
+                    "phi": col.phi,
+                    "mass": col.mass, 
+                    "charge": col.charge, 
+                    "flavor": col.flavor,
+                    "pdgId" : col.pdgId,
+                    "deltaEtaSC": d_eta_sc
+                },
                 with_name="PtEtaPhiMCandidate",
             )
-
         tight_leptons = ak.concatenate(
             [_to_candidate(tight_electrons), _to_candidate(tight_muons)], axis=1,
         )
@@ -524,10 +542,18 @@ class WrAnalysis(processor.ProcessorABC):
         # Ensure the HEEP flag is a true boolean array before bitwise ops.
         heep_flag = ak.fill_none(events.Electron.cutBased_HEEP, 0)
         heep_flag = heep_flag != 0
-
+        # --- Supercluster Eta & Crack Veto ---
+        if "deltaEtaSC" in events.Electron.fields:
+            ele_sc_eta = events.Electron.eta + events.Electron.deltaEtaSC
+        else:
+            ele_sc_eta = events.Electron.eta
+        abs_ele_sc_eta = np.abs(ele_sc_eta)
+        ele_not_in_crack = (abs_ele_sc_eta <= 1.4442) | (abs_ele_sc_eta >= 1.566)
+        
         loose_electrons = (
             (events.Electron.pt > CUTS["lepton_pt_min"])
             & (np.abs(events.Electron.eta) < CUTS["electron_eta_max"])
+            & ele_not_in_crack
             & (heep_flag | loose_noIso_mask)
         )
         return events.Electron[loose_electrons]
@@ -631,6 +657,8 @@ class WrAnalysis(processor.ProcessorABC):
         # Object selections.
         looseElectrons = self.selectLooseElectrons(events)
         looseMuons = self.selectLooseMuons(events)
+        looseElectrons = ak.with_field(looseElectrons, "electron", "flavor")
+        looseMuons = ak.with_field(looseMuons, "muon", "flavor")
         is_signal = (getattr(events, "metadata", {}) or {}).get("physics_group") == "Signal"
         AK8Jets = self.selectAK8Jets(events,era,is_signal=is_signal)
         AK8Jets_withLSF = self.selectAK8Jets_withLSF(events,era,is_signal=is_signal)
@@ -648,16 +676,14 @@ class WrAnalysis(processor.ProcessorABC):
         tightMuons_inc = looseMuons[tight_mask_mu]
         tightMuons_inc = tightMuons_inc[ak.argsort(tightMuons_inc.pt, axis=1, ascending=False)]
 
-        looseElectrons = ak.with_field(looseElectrons, "electron", "flavor")
-        looseMuons     = ak.with_field(looseMuons,     "muon",     "flavor")
-        tightElectrons_inc = ak.with_field(tightElectrons_inc, "electron", "flavor")
-        tightMuons_inc     = ak.with_field(tightMuons_inc,     "muon",     "flavor")
-
+        # Slim to common fields before concatenating to avoid UnionArrays.
+        # Keep deltaEtaSC so downstream electron SFs can use supercluster eta.
         def _to_boosted_candidate(col):
+            d_eta_sc = col.deltaEtaSC if hasattr(col, "deltaEtaSC") else ak.zeros_like(col.eta)
             return ak.zip(
                 {"pt": col.pt, "eta": col.eta, "phi": col.phi,
                  "mass": col.mass, "charge": col.charge, "pdgId": col.pdgId,
-                 "flavor": col.flavor},
+                 "flavor": col.flavor, "deltaEtaSC": d_eta_sc},
                 with_name="PtEtaPhiMCandidate",
             )
 
@@ -665,7 +691,6 @@ class WrAnalysis(processor.ProcessorABC):
         looseLeptons = looseLeptons[ak.argsort(looseLeptons.pt, axis=1, ascending=False)]
         tightLeptons_inc = ak.concatenate([_to_boosted_candidate(tightElectrons_inc), _to_boosted_candidate(tightMuons_inc)], axis=1)
         tightLeptons_inc = tightLeptons_inc[ak.argsort(tightLeptons_inc.pt, axis=1, ascending=False)]
-
         # Define a resolved-like tag and take boosted as the complement.
         has_two_leptons = ak.num(tightLeptons_inc) >= 2
         muons_padded = ak.pad_none(tightLeptons_inc, 2, axis=1)
@@ -874,15 +899,13 @@ class WrAnalysis(processor.ProcessorABC):
         weights = Weights(n)
 
         if is_mc:
-            # Cross-section normalization
+            # --- Base Weights ---
             lumi = float(LUMIS[metadata.get("era")])
             xsec = float(metadata.get("xsec"))
 
             if self._compute_sumw:
-                # Defer /sumw normalization — caller will divide by accumulated _sumw.
                 event_weight = events.genWeight * xsec * lumi * 1000.0
             else:
-                # IMPORTANT: use signed genEventSumw (do NOT abs) for NLO samples.
                 sumw = float(metadata.get("genEventSumw"))
                 if sumw == 0.0:
                     raise ZeroDivisionError(
@@ -899,7 +922,6 @@ class WrAnalysis(processor.ProcessorABC):
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
             syst_weights = {"Nominal": weights.weight()}
-
             # Optional lumi uncertainty (produces syst histograms only if enabled).
             if "lumi" in self._enabled_systs:
                 era_key = metadata.get("era")
@@ -982,9 +1004,10 @@ class WrAnalysis(processor.ProcessorABC):
         if apply_electron and loose_electrons is not None and era in ELECTRON_JSONS:
             components["LooseElectronRecoSf"] = electron_reco_sf(loose_electrons, era)
 
-        # Electron RECO SF.
+        # Electron RECO + HEEP ID SFs.
         if apply_electron and tight_electrons is not None and era in ELECTRON_JSONS:
             components["ElectronRecoSf"] = electron_reco_sf(tight_electrons, era)
+            components["ElectronIdSf"] = electron_id_sf(tight_electrons, era)
 
         # Build combined nominal SF.
         sf_nom = np.ones(n, dtype=np.float64)
@@ -1152,8 +1175,7 @@ class WrAnalysis(processor.ProcessorABC):
                       skip_cutflows=False, flavor_filter=None):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
-        #boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
-
+        
         # Fill boosted cutflows
         if not skip_cutflows:
             fill_boosted_cutflows(output, boosted_sel, weights)
@@ -1230,7 +1252,6 @@ class WrAnalysis(processor.ProcessorABC):
         """Run analysis for one NanoEvents chunk and return a dataset-nested output dict."""
         output = self.make_output()
         metadata = events.metadata
-        #print('meta data', metadata)
         mc_campaign = metadata.get("era")
         process_name = metadata.get("physics_group")
         dataset = metadata.get("sample")
@@ -1245,11 +1266,12 @@ class WrAnalysis(processor.ProcessorABC):
         events = self.apply_noise_filter(events, mc_campaign, is_signal)
         raw_pt = events.Jet.pt * (1 - events.Jet.rawFactor)
         
-        events = apply_jet_corrections(events,mc_campaign,is_mc,True )
-        corrected_pt = events.Jet.pt
-        # jec_factor = corrected_pt / raw_pt[events.Jet.rawFactor<=0.9]
+        events = apply_jet_corrections(events,mc_campaign,is_mc,True)
 
         # print("--- JEC VERIFICATION (First 10 events) ---")
+        #corrected_pt = events.Jet.pt
+        # jec_factor = corrected_pt / raw_pt[events.Jet.rawFactor<=0.9]
+
         # print(f"Raw pT:       {raw_pt[0:10].to_list()}")
         # print(f"Corrected pT: {corrected_pt[0:10].to_list()}")
         # print(f"JEC Factor:   {jec_factor[0:10].to_list()}")
@@ -1259,6 +1281,8 @@ class WrAnalysis(processor.ProcessorABC):
         # print(f"Mean JEC factor: {np.mean(flat_factors):.3f}")
         # print(f"Max JEC factor:  {np.max(flat_factors):.3f}")
         # print(f"Min JEC factor:  {np.min(flat_factors):.3f}")
+
+
         # apply jet veto
         # 2024 signal samples are really Run3Summer23BPix files
         jetid_era = "Run3Summer23BPix" if (is_signal and mc_campaign == "RunIII2024Summer24") else mc_campaign
@@ -1281,9 +1305,7 @@ class WrAnalysis(processor.ProcessorABC):
                 ak4_id_mask = events.Jet.isTightLeptonVeto
             else:
                 ak4_id_mask = events.Jet.jetId >= 6
-        #print("Events before veto:", len(events))
         events = jet_veto_event_mask(events,ak4_id_mask,mc_campaign)
-        #print("Events after veto in process:", len(events))
 
         corrected_electrons = apply_electron_scale_smearing(events, mc_campaign, is_mc)
         #verify_scale_smearing(events.Electron, corrected_electrons, is_mc)
@@ -1298,10 +1320,9 @@ class WrAnalysis(processor.ProcessorABC):
                     events["Electron", syst] = corrected_electrons[syst]
 
         corrected_muons = apply_muon_scale_smearing(events, mc_campaign, is_mc)
-        #verify_muon_scale_smearing(events.Muon, corrected_muons, is_mc)
         if corrected_muons:
             events["Muon", "pt"] = corrected_muons["pt"]
-            # Attach systematic variations if they exist (MC only)                                                                                                          
+            # Attach systematic variations if they exist (MC only)                  
             for syst in ["pt_smear_up", "pt_smear_down", "pt_scale_up", "pt_scale_down"]:
                 if syst in corrected_muons:
                     events["Muon", syst] = corrected_muons[syst]
