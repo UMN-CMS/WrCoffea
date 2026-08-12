@@ -235,15 +235,13 @@ class TestLeptonSFsForRegion:
         mock_mu_sf.assert_called_once()
         mock_mu_trig.assert_called_once()
 
+    @patch("wrcoffea.analyzer.electron_id_sf")
     @patch("wrcoffea.analyzer.electron_reco_sf")
-    def test_electron_sf_components(self, mock_e_reco, analyzer):
-        """Electron RECO SF multiplies the ee-region syst_weights.
-
-        NOTE: electron_id_sf and electron_trigger_sf are no longer imported
-        by analyzer.py — RECO is the only tight-electron SF applied here.
-        """
+    def test_electron_sf_components(self, mock_e_reco, mock_e_id, analyzer):
+        """Electron RECO and HEEP ID SFs multiply the ee-region syst_weights."""
         n = N_EVENTS
         mock_e_reco.return_value = _sf_triple(n, 0.98, 0.99, 0.97)
+        mock_e_id.return_value = _sf_triple(n, 0.95, 0.96, 0.94)
 
         tight_electrons = _make_tight_electrons(n)
         base = _base_syst_weights(n, 3.0)
@@ -253,16 +251,18 @@ class TestLeptonSFsForRegion:
         )
 
         np.testing.assert_allclose(
-            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]) * 0.98,
+            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]) * 0.98 * 0.95,
             rtol=1e-4,
-            err_msg="Electron RECO SF not applied correctly",
+            err_msg="Electron RECO x ID SF not applied correctly",
         )
         mock_e_reco.assert_called_once()
+        mock_e_id.assert_called_once()
 
+    @patch("wrcoffea.analyzer.electron_id_sf")
     @patch("wrcoffea.analyzer.electron_reco_sf")
     @patch("wrcoffea.analyzer.muon_trigger_sf")
     @patch("wrcoffea.analyzer.muon_sf")
-    def test_both_lepton_flavors(self, mock_mu_sf, mock_mu_trig, mock_e_reco, analyzer):
+    def test_both_lepton_flavors(self, mock_mu_sf, mock_mu_trig, mock_e_reco, mock_e_id, analyzer):
         """Flavor CR applies both muon and electron SFs."""
         n = N_EVENTS
         mock_mu_sf.return_value = {
@@ -272,6 +272,7 @@ class TestLeptonSFsForRegion:
         }
         mock_mu_trig.return_value = _sf_triple(n, 0.94, 1.0, 0.88)
         mock_e_reco.return_value = _sf_triple(n, 0.98, 1.0, 0.96)
+        mock_e_id.return_value = _sf_triple(n, 0.97, 1.0, 0.94)
 
         tight_muons = _make_tight_muons(n)
         tight_electrons = _make_tight_electrons(n)
@@ -281,13 +282,14 @@ class TestLeptonSFsForRegion:
             "flavor_cr_resolved", base, ERA, tight_muons, tight_electrons,
         )
 
-        sf_product = 0.95 * 0.94 * 0.98
+        sf_product = 0.95 * 0.94 * 0.98 * 0.97
         np.testing.assert_allclose(
             np.asarray(result["Nominal"]), np.full(n, sf_product), rtol=1e-4,
             err_msg="Both-flavor SF product incorrect in flavor CR",
         )
         mock_mu_sf.assert_called_once()
         mock_e_reco.assert_called_once()
+        mock_e_id.assert_called_once()
 
     @patch("wrcoffea.analyzer.muon_trigger_sf")
     @patch("wrcoffea.analyzer.muon_sf")
