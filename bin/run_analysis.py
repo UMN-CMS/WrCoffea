@@ -249,7 +249,7 @@ def _condor_cluster(*, n_workers, wait_timeout_s):
 
     cluster = LPCCondorCluster(
         ship_env=True,
-        memory="4GB",
+        memory="10GB",
         transfer_input_files=[
             str(repo_root / "wrcoffea"),
             str(repo_root / "bin"),
@@ -455,7 +455,7 @@ def _process_fileset(args, fileset, *, client, condor=False):
         tf_study=args.tf_study,
     )
     run = Runner(
-        executor=DaskExecutor(client=client, compression=None, retries=10),
+        executor=DaskExecutor(client=client, compression=None, retries=10, treereduction=10),
         chunksize=args.chunksize,
         maxchunks=args.maxchunks,
         # Skip bad files to continue processing with remaining files
@@ -512,7 +512,7 @@ if __name__ == "__main__":
     optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
     optional.add_argument("--maxchunks", type=int, default=None, help="Max chunks per dataset file (default: all). Use 1 for quick testing.")
     optional.add_argument("--maxfiles", type=int, default=None, help="Max files per dataset (default: all). Use 1 for quick testing.")
-    optional.add_argument("--systs", nargs="*", default=[], choices=["lumi", "pileup", "sf"], help="Enable systematic histogram variations. Supported: lumi, pileup, sf (muon+electron scale factors).")
+    optional.add_argument("--systs", nargs="*", default=[], choices=["lumi", "pileup", "sf", "jer", "jes", "elescale", "elesmear", "muscale", "musmear"], help="Enable systematic histogram variations. Weight-based: lumi, pileup, sf. Shape (re-run selections): jer, jes, elescale, elesmear, muscale, musmear.")
     optional.add_argument("--region", type=str, default="both", choices=["resolved", "boosted", "both"], help="Analysis region to run: resolved, boosted, or both (default: both).")
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")

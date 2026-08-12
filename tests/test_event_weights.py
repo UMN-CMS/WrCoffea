@@ -8,12 +8,6 @@ Current API (after the per-region SF refactor):
 - Lepton SFs moved to _lepton_sfs_for_region(region, syst_weights, era,
   tight_muons, tight_electrons, loose_muons=None, loose_electrons=None),
   which multiplies region-appropriate SFs into the syst_weights dict.
-
-NOTE: MC weights are TEMPORARILY disabled in analyzer.py (genWeight-only
-debug state): xsec/lumi/sumw normalization, pileup, and all lepton SFs are
-commented out, and _lepton_sfs_for_region early-returns dict(syst_weights).
-Tests that pin the restored behavior are marked xfail(strict=True) so they
-scream the moment the physics comes back.
 """
 
 import pytest
@@ -39,19 +33,6 @@ ERA = "RunIII2024Summer24"
 # cannot drift from config.yaml.  The code multiplies by 1000 to get pb^-1
 # inside build_event_weights.
 LUMI_FB = float(LUMIS[ERA])
-
-# Standard mark for tests that fail ONLY because MC weights are temporarily
-# disabled in analyzer.py.  strict=True: these must start passing (and the
-# mark must be removed) once the physics is restored.
-XFAIL_WEIGHTS_DISABLED = pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "MC weights TEMPORARILY disabled in analyzer.py (genWeight-only debug "
-        "state); remove this mark when normalization/pileup/lepton SFs are "
-        "restored"
-    ),
-)
-
 
 class MockEvents:
     """Minimal mock that looks like a NanoAOD events object."""
@@ -139,7 +120,6 @@ def metadata():
 class TestEventWeightsMC:
     """Test event weight computation for MC samples."""
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_mc_normalization_formula(self, mock_pu, analyzer, mock_events, metadata):
         """Test MC weight = genWeight * xsec * lumi * 1000 / genEventSumw."""
@@ -178,28 +158,6 @@ class TestEventWeightsMC:
         assert isinstance(syst_weights, dict)
         assert "Nominal" in syst_weights
 
-    def test_genweight_only_debug_state(self, analyzer, mock_events, metadata):
-        """CURRENT (temporary) behavior: MC weight is genWeight only.
-
-        Pins the deliberate debug state — no xsec/lumi/sumw normalization and
-        no pileup.  Delete this test when the physics is restored (its inverse
-        is pinned by the strict-xfail tests in this class).
-        """
-        weights, syst_weights = analyzer.build_event_weights(
-            mock_events, metadata, is_mc=True,
-        )
-
-        np.testing.assert_allclose(
-            weights.weight(), np.asarray(mock_events.genWeight), rtol=1e-6,
-            err_msg="Debug state should yield genWeight-only MC weights",
-        )
-        assert "pileup" not in weights.weightStatistics
-        np.testing.assert_allclose(
-            np.asarray(syst_weights["Nominal"]), np.asarray(mock_events.genWeight),
-            rtol=1e-6,
-        )
-
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_zero_sumw_raises(self, mock_pu, analyzer, mock_events):
         """Zero genEventSumw should raise ZeroDivisionError."""
@@ -210,7 +168,6 @@ class TestEventWeightsMC:
         with pytest.raises(ZeroDivisionError):
             analyzer.build_event_weights(mock_events, bad_meta, is_mc=True)
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_pileup_reweighting_applied(self, mock_pu, analyzer, mock_events, metadata):
         """Pileup weight is multiplied into the total weight."""
@@ -249,7 +206,6 @@ class TestLeptonSFsForRegion:
     dict(syst_weights), so they carry the strict xfail mark.
     """
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.muon_sf")
     @patch("wrcoffea.analyzer.muon_trigger_sf")
     def test_muon_sf_components(self, mock_mu_trig, mock_mu_sf, analyzer):
@@ -279,7 +235,6 @@ class TestLeptonSFsForRegion:
         mock_mu_sf.assert_called_once()
         mock_mu_trig.assert_called_once()
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.electron_reco_sf")
     def test_electron_sf_components(self, mock_e_reco, analyzer):
         """Electron RECO SF multiplies the ee-region syst_weights.
@@ -304,7 +259,6 @@ class TestLeptonSFsForRegion:
         )
         mock_e_reco.assert_called_once()
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.electron_reco_sf")
     @patch("wrcoffea.analyzer.muon_trigger_sf")
     @patch("wrcoffea.analyzer.muon_sf")
@@ -335,7 +289,6 @@ class TestLeptonSFsForRegion:
         mock_mu_sf.assert_called_once()
         mock_e_reco.assert_called_once()
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.muon_trigger_sf")
     @patch("wrcoffea.analyzer.muon_sf")
     def test_sf_systematic_variations(self, mock_mu_sf, mock_mu_trig):
@@ -369,26 +322,6 @@ class TestLeptonSFsForRegion:
         np.testing.assert_allclose(
             np.asarray(result["MuonRecoSfDown"]), nominal * (0.97 / 0.98), rtol=1e-5,
         )
-
-    def test_current_early_return_passthrough(self, analyzer):
-        """CURRENT (temporary) behavior: SFs disabled, dict passed through.
-
-        _lepton_sfs_for_region early-returns a copy of syst_weights with no
-        SF applied.  Delete this test when the physics is restored.
-        """
-        n = N_EVENTS
-        base = _base_syst_weights(n, 5.0)
-
-        result = analyzer._lepton_sfs_for_region(
-            "mumu_resolved_sr", base, ERA, _make_tight_muons(n), None,
-        )
-
-        assert result is not base, "Should return a new dict, not the input"
-        assert set(result.keys()) == {"Nominal"}
-        np.testing.assert_array_equal(
-            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]),
-        )
-
 
 # ---------------------------------------------------------------------------
 # Data weight tests
@@ -483,7 +416,6 @@ class TestSystematicWeights:
         relative_up = (lumi_up[pos_mask] - nominal[pos_mask]) / nominal[pos_mask]
         np.testing.assert_allclose(relative_up, 0.014, atol=0.005)
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_pileup_systematic_variations(self, mock_pu):
         """Pileup up/down variations are present in syst_weights."""
@@ -539,7 +471,6 @@ class TestEdgeCases:
         assert not np.any(np.isnan(np.asarray(weights.weight())))
         assert "Nominal" in syst_weights
 
-    @XFAIL_WEIGHTS_DISABLED
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_compute_sumw_mode(self, mock_pu):
         """compute_sumw=True omits the /sumw division."""
