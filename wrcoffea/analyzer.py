@@ -164,7 +164,7 @@ class WrAnalysis(processor.ProcessorABC):
 
     def apply_noise_filter(self, events, mc_campaign, is_signal):
         if is_signal :
-            logger.warning(f"Processign signal events. Noise filters are not applied.")
+            logger.warning(f"Processing signal events. Noise filters are not applied.")
             return events
         common_flags = (
             events.Flag.goodVertices &
@@ -264,6 +264,7 @@ class WrAnalysis(processor.ProcessorABC):
             "ele_id": ele_id_mask,
             "mu_id": mu_id_mask,
             "mu_loose": muon_loose_mask,
+            "ele_loose": electron_loose_mask,
         }
 
         return tight_leps, loose_leps, masks
@@ -278,22 +279,24 @@ class WrAnalysis(processor.ProcessorABC):
         """
         # ---------- AK4 ----------
         ak4_pteta_mask = (events.Jet.pt > CUTS["ak4_pt_min"]) & (np.abs(events.Jet.eta) < CUTS["ak4_eta_max"])
-        if era in JME_JSONS and (not is_signal):
+        # 2024 signal samples are really Run3Summer23BPix files
+        jetid_era = "Run3Summer23BPix" if (is_signal and era == "RunIII2024Summer24") else era
+        if jetid_era in JME_JSONS:
             try:
-                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, era,jetid_name="AK4PUPPI_TightLeptonVeto")
+                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, jetid_era, jetid_name="AK4PUPPI_TightLeptonVeto")
             except AttributeError as e:
                 # Fallback for missing fields (shouldn't happen after config fix)
-                key = f"jetid_fallback::{era}"
+                key = f"jetid_fallback::{jetid_era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", era, e
+                        "(example error: %s)", jetid_era, e
                     )
                 ak4_id_mask = events.Jet.jetId >= 6
         else:
-            # For eras without jetid.json (including NanoAODv12 eras)
+            # For eras without jetid.json (including NanoAODv12 eras and signal remapped from 2024)
             # Use isTightLeptonVeto if available, otherwise use jetId >= 6
             if hasattr(events.Jet, 'isTightLeptonVeto'):
                 ak4_id_mask = events.Jet.isTightLeptonVeto
@@ -535,18 +538,20 @@ class WrAnalysis(processor.ProcessorABC):
     
     def selectAK8Jets(self,events,era, is_signal: bool = False):
         """Baseline AK8 selection used in boosted categories."""
-        if era in JME_JSONS and (not is_signal):
+        # 2024 signal samples are really Run3Summer23BPix files
+        jetid_era = "Run3Summer23BPix" if (is_signal and era == "RunIII2024Summer24") else era
+        if jetid_era in JME_JSONS:
             try:
-                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era,jetid_name="AK8PUPPI_Tight")
+                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, jetid_era, jetid_name="AK8PUPPI_Tight")
             except AttributeError as e:
-                # Fallback for missing fields (shouldn't happen after config fix)                                                                        
-                key = f"jetid_fallback::{era}"
+                # Fallback for missing fields (shouldn't happen after config fix)
+                key = f"jetid_fallback::{jetid_era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", era, e
+                        "(example error: %s)", jetid_era, e
                     )
                 ak8_id_mask = events.FatJet.isTight #jetId >= 6
         else:
@@ -560,20 +565,22 @@ class WrAnalysis(processor.ProcessorABC):
 
     def selectAK8Jets_withLSF(self,events,era, is_signal: bool = False):
         """AK8 selection with LSF requirement used for boosted SR/CR definitions."""
-        if era in JME_JSONS and (not is_signal):
+        # 2024 signal samples are really Run3Summer23BPix files
+        jetid_era = "Run3Summer23BPix" if (is_signal and era == "RunIII2024Summer24") else era
+        if jetid_era in JME_JSONS:
             try:
-                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era,jetid_name="AK8PUPPI_Tight")
+                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, jetid_era, jetid_name="AK8PUPPI_Tight")
             except AttributeError as e:
-                # Fallback for missing fields (shouldn't happen after config fix)                                                                                            
-                key = f"jetid_fallback::{era}"
+                # Fallback for missing fields (shouldn't happen after config fix)
+                key = f"jetid_fallback::{jetid_era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", era, e
+                        "(example error: %s)", jetid_era, e
                     )
-                ak8_id_mask = events.FatJet.isTight #jetId >= 6                                                                                                              
+                ak8_id_mask = events.FatJet.isTight #jetId >= 6
         else:
             if hasattr(events.FatJet, 'isTight'):
                 ak8_id_mask = events.FatJet.isTight
@@ -641,9 +648,22 @@ class WrAnalysis(processor.ProcessorABC):
         tightMuons_inc = looseMuons[tight_mask_mu]
         tightMuons_inc = tightMuons_inc[ak.argsort(tightMuons_inc.pt, axis=1, ascending=False)]
 
-        looseLeptons = ak.with_name(ak.concatenate((looseElectrons, looseMuons), axis=1), 'PtEtaPhiMCandidate')
+        looseElectrons = ak.with_field(looseElectrons, "electron", "flavor")
+        looseMuons     = ak.with_field(looseMuons,     "muon",     "flavor")
+        tightElectrons_inc = ak.with_field(tightElectrons_inc, "electron", "flavor")
+        tightMuons_inc     = ak.with_field(tightMuons_inc,     "muon",     "flavor")
+
+        def _to_boosted_candidate(col):
+            return ak.zip(
+                {"pt": col.pt, "eta": col.eta, "phi": col.phi,
+                 "mass": col.mass, "charge": col.charge, "pdgId": col.pdgId,
+                 "flavor": col.flavor},
+                with_name="PtEtaPhiMCandidate",
+            )
+
+        looseLeptons = ak.concatenate([_to_boosted_candidate(looseElectrons), _to_boosted_candidate(looseMuons)], axis=1)
         looseLeptons = looseLeptons[ak.argsort(looseLeptons.pt, axis=1, ascending=False)]
-        tightLeptons_inc = ak.with_name(ak.concatenate((tightElectrons_inc, tightMuons_inc), axis=1), 'PtEtaPhiMCandidate')
+        tightLeptons_inc = ak.concatenate([_to_boosted_candidate(tightElectrons_inc), _to_boosted_candidate(tightMuons_inc)], axis=1)
         tightLeptons_inc = tightLeptons_inc[ak.argsort(tightLeptons_inc.pt, axis=1, ascending=False)]
 
         # Define a resolved-like tag and take boosted as the complement.
@@ -917,7 +937,7 @@ class WrAnalysis(processor.ProcessorABC):
         return weights, syst_weights
 
     def _lepton_sfs_for_region(self, region, syst_weights, era, tight_muons, tight_electrons,
-                              loose_muons=None):
+                              loose_muons=None, loose_electrons=None):
         """Multiply per-region lepton SFs into the base syst_weights.
 
         Computes only the SFs relevant for each region:
@@ -925,13 +945,15 @@ class WrAnalysis(processor.ProcessorABC):
           - 'mumu' regions → muon RECO + ID + ISO + trigger SFs
           - flavor CR (emu/mue) → electron RECO + muon RECO + ID + ISO + muon trigger SFs
           - boosted regions additionally get loose muon RECO + ID SFs (no ISO)
+            and loose electron RECO SFs
 
         When ``"sf"`` is in ``_enabled_systs``, per-component up/down
         variations are added to the returned dict.
 
         Returns a new syst_weights dict with lepton SFs multiplied in.
         """
-        n = len(syst_weights["Nominal"])
+        first_key = next(iter(syst_weights))
+        n = len(syst_weights[first_key])
 
         # Determine which lepton SFs to apply based on region name.
         apply_muon = "mumu" in region or "flavor_cr" in region or "mue" in region or "emu" in region
@@ -956,6 +978,10 @@ class WrAnalysis(processor.ProcessorABC):
             for comp, vals in loose_sfs.items():
                 components[f"LooseMuon{comp.capitalize()}Sf"] = vals
 
+        # Loose electron RECO SF.
+        if apply_electron and loose_electrons is not None and era in ELECTRON_JSONS:
+            components["LooseElectronRecoSf"] = electron_reco_sf(loose_electrons, era)
+
         # Electron RECO SF.
         if apply_electron and tight_electrons is not None and era in ELECTRON_JSONS:
             components["ElectronRecoSf"] = electron_reco_sf(tight_electrons, era)
@@ -967,8 +993,8 @@ class WrAnalysis(processor.ProcessorABC):
 
         result = {k: v * sf_nom for k, v in syst_weights.items()}
 
-        # Add per-component up/down variations.
-        if "sf" in self._enabled_systs and len(components) > 0:
+        # Add per-component up/down variations (only for nominal pass).
+        if "sf" in self._enabled_systs and "Nominal" in syst_weights and len(components) > 0:
             for vary_label, (vary_nom, vary_up, vary_down) in components.items():
                 # Ratio to swap nominal → varied for this component.
                 safe_nom = np.where(vary_nom > 0, vary_nom, 1.0)
@@ -979,8 +1005,92 @@ class WrAnalysis(processor.ProcessorABC):
 
         return result
 
+    @staticmethod
+    def _apply_shape_variation(events, var_source, direction):
+        """Return events with shifted kinematics for a shape systematic.
+
+        Jet variations swap pt and mass; lepton variations swap pt only.
+        Uses ``ak.with_field`` so the original events are not mutated.
+        """
+        if var_source in ("jer", "CMS_scale_j_Total"):
+            pt_field = f"pt_{var_source}_{direction}"
+            mass_field = f"mass_{var_source}_{direction}"
+            for coll_name in ("Jet", "FatJet"):
+                coll = getattr(events, coll_name, None)
+                if coll is not None and pt_field in coll.fields:
+                    coll = ak.with_field(coll, coll[pt_field], "pt")
+                    coll = ak.with_field(coll, coll[mass_field], "mass")
+                    events = ak.with_field(events, coll, coll_name)
+        elif var_source in ("ele_scale", "ele_smear"):
+            kind = "scale" if "scale" in var_source else "smear"
+            eles = ak.with_field(events.Electron, events.Electron[f"pt_{kind}_{direction}"], "pt")
+            events = ak.with_field(events, eles, "Electron")
+        elif var_source in ("mu_scale", "mu_smear"):
+            kind = "scale" if "scale" in var_source else "smear"
+            muons = ak.with_field(events.Muon, events.Muon[f"pt_{kind}_{direction}"], "pt")
+            events = ak.with_field(events, muons, "Muon")
+        return events
+
+    def _run_shape_systematic(self, events, output, metadata, is_mc, syst_label, triggers,
+                              flavor_filter=None):
+        """Re-run selection and histogram filling for a single shape variation.
+
+        ``events`` should already have modified kinematics via
+        ``_apply_shape_variation``.  Only the ``syst_label`` entry is produced
+        (no SF up/down crossing).
+
+        *flavor_filter* — if given, only fill regions whose name contains one
+        of these substrings (e.g. ``["ee", "flavor_cr"]``).
+        """
+        mc_campaign = metadata.get("era")
+        process_name = metadata.get("physics_group")
+        is_signal = (process_name == "Signal")
+
+        tight_leptons, loose_leptons, lepton_masks = self.select_leptons(events)
+        ak4_jets, _ak8_jets, jet_masks = self.select_jets(events, mc_campaign, is_signal=is_signal)
+
+        resolved_selections = None
+        if self._region in ("resolved", "both"):
+            resolved_selections = self.resolved_selections(
+                tight_leptons, ak4_jets,
+                lepton_masks=lepton_masks, jet_masks=jet_masks, triggers=triggers,
+            )
+
+        boosted_payload = None
+        if self._region in ("boosted", "both"):
+            try:
+                has_fatjet = hasattr(events, "FatJet")
+                has_lsf3 = has_fatjet and ("lsf3" in getattr(events.FatJet, "fields", []))
+                if has_fatjet and has_lsf3:
+                    boosted_payload = self.boosted_selections(events, mc_campaign, triggers=triggers)
+            except Exception as e:
+                logger.error("Boosted selections failed for %s: %s", syst_label, e)
+
+        tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
+        tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
+        loose_muons = events.Muon[lepton_masks["mu_loose"]]
+        loose_electrons = events.Electron[lepton_masks["ele_loose"]]
+        weights, _ = self.build_event_weights(events, metadata, is_mc)
+        era = mc_campaign
+
+        # Single-entry syst_weights — lepton SFs are multiplied in by
+        # _lepton_sfs_for_region but SF up/down variants are skipped
+        # because "Nominal" is absent from the dict.
+        syst_weights = {syst_label: weights.weight()}
+
+        if resolved_selections is not None:
+            self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons,
+                                weights, syst_weights, era, tight_muons, tight_electrons,
+                                skip_cutflows=True, flavor_filter=flavor_filter)
+
+        if boosted_payload is not None:
+            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
+                               era, tight_muons, tight_electrons, loose_muons, loose_electrons,
+                               skip_cutflows=True, flavor_filter=flavor_filter)
+
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
-                       weights, syst_weights, era, tight_muons, tight_electrons):
+                       weights, syst_weights, era, tight_muons, tight_electrons,
+                       skip_cutflows=False, flavor_filter=None):
         """Build resolved region masks and fill histograms + cutflows."""
         resolved_regions = {
             'wr_ee_resolved_dy_cr': resolved_selections.all(
@@ -1029,19 +1139,24 @@ class WrAnalysis(processor.ProcessorABC):
             )
 
         for region, cuts in resolved_regions.items():
+            if flavor_filter and not any(f in region for f in flavor_filter):
+                continue
             region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons)
             fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst)
 
-        fill_cutflows(output, resolved_selections, weights)
+        if not skip_cutflows:
+            fill_cutflows(output, resolved_selections, weights)
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
-                      era, tight_muons, tight_electrons, loose_muons):
+                      era, tight_muons, tight_electrons, loose_muons, loose_electrons,
+                      skip_cutflows=False, flavor_filter=None):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
         #boosted_sel.add(SEL_JET_VETO_MAP, jet_veto_pass)
 
         # Fill boosted cutflows
-        fill_boosted_cutflows(output, boosted_sel, weights)
+        if not skip_cutflows:
+            fill_boosted_cutflows(output, boosted_sel, weights)
 
         boosted_regions = {
             'wr_mumu_boosted_dy_cr': boosted_sel.all(
@@ -1070,7 +1185,10 @@ class WrAnalysis(processor.ProcessorABC):
             ),
         }
         for region, cuts in boosted_regions.items():
-            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons, loose_muons)
+            if flavor_filter and not any(f in region for f in flavor_filter):
+                continue
+            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons,
+                                                      loose_muons, loose_electrons=loose_electrons)
             if "dy_cr" in region:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, region_syst)
             elif "flavor_cr" in region:
@@ -1099,7 +1217,10 @@ class WrAnalysis(processor.ProcessorABC):
                 ),
             }
             for region, cuts in tf_boosted_regions.items():
-                region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons, loose_muons)
+                if flavor_filter and not any(f in region for f in flavor_filter):
+                    continue
+                region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons,
+                                                          loose_muons, loose_electrons=loose_electrons)
                 if "flavor_cr" in region:
                     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
                 else:
@@ -1139,17 +1260,19 @@ class WrAnalysis(processor.ProcessorABC):
         # print(f"Max JEC factor:  {np.max(flat_factors):.3f}")
         # print(f"Min JEC factor:  {np.min(flat_factors):.3f}")
         # apply jet veto
-        if mc_campaign in JME_JSONS and (not is_signal):
+        # 2024 signal samples are really Run3Summer23BPix files
+        jetid_era = "Run3Summer23BPix" if (is_signal and mc_campaign == "RunIII2024Summer24") else mc_campaign
+        if jetid_era in JME_JSONS:
             try:
-                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, mc_campaign,jetid_name="AK4PUPPI_TightLeptonVeto")
+                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, jetid_era, jetid_name="AK4PUPPI_TightLeptonVeto")
             except AttributeError as e:
-                key = f"jetid_fallback::{mc_campaign}"
+                key = f"jetid_fallback::{jetid_era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", mc_campaign, e
+                        "(example error: %s)", jetid_era, e
                     )
 
                 ak4_id_mask = events.Jet.jetId >= 6
@@ -1168,7 +1291,7 @@ class WrAnalysis(processor.ProcessorABC):
             # Overwrite nominal kinematics
             events["Electron", "pt"] = corrected_electrons["pt"]
             events["Electron", "energyErr"] = corrected_electrons["energyErr"]
-            
+
             # Attach systematic variations if they exist (MC only)
             for syst in ["pt_smear_up", "pt_smear_down", "pt_scale_up", "pt_scale_down"]:
                 if syst in corrected_electrons:
@@ -1218,6 +1341,7 @@ class WrAnalysis(processor.ProcessorABC):
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
         loose_muons = events.Muon[lepton_masks["mu_loose"]]
+        loose_electrons = events.Electron[lepton_masks["ele_loose"]]
         weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
         era = metadata.get("era")
 
@@ -1228,7 +1352,48 @@ class WrAnalysis(processor.ProcessorABC):
 
         if boosted_payload is not None:
             self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               era, tight_muons, tight_electrons, loose_muons)
+                               era, tight_muons, tight_electrons, loose_muons, loose_electrons)
+
+        # Shape systematics: re-run selections with shifted kinematics.
+        if is_mc:
+            shape_variations = []
+            if "jer" in self._enabled_systs:
+                if "pt_jer_up" in events.Jet.fields:
+                    shape_variations += [("JERUp", "jer", "up"), ("JERDown", "jer", "down")]
+            if "jes" in self._enabled_systs:
+                if "pt_CMS_scale_j_Total_up" in events.Jet.fields:
+                    shape_variations += [("JESUp", "CMS_scale_j_Total", "up"),
+                                         ("JESDown", "CMS_scale_j_Total", "down")]
+            if "elescale" in self._enabled_systs:
+                if "pt_scale_up" in events.Electron.fields:
+                    shape_variations += [("EleScaleUp", "ele_scale", "up"),
+                                         ("EleScaleDown", "ele_scale", "down")]
+            if "elesmear" in self._enabled_systs:
+                if "pt_smear_up" in events.Electron.fields:
+                    shape_variations += [("EleSmearUp", "ele_smear", "up"),
+                                         ("EleSmearDown", "ele_smear", "down")]
+            if "muscale" in self._enabled_systs:
+                if "pt_scale_up" in events.Muon.fields:
+                    shape_variations += [("MuScaleUp", "mu_scale", "up"),
+                                         ("MuScaleDown", "mu_scale", "down")]
+            if "musmear" in self._enabled_systs:
+                if "pt_smear_up" in events.Muon.fields:
+                    shape_variations += [("MuSmearUp", "mu_smear", "up"),
+                                         ("MuSmearDown", "mu_smear", "down")]
+
+            # Map variation source to the region flavors it affects.
+            _FLAVOR_FILTERS = {
+                "ele_scale": ["ee", "flavor_cr"],
+                "ele_smear": ["ee", "flavor_cr"],
+                "mu_scale":  ["mumu", "flavor_cr"],
+                "mu_smear":  ["mumu", "flavor_cr"],
+            }
+
+            for syst_label, var_source, direction in shape_variations:
+                varied_events = self._apply_shape_variation(events, var_source, direction)
+                flavor_filter = _FLAVOR_FILTERS.get(var_source)
+                self._run_shape_systematic(varied_events, output, metadata, is_mc, syst_label, triggers,
+                                           flavor_filter=flavor_filter)
 
         nested_output = {dataset: {**output}}
 

@@ -10,7 +10,7 @@ import pytest
 from coffea.nanoevents.methods import vector
 from coffea.nanoevents.methods import candidate
 
-from wrcoffea.analysis_config import CUTS
+from wrcoffea.analysis_config import CUTS, LUMIS
 from wrcoffea.analyzer import WrAnalysis
 
 ak.behavior.update(vector.behavior)
@@ -867,19 +867,9 @@ class TestProcessIntegration:
     # ------------------------------------------------------------------
     # Systematic variations enabled
     # ------------------------------------------------------------------
-    @pytest.mark.xfail(
-        strict=True,
-        reason="MC weights TEMPORARILY disabled in analyzer.py (genWeight-only "
-               "debug state); remove this mark when normalization/pileup/lepton "
-               "SFs are restored")
     @_apply_sf_patches
     def test_process_systematic_variations_enabled(self, *_mocks):
-        """Systematic variations are created when enabled.
-
-        Currently fails with KeyError('pileupUp'): the pileup weight is never
-        added to Weights while the MC-weight block is disabled, but the
-        pileup-systematics branch still requests the modifier.
-        """
+        """Systematic variations (lumi + pileup) run end-to-end."""
         proc = WrAnalysis(mass_point=None, region="resolved",
                           enabled_systs=["lumi", "pileup"])
         events = _make_integration_events(n_events=5, n_muons=2, n_jets=2)
@@ -889,12 +879,11 @@ class TestProcessIntegration:
         assert "DYJetsToLL_M-50" in output
 
     # ------------------------------------------------------------------
-    # Lumi-only systematics still work in the genWeight-only debug state
+    # Lumi-only systematics
     # ------------------------------------------------------------------
     @_apply_sf_patches
     def test_process_lumi_systematics_only(self, *_mocks):
-        """enabled_systs=['lumi'] runs end-to-end (lumi variations are not
-        part of the temporarily-disabled MC weight block)."""
+        """enabled_systs=['lumi'] runs end-to-end with normalized weights."""
         proc = WrAnalysis(mass_point=None, region="resolved",
                           enabled_systs=["lumi"])
         events = _make_integration_events(n_events=5, n_muons=2, n_jets=2)
@@ -903,16 +892,14 @@ class TestProcessIntegration:
 
         ds = output["DYJetsToLL_M-50"]
         cum = ds["cutflow"]["mumu"]["cumulative"]
-        assert cum.values()[0] == 5.0  # no_cuts, genWeight-only weights
+        # no_cuts bin: 5 events x genWeight(=1) * xsec * lumi * 1000 / sumw,
+        # with xsec/sumw from _make_integration_events default metadata.
+        expected = 5 * 6077.22 * float(LUMIS["RunIISummer20UL18"]) * 1000.0 / 50000.0
+        assert cum.values()[0] == pytest.approx(expected)
 
     # ------------------------------------------------------------------
     # genEventSumw=0 raises ZeroDivisionError
     # ------------------------------------------------------------------
-    @pytest.mark.xfail(
-        strict=True,
-        reason="MC weights TEMPORARILY disabled in analyzer.py (genWeight-only "
-               "debug state); remove this mark when normalization/pileup/lepton "
-               "SFs are restored")
     @_apply_sf_patches
     def test_process_zero_sumw_raises(self, *_mocks):
         """genEventSumw=0 raises ZeroDivisionError."""
