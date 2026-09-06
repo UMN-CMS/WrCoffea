@@ -576,8 +576,24 @@ def _mock_apply_muon_scale_smearing(events, era, is_mc):
 
 
 # All correction patches applied to every test in this class.
+def _mock_dy_zpt_weight(events, era, *, is_dy):
+    from wrcoffea.dy_reweight import identity_weights
+    return identity_weights(len(events))
+
+
+def _mock_signal_kfactor_weight(events, era, *, mass_point, is_signal):
+    return {"nominal": np.ones(len(events), dtype=np.float64), "applied": False}
+
+
+def _mock_dy_reshape_weight(jet_pt, era, kind, *, is_dy):
+    return None   # behave as an era without a reshape payload
+
+
 _SF_PATCHES = {
     "wrcoffea.analyzer.jet_veto_event_mask": _mock_jet_veto,
+    "wrcoffea.analyzer.dy_zpt_weight": _mock_dy_zpt_weight,
+    "wrcoffea.analyzer.signal_kfactor_weight": _mock_signal_kfactor_weight,
+    "wrcoffea.analyzer.dy_reshape_weight": _mock_dy_reshape_weight,
     "wrcoffea.analyzer.pileup_weight": _mock_pileup_weight,
     "wrcoffea.analyzer.muon_sf": _mock_muon_sf,
     "wrcoffea.analyzer.muon_sf_loose": _mock_muon_sf_loose,
@@ -653,8 +669,12 @@ class TestProcessIntegration:
         events = _make_integration_events(n_events=3, n_muons=2, n_jets=2)
         events.genWeight = ak.Array([1.0, 1.0, 1.0])
 
+        # The identity mock attaches no shifted kinematics, so the shape passes
+        # (which UL18 can now produce) are planned away: this test only checks
+        # what apply_jet_corrections is asked for.
         with patch("wrcoffea.analyzer.apply_jet_corrections",
-                   side_effect=lambda ev, era, is_mc, variations=(): ev) as jec:
+                   side_effect=lambda ev, era, is_mc, variations=(): ev) as jec, \
+             patch.object(WrAnalysis, "_plan_shape_variations", return_value=([], [])):
             proc.process(events)
 
         assert jec.call_count == 1
@@ -954,8 +974,8 @@ class TestProcessIntegration:
     # ------------------------------------------------------------------
     @_apply_sf_patches
     def test_process_missing_fatjet_graceful(self, *_mocks):
-        """Missing FatJet is handled gracefully (no crash)."""
-        proc = WrAnalysis(mass_point=None, region="both")
+        """Missing FatJet lsf3 is fine for a resolved-only run, an error otherwise."""
+        proc = WrAnalysis(mass_point=None, region="resolved")
         events = _make_integration_events(n_events=3, n_muons=2, n_jets=2,
                                            n_fatjets=0)
         delattr(events, "FatJet")
@@ -975,14 +995,16 @@ class TestProcessIntegration:
         output = proc.process(events)
 
         assert "DYJetsToLL_M-50" in output
+        with pytest.raises(RuntimeError, match="no 'lsf3' field"):
+            WrAnalysis(mass_point=None, region="both").process(events)
 
     # ------------------------------------------------------------------
     # Missing lsf3 handled gracefully
     # ------------------------------------------------------------------
     @_apply_sf_patches
     def test_process_missing_lsf3_graceful(self, *_mocks):
-        """Missing lsf3 field is handled gracefully."""
-        proc = WrAnalysis(mass_point=None, region="both")
+        """Missing lsf3 is fine for a resolved-only run; boosted requests fail loudly."""
+        proc = WrAnalysis(mass_point=None, region="resolved")
         events = _make_integration_events(n_events=3, n_muons=2, n_jets=2,
                                            n_fatjets=1)
         # Rebuild FatJet without lsf3
@@ -1000,6 +1022,9 @@ class TestProcessIntegration:
         output = proc.process(events)
 
         assert "DYJetsToLL_M-50" in output
+        for mode in ("both", "boosted"):
+            with pytest.raises(RuntimeError, match="no 'lsf3' field"):
+                WrAnalysis(mass_point=None, region=mode).process(events)
 
     # ------------------------------------------------------------------
     # Metadata extraction -- sample name becomes dataset key

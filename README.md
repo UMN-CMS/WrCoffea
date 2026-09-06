@@ -141,7 +141,9 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `--maxchunks` | `<int>` | Max chunks per file (default: all). Use `1` for quick testing |
 | `--maxfiles` | `<int>` | Max files per dataset (default: all). Use `1` for quick testing |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
-| `--systs` | `lumi` `pileup` `sf` | Enable systematic variations (see [Systematics](#systematics)) |
+| `--systs` | `lumi` `pileup` `sf` `jer` `jes` `elescale` `elesmear` `muscale` `musmear` | Enable systematic variations (see [Systematics](#systematics)) |
+| `--syst-observables` | `all` `fit` or `<hist names>` | Histograms that receive the variations (default: all) |
+| `--omit-systs` | `<source names>` | Record a deliberate omission of named sources (needed when an era lacks the inputs for a source) |
 | `--study` | `transfer-factor` | Add a study's extra regions to the output. `transfer-factor` adds SR / flavor-CR copies without the m > 800 GeV cut (suffix `_nomass`) for the eμ transfer-factor closure |
 | `--split-groups` | `tt_tW` | Composite runs: save these groups as one ROOT file per subgroup (e.g. `WRAnalyzer_TTbar.root` and `WRAnalyzer_tW.root`) |
 | `--xrd-fallback` | | Enable XRootD redirector fallback during unskimmed preprocess |
@@ -294,6 +296,7 @@ pip install -e ".[test]"
 
 ## Additional Documentation
 
+- **[Repository Review](docs/repo_review.md)** - Findings, resolved issues, and validation recorded on 2026-09-07
 - **[Getting Started](docs/getting_started.md)** - Installation, environment setup, and grid proxy
 - **[Running the Analyzer](docs/run_analysis.md)** - Detailed analysis options and workflows
 - **[Creating Filesets](docs/filesets.md)** - Instructions for generating NanoAOD file lists

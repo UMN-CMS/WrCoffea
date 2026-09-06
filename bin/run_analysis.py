@@ -29,6 +29,7 @@ from wrcoffea.cli_utils import (
     split_sample_groups,
 )
 from wrcoffea.regions import STUDIES, resolve_studies
+from wrcoffea.systematics import FAMILIES, FIT_OBSERVABLES, validate_requested, resolve_syst_observables, normalize_omitted
 from wrcoffea.xrootd_fallback import (
     DEFAULT_RETRIES_PER_REDIRECTOR,
     DEFAULT_RETRY_SLEEP_SECONDS,
@@ -157,6 +158,19 @@ def validate_arguments(args, sig_points):
             f"--dy {args.dy} is not available for {args.era}. "
             f"Valid choices: {DY_VARIANTS.get(args.era, [])}"
         )
+
+    # Systematics: every requested family must be producible for this era,
+    # and every requested observable must be a booked histogram.
+    validate_requested(args.era, getattr(args, "systs", None) or [],
+                       getattr(args, "omit_systs", None) or [])
+    if getattr(args, "no_dy_zpt_reweight", False) and "dyzpt" in (getattr(args, "systs", None) or []):
+        raise ValueError("--systs dyzpt varies the DY Z-pT reweighting; it cannot be combined with --no-dy-zpt-reweight.")
+    if "dyreshape" in (getattr(args, "systs", None) or []) and (
+            getattr(args, "no_dy_reshape", False) or getattr(args, "no_dy_zpt_reweight", False)):
+        raise ValueError("--systs dyreshape varies the DY reshape; it needs both the reshape and the "
+                         "Z-pT reweighting on (drop --no-dy-reshape / --no-dy-zpt-reweight).")
+    from wrcoffea.histograms import all_histogram_names
+    resolve_syst_observables(getattr(args, "syst_observables", None), all_histogram_names())
 
     if args.max_workers is not None and args.max_workers < 1:
         raise ValueError("--max-workers must be a positive integer")
@@ -451,6 +465,11 @@ def _process_fileset(args, fileset, *, client, condor=False):
         region=args.region,
         compute_sumw=args.unskimmed,
         region_variants=resolve_studies(args.study),
+        syst_observables=getattr(args, "syst_observables", None),
+        omit_systs=getattr(args, "omit_systs", None),
+        dy_zpt_reweight=not getattr(args, "no_dy_zpt_reweight", False),
+        signal_kfactor=not getattr(args, "no_signal_kfactor", False),
+        dy_reshape=not getattr(args, "no_dy_reshape", False),
     )
     run = Runner(
         executor=DaskExecutor(client=client, compression=None, retries=10, treereduction=10),
@@ -458,7 +477,7 @@ def _process_fileset(args, fileset, *, client, condor=False):
         maxchunks=args.maxchunks,
         # Skip bad files to continue processing with remaining files
         skipbadfiles=False,
-        xrootdtimeout=60 if condor else 10,
+        xrootdtimeout=getattr(args, "xrootd_timeout", None) or (60 if condor else 10),
         align_clusters=False,
         savemetrics=True,
         schema=NanoAODSchema,
@@ -563,8 +582,32 @@ if __name__ == "__main__":
     optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
     optional.add_argument("--maxchunks", type=int, default=None, help="Max chunks per dataset file (default: all). Use 1 for quick testing.")
     optional.add_argument("--maxfiles", type=int, default=None, help="Max files per dataset (default: all). Use 1 for quick testing.")
-    optional.add_argument("--systs", nargs="*", default=[], choices=["lumi", "pileup", "sf", "jer", "jes", "elescale", "elesmear", "muscale", "musmear"], help="Enable systematic histogram variations. Weight-based: lumi, pileup, sf. Shape (re-run selections): jer, jes, elescale, elesmear, muscale, musmear.")
+    optional.add_argument("--systs", nargs="*", default=[], choices=list(FAMILIES), metavar="FAMILY",
+                          help=f"Enable systematic histogram variations (choices: {', '.join(FAMILIES)}). "
+                               "Weight-based: pileup, sf, dyzpt, lsf, dyreshape. Shape (re-run selections): jer, jes, elescale, "
+                               "elesmear, muscale, musmear. Normalization (scaled at export): lumi. "
+                               "A family the era cannot produce is an error, not a silent skip.")
+    optional.add_argument("--omit-systs", nargs="*", default=[], metavar="SOURCE",
+                          help="Deliberately leave out these systematic sources (e.g. ElectronTrigSf) "
+                               "although their family is enabled. The omission is recorded in the "
+                               "output manifest. Required when a source has no inputs for the era.")
+    optional.add_argument("--syst-observables", nargs="*", default=None, metavar="OBS",
+                          help="Histograms that receive the systematic variations (Nominal is always "
+                               "filled everywhere). Default: all. Use 'fit' to restrict them to "
+                               f"{' '.join(FIT_OBSERVABLES)} (saves memory), or list histogram names.")
     optional.add_argument("--region", type=str, default="both", choices=["resolved", "boosted", "both"], help="Analysis region to run: resolved, boosted, or both (default: both).")
+    optional.add_argument("--no-dy-zpt-reweight", action="store_true",
+                          help="Do not apply the DY Z-pT (QCD x EW) reweighting to DYJets for eras with a payload "
+                               "in config.yaml (dy_zpt_reweight). Incompatible with --systs dyzpt.")
+    optional.add_argument("--xrootd-timeout", type=int, default=None, metavar="SECONDS",
+                          help="XRootD read timeout per chunk (default: 60 with --condor, 10 locally). Raise it when "
+                               "streaming skims over a high-latency link ('Operation expired' read failures).")
+    optional.add_argument("--no-dy-reshape", action="store_true",
+                          help="Do not apply the data-driven DY reshape vs jet pT for eras with a payload in "
+                               "config.yaml (dy_reshape). Also off whenever --no-dy-zpt-reweight is given.")
+    optional.add_argument("--no-signal-kfactor", action="store_true",
+                          help="Do not apply the signal k(m_lN)/<k> shape reweighting for eras with a payload "
+                               "in config.yaml (signal_kfactor).")
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")
     optional.add_argument("--list-masses", action="store_true", help="Print available signal mass points for the given era (or all eras if none provided) and exit.")

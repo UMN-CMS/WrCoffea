@@ -26,16 +26,18 @@ from coffea.analysis_tools import Weights, PackedSelection
 from coffea.lumi_tools import LumiMask
 import awkward as ak
 import numpy as np
+import copy
 import os
 import logging
 from coffea.nanoevents.methods import vector
 from wrcoffea.analysis_config import (
-    CUTS, ELECTRON_JSONS, JME_JSONS, LUMI_JSONS, LUMI_UNC, LUMIS, MUON_JSONS, PILEUP_JSONS,
+    CUTS, DY_RESHAPE_JSONS, DY_ZPT_REWEIGHT_JSONS, ELECTRON_JSONS, HEM_VETO, JME_JSONS, LUMI_JSONS, LUMI_UNC, LUMIS,
+    MUON_JSONS, PILEUP_JSONS, SIGNAL_KFACTOR_JSONS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
-    SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
+    SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
     SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
     SEL_60_MLL_150,
@@ -49,9 +51,18 @@ from wrcoffea.analysis_config import (
     SEL_OF_LEPTON_IN_AK8, SEL_NO_SF_LEPTON_IN_AK8,
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
+from wrcoffea.dy_reshape import dy_reshape_weight
+from wrcoffea.dy_reweight import DY_PROCESS_GROUP, dy_zpt_weight
+from wrcoffea.signal_kfactor import SIGNAL_PROCESS_GROUP, mass_point_key, signal_kfactor_weight
 from wrcoffea.era_utils import ERA_MAPPING
 from wrcoffea.regions import RESOLVED_REGIONS, BOOSTED_REGIONS, build_regions, validate_variants
-from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, electron_trigger_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
+from wrcoffea.systematics import (
+    DIRECTIONS, NOMINAL, SHAPE, WEIGHT,
+    normalize_families, normalize_omitted, producible, production_config,
+    resolve_syst_observables,
+)
+from wrcoffea.histograms import all_histogram_names
+from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, electron_trigger_sf, lsf_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
@@ -80,26 +91,61 @@ class WrAnalysis(processor.ProcessorABC):
 
     Parameters
     - `mass_point`: optional signal mass label (carried through for naming).
-    - `enabled_systs`: list of enabled systematic families. Currently supported:
-      - `lumi`: add `LumiUp`/`LumiDown` variations as histogram `syst` axis values.
+    - `enabled_systs`: list of enabled systematic families (see
+      ``wrcoffea.systematics.FAMILIES``).  Weight families add entries to the
+      histogram ``syst`` axis from one selection pass; shape families re-run
+      the selection on shifted kinematics; normalization families (``lumi``)
+      are not filled at event level at all, the writer scales the nominal.
+    - `syst_observables`: which histograms receive the non-Nominal entries.
+      ``None``, empty, or ``["all"]`` selects every histogram (default);
+      ``["fit"]`` selects the fit observables
+      (``wrcoffea.systematics.FIT_OBSERVABLES``); otherwise an explicit list
+      of histogram names.
+    - `omit_systs`: source names (e.g. ``ElectronTrigSf``) deliberately left
+      out although their family is enabled.  Recorded in the output so the
+      omission is never mistaken for coverage.
     - `region`: which analysis region to run ("resolved", "boosted", or "both").
     - `compute_sumw`: if True, compute sum-of-genWeights over all input events
       before filtering instead of using the pre-computed ``genEventSumw`` from
       metadata. Histograms are filled without the ``/sumw`` normalization; the
       caller must divide by the accumulated ``_sumw`` per dataset after processing.
+    - `dy_zpt_reweight`: apply the DY Z-pT (QCD x EW) reweighting to ``DYJets``
+      for eras with a payload in ``config.yaml`` (default True).  The
+      ``dyzpt`` systematic family needs it enabled.
+    - `signal_kfactor`: apply the k(m_lN)/<k> shape reweighting to ``Signal``
+      for eras with a payload in ``config.yaml`` (default True).
+    - `dy_reshape`: apply the data-driven DY reshape vs jet pT to ``DYJets``
+      for eras with a payload in ``config.yaml`` (default True).  It is
+      derived on top of the Z-pT reweighting, so it is only applied when
+      that is on too.
     """
     def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False,
-                 region_variants=None):
+                 region_variants=None, syst_observables=None, omit_systs=None,
+                 dy_zpt_reweight=True, signal_kfactor=True, dy_reshape=True):
         self._signal_sample = mass_point
         self._compute_sumw = compute_sumw
+        self._dy_zpt_reweight = bool(dy_zpt_reweight)
+        self._dy_reshape = bool(dy_reshape) and self._dy_zpt_reweight
+        self._signal_kfactor = bool(signal_kfactor)
         # Extra regions derived from nominal ones by dropping cuts (see
         # wrcoffea.regions).  Validated up front so bad names fail before processing.
         self._region_variants = validate_variants(region_variants or ())
-        enabled = enabled_systs or []
-        self._enabled_systs = {str(s).strip().lower() for s in enabled if str(s).strip()}
+        self._enabled_systs = normalize_families(enabled_systs)
+        # None -> every histogram gets every variation; otherwise a frozenset
+        # of histogram names (Nominal is always filled everywhere).
+        self._syst_observables = resolve_syst_observables(syst_observables, all_histogram_names())
+        self._omit_systs = normalize_omitted(omit_systs)
+        self._sources_by_era = {}
         self._region = region.lower() if region else "both"
         if self._region not in ("resolved", "boosted", "both"):
             raise ValueError(f"Invalid region '{region}'. Must be 'resolved', 'boosted', or 'both'.")
+        # What this run was asked to produce, recorded in every chunk so the
+        # writer can demand every region and variation and refuse to merge
+        # payloads made with different settings.
+        self._syst_config = production_config(
+            self._enabled_systs, self._omit_systs, self._syst_observables,
+            region=self._region, variants=self._region_variants,
+        )
         booking = _booking_specs()
         def _make_output():
             out = {}
@@ -423,7 +469,32 @@ class WrAnalysis(processor.ProcessorABC):
 
         return e_trig, mu_trig, emu_trig
 
-    def resolved_selections(self, tight_leptons, ak4_jets, *, lepton_masks=None, jet_masks=None, triggers=None):
+    @staticmethod
+    def _hem_veto_ok(era, *leptons):
+        """Per-event True where none of *leptons* is an electron in the HEM 15/16 window.
+
+        Ported from the Run 2 ``HNWRAnalyzer::isHEMVetoEvent``: only the
+        leptons a region is built from are inspected, on electron eta and phi.
+        *leptons* are per-event optional candidates (None where absent); a
+        missing candidate never vetoes.  Eras without a ``hem_veto`` entry in
+        ``config.yaml`` return all True.
+        """
+        n = len(leptons[0])
+        window = HEM_VETO.get(era)
+        if window is None:
+            return np.ones(n, dtype=bool)
+        bad = np.zeros(n, dtype=bool)
+        for lep in leptons:
+            is_electron = ak.fill_none(abs(lep.pdgId) == 11, False)
+            in_window = ak.fill_none(
+                (lep.eta < window["eta_max"]) & (lep.phi > window["phi_min"]) & (lep.phi < window["phi_max"]),
+                False,
+            )
+            bad |= np.asarray(is_electron & in_window, dtype=bool)
+        return ~bad
+
+    def resolved_selections(self, tight_leptons, ak4_jets, *, lepton_masks=None, jet_masks=None, triggers=None,
+                            era=None):
         """
         Build PackedSelection for the resolved region.
 
@@ -495,6 +566,9 @@ class WrAnalysis(processor.ProcessorABC):
         dr_jj   = ak.fill_none(j1.deltaR(j2) > CUTS["dr_min"], False)
 
         selections.add("dr_all_pairs_gt0p4", dr_ll & dr_l1j1 & dr_l1j2 & dr_l2j1 & dr_l2j2 & dr_jj)
+
+        # HEM 15/16 veto on the two tight leptons (2018 only; all True elsewhere).
+        selections.add(SEL_HEM_VETO, self._hem_veto_ok(era, l1, l2))
 
         # Triggers
         if triggers is not None:
@@ -894,19 +968,24 @@ class WrAnalysis(processor.ProcessorABC):
         mue_cr = muTrig & CR_mask & is_lead_mu & no_extra_tight_flav_cr # lead mu, loose e                                                                        
         ee_sr = eTrig & SR_mask & is_lead_e & no_extra_tight_sr
         mumu_sr = muTrig & SR_mask &  is_lead_mu & no_extra_tight_sr
-        selections.add(SEL_MUMU_DYCR, mumu_dy_cr & is_sublead_mu)
-        selections.add(SEL_EE_DYCR,  ee_dy_cr & is_sublead_e)
-        selections.add(SEL_MUMU_SR,  mumu_sr & is_sublead_mu_sr)
-        selections.add(SEL_EE_SR,    ee_sr & is_sublead_e_sr)
-        selections.add(SEL_EMU_CR,   emu_cr & is_sublead_mu_cr)
-        selections.add(SEL_MUE_CR,   mue_cr & is_sublead_e_cr)
+        # HEM 15/16 veto (2018 only) on the leading tight lepton and the
+        # sub-leading candidate each region is built from.
+        hem_ok_dy = ak.Array(self._hem_veto_ok(era, tight_lep, DY_loose_lep))
+        hem_ok_sr = ak.Array(self._hem_veto_ok(era, tight_lep, sf_candidate))
+        hem_ok_cr = ak.Array(self._hem_veto_ok(era, tight_lep, of_candidate))
+        selections.add(SEL_MUMU_DYCR, mumu_dy_cr & is_sublead_mu & hem_ok_dy)
+        selections.add(SEL_EE_DYCR,  ee_dy_cr & is_sublead_e & hem_ok_dy)
+        selections.add(SEL_MUMU_SR,  mumu_sr & is_sublead_mu_sr & hem_ok_sr)
+        selections.add(SEL_EE_SR,    ee_sr & is_sublead_e_sr & hem_ok_sr)
+        selections.add(SEL_EMU_CR,   emu_cr & is_sublead_mu_cr & hem_ok_cr)
+        selections.add(SEL_MUE_CR,   mue_cr & is_sublead_e_cr & hem_ok_cr)
 
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate
 
     def build_event_weights(self, events, metadata, is_mc):
         """
         Base event weights (no lepton SFs — those are applied per-region):
-          - MC: genWeight × xsec × lumi / sumw + pileup + lumi syst
+          - MC: genWeight × xsec × lumi / sumw + pileup + DY Z-pT reweight
           - Data: unit weights
         """
         n = len(events)
@@ -935,34 +1014,41 @@ class WrAnalysis(processor.ProcessorABC):
                 pu_nom, pu_up, pu_down = pileup_weight(events, era)
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
-            syst_weights = {"Nominal": weights.weight()}
-            # Optional lumi uncertainty (produces syst histograms only if enabled).
-            if "lumi" in self._enabled_systs:
-                era_key = metadata.get("era")
-                delta = LUMI_UNC.get(era_key)
-                if delta is None:
-                    logger.warning(
-                        f"No luminosity uncertainty defined for era '{era_key}'. "
-                        "Skipping lumiUp/lumiDown systematics."
-                    )
-                else:
-                    ones = np.ones(n, dtype=np.float32)
-                    weights.add(
-                        "lumi",
-                        ones,
-                        weightUp=ones * (1.0 + float(delta)),
-                        weightDown=ones * (1.0 - float(delta)),
-                    )
-                    syst_weights["Nominal"] = weights.weight()
-                    syst_weights["LumiUp"] = weights.weight(modifier="lumiUp")
-                    syst_weights["LumiDown"] = weights.weight(modifier="lumiDown")
+            # DY Z-pT reweighting (QCD NLO/LO x EW, ported from the Run 2
+            # HNWRAnalyzer).  Non-trivial for DYJets only; other MC gets the
+            # identity so the variation labels still exist for coverage.
+            dy = None
+            if self._dy_zpt_reweight and era in DY_ZPT_REWEIGHT_JSONS:
+                dy = dy_zpt_weight(events, era, is_dy=(metadata.get("physics_group") == DY_PROCESS_GROUP))
+                weights.add("dy_zpt", dy["nominal"])
 
-            # Optional pileup uncertainty.
-            if "pileup" in self._enabled_systs:
-                era_key = metadata.get("era")
-                if era_key in PILEUP_JSONS:
-                    syst_weights["PileupUp"] = weights.weight(modifier="pileupUp")
-                    syst_weights["PileupDown"] = weights.weight(modifier="pileupDown")
+            # Signal NLO/LO k-factor vs gen m(lN), divided by the per-mass-point
+            # average (shape only; the configured xsec already carries <k>).
+            if self._signal_kfactor and era in SIGNAL_KFACTOR_JSONS \
+                    and metadata.get("physics_group") == SIGNAL_PROCESS_GROUP:
+                kf = signal_kfactor_weight(
+                    events, era, mass_point=self._mass_point_key(metadata), is_signal=True,
+                )
+                weights.add("signal_kfactor", kf["nominal"])
+
+            syst_weights = {NOMINAL: weights.weight()}
+            # "lumi" is a normalization systematic: it is never filled at
+            # event level.  save_hists scales the nominal histogram instead.
+
+            # Optional pileup uncertainty, gated like every other source:
+            # family enabled, inputs available for the era, not omitted.
+            if "Pileup" in self._producible_names(era, WEIGHT):
+                syst_weights["PileupUp"] = weights.weight(modifier="pileupUp")
+                syst_weights["PileupDown"] = weights.weight(modifier="pileupDown")
+
+            # DY Z-pT variations: swap the nominal reweight for the varied one.
+            if dy is not None:
+                allowed = self._producible_names(era, WEIGHT)
+                safe_nom = np.where(dy["nominal"] > 0, dy["nominal"], 1.0)
+                for name, (dy_up, dy_down) in dy["variations"].items():
+                    if name in allowed:
+                        syst_weights[f"{name}Up"] = syst_weights[NOMINAL] * (dy_up / safe_nom)
+                        syst_weights[f"{name}Down"] = syst_weights[NOMINAL] * (dy_down / safe_nom)
 
         else:  # is_data
             weights.add("data", np.ones(n, dtype=np.float32))
@@ -971,6 +1057,39 @@ class WrAnalysis(processor.ProcessorABC):
             }
 
         return weights, syst_weights
+
+    def _dy_reshape_for_region(self, syst_weights, kind, jet_pt, era, process_name, is_mc):
+        """Multiply the DY reshape ratio (and its variations) into region weights.
+
+        *kind* is ``"resolved"`` or ``"boosted"``, *jet_pt* the per-event
+        leading AK4 pT or AK8-candidate pT the ratio is binned in.  Non-DY
+        MC receives the identity so the variation labels still exist for
+        coverage.  Returns *syst_weights* unchanged when the era has no
+        payload or the reshape is disabled.
+        """
+        if not is_mc or not self._dy_reshape:
+            return syst_weights
+        rw = dy_reshape_weight(jet_pt, era, kind, is_dy=(process_name == DY_PROCESS_GROUP))
+        if rw is None:
+            return syst_weights
+        nom = rw["nominal"]
+        result = {k: v * nom for k, v in syst_weights.items()}
+        if NOMINAL in syst_weights:
+            allowed = self._producible_names(era, WEIGHT)
+            safe_nom = np.where(nom > 0, nom, 1.0)
+            for name, (up, down) in rw["variations"].items():
+                if name in allowed:
+                    result[f"{name}Up"] = result[NOMINAL] * (up / safe_nom)
+                    result[f"{name}Down"] = result[NOMINAL] * (down / safe_nom)
+        return result
+
+    def _mass_point_key(self, metadata):
+        """``WR<m>_N<m>`` for a signal dataset, from its name or ``--mass``."""
+        for name in (metadata.get("dataset"), metadata.get("sample"), self._signal_sample):
+            key = mass_point_key(name)
+            if key is not None:
+                return key
+        return None
 
     @staticmethod
     def _region_trigger(region):
@@ -984,6 +1103,26 @@ class WrAnalysis(processor.ProcessorABC):
         if "ee" in region or "emu" in region:
             return "e"
         return "mu"
+
+    @staticmethod
+    def _jet_lepton_flavor(region):
+        """Flavour of the lepton inside the AK8 jet for a boosted SR / flavour-CR region.
+
+        Same-flavour regions carry the leading lepton's flavour in the jet;
+        the flavour CRs are named lead-then-jet (``emu``: leading electron,
+        muon in the jet).  Returns ``None`` for regions without an LSF jet.
+        """
+        if "boosted" not in region or "dy_cr" in region:
+            return None
+        if "emu" in region:
+            return "muon"
+        if "mue" in region:
+            return "electron"
+        if "mumu" in region:
+            return "muon"
+        if "ee" in region:
+            return "electron"
+        return None
 
     def _lepton_sfs_for_region(self, region, syst_weights, era, tight_muons, tight_electrons,
                               loose_muons=None, loose_electrons=None, *, is_mc):
@@ -999,9 +1138,12 @@ class WrAnalysis(processor.ProcessorABC):
             region (see ``_region_trigger``)
           - boosted regions additionally get loose muon RECO + ID SFs (no ISO)
             and loose electron RECO SFs
+          - boosted SR / flavour-CR regions get the flat LSF SF of the
+            lepton-in-jet flavour when the era has one configured
 
-        When ``"sf"`` is in ``_enabled_systs``, per-component up/down
-        variations are added to the returned dict.
+        Per-component up/down variations are added to the returned dict for
+        every component whose systematic source is enabled and producible
+        (the ``sf`` family for the lepton components, ``lsf`` for the LSF SF).
 
         Returns a new syst_weights dict, with lepton SFs multiplied in for MC.
         """
@@ -1049,6 +1191,13 @@ class WrAnalysis(processor.ProcessorABC):
             if apply_electron_trig:
                 components["ElectronTrigSf"] = electron_trigger_sf(tight_electrons, era)
 
+        # LSF scale factor (boosted SR / flavour CR only; era-gated).
+        jet_flavor = self._jet_lepton_flavor(region)
+        if jet_flavor is not None:
+            lsf = lsf_sf(era, jet_flavor, n)
+            if lsf is not None:
+                components["LsfSf"] = lsf
+
         # Build combined nominal SF.
         sf_nom = np.ones(n, dtype=np.float64)
         for _label, (comp_nom, _comp_up, _comp_down) in components.items():
@@ -1056,9 +1205,15 @@ class WrAnalysis(processor.ProcessorABC):
 
         result = {k: v * sf_nom for k, v in syst_weights.items()}
 
-        # Add per-component up/down variations (only for nominal pass).
-        if "sf" in self._enabled_systs and "Nominal" in syst_weights and len(components) > 0:
+        # Add per-component up/down variations (only for nominal pass), and
+        # only for components whose inputs exist for this era and that were
+        # not explicitly omitted.  An identity SF from a missing payload must
+        # not turn into a "produced" variation.
+        allowed = self._producible_names(era, WEIGHT)
+        if "Nominal" in syst_weights and len(components) > 0:
             for vary_label, (vary_nom, vary_up, vary_down) in components.items():
+                if vary_label not in allowed:
+                    continue
                 # Ratio to swap nominal → varied for this component.
                 safe_nom = np.where(vary_nom > 0, vary_nom, 1.0)
                 ratio_up = vary_up / safe_nom
@@ -1069,41 +1224,110 @@ class WrAnalysis(processor.ProcessorABC):
         return result
 
     @staticmethod
-    def _apply_shape_variation(events, var_source, direction):
-        """Return events with shifted kinematics for a shape systematic.
+    def _require_boosted_inputs(events):
+        """Raise unless the branches the boosted selection needs are present."""
+        fatjet = getattr(events, "FatJet", None)
+        if fatjet is None:
+            raise RuntimeError(
+                "Boosted regions were requested but the input has no FatJet collection. "
+                "Run with --region resolved or use an input that keeps FatJet."
+            )
+        if "lsf3" not in getattr(fatjet, "fields", []):
+            raise RuntimeError(
+                "Boosted regions were requested but FatJet has no 'lsf3' field. "
+                "Run with --region resolved or use an input that keeps FatJet_lsf3."
+            )
+
+    def _producible_sources(self, era, kind):
+        """Enabled sources of *kind* with inputs for *era*, minus omissions (cached)."""
+        key = (era, kind)
+        if key not in self._sources_by_era:
+            self._sources_by_era[key] = producible(
+                era, self._enabled_systs, omitted=self._omit_systs, kinds=(kind,),
+            )
+        return self._sources_by_era[key]
+
+    def _producible_names(self, era, kind):
+        return {src.name for src in self._producible_sources(era, kind)}
+
+    def _plan_shape_variations(self, events, era):
+        """Decide, per enabled shape label, how this chunk covers it.
+
+        Returns ``(passes, nominal_aliases)``:
+          - ``passes``: ``(label, source, direction)`` triples whose shifted
+            fields exist on the affected collections; each gets its own
+            selection + fill pass.
+          - ``nominal_aliases``: labels whose affected collections are empty
+            in this chunk.  The variation cannot change anything here, so the
+            chunk's nominal is filled under the label and counts as evaluated.
+
+        A label whose fields are missing while affected objects *are* present
+        means the correction inputs were unavailable or the correction
+        failed.  That is an error, never a silent skip.
+        """
+        passes, nominal_aliases = [], []
+        for src in self._producible_sources(era, SHAPE):
+            for direction in DIRECTIONS:
+                label = src.label(direction)
+                required = src.required_fields(direction)
+                # Every non-empty affected collection must carry the shifted
+                # fields; an empty collection has nothing to shift.
+                populated, incomplete = [], []
+                for name in src.objects:
+                    coll = getattr(events, name, None)
+                    if coll is None or int(ak.sum(ak.num(coll))) == 0:
+                        continue
+                    populated.append(name)
+                    missing = [f for f in required if f not in coll.fields]
+                    if missing:
+                        incomplete.append(f"{name} lacks {missing}")
+                if incomplete:
+                    raise RuntimeError(
+                        f"Systematic '{label}' was requested for era '{era}' but this chunk has "
+                        f"affected objects without shifted kinematics ({'; '.join(incomplete)}): "
+                        "correction inputs are unavailable or the correction failed. Refusing to "
+                        "produce an incomplete variation."
+                    )
+                if populated:
+                    passes.append((label, src, direction))
+                else:
+                    nominal_aliases.append(label)
+        return passes, nominal_aliases
+
+    @staticmethod
+    def _apply_shape_variation(events, source, direction):
+        """Return events with shifted kinematics for shape *source*.
 
         Jet variations swap pt and mass; lepton variations swap pt only.
         Uses ``ak.with_field`` so the original events are not mutated.
         """
-        if var_source in ("jer", "CMS_scale_j_Total"):
-            pt_field = f"pt_{var_source}_{direction}"
-            mass_field = f"mass_{var_source}_{direction}"
-            for coll_name in ("Jet", "FatJet"):
-                coll = getattr(events, coll_name, None)
-                if coll is not None and pt_field in coll.fields:
-                    coll = ak.with_field(coll, coll[pt_field], "pt")
-                    coll = ak.with_field(coll, coll[mass_field], "mass")
-                    events = ak.with_field(events, coll, coll_name)
-        elif var_source in ("ele_scale", "ele_smear"):
-            kind = "scale" if "scale" in var_source else "smear"
-            eles = ak.with_field(events.Electron, events.Electron[f"pt_{kind}_{direction}"], "pt")
-            events = ak.with_field(events, eles, "Electron")
-        elif var_source in ("mu_scale", "mu_smear"):
-            kind = "scale" if "scale" in var_source else "smear"
-            muons = ak.with_field(events.Muon, events.Muon[f"pt_{kind}_{direction}"], "pt")
-            events = ak.with_field(events, muons, "Muon")
+        pt_field = source.variation_field(direction)
+        mass_field = pt_field.replace("pt_", "mass_", 1)
+        for coll_name in source.objects:
+            coll = getattr(events, coll_name, None)
+            if coll is None or pt_field not in coll.fields:
+                continue
+            coll = ak.with_field(coll, coll[pt_field], "pt")
+            if mass_field in coll.fields:
+                coll = ak.with_field(coll, coll[mass_field], "mass")
+            if isinstance(events, ak.Array):
+                events = ak.with_field(events, coll, coll_name)
+            else:
+                # Plain container of collections (test doubles): shallow copy.
+                events = copy.copy(events)
+                setattr(events, coll_name, coll)
         return events
 
-    def _run_shape_systematic(self, events, output, metadata, is_mc, syst_label, triggers,
-                              flavor_filter=None):
+    def _run_shape_systematic(self, events, output, metadata, is_mc, syst_label, triggers):
         """Re-run selection and histogram filling for a single shape variation.
 
         ``events`` should already have modified kinematics via
         ``_apply_shape_variation``.  Only the ``syst_label`` entry is produced
-        (no SF up/down crossing).
+        (no SF up/down crossing).  Every region is filled: a lepton shift can
+        change the extra-lepton veto of the other flavor's regions, so no
+        region is assumed unaffected here.
 
-        *flavor_filter* — if given, only fill regions whose name contains one
-        of these substrings (e.g. ``["ee", "flavor_cr"]``).
+        Returns ``{region: {syst_label}}`` for the regions that were filled.
         """
         mc_campaign = metadata.get("era")
         process_name = metadata.get("physics_group")
@@ -1117,17 +1341,15 @@ class WrAnalysis(processor.ProcessorABC):
             resolved_selections = self.resolved_selections(
                 tight_leptons, ak4_jets,
                 lepton_masks=lepton_masks, jet_masks=jet_masks, triggers=triggers,
+                era=mc_campaign,
             )
 
         boosted_payload = None
         if self._region in ("boosted", "both"):
-            try:
-                has_fatjet = hasattr(events, "FatJet")
-                has_lsf3 = has_fatjet and ("lsf3" in getattr(events.FatJet, "fields", []))
-                if has_fatjet and has_lsf3:
-                    boosted_payload = self.boosted_selections(events, mc_campaign, triggers=triggers)
-            except Exception as e:
-                logger.error("Boosted selections failed for %s: %s", syst_label, e)
+            # A failure here would silently drop the boosted regions from
+            # this variation only; let it propagate.
+            self._require_boosted_inputs(events)
+            boosted_payload = self.boosted_selections(events, mc_campaign, triggers=triggers)
 
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
@@ -1139,34 +1361,50 @@ class WrAnalysis(processor.ProcessorABC):
         # because "Nominal" is absent from the dict.
         syst_weights = {syst_label: weights.weight()}
 
+        coverage = {}
         if resolved_selections is not None:
-            self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons,
-                                weights, syst_weights, era, tight_muons, tight_electrons,
-                                is_mc=is_mc, skip_cutflows=True, flavor_filter=flavor_filter)
+            coverage.update(self._fill_resolved(
+                output, resolved_selections, process_name, ak4_jets, tight_leptons,
+                weights, syst_weights, era, tight_muons, tight_electrons,
+                is_mc=is_mc, skip_cutflows=True,
+            ))
 
         if boosted_payload is not None:
-            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               era, is_mc=is_mc, skip_cutflows=True, flavor_filter=flavor_filter)
+            coverage.update(self._fill_boosted(
+                output, boosted_payload, process_name, weights, syst_weights,
+                era, is_mc=is_mc, skip_cutflows=True,
+            ))
+        return coverage
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
-                       *, is_mc, skip_cutflows=False, flavor_filter=None):
+                       *, is_mc, skip_cutflows=False):
         """Build resolved region masks and fill histograms + cutflows.
 
         Regions (and any enabled variants) come from ``wrcoffea.regions``.
+        Returns ``{region: set(labels filled)}``.
         """
         resolved_regions = build_regions(RESOLVED_REGIONS, resolved_selections, self._region_variants)
+        # Leading AK4 jet pT for the DY reshape (0 where the event has no jet;
+        # such events never enter a resolved region).
+        lead_ak4_pt = np.asarray(ak.fill_none(ak.pad_none(ak4_jets, 1)[:, 0].pt, 0.0), dtype=np.float64)
 
+        coverage = {}
         for region, cuts in resolved_regions.items():
-            if flavor_filter and not any(f in region for f in flavor_filter):
-                continue
             region_syst = self._lepton_sfs_for_region(
                 region, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
             )
-            fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst)
+            region_syst = self._dy_reshape_for_region(
+                region_syst, "resolved", lead_ak4_pt, era, process_name, is_mc,
+            )
+            coverage[region] = fill_resolved_histograms(
+                output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst,
+                syst_observables=self._syst_observables,
+            )
 
         if not skip_cutflows:
             fill_cutflows(output, resolved_selections, weights)
+        return coverage
 
     @staticmethod
     def _candidates_by_flavor(candidate):
@@ -1182,8 +1420,10 @@ class WrAnalysis(processor.ProcessorABC):
         return col[pdg == 13], col[pdg == 11]
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
-                      era, *, is_mc, skip_cutflows=False, flavor_filter=None):
+                      era, *, is_mc, skip_cutflows=False):
         """Unpack boosted payload, build region masks, and fill histograms.
+
+        Returns ``{region: set(labels filled)}``.
 
         Lepton SFs are evaluated on the two objects each region is built from:
         the leading tight lepton gets the tight SFs (and the trigger SF), and
@@ -1213,16 +1453,24 @@ class WrAnalysis(processor.ProcessorABC):
             )
 
         boosted_regions = build_regions(BOOSTED_REGIONS, boosted_sel, self._region_variants)
+        coverage = {}
         for region, cuts in boosted_regions.items():
-            if flavor_filter and not any(f in region for f in flavor_filter):
-                continue
             region_syst = _region_sfs(region)
             if "dy_cr" in region:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, region_syst)
+                sublead, ak8 = DY_loose_lep, AK8_cand_dy
             elif "flavor_cr" in region:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
+                sublead, ak8 = of_candidate, AK8_cand
             else:
-                fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, region_syst)
+                sublead, ak8 = sf_candidate, AK8_cand
+            ak8_pt = np.asarray(ak.fill_none(ak8.pt, 0.0), dtype=np.float64)
+            region_syst = self._dy_reshape_for_region(
+                region_syst, "boosted", ak8_pt, era, process_name, is_mc,
+            )
+            coverage[region] = fill_boosted_histograms(
+                output, region, cuts, process_name, tight_lep, ak8, sublead, weights, region_syst,
+                syst_observables=self._syst_observables,
+            )
+        return coverage
 
     def process(self, events):
         """Run analysis for one NanoEvents chunk and return a dataset-nested output dict."""
@@ -1325,21 +1573,16 @@ class WrAnalysis(processor.ProcessorABC):
                 lepton_masks=lepton_masks,
                 jet_masks=jet_masks,
                 triggers=triggers,
+                era=mc_campaign,
             )
 
         # Boosted selections (skip gracefully if FatJet/lsf3 is absent).
         boosted_payload = None
         if self._region in ("boosted", "both"):
-            try:
-                has_fatjet = hasattr(events, "FatJet")
-                has_lsf3 = has_fatjet and ("lsf3" in getattr(events.FatJet, "fields", []))
-                if has_fatjet and has_lsf3:
-                    boosted_payload = self.boosted_selections(events, mc_campaign, triggers=triggers)
-                else:
-                    logger.info("Skipping boosted selections: missing FatJet/lsf3 branches")
-            except Exception as e:
-                logger.error(f"Boosted selections failed: {e}", exc_info=True)
-                raise
+            # The boosted regions are part of the requested output; a chunk
+            # that cannot build them must fail rather than silently drop them.
+            self._require_boosted_inputs(events)
+            boosted_payload = self.boosted_selections(events, mc_campaign, triggers=triggers)
 
         # Reconstruct tight lepton collections from events + masks for SF
         # evaluation.  Using short-lived NanoAOD slices (not carried from
@@ -1349,55 +1592,71 @@ class WrAnalysis(processor.ProcessorABC):
         weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
         era = metadata.get("era")
 
+        # Shape systematics whose affected collections are empty in this
+        # chunk cannot differ from nominal: fill nominal under their label so
+        # the chunk still counts as covered.  Missing fields with objects
+        # present is an error (raised inside _plan_shape_variations).
+        shape_passes, nominal_aliases = ([], [])
+        if is_mc:
+            shape_passes, nominal_aliases = self._plan_shape_variations(events, era)
+            for label in nominal_aliases:
+                syst_weights[label] = weights.weight()
+
         # Fill histograms.
+        coverage = {}
         if resolved_selections is not None:
-            self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons,
-                                weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc)
+            coverage.update(self._fill_resolved(
+                output, resolved_selections, process_name, ak4_jets, tight_leptons,
+                weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
+            ))
 
         if boosted_payload is not None:
-            self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               era, is_mc=is_mc)
+            coverage.update(self._fill_boosted(
+                output, boosted_payload, process_name, weights, syst_weights, era, is_mc=is_mc,
+            ))
 
         # Shape systematics: re-run selections with shifted kinematics.
-        if is_mc:
-            shape_variations = []
-            if "jer" in self._enabled_systs:
-                if "pt_jer_up" in events.Jet.fields:
-                    shape_variations += [("JERUp", "jer", "up"), ("JERDown", "jer", "down")]
-            if "jes" in self._enabled_systs:
-                if "pt_CMS_scale_j_Total_up" in events.Jet.fields:
-                    shape_variations += [("JESUp", "CMS_scale_j_Total", "up"),
-                                         ("JESDown", "CMS_scale_j_Total", "down")]
-            if "elescale" in self._enabled_systs:
-                if "pt_scale_up" in events.Electron.fields:
-                    shape_variations += [("EleScaleUp", "ele_scale", "up"),
-                                         ("EleScaleDown", "ele_scale", "down")]
-            if "elesmear" in self._enabled_systs:
-                if "pt_smear_up" in events.Electron.fields:
-                    shape_variations += [("EleSmearUp", "ele_smear", "up"),
-                                         ("EleSmearDown", "ele_smear", "down")]
-            if "muscale" in self._enabled_systs:
-                if "pt_scale_up" in events.Muon.fields:
-                    shape_variations += [("MuScaleUp", "mu_scale", "up"),
-                                         ("MuScaleDown", "mu_scale", "down")]
-            if "musmear" in self._enabled_systs:
-                if "pt_smear_up" in events.Muon.fields:
-                    shape_variations += [("MuSmearUp", "mu_smear", "up"),
-                                         ("MuSmearDown", "mu_smear", "down")]
+        for syst_label, source, direction in shape_passes:
+            varied_events = self._apply_shape_variation(events, source, direction)
+            for region, labels in self._run_shape_systematic(
+                varied_events, output, metadata, is_mc, syst_label, triggers,
+            ).items():
+                coverage.setdefault(region, set()).update(labels)
 
-            # Map variation source to the region flavors it affects.
-            _FLAVOR_FILTERS = {
-                "ele_scale": ["ee", "flavor_cr"],
-                "ele_smear": ["ee", "flavor_cr"],
-                "mu_scale":  ["mumu", "flavor_cr"],
-                "mu_smear":  ["mumu", "flavor_cr"],
-            }
-
-            for syst_label, var_source, direction in shape_variations:
-                varied_events = self._apply_shape_variation(events, var_source, direction)
-                flavor_filter = _FLAVOR_FILTERS.get(var_source)
-                self._run_shape_systematic(varied_events, output, metadata, is_mc, syst_label, triggers,
-                                           flavor_filter=flavor_filter)
+        # Coverage bookkeeping: counts accumulate across chunks by addition,
+        # so save_hists can require count == n_chunks per (region, label).
+        output["syst_coverage"] = {
+            region: {label: 1 for label in sorted(labels)}
+            for region, labels in coverage.items()
+        }
+        output["n_chunks"] = 1
+        if not is_mc or era not in DY_ZPT_REWEIGHT_JSONS:
+            dy_zpt_status = "unconfigured"
+        elif not self._dy_zpt_reweight:
+            dy_zpt_status = "off"
+        else:
+            dy_zpt_status = "applied" if process_name == DY_PROCESS_GROUP else "identity"
+        if not is_mc or era not in DY_RESHAPE_JSONS:
+            dy_reshape_status = "unconfigured"
+        elif not self._dy_reshape:
+            dy_reshape_status = "off"
+        else:
+            dy_reshape_status = "applied" if process_name == DY_PROCESS_GROUP else "identity"
+        if not is_mc or era not in SIGNAL_KFACTOR_JSONS or process_name != SIGNAL_PROCESS_GROUP:
+            kfactor_status = "unconfigured"
+        else:
+            kfactor_status = "applied" if self._signal_kfactor else "off"
+        output["dataset_meta"] = {
+            "era": {str(era)},
+            "datatype": {"mc" if is_mc else "data"},
+            "physics_group": {str(process_name)},
+            "dy_zpt_reweight": {dy_zpt_status},
+            "signal_kfactor": {kfactor_status},
+            "dy_reshape": {dy_reshape_status},
+            # What this run was asked to produce; chunks and datasets with
+            # different settings must never be merged.
+            "syst_config": {self._syst_config},
+        }
 
         nested_output = {dataset: {**output}}
 

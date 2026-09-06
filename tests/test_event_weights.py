@@ -462,8 +462,10 @@ class TestSystematicWeights:
     """Test systematic weight variations."""
 
     @patch("wrcoffea.analyzer.pileup_weight")
-    def test_lumi_systematic_variations(self, mock_pu):
-        """Lumi up/down variations are present and have correct direction."""
+    def test_lumi_is_a_normalization_source_not_an_event_weight(self, mock_pu):
+        """'lumi' never enters syst_weights; the writer scales the nominal instead."""
+        from wrcoffea.systematics import NORMALIZATION, systematics_for
+
         n = N_EVENTS
         mock_pu.return_value = _sf_triple(n)
         ev = _make_mock_events(n)
@@ -474,22 +476,11 @@ class TestSystematicWeights:
             ev, meta, is_mc=True,
         )
 
-        assert "LumiUp" in syst_weights, "LumiUp variation missing"
-        assert "LumiDown" in syst_weights, "LumiDown variation missing"
-
-        nominal = np.asarray(syst_weights["Nominal"])
-        lumi_up = np.asarray(syst_weights["LumiUp"])
-        lumi_down = np.asarray(syst_weights["LumiDown"])
-
-        # Lumi up should be > nominal, lumi down should be < nominal
-        # (for events with positive weights).
-        pos_mask = nominal > 0
-        assert np.all(lumi_up[pos_mask] > nominal[pos_mask]), "LumiUp should increase weights"
-        assert np.all(lumi_down[pos_mask] < nominal[pos_mask]), "LumiDown should decrease weights"
-
-        # Check typical lumi uncertainty magnitude (~1.4% for RunIII2024Summer24).
-        relative_up = (lumi_up[pos_mask] - nominal[pos_mask]) / nominal[pos_mask]
-        np.testing.assert_allclose(relative_up, 0.014, atol=0.005)
+        assert set(syst_weights) == {"Nominal"}
+        assert "lumi" not in weights.weightStatistics
+        (lumi,) = systematics_for(ERA, ["lumi"])
+        assert lumi.kind == NORMALIZATION
+        assert lumi.labels() == ("LumiUp", "LumiDown")
 
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_pileup_systematic_variations(self, mock_pu):

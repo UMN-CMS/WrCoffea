@@ -6,6 +6,13 @@ Canonical naming choice:
 Each spec is: (name, bins, label, getter)
   - For resolved: getter(tight_leptons, ak4_jets) -> values
   - For boosted:  getter(tight_lepton, ak8_jet, loose_lepton) -> values
+
+Systematic coverage:
+  ``fill_*_histograms`` take ``syst_observables``: ``None`` fills every
+  histogram for every entry of ``syst_weights``; a set of names restricts the
+  non-Nominal entries to those histograms (Nominal is always filled
+  everywhere).  Both return the set of syst labels that were completed for
+  the region so the analyzer can record chunk coverage.
 """
 
 import logging
@@ -35,7 +42,23 @@ from wrcoffea.analysis_config import (
 )
 
 logger = logging.getLogger(__name__)
- 
+
+NOMINAL = "Nominal"
+
+
+def _labels_for(hist_name, syst_weights, syst_observables):
+    """Which entries of ``syst_weights`` are filled into ``hist_name``."""
+    if syst_observables is None or hist_name in syst_observables:
+        return list(syst_weights)
+    return [k for k in syst_weights if k == NOMINAL]
+
+
+def all_histogram_names():
+    """Every histogram key booked by the analyzer (1D and 2D)."""
+    names = set(_booking_specs())
+    names.update(key for key, *_ in RESOLVED_2D_HIST_SPECS)
+    names.update(key for key, *_ in BOOSTED_2D_HIST_SPECS)
+    return frozenset(names)
 
 ResolvedGetter = Callable[[ak.Array, ak.Array, ak.Array, ak.Array], ak.Array]
 BoostedGetter = Callable[[ak.Array, ak.Array, ak.Array], ak.Array]
@@ -139,8 +162,12 @@ def create_hist2D(name_x, bins_x, label_x,
         .Reg(*bins_y, name=name_y, label=label_y)
         .Weight()
     )
-def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, weights, syst_weights):
-    """Fill all resolved-region histograms for a given region selection mask."""
+def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, weights, syst_weights,
+                             syst_observables=None):
+    """Fill all resolved-region histograms for a given region selection mask.
+
+    Returns the set of syst labels completed for *region*.
+    """
     leptons_cut = leptons[cut]
     jets_cut    = jets[cut]
     syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
@@ -150,8 +177,12 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
     dijet    = jets_cut[:, 0] + jets_cut[:, 1]
     #print("Events entering histogram filling:", len(leptons_cut[:,0]))
     for hist_name, _bins, _label, expr in RESOLVED_HIST_SPECS:
+        labels = _labels_for(hist_name, syst_weights_cut, syst_observables)
+        if not labels:
+            continue
         vals = expr(leptons_cut, jets_cut, dilepton, dijet)
-        for syst_label, sw in syst_weights_cut.items():
+        for syst_label in labels:
+            sw = syst_weights_cut[syst_label]
             output[hist_name].fill(
                 process=process_name,
                 region=region,
@@ -161,12 +192,16 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
             )
 
     for hist_key, xinfo, yinfo, expr in RESOLVED_2D_HIST_SPECS:
+        labels = _labels_for(hist_key, syst_weights_cut, syst_observables)
+        if not labels:
+            continue
         xvals, yvals = expr(leptons_cut, jets_cut, dilepton, dijet)
-        
+
         xname, _, _ = xinfo
         yname, _, _ = yinfo
-        
-        for syst_label, sw in syst_weights_cut.items():
+
+        for syst_label in labels:
+            sw = syst_weights_cut[syst_label]
             output[hist_key].fill(
                 process=process_name,
                 region=region,
@@ -177,9 +212,16 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
                 },
                 weight=sw,
             )
-            
-def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets, looseleptons, weights, syst_weights):
-    """Fill all boosted-region histograms for a given region selection mask."""
+
+    return set(syst_weights_cut)
+
+
+def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets, looseleptons, weights, syst_weights,
+                            syst_observables=None):
+    """Fill all boosted-region histograms for a given region selection mask.
+
+    Returns the set of syst labels completed for *region*.
+    """
     syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
 
     # Evaluate all base boosted quantities from the spec table.
@@ -204,8 +246,12 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
         )
 
     for hist_name, vals_all in value_map.items():
+        labels = _labels_for(hist_name, syst_weights_cut, syst_observables)
+        if not labels:
+            continue
         vals = vals_all[cut]
-        for syst_label, sw in syst_weights_cut.items():
+        for syst_label in labels:
+            sw = syst_weights_cut[syst_label]
             output[hist_name].fill(
                 process=process_name,
                 region=region,
@@ -222,14 +268,18 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
     ) in BOOSTED_2D_HIST_SPECS:
         xname, _, _ = xinfo
         yname, _, _ = yinfo
+        labels = _labels_for(hist_key, syst_weights_cut, syst_observables)
+        if not labels:
+            continue
         # Evaluate full arrays first (same logic as 1D)
         xvals_all, yvals_all = expr(leptons, ak8jets, looseleptons)
-        
+
         # Apply region cut
         xvals = xvals_all[cut]
         yvals = yvals_all[cut]
-        
-        for syst_label, sw in syst_weights_cut.items():
+
+        for syst_label in labels:
+            sw = syst_weights_cut[syst_label]
             output[hist_key].fill(
                 process=process_name,
                 region=region,
@@ -240,6 +290,10 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
                 },
                 weight=sw,
             )
+
+    return set(syst_weights_cut)
+
+
 def _cutflow_histograms(selections, weights, steps):
     """Build eager cutflows with event-level sum(w) and sum(w**2).
 

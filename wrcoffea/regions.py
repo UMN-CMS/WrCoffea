@@ -18,7 +18,7 @@ from wrcoffea.analysis_config import (
     SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
-    SEL_DR_ALL_PAIRS_GT0P4, SEL_60_MLL_150, SEL_MLL_GT400, SEL_MLLJJ_GT800,
+    SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO, SEL_60_MLL_150, SEL_MLL_GT400, SEL_MLLJJ_GT800,
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR, SEL_MUE_CR,
@@ -34,17 +34,17 @@ RegionCuts = tuple[str, ...]
 _RESOLVED_EE_BASE: RegionCuts = (
     SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-    SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+    SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO,
 )
 _RESOLVED_MUMU_BASE: RegionCuts = (
     SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_MUONS,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-    SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+    SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO,
 )
 _RESOLVED_EM_BASE: RegionCuts = (
     SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_EM,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-    SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
+    SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO,
 )
 
 RESOLVED_REGIONS: dict[str, RegionCuts] = {
@@ -55,6 +55,9 @@ RESOLVED_REGIONS: dict[str, RegionCuts] = {
     "wr_mumu_resolved_sr":    _RESOLVED_MUMU_BASE + (SEL_MLL_GT400, SEL_MLLJJ_GT800),
 }
 
+# The HEM veto (SEL_HEM_VETO in the resolved bases) is folded into the
+# per-region masks (SEL_MUMU_DYCR ...) for the boosted regions, because the
+# sub-leading candidate it inspects differs per region.
 # The DY CRs keep their mass requirement inside SEL_DYCR_MASK because the DY
 # candidate mass uses a different AK8 jet and may include the loose lepton.
 # The SR / flavor-CR selections carry no mass cuts; those are the standalone
@@ -140,6 +143,32 @@ def validate_variants(names: Iterable[str]) -> frozenset[str]:
                 raise ValueError(f"Variant '{name}' generates duplicate region name '{new_name}'.")
             generated.add(new_name)
     return requested
+
+
+REGION_MODES = ("resolved", "boosted", "both")
+
+
+def region_names(mode: str, variants: Iterable[str] = ()) -> list[str]:
+    """Names of every region a run in *mode* with *variants* must produce.
+
+    Mirrors :func:`build_regions` without needing selections, so the writer
+    can demand each region independently of what a chunk happened to fill.
+    """
+    mode = (mode or "both").lower()
+    if mode not in REGION_MODES:
+        raise ValueError(f"Invalid region mode '{mode}'. Must be one of {REGION_MODES}.")
+    topologies = []
+    if mode in ("resolved", "both"):
+        topologies.append(RESOLVED_REGIONS)
+    if mode in ("boosted", "both"):
+        topologies.append(BOOSTED_REGIONS)
+    out: list[str] = []
+    for nominal in topologies:
+        out.extend(nominal)
+        for vname in sorted(validate_variants(variants)):
+            var = REGION_VARIANTS[vname]
+            out.extend(region + var.suffix for region in var.regions if region in nominal)
+    return out
 
 
 def build_regions(nominal: Mapping[str, RegionCuts], selections, variants: Iterable[str] = ()):

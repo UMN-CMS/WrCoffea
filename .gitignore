@@ -42,3 +42,6 @@ coffea_env
 .cmslpc-local-conf
 bootstrap.sh
 shell
+
+# CMS-internal reference copy of the Muon POG recommendations page
+corrections.md
