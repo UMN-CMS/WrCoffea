@@ -28,6 +28,38 @@ _PHYSICS_SUBGROUPS: dict[str, tuple[str, list[str]]] = {
     "tW":    ("tt_tW", ["TWminus", "TbarWplus"]),
 }
 
+# Physics groups that can be split into separate output files (--split-groups).
+SPLITTABLE_GROUPS: list[str] = sorted({parent for parent, _ in _PHYSICS_SUBGROUPS.values()})
+
+
+def split_sample_groups(sample_to_group: Mapping[str, str], split_groups) -> dict[str, str]:
+    """Remap samples of each parent group in *split_groups* to its subgroups.
+
+    Uses ``_PHYSICS_SUBGROUPS`` to assign e.g. ``TTto2L2Nu*`` samples of the
+    ``tt_tW`` group to ``TTbar`` and ``TWminus*``/``TbarWplus*`` to ``tW``, so
+    each subgroup is saved to its own ROOT file.  Samples of a split group
+    that match no subgroup keep their parent group.  Unknown group names
+    raise ``ValueError``.
+    """
+    requested = list(dict.fromkeys(split_groups or []))
+    unknown = sorted(set(requested) - set(SPLITTABLE_GROUPS))
+    if unknown:
+        raise ValueError(
+            f"Cannot split group(s) {unknown}; splittable groups are {SPLITTABLE_GROUPS}."
+        )
+    out = dict(sample_to_group)
+    for sample_key, group in sample_to_group.items():
+        if group not in requested:
+            continue
+        for subgroup, (parent, prefixes) in _PHYSICS_SUBGROUPS.items():
+            if parent == group and any(sample_key.startswith(pfx) for pfx in prefixes):
+                out[sample_key] = subgroup
+                break
+        else:
+            logger.warning("Sample '%s' in group '%s' matches no subgroup; keeping parent group.",
+                           sample_key, group)
+    return out
+
 # WR masses to scan when selecting default signal points.
 # For each WR value, the min, median, and max N are picked from the era's CSV.
 # Edit this list to change which signal points are included in composite runs.

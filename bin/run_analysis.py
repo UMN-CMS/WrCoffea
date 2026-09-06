@@ -16,6 +16,7 @@ from wrcoffea.era_utils import get_era_details
 from wrcoffea.analysis_config import DY_VARIANTS
 from wrcoffea.cli_utils import (
     COMPOSITE_SAMPLES,
+    SPLITTABLE_GROUPS,
     build_fileset_path,
     build_sample_to_group_map,
     list_eras,
@@ -25,7 +26,9 @@ from wrcoffea.cli_utils import (
     load_masses_from_csv,
     normalize_mass_point,
     select_default_signal_points,
+    split_sample_groups,
 )
+from wrcoffea.regions import STUDIES, resolve_studies
 from wrcoffea.xrootd_fallback import (
     DEFAULT_RETRIES_PER_REDIRECTOR,
     DEFAULT_RETRY_SLEEP_SECONDS,
@@ -447,7 +450,7 @@ def _process_fileset(args, fileset, *, client, condor=False):
         enabled_systs=args.systs,
         region=args.region,
         compute_sumw=args.unskimmed,
-        tf_study=args.tf_study,
+        region_variants=resolve_studies(args.study),
     )
     run = Runner(
         executor=DaskExecutor(client=client, compression=None, retries=10, treereduction=10),
@@ -481,6 +484,60 @@ def _process_fileset(args, fileset, *, client, condor=False):
 # CLI
 # ---------------------------------------------------------------------------
 
+def _run_local_composite(args, era, *, client, sample_to_group):
+    """Sequentially process each sample of a composite mode on a local cluster.
+
+    Output is saved through ``save_histograms_by_group`` with the same
+    ``sample_to_group`` map used by the Condor path, so ``--split-groups``
+    behaves identically in both execution modes.
+    """
+    from wrcoffea.save_hists import save_histograms_by_group
+
+    composite_mode = args.sample
+    samples = COMPOSITE_SAMPLES[composite_mode]
+    has_signal = "Signal" in samples
+    sig_points = select_default_signal_points(era) if has_signal else []
+
+    for sample in samples:
+        sample_runs = [(sample, None)]
+        if sample == "Signal":
+            sample_runs = [(sample, mp) for mp in sig_points]
+
+        for sample_name, mass_point in sample_runs:
+            label = f"{sample_name}" + (f" ({mass_point})" if mass_point else "")
+            logging.info("=== Processing %s ===", label)
+
+            # Temporarily set args for this sample.
+            args.sample = sample_name
+            args.mass = mass_point
+
+            try:
+                filepath = build_fileset_path(
+                    era=era, sample=sample_name,
+                    unskimmed=args.unskimmed, dy=args.dy,
+                )
+                sample_fileset = load_and_select_fileset(
+                    filepath=filepath,
+                    desired_process=sample_name,
+                    mass=mass_point,
+                    maxfiles=args.maxfiles,
+                )
+                hists = _process_fileset(args, sample_fileset, client=client, condor=False)
+
+                if args.unskimmed:
+                    hists = normalize_by_sumw(hists)
+
+                if not args.debug:
+                    save_histograms_by_group(hists, args, sample_to_group)
+
+                logging.info("=== Finished %s ===", label)
+            except Exception:
+                logging.exception("Failed processing %s. Continuing...", label)
+
+    args.sample = composite_mode
+    args.mass = None
+
+
 if __name__ == "__main__":
     ERA_CHOICES = list_eras()
     SAMPLE_CHOICES = list_samples()
@@ -511,7 +568,12 @@ if __name__ == "__main__":
     optional.add_argument("--list-eras", action="store_true", help="Print available eras and exit.")
     optional.add_argument("--list-samples", action="store_true", help="Print available samples and exit.")
     optional.add_argument("--list-masses", action="store_true", help="Print available signal mass points for the given era (or all eras if none provided) and exit.")
-    optional.add_argument("--tf-study", action="store_true", help="Add transfer factor study regions (no mass cut) to the output.")
+    optional.add_argument("--study", nargs="*", default=[], choices=sorted(STUDIES), metavar="STUDY",
+                          help="Add the extra regions of these studies to the output "
+                               f"(choices: {', '.join(sorted(STUDIES))}). E.g. --study transfer-factor "
+                               "adds SR/flavor-CR copies without the m > 800 GeV cut (suffix _nomass).")
+    optional.add_argument("--split-groups", nargs="*", default=[], choices=SPLITTABLE_GROUPS, metavar="GROUP",
+                          help=f"Composite runs: save these physics groups as one file per subgroup (choices: {', '.join(SPLITTABLE_GROUPS)}).")
     optional.add_argument("--preflight-only", action="store_true", help="Validate fileset path/schema and selection, then exit without processing.")
     optional.add_argument(
         "--xrd-fallback",
@@ -596,18 +658,14 @@ if __name__ == "__main__":
         )
         sample_to_group = build_sample_to_group_map(fileset, signal_points=sig_points)
 
-        # When --tf-study, split tt_tW into separate TTbar and tW output files.
-        if args.tf_study:
-            from wrcoffea.cli_utils import _PHYSICS_SUBGROUPS
-            for sample_key in list(sample_to_group):
-                if sample_to_group[sample_key] != "tt_tW":
-                    continue
-                for subgroup, (parent, prefixes) in _PHYSICS_SUBGROUPS.items():
-                    if parent == "tt_tW" and any(sample_key.startswith(p) for p in prefixes):
-                        sample_to_group[sample_key] = subgroup
-                        break
-            logging.info("TF study: split tt_tW into %s",
-                         [g for g in sorted(set(sample_to_group.values())) if g in _PHYSICS_SUBGROUPS])
+        # Optionally split parent groups (e.g. tt_tW -> TTbar, tW) into
+        # separate output files.  The same map is used by both the Condor
+        # and the local composite paths.
+        split_groups = list(args.split_groups)
+        if split_groups:
+            sample_to_group = split_sample_groups(sample_to_group, split_groups)
+            logging.info("Split groups %s into %s", split_groups,
+                         sorted(set(sample_to_group.values())))
 
         n_files = sum(len(ds.get("files", {})) for ds in fileset.values())
         logging.info(
@@ -675,47 +733,7 @@ if __name__ == "__main__":
         n_workers = args.max_workers or 3
         with _local_cluster(n_workers=n_workers, threads_per_worker=args.threads_per_worker or 1) as client:
             if is_composite:
-                # Sequential local processing: loop through each sample individually.
-                samples = COMPOSITE_SAMPLES[args.sample]
-                has_signal = "Signal" in samples
-                sig_points = select_default_signal_points(era) if has_signal else []
-
-                for sample in samples:
-                    sample_runs = [(sample, None)]
-                    if sample == "Signal":
-                        sample_runs = [(sample, mp) for mp in sig_points]
-
-                    for sample_name, mass_point in sample_runs:
-                        label = f"{sample_name}" + (f" ({mass_point})" if mass_point else "")
-                        logging.info("=== Processing %s ===", label)
-
-                        # Temporarily set args for this sample.
-                        args.sample = sample_name
-                        args.mass = mass_point
-
-                        try:
-                            filepath = build_fileset_path(
-                                era=era, sample=sample_name,
-                                unskimmed=args.unskimmed, dy=args.dy,
-                            )
-                            sample_fileset = load_and_select_fileset(
-                                filepath=filepath,
-                                desired_process=sample_name,
-                                mass=mass_point,
-                                maxfiles=args.maxfiles,
-                            )
-                            hists = _process_fileset(args, sample_fileset, client=client, condor=False)
-
-                            if args.unskimmed:
-                                hists = normalize_by_sumw(hists)
-
-                            if not args.debug:
-                                from wrcoffea.save_hists import save_histograms
-                                save_histograms(hists, args)
-
-                            logging.info("=== Finished %s ===", label)
-                        except Exception:
-                            logging.exception("Failed processing %s. Continuing...", label)
+                _run_local_composite(args, era, client=client, sample_to_group=sample_to_group)
             else:
                 try:
                     hists = _process_fileset(args, fileset, client=client, condor=False)

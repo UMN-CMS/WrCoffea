@@ -12,8 +12,8 @@ High-level flow per chunk:
 Output conventions:
     - Canonical histogram naming: output dict key == numeric axis name == ROOT stem.
     - All physics histograms carry categorical axes: (process, region, syst).
-    - `fill_cutflows()` writes a nested `output["cutflow"]` structure with both
-        weighted and unweighted one-bin hists plus PackedSelection cutflow hists.
+    - Cutflows contain labeled one-cut and cumulative histograms with raw
+        counts and base-weight yields/variances, before per-region lepton SFs.
 
 Notes for distributed execution (Dask/Condor):
     - correctionlib payloads are cached per worker process.
@@ -50,6 +50,7 @@ from wrcoffea.analysis_config import (
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 from wrcoffea.era_utils import ERA_MAPPING
+from wrcoffea.regions import RESOLVED_REGIONS, BOOSTED_REGIONS, build_regions, validate_variants
 from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, electron_trigger_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
@@ -87,10 +88,13 @@ class WrAnalysis(processor.ProcessorABC):
       metadata. Histograms are filled without the ``/sumw`` normalization; the
       caller must divide by the accumulated ``_sumw`` per dataset after processing.
     """
-    def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False, tf_study=False):
+    def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False,
+                 region_variants=None):
         self._signal_sample = mass_point
         self._compute_sumw = compute_sumw
-        self._tf_study = tf_study
+        # Extra regions derived from nominal ones by dropping cuts (see
+        # wrcoffea.regions).  Validated up front so bad names fail before processing.
+        self._region_variants = validate_variants(region_variants or ())
         enabled = enabled_systs or []
         self._enabled_systs = {str(s).strip().lower() for s in enabled if str(s).strip()}
         self._region = region.lower() if region else "both"
@@ -514,15 +518,19 @@ class WrAnalysis(processor.ProcessorABC):
         n_ele_id    = ak.sum(lepton_masks["ele_id"],    axis=1)
         n_mu_id     = ak.sum(lepton_masks["mu_id"],     axis=1)
 
+        # Object-level cutflow rows.  These use "at least" counts so that an
+        # extra lepton passing only one of (pT/eta, ID) does not reject an
+        # event that the region (exactly two tight leptons) keeps; the tight
+        # rows that follow in the cutflow pin the count to exactly two.
         # pT/eta-only
-        selections.add("two_pteta_electrons", n_ele_pteta == 2)
-        selections.add("two_pteta_muons",     n_mu_pteta  == 2)
-        selections.add("two_pteta_em",        (n_ele_pteta == 1) & (n_mu_pteta == 1))
+        selections.add("two_pteta_electrons", n_ele_pteta >= 2)
+        selections.add("two_pteta_muons",     n_mu_pteta  >= 2)
+        selections.add("two_pteta_em",        (n_ele_pteta >= 1) & (n_mu_pteta >= 1))
 
         # ID-only
-        selections.add("two_id_electrons", n_ele_id == 2)
-        selections.add("two_id_muons",     n_mu_id  == 2)
-        selections.add("two_id_em",        (n_ele_id == 1) & (n_mu_id == 1))
+        selections.add("two_id_electrons", n_ele_id >= 2)
+        selections.add("two_id_muons",     n_mu_id  >= 2)
+        selections.add("two_id_em",        (n_ele_id >= 1) & (n_mu_id >= 1))
 
         return selections
     
@@ -836,7 +844,9 @@ class WrAnalysis(processor.ProcessorABC):
         pt_dilept_sr  = (tight_lep + AK8_cand).pt
         pt_lj_sr = (tight_lep + sf_candidate).pt
 
-        SR_mask = is_sr & (mlj_sr > CUTS["mlljj_min"]) & (mll_sr > CUTS["mll_sr_min"])
+        # Mass requirements are separate selections (SEL_MLL_GT200_BOOSTED,
+        # SEL_MLJ_GT800_BOOSTED) so regions can be composed with or without them.
+        SR_mask = is_sr
         # Veto extra tight leptons for SR.
         no_extra_tight_sr = self._no_extra_tight_leptons(
             looseMuons, looseElectrons, tight_lep, sf_candidate)
@@ -852,7 +862,7 @@ class WrAnalysis(processor.ProcessorABC):
         pt_dilept_cr  = (tight_lep + AK8_cand).pt
         pt_lj_cr = (tight_lep + of_candidate).pt
 
-        CR_mask = is_cr & (mlj_cr > CUTS["mlljj_min"]) & (mll_cr > CUTS["mll_sr_min"])
+        CR_mask = is_cr
         # Veto extra tight leptons for flavor CR.
         no_extra_tight_flav_cr = self._no_extra_tight_leptons(
             looseMuons, looseElectrons, tight_lep, of_candidate)
@@ -890,21 +900,6 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add(SEL_EE_SR,    ee_sr & is_sublead_e_sr)
         selections.add(SEL_EMU_CR,   emu_cr & is_sublead_mu_cr)
         selections.add(SEL_MUE_CR,   mue_cr & is_sublead_e_cr)
-
-        # Transfer factor study: boosted low-mass regions with mlj < 800 GeV.
-        if self._tf_study:
-            SR_mask_tf_low = is_sr & (mlj_sr < CUTS["mlljj_min"]) & (mll_sr > CUTS["mll_sr_min"])
-            CR_mask_tf_low = is_cr & (mlj_cr < CUTS["mlljj_min"]) & (mll_cr > CUTS["mll_sr_min"])
-
-            ee_sr_tf_low = eTrig & SR_mask_tf_low & is_lead_e & no_extra_tight_sr
-            mumu_sr_tf_low = muTrig & SR_mask_tf_low & is_lead_mu & no_extra_tight_sr
-            emu_cr_tf_low = eTrig & CR_mask_tf_low & is_lead_e & no_extra_tight_flav_cr
-            mue_cr_tf_low = muTrig & CR_mask_tf_low & is_lead_mu & no_extra_tight_flav_cr
-
-            selections.add("mumu_sr_tf_low", mumu_sr_tf_low & is_sublead_mu_sr)
-            selections.add("ee_sr_tf_low", ee_sr_tf_low & is_sublead_e_sr)
-            selections.add("emu_cr_tf_low", emu_cr_tf_low & is_sublead_mu_cr)
-            selections.add("mue_cr_tf_low", mue_cr_tf_low & is_sublead_e_cr)
 
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate
 
@@ -1136,8 +1131,6 @@ class WrAnalysis(processor.ProcessorABC):
 
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
-        loose_muons = events.Muon[lepton_masks["mu_loose"]]
-        loose_electrons = events.Electron[lepton_masks["ele_loose"]]
         weights, _ = self.build_event_weights(events, metadata, is_mc)
         era = mc_campaign
 
@@ -1153,66 +1146,16 @@ class WrAnalysis(processor.ProcessorABC):
 
         if boosted_payload is not None:
             self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               era, tight_muons, tight_electrons, loose_muons, loose_electrons,
-                               is_mc=is_mc, skip_cutflows=True, flavor_filter=flavor_filter)
+                               era, is_mc=is_mc, skip_cutflows=True, flavor_filter=flavor_filter)
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
                        *, is_mc, skip_cutflows=False, flavor_filter=None):
-        """Build resolved region masks and fill histograms + cutflows."""
-        resolved_regions = {
-            'wr_ee_resolved_dy_cr': resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_60_MLL_150, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
-            ),
-            'wr_mumu_resolved_dy_cr': resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_60_MLL_150, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
-            ),
-            'wr_resolved_flavor_cr': resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
-            ),
-            'wr_ee_resolved_sr': resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
-            ),
-            'wr_mumu_resolved_sr': resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
-            ),
-        }
+        """Build resolved region masks and fill histograms + cutflows.
 
-        # Transfer factor study: low-mass regions with mlljj < 800 GeV.
-        if self._tf_study:
-            resolved_regions['wr_ee_resolved_sr_tf_low'] = resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
-            )
-            resolved_regions['wr_mumu_resolved_sr_tf_low'] = resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
-            )
-            resolved_regions['wr_resolved_flavor_cr_tf_low'] = resolved_selections.all(
-                SEL_TWO_TIGHT_LEPTONS,
-                SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-                SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
-                SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
-            )
+        Regions (and any enabled variants) come from ``wrcoffea.regions``.
+        """
+        resolved_regions = build_regions(RESOLVED_REGIONS, resolved_selections, self._region_variants)
 
         for region, cuts in resolved_regions.items():
             if flavor_filter and not any(f in region for f in flavor_filter):
@@ -1225,83 +1168,61 @@ class WrAnalysis(processor.ProcessorABC):
         if not skip_cutflows:
             fill_cutflows(output, resolved_selections, weights)
 
+    @staticmethod
+    def _candidates_by_flavor(candidate):
+        """Split a per-event optional lepton candidate into (muons, electrons).
+
+        Each output is a jagged collection with 0 or 1 entries per event, so
+        it can be fed to the per-object SF functions exactly like a filtered
+        NanoAOD collection.  Events where the candidate is None contribute an
+        empty list to both outputs.
+        """
+        col = ak.singletons(candidate)
+        pdg = abs(col.pdgId)
+        return col[pdg == 13], col[pdg == 11]
+
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
-                      era, tight_muons, tight_electrons, loose_muons, loose_electrons,
-                      *, is_mc, skip_cutflows=False, flavor_filter=None):
-        """Unpack boosted payload, build region masks, and fill histograms."""
+                      era, *, is_mc, skip_cutflows=False, flavor_filter=None):
+        """Unpack boosted payload, build region masks, and fill histograms.
+
+        Lepton SFs are evaluated on the two objects each region is built from:
+        the leading tight lepton gets the tight SFs (and the trigger SF), and
+        the region's sub-leading candidate (DY partner, same-flavor lepton in
+        the AK8 jet, or opposite-flavor lepton in the AK8 jet) gets the loose
+        SFs.  This matches the objects used to fill the histograms.
+        """
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
-        
+
         # Fill boosted cutflows
         if not skip_cutflows:
             fill_boosted_cutflows(output, boosted_sel, weights)
 
-        boosted_regions = {
-            'wr_mumu_boosted_dy_cr': boosted_sel.all(
-                SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
-                SEL_ATLEAST1AK8_DPHI_GT2, SEL_MUMU_DYCR, #SEL_JET_VETO_MAP,
-            ),
-            'wr_mumu_boosted_sr': boosted_sel.all(
-                SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUMU_SR, SEL_AK8JETS_WITH_LSF,
-                #SEL_JET_VETO_MAP,
-            ),
-            'wr_ee_boosted_dy_cr': boosted_sel.all(
-                SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
-                SEL_ATLEAST1AK8_DPHI_GT2, SEL_EE_DYCR, #SEL_JET_VETO_MAP,
-            ),
-            'wr_ee_boosted_sr': boosted_sel.all(
-                SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EE_SR, SEL_AK8JETS_WITH_LSF,
-                #SEL_JET_VETO_MAP,
-            ),
-            'wr_emu_boosted_flavor_cr': boosted_sel.all(
-                SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EMU_CR, SEL_AK8JETS_WITH_LSF,
-                #SEL_JET_VETO_MAP,
-            ),
-            'wr_mue_boosted_flavor_cr': boosted_sel.all(
-                SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUE_CR, SEL_AK8JETS_WITH_LSF,
-                #SEL_JET_VETO_MAP,
-            ),
+        lead_mu, lead_e = self._candidates_by_flavor(tight_lep)
+        sublead_by_kind = {
+            "dy_cr": self._candidates_by_flavor(DY_loose_lep),
+            "flavor_cr": self._candidates_by_flavor(of_candidate),
+            "sr": self._candidates_by_flavor(sf_candidate),
         }
+
+        def _region_sfs(region):
+            kind = "dy_cr" if "dy_cr" in region else ("flavor_cr" if "flavor_cr" in region else "sr")
+            sub_mu, sub_e = sublead_by_kind[kind]
+            return self._lepton_sfs_for_region(
+                region, syst_weights, era, lead_mu, lead_e,
+                loose_muons=sub_mu, loose_electrons=sub_e, is_mc=is_mc,
+            )
+
+        boosted_regions = build_regions(BOOSTED_REGIONS, boosted_sel, self._region_variants)
         for region, cuts in boosted_regions.items():
             if flavor_filter and not any(f in region for f in flavor_filter):
                 continue
-            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons,
-                                                      loose_muons, loose_electrons=loose_electrons, is_mc=is_mc)
+            region_syst = _region_sfs(region)
             if "dy_cr" in region:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, region_syst)
             elif "flavor_cr" in region:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
             else:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, region_syst)
-
-        # Transfer factor study: boosted low-mass regions with mlj < 800 GeV.
-        if self._tf_study:
-            tf_boosted_regions = {
-                'wr_mumu_boosted_sr_tf_low': boosted_sel.all(
-                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "mumu_sr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
-                ),
-                'wr_ee_boosted_sr_tf_low': boosted_sel.all(
-                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "ee_sr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
-                ),
-                'wr_emu_boosted_flavor_cr_tf_low': boosted_sel.all(
-                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "emu_cr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
-                ),
-                'wr_mue_boosted_flavor_cr_tf_low': boosted_sel.all(
-                    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, "mue_cr_tf_low",
-                    SEL_AK8JETS_WITH_LSF, #SEL_JET_VETO_MAP,
-                ),
-            }
-            for region, cuts in tf_boosted_regions.items():
-                if flavor_filter and not any(f in region for f in flavor_filter):
-                    continue
-                region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons,
-                                                          loose_muons, loose_electrons=loose_electrons, is_mc=is_mc)
-                if "flavor_cr" in region:
-                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
-                else:
-                    fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, sf_candidate, weights, region_syst)
 
     def process(self, events):
         """Run analysis for one NanoEvents chunk and return a dataset-nested output dict."""
@@ -1425,8 +1346,6 @@ class WrAnalysis(processor.ProcessorABC):
         # select_leptons) so the full column cache is freed promptly.
         tight_electrons = events.Electron[lepton_masks["ele_pteta"] & lepton_masks["ele_id"]]
         tight_muons = events.Muon[lepton_masks["mu_pteta"] & lepton_masks["mu_id"]]
-        loose_muons = events.Muon[lepton_masks["mu_loose"]]
-        loose_electrons = events.Electron[lepton_masks["ele_loose"]]
         weights, syst_weights = self.build_event_weights(events, metadata, is_mc)
         era = metadata.get("era")
 
@@ -1437,7 +1356,7 @@ class WrAnalysis(processor.ProcessorABC):
 
         if boosted_payload is not None:
             self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               era, tight_muons, tight_electrons, loose_muons, loose_electrons, is_mc=is_mc)
+                               era, is_mc=is_mc)
 
         # Shape systematics: re-run selections with shifted kinematics.
         if is_mc:

@@ -97,7 +97,7 @@ def main():
     # args namespace consumed by _process_fileset / save_histograms_by_group.
     proc_args = SimpleNamespace(
         era=a.era, sample="signal", mass=None, dy=None,
-        region=a.region, systs=[], tf_study=False,
+        region=a.region, systs=[], study=[],
         unskimmed=a.unskimmed, chunksize=a.chunksize, maxchunks=a.maxchunks,
         debug=False, dir=a.dir, name=None,
         # xrd fallback only matters for unskimmed preprocess

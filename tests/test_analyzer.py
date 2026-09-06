@@ -710,14 +710,14 @@ class TestProcessIntegration:
 
     @pytest.mark.parametrize("flavor", ["ee", "mumu"])
     @pytest.mark.parametrize("topology", ["resolved", "boosted"])
-    @pytest.mark.parametrize("tf_low", [False, True], ids=["sr", "tf-low"])
+    @pytest.mark.parametrize("nomass", [False, True], ids=["sr", "nomass"])
     @_apply_sf_patches
-    def test_process_data_skips_lepton_sfs(self, flavor, topology, tf_low):
+    def test_process_data_skips_lepton_sfs(self, flavor, topology, nomass):
         """Selected data retains unit weights without evaluating efficiency payloads."""
         from contextlib import ExitStack
 
         proc = WrAnalysis(
-            mass_point=None, region="both", tf_study=True,
+            mass_point=None, region="both", region_variants={"nomass"},
             enabled_systs=["sf", "lumi", "pileup", "jes", "jer", "elescale", "muscale"],
         )
         n = 3
@@ -740,12 +740,12 @@ class TestProcessIntegration:
                 leptons = ak.with_field(leptons, ak.Array([[True, False]] * n), "cutBased_HEEP")
                 leptons = ak.with_field(leptons, ak.Array([[4, 2]] * n), "cutBased")
         setattr(events, collection, leptons)
-        jet_pt = 60.0 if tf_low else 300.0
+        jet_pt = 60.0 if nomass else 300.0
         events.Jet = ak.with_field(events.Jet, ak.full_like(events.Jet.pt, jet_pt), "pt")
         events.Jet = ak.with_field(events.Jet, ak.zeros_like(events.Jet.eta), "eta")
         events.Jet = ak.with_field(events.Jet, ak.Array([[np.pi / 2, -np.pi / 2]] * n), "phi")
         events.FatJet = ak.with_field(
-            events.FatJet, ak.full_like(events.FatJet.pt, 300.0 if tf_low else 600.0), "pt",
+            events.FatJet, ak.full_like(events.FatJet.pt, 300.0 if nomass else 600.0), "pt",
         )
         events.FatJet = ak.with_field(events.FatJet, ak.zeros_like(events.FatJet.eta), "eta")
         events.FatJet = ak.with_field(events.FatJet, ak.full_like(events.FatJet.phi, np.pi), "phi")
@@ -759,7 +759,7 @@ class TestProcessIntegration:
                 ))
             output = proc.process(events)["Observed"]
 
-        suffix = "sr_tf_low" if tf_low else "sr"
+        suffix = "sr_nomass" if nomass else "sr"
         selected = output["mass_dilepton"][{
             "process": "Observed", "region": f"wr_{flavor}_{topology}_{suffix}", "syst": "Nominal",
         }]
@@ -858,12 +858,12 @@ class TestProcessIntegration:
     # Resolved-only region
     # ------------------------------------------------------------------
     @pytest.mark.parametrize("flavor", ["ee", "mumu"])
-    @pytest.mark.parametrize("region", ["dy_cr", "sr", "sr_tf_low"])
+    @pytest.mark.parametrize("region", ["dy_cr", "sr", "sr_nomass"])
     @_apply_sf_patches
     @patch("wrcoffea.analyzer.electron_id_sf", new=_mock_electron_reco_sf)
     def test_resolved_same_flavor_requires_two_total_tight_leptons(self, flavor, region):
         """Extra tight leptons are vetoed; an extra loose lepton remains allowed."""
-        proc = WrAnalysis(mass_point=None, region="resolved", tf_study=True)
+        proc = WrAnalysis(mass_point=None, region="resolved", region_variants={"nomass"})
         events = _make_integration_events(
             n_events=4, n_muons=2, n_electrons=2,
             metadata={"xsec": 1.0, "genEventSumw": LUMIS["RunIISummer20UL18"] * 1000.0},
@@ -898,7 +898,7 @@ class TestProcessIntegration:
         assert ak.to_list(ak.num(tight)) == [2, 3, 2, 4]
         assert ak.to_list(ak.num(loose)) == [0, 0, 1, 0]
 
-        jet_pt = {"dy_cr": 500.0, "sr": 300.0, "sr_tf_low": 60.0}[region]
+        jet_pt = {"dy_cr": 500.0, "sr": 300.0, "sr_nomass": 60.0}[region]
         events.Jet = ak.with_field(events.Jet, ak.full_like(events.Jet.pt, jet_pt), "pt")
         events.Jet = ak.with_field(events.Jet, ak.zeros_like(events.Jet.eta), "eta")
         events.Jet = ak.with_field(events.Jet, ak.Array([[np.pi / 2, -np.pi / 2]] * 4), "phi")
@@ -1327,3 +1327,95 @@ class TestNoiseFilter:
         out = WrAnalysis(mass_point=None).apply_noise_filter(events, "Run3Summer22")
 
         assert ak.to_list(out.event) == [1]
+
+
+# ---------------------------------------------------------------------------
+# Boosted SFs are evaluated on the selected candidates
+# ---------------------------------------------------------------------------
+
+def _cand(pt, pdg):
+    """One boosted lepton candidate record."""
+    return {"pt": pt, "eta": 0.1, "phi": 0.2, "mass": 0.0, "charge": -1,
+            "pdgId": pdg, "flavor": "muon" if abs(pdg) == 13 else "electron",
+            "deltaEtaSC": 0.0}
+
+
+def _optional_candidates(specs):
+    """Per-event optional candidate array from [(pt, pdgId) or None, ...]."""
+    return ak.Array([_cand(*spec) if spec else None for spec in specs])
+
+
+class TestBoostedSFCandidates:
+    """_fill_boosted must hand the region's own lead/sublead objects to the SF code."""
+
+    def test_candidates_by_flavor_splits_and_keeps_alignment(self):
+        cand = _optional_candidates([(100.0, 11), (90.0, -13), None])
+        mu, e = WrAnalysis._candidates_by_flavor(cand)
+        assert ak.to_list(ak.num(mu)) == [0, 1, 0]
+        assert ak.to_list(ak.num(e)) == [1, 0, 0]
+        assert ak.to_list(ak.flatten(mu.pt)) == [90.0]
+        assert ak.to_list(ak.flatten(e.pt)) == [100.0]
+
+    def test_fill_boosted_uses_region_candidates(self):
+        from coffea.analysis_tools import PackedSelection
+        from wrcoffea.analysis_config import (
+            SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
+            SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
+            SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR, SEL_MUE_CR,
+            SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
+        )
+        n = 3
+        # ev0: lead e; SF partner e; DY partner e; OF partner mu
+        # ev1: lead mu; SF partner mu; DY partner mu; OF partner e
+        # ev2: nothing selected
+        tight_lep = _optional_candidates([(120.0, 11), (110.0, 13), None])
+        sf_cand = _optional_candidates([(70.0, -11), (65.0, -13), None])
+        dy_cand = _optional_candidates([(60.0, -11), (55.0, -13), None])
+        of_cand = _optional_candidates([(80.0, -13), (75.0, -11), None])
+        ak8 = ak.Array([{"pt": 300.0, "eta": 0.0, "phi": 1.0, "mass": 50.0}] * n)
+
+        sel = PackedSelection()
+        for name in (SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
+                     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
+                     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR, SEL_MUE_CR,
+                     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED):
+            sel.add(name, np.ones(n, dtype=bool))
+        payload = (sel, tight_lep, ak8, dy_cand, ak8, of_cand, sf_cand)
+
+        captured = {}
+
+        def fake_sfs(region, syst_weights, era, tight_muons, tight_electrons,
+                     loose_muons=None, loose_electrons=None, *, is_mc):
+            captured[region] = {
+                "tight_mu": ak.to_list(ak.flatten(tight_muons.pt)),
+                "tight_e": ak.to_list(ak.flatten(tight_electrons.pt)),
+                "loose_mu": ak.to_list(ak.flatten(loose_muons.pt)),
+                "loose_e": ak.to_list(ak.flatten(loose_electrons.pt)),
+                "n_tight": ak.to_list(ak.num(tight_muons) + ak.num(tight_electrons)),
+            }
+            return dict(syst_weights)
+
+        proc = WrAnalysis(mass_point=None, region="boosted")
+        syst_weights = {"Nominal": np.ones(n)}
+        with patch.object(proc, "_lepton_sfs_for_region", side_effect=fake_sfs), \
+             patch("wrcoffea.analyzer.fill_boosted_histograms"), \
+             patch("wrcoffea.analyzer.fill_boosted_cutflows"):
+            proc._fill_boosted({}, payload, "DYJets", None, syst_weights, "RunIII2024Summer24", is_mc=True)
+
+        # Lead lepton is the same object for every region: e in ev0, mu in ev1, none in ev2.
+        for region, got in captured.items():
+            assert got["tight_e"] == [120.0], region
+            assert got["tight_mu"] == [110.0], region
+            assert got["n_tight"] == [1, 1, 0], region
+
+        # Sub-leading object depends on the region kind.
+        assert captured["wr_ee_boosted_sr"]["loose_e"] == [70.0]
+        assert captured["wr_ee_boosted_sr"]["loose_mu"] == [65.0]
+        assert captured["wr_ee_boosted_dy_cr"]["loose_e"] == [60.0]
+        assert captured["wr_mumu_boosted_dy_cr"]["loose_mu"] == [55.0]
+        assert captured["wr_emu_boosted_flavor_cr"]["loose_mu"] == [80.0]
+        assert captured["wr_emu_boosted_flavor_cr"]["loose_e"] == [75.0]
+        assert set(captured) == {
+            "wr_mumu_boosted_dy_cr", "wr_mumu_boosted_sr", "wr_ee_boosted_dy_cr",
+            "wr_ee_boosted_sr", "wr_emu_boosted_flavor_cr", "wr_mue_boosted_flavor_cr",
+        }

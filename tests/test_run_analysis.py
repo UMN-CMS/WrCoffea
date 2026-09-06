@@ -60,7 +60,7 @@ def test_process_fileset_runner_config(monkeypatch):
         systs=[],
         region="both",
         unskimmed=True,
-        tf_study=False,
+        study=[],
         chunksize=1000,
         maxchunks=None,
     )
@@ -333,3 +333,78 @@ def test_preprocess_with_xrd_fallback_raises_after_all_redirectors_fail(monkeypa
             treename="Events",
             args=args,
         )
+
+
+# ---------------------------------------------------------------------------
+# Group splitting and local/Condor composite output parity
+# ---------------------------------------------------------------------------
+
+def test_split_sample_groups_remaps_subgroups_and_rejects_unknown():
+    from wrcoffea.cli_utils import split_sample_groups
+
+    mapping = {
+        "TTto2L2Nu_TuneCP5": "tt_tW",
+        "TWminus_2L": "tt_tW",
+        "TbarWplus_2L": "tt_tW",
+        "TTtoLNu2Q": "tt_tW",  # no subgroup prefix -> stays in the parent
+        "DYto2L": "DYJets",
+    }
+    out = split_sample_groups(mapping, ["tt_tW"])
+    assert out == {
+        "TTto2L2Nu_TuneCP5": "TTbar",
+        "TWminus_2L": "tW",
+        "TbarWplus_2L": "tW",
+        "TTtoLNu2Q": "tt_tW",
+        "DYto2L": "DYJets",
+    }
+    # No split requested -> identity copy.
+    assert split_sample_groups(mapping, []) == mapping
+    with pytest.raises(ValueError):
+        split_sample_groups(mapping, ["DYJets"])
+
+
+def test_local_composite_saves_through_group_map(monkeypatch):
+    """The local composite loop must honor the same group map as Condor.
+
+    Regression: before the fix, the local path called save_histograms(args)
+    per sample, so --split-groups (tt_tW -> TTbar/tW) only worked on Condor.
+    """
+    import wrcoffea.save_hists as save_hists_mod
+
+    monkeypatch.setattr(run_analysis, "COMPOSITE_SAMPLES", {"bkg": ["DYJets", "tt_tW"]})
+    monkeypatch.setattr(run_analysis, "build_fileset_path", lambda **kw: f"{kw['sample']}.json")
+    monkeypatch.setattr(run_analysis, "load_and_select_fileset", lambda **kw: {"fs": kw["desired_process"]})
+
+    per_sample_hists = {
+        "DYJets": {"DYto2L": {"h": 1}},
+        "tt_tW": {"TTto2L2Nu_TuneCP5": {"h": 2}, "TWminus_2L": {"h": 3}},
+    }
+    monkeypatch.setattr(
+        run_analysis, "_process_fileset",
+        lambda args, fileset, *, client, condor=False: per_sample_hists[args.sample],
+    )
+
+    saved_groups = []
+    monkeypatch.setattr(
+        save_hists_mod, "save_histograms",
+        lambda hists, group_args: saved_groups.append((group_args.sample, sorted(hists))),
+    )
+
+    sample_to_group = {
+        "DYto2L": "DYJets",
+        "TTto2L2Nu_TuneCP5": "TTbar",
+        "TWminus_2L": "tW",
+    }
+    args = SimpleNamespace(sample="bkg", mass=None, unskimmed=False, dy=None,
+                           maxfiles=None, debug=False)
+
+    run_analysis._run_local_composite(args, "RunIII2024Summer24", client=object(),
+                                      sample_to_group=sample_to_group)
+
+    assert sorted(saved_groups) == [
+        ("DYJets", ["DYto2L"]),
+        ("TTbar", ["TTto2L2Nu_TuneCP5"]),
+        ("tW", ["TWminus_2L"]),
+    ]
+    # The loop restores the composite mode after temporarily rebinding args.sample.
+    assert args.sample == "bkg" and args.mass is None

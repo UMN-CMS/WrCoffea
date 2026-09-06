@@ -13,19 +13,20 @@ from typing import Callable
 
 import awkward as ak
 import hist
+import numpy as np
 
 from wrcoffea.analysis_config import (
     CUTS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
-    SEL_TWO_TIGHT_LEPTONS,
+    SEL_TWO_TIGHT_LEPTONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
+    SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
     #SEL_JET_VETO_MAP,
     # Boosted selections
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_AK8JETS_WITH_LSF,
-    SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR,
     SEL_LEAD_IS_ELECTRON, SEL_LEAD_IS_MUON,
     SEL_NO_DY_PAIR, SEL_NO_EXTRA_TIGHT_SR, SEL_NO_EXTRA_TIGHT_CR,
     SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
@@ -239,22 +240,55 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
                 },
                 weight=sw,
             )
-def _relabel_cutflow(h_raw, cut_names):
-    """Convert an Integer-axis cutflow histogram to one with StrCategory axis.
+def _cutflow_histograms(selections, weights, steps):
+    """Build eager cutflows with event-level sum(w) and sum(w**2).
 
-    This embeds the cut names as bin labels in the ROOT file, making it
-    self-documenting and robust against ordering changes.
+    Coffea 2025.12's eager ``yieldhist`` fills each bin with its total weight,
+    giving (sum(w))**2 as the variance. Accumulate the second moment from
+    individual events instead, so uncertainties are independent of chunking.
     """
-    h = hist.Hist(
-        hist.axis.StrCategory(cut_names, name="cut"),
-        storage=h_raw.storage_type(),
-    )
-    h.view(flow=False)[...] = h_raw.view(flow=False)
-    return h
+    axis = hist.axis.StrCategory(["no_cuts", *steps], name="cut")
+    bucket = {}
+    for name in ("onecut", "cumulative"):
+        bucket[name] = hist.Hist(axis, storage=hist.storage.Weight())
+        bucket[f"{name}_unweighted"] = hist.Hist(axis, storage=hist.storage.Weight())
+
+    event_weights = np.asarray(weights.weight(), dtype=np.float64)
+    cumulative = np.ones(len(event_weights), dtype=bool)
+
+    def record(name, index, mask):
+        selected = event_weights[mask]
+        view = bucket[name].view()
+        view.value[index] = np.sum(selected)
+        view.variance[index] = np.sum(selected**2)
+        count = np.count_nonzero(mask)
+        unweighted = bucket[f"{name}_unweighted"].view()
+        unweighted.value[index] = count
+        unweighted.variance[index] = count
+
+    record("onecut", 0, cumulative)
+    record("cumulative", 0, cumulative)
+    for index, step in enumerate(steps, 1):
+        mask = selections.all(step)
+        cumulative &= mask
+        record("onecut", index, mask)
+        record("cumulative", index, cumulative)
+    return bucket
 
 
 def fill_cutflows(output, selections, weights):
     """Build cumulative cutflows for ee, mumu, and em channels.
+
+    Order: jets (pT/eta, then ID), leptons (pT/eta, then ID, then exactly two
+    tight, then flavor-specific tight, then leading/subleading pT), trigger,
+    dR, mlljj, mll.  The object-level pT/eta and ID rows are "at least"
+    counts taken independently; the tight rows then require exactly two
+    objects passing both, so the final bin equals the region yield.
+    Extra non-tight leptons are allowed.  The final masks match the resolved
+    SR / flavor CR.
+
+    ``no_cuts`` starts after upstream event filters (and any input skim).
+    Weighted bins use base event weights, before per-region lepton SFs.
 
     Output layout (keys under ``output["cutflow"]``):
         - per-flavor: ``ee``, ``mumu``, ``em``
@@ -267,12 +301,14 @@ def fill_cutflows(output, selections, weights):
     # --- Define cumulative chains per flavor
     chains = {
         "ee": [
-            #SEL_JET_VETO_MAP,
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_ELECTRONS,
             SEL_TWO_ID_ELECTRONS,
             SEL_TWO_TIGHT_LEPTONS,
+            SEL_TWO_TIGHT_ELECTRONS,
+            SEL_LEAD_TIGHT_PT60,
+            SEL_SUBLEAD_TIGHT_PT53,
             SEL_E_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
             SEL_MLLJJ_GT800,
@@ -280,12 +316,14 @@ def fill_cutflows(output, selections, weights):
             SEL_MLL_GT400,
         ],
         "mumu": [
-            #SEL_JET_VETO_MAP,
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_MUONS,
             SEL_TWO_ID_MUONS,
             SEL_TWO_TIGHT_LEPTONS,
+            SEL_TWO_TIGHT_MUONS,
+            SEL_LEAD_TIGHT_PT60,
+            SEL_SUBLEAD_TIGHT_PT53,
             SEL_MU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
             SEL_MLLJJ_GT800,
@@ -293,12 +331,14 @@ def fill_cutflows(output, selections, weights):
             SEL_MLL_GT400,
         ],
         "em": [
-            #SEL_JET_VETO_MAP,
             SEL_MIN_TWO_AK4_JETS_PTETA,
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_EM,
             SEL_TWO_ID_EM,
             SEL_TWO_TIGHT_LEPTONS,
+            SEL_TWO_TIGHT_EM,
+            SEL_LEAD_TIGHT_PT60,
+            SEL_SUBLEAD_TIGHT_PT53,
             SEL_EMU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
             SEL_MLLJJ_GT800,
@@ -309,20 +349,9 @@ def fill_cutflows(output, selections, weights):
 
     # --- Per-flavor: multi-bin onecut / cumulative histograms
     for flavor, steps in chains.items():
-        output["cutflow"].setdefault(flavor, {})
-        bucket = output["cutflow"][flavor]
-
-        # Cut names for axis labels: "no_cuts" + the selection step names
-        cut_names = ["no_cuts"] + list(steps)
-
-        cf = selections.cutflow(*steps, weights=weights)
-        h_onecut_raw, h_cum_raw, _labels = cf.yieldhist(weighted=True)
-        bucket["onecut"] = _relabel_cutflow(h_onecut_raw, cut_names)
-        bucket["cumulative"] = _relabel_cutflow(h_cum_raw, cut_names)
-
-        h_onecut_unw, h_cum_unw, _labels = cf.yieldhist(weighted=False)
-        bucket["onecut_unweighted"] = _relabel_cutflow(h_onecut_unw, cut_names)
-        bucket["cumulative_unweighted"] = _relabel_cutflow(h_cum_unw, cut_names)
+        output["cutflow"].setdefault(flavor, {}).update(
+            _cutflow_histograms(selections, weights, steps)
+        )
 
 
 def fill_boosted_cutflows(output, selections, weights):
@@ -330,7 +359,8 @@ def fill_boosted_cutflows(output, selections, weights):
 
     Similar to fill_cutflows but for boosted topology. Shows progression
     through boosted-specific selections (SR progression for ee/mumu,
-    flavor CR for em).
+    flavor CR for em). As in the resolved cutflow, ``no_cuts`` follows
+    upstream filters and the weighted bins exclude per-region lepton SFs.
 
     Output layout (keys under ``output["cutflow_boosted"]``):
         - per-flavor: ``ee``, ``mumu``, ``em``
@@ -386,16 +416,6 @@ def fill_boosted_cutflows(output, selections, weights):
 
     # Generate cutflow histograms per flavor
     for flavor, steps in chains.items():
-        output["cutflow_boosted"].setdefault(flavor, {})
-        bucket = output["cutflow_boosted"][flavor]
-
-        cut_names = ["no_cuts"] + list(steps)
-
-        cf = selections.cutflow(*steps, weights=weights)
-        h_onecut_raw, h_cum_raw, _labels = cf.yieldhist(weighted=True)
-        bucket["onecut"] = _relabel_cutflow(h_onecut_raw, cut_names)
-        bucket["cumulative"] = _relabel_cutflow(h_cum_raw, cut_names)
-
-        h_onecut_unw, h_cum_unw, _labels = cf.yieldhist(weighted=False)
-        bucket["onecut_unweighted"] = _relabel_cutflow(h_onecut_unw, cut_names)
-        bucket["cumulative_unweighted"] = _relabel_cutflow(h_cum_unw, cut_names)
+        output["cutflow_boosted"].setdefault(flavor, {}).update(
+            _cutflow_histograms(selections, weights, steps)
+        )

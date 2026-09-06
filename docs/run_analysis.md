@@ -119,7 +119,19 @@ Each variation produces a separate histogram under `syst_<name>_<region>/` direc
 | `--dir DIR` | Create output subdirectory under rootfiles path |
 | `--name SUFFIX` | Append suffix to output ROOT filename |
 | `--debug` | Run without saving histograms (for testing) |
-| `--tf-study` | Add transfer factor study regions (no mass cut) to the output |
+| `--study STUDY [STUDY ...]` | Add a study's extra regions to the output. `transfer-factor` adds the SR / flavor-CR regions without the m(lljj) or m(lJ) > 800 GeV cut, named `<region>_nomass`; the mass histograms span 0–8000 GeV so the plotter slices them at 800 GeV. Registered in `wrcoffea/regions.py` |
+| `--split-groups GROUP [GROUP ...]` | Composite runs (`bkg`, `mc`, `all`): write these groups as one ROOT file per subgroup, e.g. `tt_tW` → `WRAnalyzer_TTbar.root` + `WRAnalyzer_tW.root`. Applies to local and Condor runs alike |
+
+#### Transfer-factor study
+
+The eμ transfer factor R = SR / flavor CR is measured on tt̄ and its closure is
+checked below 800 GeV (AN-19-083 Appendix J). Run the analyzer with the study
+regions and tt̄ split out, then fit with the plotter:
+
+```bash
+python3 bin/run_analysis.py RunIII2024Summer24 bkg --study transfer-factor --split-groups tt_tW --dir tf_study
+cd WR_Plotter && python3 bin/emu_transfer_factor.py --era RunIII2024Summer24 --dir tf_study --tf-study --input WRAnalyzer_TTbar.root
+```
 
 ### Systematics
 
