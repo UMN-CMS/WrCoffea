@@ -1033,3 +1033,37 @@ class TestJetVariationGating:
     def test_data_never_gets_variations(self):
         out = sf.apply_jet_corrections(_make_jec_events(), self.ERA, False, variations={"jer", "jes"})
         assert self._var_fields(out.Jet) == set()
+
+
+# ---------------------------------------------------------------------------
+# Tests: JER scale-factor payload schemas
+# ---------------------------------------------------------------------------
+
+class TestJerScaleFactorSchemas:
+    """_jer_scale_factor must handle both the 'systematic'-input schema and the
+    Summer24 JRV2 schema (nominal + separate SFUncertainty correction)."""
+
+    @pytest.fixture(autouse=True)
+    def _real_correctionlib(self):
+        pytest.importorskip("correctionlib")
+
+    @staticmethod
+    def _eval(era):
+        import correctionlib
+        from wrcoffea.analysis_config import JERC_JSONS
+        cfg = JERC_JSONS[era]["JERC_AK4"]
+        cs = correctionlib.CorrectionSet.from_file(cfg["json"])
+        eta, pt = ak.Array([[0.5, 2.0]]), ak.Array([[100.0, 500.0]])
+        return {v: ak.to_numpy(ak.flatten(sf._jer_scale_factor(cs, cfg["JR_tag_MC"], cfg["algo"], eta, pt, v)))
+                for v in ("nom", "up", "down")}
+
+    @pytest.mark.parametrize("era", ["RunIII2024Summer24", "Run3Summer23BPix", "RunIISummer20UL18"])
+    def test_variations_bracket_nominal(self, era):
+        vals = self._eval(era)
+        assert np.all(vals["up"] > vals["nom"]), era
+        assert np.all(vals["down"] < vals["nom"]), era
+        assert np.all(vals["nom"] > 0.9), era
+
+    def test_jrv2_uses_sfuncertainty_symmetrically(self):
+        vals = self._eval("RunIII2024Summer24")
+        np.testing.assert_allclose(vals["up"] - vals["nom"], vals["nom"] - vals["down"], rtol=1e-9)

@@ -163,18 +163,18 @@ jerc_jsons:
   RunIII2024Summer24:
     JERC_AK4:
       json: data/jsonpog/JME/Run3/RunIII2024Summer24/jet_jerc.json.gz
-      tag_MC: "Summer24Prompt24_V2_MC"
-      tag_Data: "Summer24Prompt24_V2_DATA"
+      tag_MC: "Summer24Prompt24_V5_MC"
+      tag_Data: "Summer24Prompt24_V5_DATA"
       algo: "AK4PFPuppi"
-      JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1"
+      JR_tag_MC: "Summer24Prompt24_JRV2"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
     JERC_AK8:
       json: data/jsonpog/JME/Run3/RunIII2024Summer24/fatJet_jerc.json.gz
-      tag_MC: "Summer24Prompt24_V2_MC"
-      tag_Data: "Summer24Prompt24_V2_DATA"
+      tag_MC: "Summer24Prompt24_V5_MC"
+      tag_Data: "Summer24Prompt24_V5_DATA"
       algo: "AK8PFPuppi"
-      JR_tag_MC: "Summer23BPixPrompt23_RunD_JRV1"
+      JR_tag_MC: "Summer24Prompt24_JRV2"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
 # JSON POG payloads — Muon

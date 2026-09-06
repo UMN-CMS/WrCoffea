@@ -1164,6 +1164,36 @@ def get_jerc_key(tag, algo, cat_name, reduction_level):
         source = cat_name.replace("CMS_scale_j_", "")
         return f"{tag}_{source}_{algo}"
 
+def _jer_scale_factor(ceval, tag, algo, eta, pt, sys_var):
+    """Evaluate the JER scale factor for ``sys_var`` in ("nom", "up", "down").
+
+    Two payload schemas exist:
+      - a ``systematic`` input on the ScaleFactor correction (UL, Run 3 up to
+        Summer23 JRV1), optionally with a JetPt input;
+      - no ``systematic`` input (Summer24 JRV2 onward): the ScaleFactor gives
+        the nominal and a separate ``SFUncertainty`` correction gives the
+        absolute uncertainty, so up/down are nominal +/- uncertainty.
+    """
+    sf = ceval[f"{tag}_MC_ScaleFactor_{algo}"]
+    names = [i.name for i in sf.inputs]
+    args = {"JetEta": eta, "JetPt": pt, "systematic": sys_var}
+    if "systematic" in names:
+        return sf.evaluate(*[args[n] for n in names])
+
+    nominal = sf.evaluate(*[args[n] for n in names])
+    if sys_var == "nom":
+        return nominal
+    unc_key = f"{tag}_MC_SFUncertainty_{algo}"
+    if not _has_correction(ceval, unc_key):
+        raise KeyError(
+            f"JER payload '{tag}' has no systematic input on the ScaleFactor and no "
+            f"'{unc_key}' correction; cannot build the '{sys_var}' variation."
+        )
+    unc = ceval[unc_key]
+    unc_val = unc.evaluate(*[args[n] for n in [i.name for i in unc.inputs]])
+    return nominal + unc_val if sys_var == "up" else nominal - unc_val
+
+
 def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, events, ceval, tag, algo, sys_var="nom"):
     """Returns smeared pt and mass without modifying the original jet collection"""
     if ak.sum(ak.num(jets)) == 0:
@@ -1176,13 +1206,9 @@ def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, ev
     else:
         return pt_to_smear, mass_to_smear
     res = ceval[f"{tag}_MC_PtResolution_{algo}"]
-    sf  = ceval[f"{tag}_MC_ScaleFactor_{algo}"]
 
     sigma = res.evaluate(jets.eta, pt_to_smear, rho)
-    if len(sf.inputs) == 3:
-        sf_val = sf.evaluate(jets.eta, pt_to_smear, sys_var)
-    else:
-        sf_val = sf.evaluate(jets.eta, sys_var)
+    sf_val = _jer_scale_factor(ceval, tag, algo, jets.eta, pt_to_smear, sys_var)
 
     cjer_match = 1 + (sf_val - 1) * (pt_to_smear - genpt) / pt_to_smear
 
