@@ -26,6 +26,17 @@ _CORRECTIONSET_CACHE = {}
 _WARN_ONCE: set[str] = set()
 
 
+def _has_correction(cset, name):
+    """Return True if *name* is a correction in the correctionlib CorrectionSet.
+
+    ``CorrectionSet.__getitem__`` raises ``IndexError`` (not ``KeyError``) for
+    an unknown name, which breaks the Mapping ``in`` operator and also
+    ``name in cset.keys()`` since the KeysView delegates to it.  Iterating the
+    set only touches the names, so that is the safe membership test.
+    """
+    return name in set(cset)
+
+
 def _unflatten_and_product(flat_nom, flat_up, flat_down, counts):
     """Unflatten per-object SFs, take product over objects per event.
 
@@ -88,9 +99,13 @@ def jet_veto_event_mask(events, ak4_id_mask, era):
 
     Evaluates the ``jetvetomap`` correction on all jets with pT > 15 GeV.
     Events containing at least one jet in a vetoed (eta, phi) region are
-    flagged False.  Applies to both data and MC.
+    flagged False.  Applies to both data and MC.  Always returns a NumPy
+    boolean array of shape ``(len(events),)``; the caller filters events.
     """
     n_events = len(events)
+    if n_events == 0:
+        return np.ones(0, dtype=bool)
+
     if era not in JETVETO_JSONS:
         key = f"jetveto_unconfigured::{era}"
         if key not in _WARN_ONCE:
@@ -127,7 +142,7 @@ def jet_veto_event_mask(events, ak4_id_mask, era):
     # Unflatten and check if any jet per event is vetoed.
     vetoed_per_jet = ak.unflatten(veto_vals > 0, counts)
     any_vetoed = ak.any(vetoed_per_jet, axis=1)
-    return events[~any_vetoed]
+    return ak.to_numpy(~any_vetoed)
 
 
 def _get_muon_ceval(era,key):
@@ -238,14 +253,77 @@ def muon_sf_loose(loose_muons, era):
     return {"reco": reco, "id": id_sf}
 
 
+_MUON_HLT_CORRECTION = "NUM_HLT_DEN_HighPtLooseRelIsoProbes"
+
+
+def _muon_hlt_eta_input(corr, flat_eta):
+    """Return eta in the convention the HLT correction is binned in.
+
+    The per-era high-pT HLT payloads (schemaV2) take ``abseta``; the POG
+    ``muon_HighPt`` payloads take signed ``eta``.
+    """
+    inputs = getattr(corr, "inputs", None) or []
+    first_input = getattr(inputs[0], "name", "abseta") if len(inputs) else "abseta"
+    if first_input == "abseta":
+        return np.clip(np.abs(flat_eta), 0.0, 2.4)
+    return np.clip(flat_eta, -2.399, 2.399)
+
+
+def _muon_trigger_sf_from_efficiencies(data_eff_corr, mc_eff_corr, flat_eta, hlt_pt, counts):
+    """Event trigger SF from per-lepton data/MC efficiencies.
+
+    Implements the dilepton OR formula ``e(l1,l2) = 1 - (1-e(l1))(1-e(l2))``
+    separately for data and MC, then ``SF = e_data / e_MC``.
+    """
+    hlt_eta = _muon_hlt_eta_input(data_eff_corr, flat_eta)
+
+    def _event_eff(corr, variation):
+        per_lepton = ak.unflatten(corr.evaluate(hlt_eta, hlt_pt, variation), counts)
+        return 1.0 - ak.prod(1.0 - per_lepton, axis=1)
+
+    def _safe_ratio(num, den):
+        num_np = np.asarray(ak.fill_none(num, 0.0), dtype=np.float64)
+        den_np = np.asarray(ak.fill_none(den, 0.0), dtype=np.float64)
+        out = np.ones_like(num_np)
+        np.divide(num_np, den_np, out=out, where=den_np > 0)
+        return out
+
+    nom = _safe_ratio(_event_eff(data_eff_corr, "nominal"), _event_eff(mc_eff_corr, "nominal"))
+    up = _safe_ratio(_event_eff(data_eff_corr, "systup"), _event_eff(mc_eff_corr, "systup"))
+    down = _safe_ratio(_event_eff(data_eff_corr, "systdown"), _event_eff(mc_eff_corr, "systdown"))
+    return nom, up, down
+
+
+def _muon_trigger_sf_from_leading_sf(sf_corr, pt_jagged, flat_eta, hlt_pt, counts):
+    """Event trigger SF from a per-lepton SF payload (no efficiencies).
+
+    The single-muon trigger OR is dominated by the leading muon, and without
+    data/MC efficiencies the two legs cannot be combined properly, so the SF
+    of the leading-pT tight muon is applied once per event.
+    """
+    hlt_eta = _muon_hlt_eta_input(sf_corr, flat_eta)
+    lead = ak.argmax(pt_jagged, axis=1, keepdims=True)
+
+    def _leading(variation):
+        per_lepton = ak.unflatten(sf_corr.evaluate(hlt_eta, hlt_pt, variation), counts)
+        return np.asarray(ak.fill_none(ak.firsts(per_lepton[lead]), 1.0), dtype=np.float64)
+
+    return _leading("nominal"), _leading("systup"), _leading("systdown")
+
+
 def muon_trigger_sf(tight_muons, era):
-    """Compute per-event muon trigger SF using dilepton efficiency formula.
+    """Compute per-event muon trigger SF.
 
-    Implements:
-        e(l1,l2) = 1 - (1-e(l1))(1-e(l2))
+    Two payload shapes are supported; the treatment is chosen per era from
+    what the configured ``TRIGGER`` JSON contains:
 
-    Event SF:
-        SF = e_data(event) / e_MC(event)
+    1. Data and MC efficiencies (``<name>_DATAeff`` / ``<name>_MCeff``,
+       currently the 2024 high-pT HLT payload): the event efficiency is built
+       with the dilepton OR formula ``e(l1,l2) = 1 - (1-e(l1))(1-e(l2))`` and
+       ``SF = e_data / e_MC``.
+    2. Per-lepton scale factors only (2022/2023 high-pT HLT payloads and the
+       POG ``muon_HighPt`` files): the SF of the leading-pT tight muon is
+       applied once per event.
 
     Returns (nominal, up, down) arrays of shape (n_events,).
     Events with no tight muons get SF = 1.0.
@@ -263,69 +341,32 @@ def muon_trigger_sf(tight_muons, era):
 
     ceval = _get_muon_ceval(era, "TRIGGER")
 
-    data_eff_corr = ceval["NUM_HLT_DEN_HighPtLooseRelIsoProbes_DATAeff"]
-    mc_eff_corr   = ceval["NUM_HLT_DEN_HighPtLooseRelIsoProbes_MCeff"]
-
     counts = ak.num(tight_muons)
-
-    flat_pt = np.asarray(
-        ak.flatten(ak.fill_none(tight_muons.pt, 0.0)),
-        dtype=np.float64
-    )
-    flat_eta = np.asarray(
-        ak.flatten(ak.fill_none(tight_muons.eta, 0.0)),
-        dtype=np.float64
-    )
+    flat_pt = np.asarray(ak.flatten(ak.fill_none(tight_muons.pt, 0.0)), dtype=np.float64)
+    flat_eta = np.asarray(ak.flatten(ak.fill_none(tight_muons.eta, 0.0)), dtype=np.float64)
 
     if len(flat_pt) == 0:
         return ones, ones.copy(), ones.copy()
 
-    # Clip inputs
-    #    hlt_eta = np.clip(flat_eta, -2.399, 2.399)
-    hlt_eta = np.clip(np.abs(flat_eta), 0.0, 2.4)
-    hlt_pt  = np.clip(flat_pt, 50.001, 1e9)
+    hlt_pt = np.clip(flat_pt, 50.001, 1e9)
 
-    # Evaluate efficiencies
-    eff_data_nom  = data_eff_corr.evaluate(hlt_eta, hlt_pt, "nominal")
-    eff_data_up   = data_eff_corr.evaluate(hlt_eta, hlt_pt, "systup")
-    eff_data_down = data_eff_corr.evaluate(hlt_eta, hlt_pt, "systdown")
+    data_key = f"{_MUON_HLT_CORRECTION}_DATAeff"
+    mc_key = f"{_MUON_HLT_CORRECTION}_MCeff"
+    if _has_correction(ceval, data_key) and _has_correction(ceval, mc_key):
+        return _muon_trigger_sf_from_efficiencies(
+            ceval[data_key], ceval[mc_key], flat_eta, hlt_pt, counts
+        )
 
-    eff_mc_nom  = mc_eff_corr.evaluate(hlt_eta, hlt_pt, "nominal")
-    eff_mc_up   = mc_eff_corr.evaluate(hlt_eta, hlt_pt, "systup")
-    eff_mc_down = mc_eff_corr.evaluate(hlt_eta, hlt_pt, "systdown")
-
-    # Restore event structure
-    eff_data_nom_jag = ak.unflatten(eff_data_nom, counts)
-    eff_data_up_jag = ak.unflatten(eff_data_up, counts)
-    eff_data_down_jag = ak.unflatten(eff_data_down, counts)
-
-    eff_mc_nom_jag = ak.unflatten(eff_mc_nom, counts)
-    eff_mc_up_jag = ak.unflatten(eff_mc_up, counts)
-    eff_mc_down_jag = ak.unflatten(eff_mc_down, counts)
-
-    # Event efficiencies using OR logic
-    event_eff_data_nom  = 1.0 - ak.prod(1.0 - eff_data_nom_jag, axis=1)
-    event_eff_data_up   = 1.0 - ak.prod(1.0 - eff_data_up_jag, axis=1)
-    event_eff_data_down = 1.0 - ak.prod(1.0 - eff_data_down_jag, axis=1)
-
-    event_eff_mc_nom  = 1.0 - ak.prod(1.0 - eff_mc_nom_jag, axis=1)
-    event_eff_mc_up   = 1.0 - ak.prod(1.0 - eff_mc_up_jag, axis=1)
-    event_eff_mc_down = 1.0 - ak.prod(1.0 - eff_mc_down_jag, axis=1)
-
-    # Safe ratio
-    def _safe_ratio(num, den):
-        num_np = np.asarray(ak.fill_none(num, 0.0), dtype=np.float64)
-        den_np = np.asarray(ak.fill_none(den, 0.0), dtype=np.float64)
-
-        out = np.ones_like(num_np)
-        np.divide(num_np, den_np, out=out, where=den_np > 0)
-        return out
-
-    trig_sf_nom  = _safe_ratio(event_eff_data_nom, event_eff_mc_nom)
-    trig_sf_up   = _safe_ratio(event_eff_data_up, event_eff_mc_up)
-    trig_sf_down = _safe_ratio(event_eff_data_down, event_eff_mc_down)
-
-    return trig_sf_nom, trig_sf_up, trig_sf_down
+    key = f"muon_trig_sf_only::{era}"
+    if key not in _WARN_ONCE:
+        _WARN_ONCE.add(key)
+        logger.info(
+            "Muon trigger payload for era '%s' has no data/MC efficiencies; "
+            "applying the leading-muon per-lepton SF.", era
+        )
+    return _muon_trigger_sf_from_leading_sf(
+        ceval[_MUON_HLT_CORRECTION], tight_muons.pt, flat_eta, hlt_pt, counts
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -518,7 +559,10 @@ def electron_trigger_sf(tight_electrons, era):
     Returns (nominal, up, down) arrays of shape (n_events,).
     Events with no tight electrons get SF = 1.0.
 
-    Note: Uses HLT_SF_Ele30_TightID as proxy for Ele32_WPTight_Gsf trigger.
+    Note: the EGM HLT payloads only provide the single-electron
+    ``HLT_SF_Ele30_TightID`` efficiencies, which are used as a proxy for the
+    full Run 3 electron trigger OR (Ele30_WPTight || Photon200 || Ele115 ||
+    Ele50_PFJet165).  Efficiencies are evaluated at supercluster eta.
     """
     n_events = len(tight_electrons)
     ones = np.ones(n_events, dtype=np.float64)
@@ -546,8 +590,18 @@ def electron_trigger_sf(tight_electrons, era):
     if len(flat_pt) == 0:
         return ones, ones.copy(), ones.copy()
 
+    # Supercluster eta = eta + deltaEtaSC (fall back to eta if the branch is absent).
+    try:
+        flat_deltaEtaSC = np.asarray(ak.flatten(ak.fill_none(tight_electrons.deltaEtaSC, 0.0)), dtype=np.float64)
+    except AttributeError:
+        key = f"missing_deltaEtaSC_trig::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.warning("Electron `deltaEtaSC` branch missing; using eta as fallback for trigger SF.")
+        flat_deltaEtaSC = np.zeros_like(flat_eta)
+
     # Clip inputs to valid ranges.
-    hlt_eta = np.clip(flat_eta, -2.499, 2.499)
+    hlt_eta = np.clip(flat_eta + flat_deltaEtaSC, -2.499, 2.499)
     hlt_pt = np.clip(flat_pt, 30.001, 1e6)
 
     # Use Ele30_TightID as proxy for Ele32_WPTight_Gsf.
@@ -660,7 +714,7 @@ def electron_id_sf(tight_electrons, era):
     # 5. Load ceval using the existing helper function in your file
     ceval = _get_electron_ceval(era, "RECO")
     
-    if correction_name not in ceval:
+    if not _has_correction(ceval, correction_name):
         key = f"missing_correction_name::{era}_{correction_name}"
         if key not in _WARN_ONCE:
             _WARN_ONCE.add(key)
@@ -1183,17 +1237,17 @@ def _apply_jec(jets, events, ceval, tag, algo, isMC):
     if len(valid_tags) > 0:
         for t in valid_tags:            
             l1_key = f"{t}_L1FastJet_{algo}"
-            c1 = _safe_eval(ceval[l1_key], jets, events, pt_raw, rho) if l1_key in ceval else 1.0
+            c1 = _safe_eval(ceval[l1_key], jets, events, pt_raw, rho) if _has_correction(ceval, l1_key) else 1.0
             pt1 = pt_raw * c1
             m1 = mass_raw * c1
 
             l2_key = f"{t}_L2Relative_{algo}"
-            c2 = _safe_eval(ceval[l2_key], jets, events, pt1, rho) if l2_key in ceval else 1.0
+            c2 = _safe_eval(ceval[l2_key], jets, events, pt1, rho) if _has_correction(ceval, l2_key) else 1.0
             pt2 = pt1 * c2
             m2 = m1 * c2
             
             res_key = f"{t}_L2L3Residual_{algo}"
-            c4 = _safe_eval(ceval[res_key], jets, events, pt2, rho) if (not isMC and res_key in ceval) else 1.0
+            c4 = _safe_eval(ceval[res_key], jets, events, pt2, rho) if (not isMC and _has_correction(ceval, res_key)) else 1.0
 
             pt_out = pt2 * c4
             m_out = m2 * c4
@@ -1239,7 +1293,7 @@ def _correct_subjets(subjets, events, ceval, tag, algo, isMC):
             
             # 1. L1 FastJet
             l1_key = f"{t}_L1FastJet_{algo}"
-            if l1_key in ceval.keys():  # <-- .keys() fix applied
+            if _has_correction(ceval, l1_key):
                 # _safe_eval is smart enough to extract area, eta, etc., from subjets natively!
                 c1 = _safe_eval(ceval[l1_key], subjets, events, pt_raw, rho)
             else:
@@ -1250,7 +1304,7 @@ def _correct_subjets(subjets, events, ceval, tag, algo, isMC):
 
             # 2. L2 Relative
             l2_key = f"{t}_L2Relative_{algo}"
-            if l2_key in ceval.keys():  # <-- .keys() fix applied
+            if _has_correction(ceval, l2_key):
                 c2 = _safe_eval(ceval[l2_key], subjets, events, pt1, rho)
             else:
                 c2 = 1.0
@@ -1260,7 +1314,7 @@ def _correct_subjets(subjets, events, ceval, tag, algo, isMC):
             
             # # 3. L3 Absolute (Commented out as in apply_jec)
             # l3_key = f"{t}_L3Absolute_{algo}"
-            # if l3_key in ceval.keys():
+            # if _has_correction(ceval, l3_key):
             #     c3 = _safe_eval(ceval[l3_key], subjets, events, pt2, rho)
             # else:
             #     c3 = 1.0
@@ -1271,7 +1325,7 @@ def _correct_subjets(subjets, events, ceval, tag, algo, isMC):
             # 4. Residuals
             res_key = f"{t}_L2L3Residual_{algo}"
             if not isMC:
-                if res_key in ceval.keys():  # <-- .keys() fix applied
+                if _has_correction(ceval, res_key):
                     # Notice we pass pt2 here since L3 is commented out
                     c4 = _safe_eval(ceval[res_key], subjets, events, pt2, rho)
                 else:
@@ -1348,7 +1402,16 @@ def _recompute_softdrop(events):
     # Return the updated fatjets record
     return ak.with_field(fatjets, updated_msoftdrop, "msoftdrop")
 
-def apply_jet_corrections(events, era, isMC,save_all_variations=False):
+def apply_jet_corrections(events, era, isMC, variations=()):
+    """Apply JEC (data and MC) and nominal JER smearing (MC) to Jet and FatJet.
+
+    *variations* selects which MC shape variations are additionally attached
+    as ``pt_<var>_{up,down}`` / ``mass_<var>_{up,down}`` fields:
+      - ``"jer"``: JER scale-factor up/down (``pt_jer_up`` ...)
+      - ``"jes"``: each source in the era's ``jes_unc_mapping``
+        (``pt_CMS_scale_j_Total_up`` ...)
+    Nothing is computed for variations that are not requested.
+    """
     cfgAK4 = JERC_JSONS[era]["JERC_AK4"]
     cfgAK8 = JERC_JSONS[era]["JERC_AK8"]
 
@@ -1406,12 +1469,18 @@ def apply_jet_corrections(events, era, isMC,save_all_variations=False):
         fatjets = ak.with_field(fatjets, mass_nom_ak8, "mass")
 
         # ==========================================
-        # STEP 4: Save All Variations (if flagged)
+        # STEP 4: Requested shape variations only
         # ==========================================
-        if era == "RunIISummer20UL18":
-            save_all_variations = False
-        if save_all_variations:
-            # --- JER SYSTEMATICS (AK4) ---
+        want_jer = "jer" in variations
+        want_jes = "jes" in variations
+        if era == "RunIISummer20UL18" and (want_jer or want_jes):
+            key = f"jet_variations_unsupported::{era}"
+            if key not in _WARN_ONCE:
+                _WARN_ONCE.add(key)
+                logger.warning("Jet shape variations are not configured for era '%s'; skipping.", era)
+            want_jer = want_jes = False
+
+        if want_jer:
             for jer_dir in ["up", "down"]:
                 pt_jer, mass_jer = _get_smeared_kinematics(
                     jets, pt_jec_ak4, mass_jec_ak4, genpt, valid_match, events, cevalAK4, cfgAK4["JR_tag_MC"], algoAK4, sys_var=jer_dir
@@ -1419,10 +1488,16 @@ def apply_jet_corrections(events, era, isMC,save_all_variations=False):
                 jets = ak.with_field(jets, pt_jer, f"pt_jer_{jer_dir}")
                 jets = ak.with_field(jets, mass_jer, f"mass_jer_{jer_dir}")
 
-            # --- JES SYSTEMATICS (AK4) ---
+                pt_jer8, mass_jer8 = _get_smeared_kinematics(
+                    fatjets, pt_jec_ak8, mass_jec_ak8, genpt8, valid_match8, events, cevalAK8, cfgAK8["JR_tag_MC"], algoAK8, sys_var=jer_dir
+                )
+                fatjets = ak.with_field(fatjets, pt_jer8, f"pt_jer_{jer_dir}")
+                fatjets = ak.with_field(fatjets, mass_jer8, f"mass_jer_{jer_dir}")
+
+        if want_jes:
             for cat_name, source_name in cfgAK4.get("jes_unc_mapping", {}).items():
                 exact_json_key = f"{tagAK4}_{source_name}_{algoAK4}"
-                if exact_json_key in cevalAK4:
+                if _has_correction(cevalAK4, exact_json_key):
                     shift = cevalAK4[exact_json_key].evaluate(jets.eta, pt_jec_ak4)
                     for jes_dir in ["up", "down"]:
                         c_jes = 1.0 + shift if jes_dir == "up" else 1.0 - shift
@@ -1432,18 +1507,9 @@ def apply_jet_corrections(events, era, isMC,save_all_variations=False):
                         jets = ak.with_field(jets, pt_final, f"pt_{cat_name}_{jes_dir}")
                         jets = ak.with_field(jets, mass_final, f"mass_{cat_name}_{jes_dir}")
 
-            # --- JER SYSTEMATICS (AK8) ---
-            for jer_dir in ["up", "down"]:
-                pt_jer, mass_jer = _get_smeared_kinematics(
-                    fatjets, pt_jec_ak8, mass_jec_ak8, genpt8, valid_match8, events, cevalAK8, cfgAK8["JR_tag_MC"], algoAK8, sys_var=jer_dir
-                )
-                fatjets = ak.with_field(fatjets, pt_jer, f"pt_jer_{jer_dir}")
-                fatjets = ak.with_field(fatjets, mass_jer, f"mass_jer_{jer_dir}")
-
-            # --- JES SYSTEMATICS (AK8) ---
             for cat_name, source_name in cfgAK8.get("jes_unc_mapping", {}).items():
                 exact_json_key = f"{tagAK8}_{source_name}_{algoAK8}"
-                if exact_json_key in cevalAK8:
+                if _has_correction(cevalAK8, exact_json_key):
                     shift = cevalAK8[exact_json_key].evaluate(fatjets.eta, pt_jec_ak8)
                     for jes_dir in ["up", "down"]:
                         c_jes = 1.0 + shift if jes_dir == "up" else 1.0 - shift

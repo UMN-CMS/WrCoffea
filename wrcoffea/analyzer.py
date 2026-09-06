@@ -36,7 +36,7 @@ from wrcoffea.analysis_config import (
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
-    SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
+    SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
     SEL_60_MLL_150,
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
@@ -50,7 +50,7 @@ from wrcoffea.analysis_config import (
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
 )
 from wrcoffea.era_utils import ERA_MAPPING
-from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
+from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, electron_trigger_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
@@ -82,10 +82,10 @@ class WrAnalysis(processor.ProcessorABC):
     - `enabled_systs`: list of enabled systematic families. Currently supported:
       - `lumi`: add `LumiUp`/`LumiDown` variations as histogram `syst` axis values.
     - `region`: which analysis region to run ("resolved", "boosted", or "both").
-    - `compute_sumw`: if True, compute sum-of-genWeights on-the-fly instead of
-      using the pre-computed ``genEventSumw`` from metadata. Histograms are filled
-      without the ``/sumw`` normalization; the caller must divide by the accumulated
-      ``_sumw`` per dataset after processing.
+    - `compute_sumw`: if True, compute sum-of-genWeights over all input events
+      before filtering instead of using the pre-computed ``genEventSumw`` from
+      metadata. Histograms are filled without the ``/sumw`` normalization; the
+      caller must divide by the accumulated ``_sumw`` per dataset after processing.
     """
     def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False, tf_study=False):
         self._signal_sample = mass_point
@@ -162,39 +162,58 @@ class WrAnalysis(processor.ProcessorABC):
         reject = (events.MET.pt > 100) & ak.any(bad_jet, axis=1) & run_mask
         return reject
 
-    def apply_noise_filter(self, events, mc_campaign, is_signal):
-        if is_signal :
-            logger.warning(f"Processing signal events. Noise filters are not applied.")
-            return events
-        common_flags = (
-            events.Flag.goodVertices &
-            events.Flag.globalSuperTightHalo2016Filter &
-            events.Flag.EcalDeadCellTriggerPrimitiveFilter &
-            events.Flag.BadPFMuonFilter &
-            events.Flag.eeBadScFilter
-        )
-        if hasattr(events.Flag, "BadPFMuonDzFilter"):
-            common_flags = common_flags & events.Flag.BadPFMuonDzFilter
-        if hasattr(events.Flag, "hfNoisyHitsFilter"):
-            common_flags = common_flags & events.Flag.hfNoisyHitsFilter
+    # MET-filter flags required for every era (data, background MC, and signal).
+    _COMMON_NOISE_FLAGS = (
+        "goodVertices",
+        "globalSuperTightHalo2016Filter",
+        "EcalDeadCellTriggerPrimitiveFilter",
+        "BadPFMuonFilter",
+        "eeBadScFilter",
+    )
+    # Only present in newer NanoAOD; applied whenever available.
+    _OPTIONAL_NOISE_FLAGS = ("BadPFMuonDzFilter", "hfNoisyHitsFilter")
+
+    def _noise_flag(self, events, name, mc_campaign):
+        """Return ``events.Flag.<name>``, or an all-True mask (warn once) if absent."""
+        flags = getattr(events, "Flag", None)
+        if flags is not None and hasattr(flags, name):
+            return getattr(flags, name)
+        key = f"noise_flag_missing::{mc_campaign}::{name}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.warning(
+                "MET filter flag '%s' missing for era '%s'; treating it as passed.",
+                name, mc_campaign,
+            )
+        return ak.ones_like(events.event, dtype=bool)
+
+    def apply_noise_filter(self, events, mc_campaign):
+        """Apply the recommended MET noise filters for the era.
+
+        Applied to data, background MC, and signal alike (AN-19-083 Sec. 4
+        requires all events to pass the MET filters).  Flags that only exist
+        in newer NanoAOD are applied when present; a missing required flag is
+        treated as passed and reported once per worker.
+        """
+        mask = ak.ones_like(events.event, dtype=bool)
+        for name in self._COMMON_NOISE_FLAGS:
+            mask = mask & self._noise_flag(events, name, mc_campaign)
+        flags = getattr(events, "Flag", None)
+        for name in self._OPTIONAL_NOISE_FLAGS:
+            if flags is not None and hasattr(flags, name):
+                mask = mask & getattr(flags, name)
+
         if mc_campaign in ("RunIISummer20UL18", "Run2Autumn18"):
-            mask = (
-                common_flags &
-                events.Flag.HBHENoiseFilter &
-                events.Flag.HBHENoiseIsoFilter &
-                events.Flag.ecalBadCalibFilter
-            )            
-        elif mc_campaign in ("Run3Summer22", "Run3Summer23BPix","Run3Summer22EE", "Run3Summer23"):
-            mask = common_flags & ~self.ecal_bad_calib_filter(events)
-            
-        elif (mc_campaign == "RunIII2024Summer24"):
-            mask = common_flags & events.Flag.ecalBadCalibFilter
-            
+            for name in ("HBHENoiseFilter", "HBHENoiseIsoFilter", "ecalBadCalibFilter"):
+                mask = mask & self._noise_flag(events, name, mc_campaign)
+        elif mc_campaign in ("Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix"):
+            mask = mask & ~self.ecal_bad_calib_filter(events)
+        elif mc_campaign == "RunIII2024Summer24":
+            mask = mask & self._noise_flag(events, "ecalBadCalibFilter", mc_campaign)
         else:
             logger.warning(f"No known Era {mc_campaign}. Noise filters are not applied.")
-            mask = ak.ones_like(events.event, dtype=bool)
         return events[mask]
-    
+
     def select_leptons(self, events):
         """Build tight/loose lepton collections and bookkeeping masks.
 
@@ -447,7 +466,7 @@ class WrAnalysis(processor.ProcessorABC):
         j1, j2 = jpad[:, 0], jpad[:, 1]
 
         # Add criteria
-        selections.add("two_tight_leptons",      n_tight == 2)
+        selections.add(SEL_TWO_TIGHT_LEPTONS,    n_tight == 2)
         selections.add("lead_tight_lepton_pt60", ak.fill_none(l1.pt > CUTS["lead_lepton_pt_min"], False))
         selections.add("sublead_tight_pt53",     ak.fill_none(l2.pt > CUTS["sublead_lepton_pt_min"], False))
         selections.add("min_two_ak4_jets",       n_ak4 >= 2)
@@ -958,29 +977,51 @@ class WrAnalysis(processor.ProcessorABC):
 
         return weights, syst_weights
 
+    @staticmethod
+    def _region_trigger(region):
+        """Return which single-lepton trigger selects *region*: ``"e"`` or ``"mu"``.
+
+        Mirrors the region definitions in ``_fill_resolved`` / ``_fill_boosted``:
+        the ee regions and the boosted e+mu-jet flavor CR (leading electron)
+        are selected by the electron triggers; the mumu regions, the resolved
+        flavor CR, and the boosted mu+e-jet flavor CR by the muon triggers.
+        """
+        if "ee" in region or "emu" in region:
+            return "e"
+        return "mu"
+
     def _lepton_sfs_for_region(self, region, syst_weights, era, tight_muons, tight_electrons,
-                              loose_muons=None, loose_electrons=None):
-        """Multiply per-region lepton SFs into the base syst_weights.
+                              loose_muons=None, loose_electrons=None, *, is_mc):
+        """Multiply per-region lepton SFs into MC base syst_weights.
+
+        Data keeps its base weights, without efficiency SFs or SF variations.
 
         Computes only the SFs relevant for each region:
-          - 'ee' regions  → electron RECO SF
-          - 'mumu' regions → muon RECO + ID + ISO + trigger SFs
-          - flavor CR (emu/mue) → electron RECO + muon RECO + ID + ISO + muon trigger SFs
+          - 'ee' regions  → electron RECO + HEEP ID + electron trigger SFs
+          - 'mumu' regions → muon RECO + ID + ISO + muon trigger SFs
+          - flavor CRs → electron RECO + ID and muon RECO + ID + ISO SFs, plus
+            the trigger SF of whichever single-lepton trigger selects the
+            region (see ``_region_trigger``)
           - boosted regions additionally get loose muon RECO + ID SFs (no ISO)
             and loose electron RECO SFs
 
         When ``"sf"`` is in ``_enabled_systs``, per-component up/down
         variations are added to the returned dict.
 
-        Returns a new syst_weights dict with lepton SFs multiplied in.
+        Returns a new syst_weights dict, with lepton SFs multiplied in for MC.
         """
+        if not is_mc:
+            return dict(syst_weights)
+
         first_key = next(iter(syst_weights))
         n = len(syst_weights[first_key])
 
         # Determine which lepton SFs to apply based on region name.
         apply_muon = "mumu" in region or "flavor_cr" in region or "mue" in region or "emu" in region
         apply_electron = "ee" in region or "flavor_cr" in region or "mue" in region or "emu" in region
-        apply_muon_trig = apply_muon
+        trigger = self._region_trigger(region)
+        apply_muon_trig = apply_muon and trigger == "mu"
+        apply_electron_trig = apply_electron and trigger == "e"
 
         # Collect all SF components as {label: (nom, up, down)}.
         components = {}
@@ -1004,10 +1045,14 @@ class WrAnalysis(processor.ProcessorABC):
         if apply_electron and loose_electrons is not None and era in ELECTRON_JSONS:
             components["LooseElectronRecoSf"] = electron_reco_sf(loose_electrons, era)
 
-        # Electron RECO + HEEP ID SFs.
+        # Electron RECO + HEEP ID SFs, plus trigger SF where the electron
+        # triggers select the region.
         if apply_electron and tight_electrons is not None and era in ELECTRON_JSONS:
             components["ElectronRecoSf"] = electron_reco_sf(tight_electrons, era)
             components["ElectronIdSf"] = electron_id_sf(tight_electrons, era)
+
+            if apply_electron_trig:
+                components["ElectronTrigSf"] = electron_trigger_sf(tight_electrons, era)
 
         # Build combined nominal SF.
         sf_nom = np.ones(n, dtype=np.float64)
@@ -1104,39 +1149,44 @@ class WrAnalysis(processor.ProcessorABC):
         if resolved_selections is not None:
             self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons,
                                 weights, syst_weights, era, tight_muons, tight_electrons,
-                                skip_cutflows=True, flavor_filter=flavor_filter)
+                                is_mc=is_mc, skip_cutflows=True, flavor_filter=flavor_filter)
 
         if boosted_payload is not None:
             self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
                                era, tight_muons, tight_electrons, loose_muons, loose_electrons,
-                               skip_cutflows=True, flavor_filter=flavor_filter)
+                               is_mc=is_mc, skip_cutflows=True, flavor_filter=flavor_filter)
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
-                       skip_cutflows=False, flavor_filter=None):
+                       *, is_mc, skip_cutflows=False, flavor_filter=None):
         """Build resolved region masks and fill histograms + cutflows."""
         resolved_regions = {
             'wr_ee_resolved_dy_cr': resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_60_MLL_150, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_mumu_resolved_dy_cr': resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_60_MLL_150, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_resolved_flavor_cr': resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_ee_resolved_sr': resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
             ),
             'wr_mumu_resolved_sr': resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_MLL_GT400, SEL_MLLJJ_GT800, #SEL_JET_VETO_MAP,
@@ -1146,16 +1196,19 @@ class WrAnalysis(processor.ProcessorABC):
         # Transfer factor study: low-mass regions with mlljj < 800 GeV.
         if self._tf_study:
             resolved_regions['wr_ee_resolved_sr_tf_low'] = resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
             )
             resolved_regions['wr_mumu_resolved_sr_tf_low'] = resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
             )
             resolved_regions['wr_resolved_flavor_cr_tf_low'] = resolved_selections.all(
+                SEL_TWO_TIGHT_LEPTONS,
                 SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
                 SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4,
                 SEL_MLL_GT400, SEL_MLLJJ_LT800, #SEL_JET_VETO_MAP,
@@ -1164,7 +1217,9 @@ class WrAnalysis(processor.ProcessorABC):
         for region, cuts in resolved_regions.items():
             if flavor_filter and not any(f in region for f in flavor_filter):
                 continue
-            region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons)
+            region_syst = self._lepton_sfs_for_region(
+                region, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
+            )
             fill_resolved_histograms(output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst)
 
         if not skip_cutflows:
@@ -1172,7 +1227,7 @@ class WrAnalysis(processor.ProcessorABC):
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
                       era, tight_muons, tight_electrons, loose_muons, loose_electrons,
-                      skip_cutflows=False, flavor_filter=None):
+                      *, is_mc, skip_cutflows=False, flavor_filter=None):
         """Unpack boosted payload, build region masks, and fill histograms."""
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
         
@@ -1210,7 +1265,7 @@ class WrAnalysis(processor.ProcessorABC):
             if flavor_filter and not any(f in region for f in flavor_filter):
                 continue
             region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons,
-                                                      loose_muons, loose_electrons=loose_electrons)
+                                                      loose_muons, loose_electrons=loose_electrons, is_mc=is_mc)
             if "dy_cr" in region:
                 fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand_dy, DY_loose_lep, weights, region_syst)
             elif "flavor_cr" in region:
@@ -1242,7 +1297,7 @@ class WrAnalysis(processor.ProcessorABC):
                 if flavor_filter and not any(f in region for f in flavor_filter):
                     continue
                 region_syst = self._lepton_sfs_for_region(region, syst_weights, era, tight_muons, tight_electrons,
-                                                          loose_muons, loose_electrons=loose_electrons)
+                                                          loose_muons, loose_electrons=loose_electrons, is_mc=is_mc)
                 if "flavor_cr" in region:
                     fill_boosted_histograms(output, region, cuts, process_name, tight_lep, AK8_cand, of_candidate, weights, region_syst)
                 else:
@@ -1260,13 +1315,21 @@ class WrAnalysis(processor.ProcessorABC):
         is_mc = datatype == "mc"
         is_data = not is_mc
         is_signal = (metadata.get("physics_group") == "Signal")
+
+        # Normalization includes all input MC events, including those rejected
+        # by the filters below. Preserve signed generator weights per chunk.
+        chunk_sumw = float(ak.sum(events.genWeight)) if self._compute_sumw and is_mc else None
+
         # Apply lumi mask (data only).
         events = self.apply_lumi_mask(events, mc_campaign, is_data)
-        # Apply noise filters (data and MC, not on signal )
-        events = self.apply_noise_filter(events, mc_campaign, is_signal)
+        # Apply MET noise filters (data, MC, and signal).
+        events = self.apply_noise_filter(events, mc_campaign)
         raw_pt = events.Jet.pt * (1 - events.Jet.rawFactor)
         
-        events = apply_jet_corrections(events,mc_campaign,is_mc,True)
+        # JEC/JER always; JER and JES up/down kinematics only when requested.
+        events = apply_jet_corrections(
+            events, mc_campaign, is_mc, variations=self._enabled_systs & {"jer", "jes"},
+        )
 
         # print("--- JEC VERIFICATION (First 10 events) ---")
         #corrected_pt = events.Jet.pt
@@ -1305,7 +1368,8 @@ class WrAnalysis(processor.ProcessorABC):
                 ak4_id_mask = events.Jet.isTightLeptonVeto
             else:
                 ak4_id_mask = events.Jet.jetId >= 6
-        events = jet_veto_event_mask(events,ak4_id_mask,mc_campaign)
+        veto_mask = jet_veto_event_mask(events, ak4_id_mask, mc_campaign)
+        events = events[veto_mask]
 
         corrected_electrons = apply_electron_scale_smearing(events, mc_campaign, is_mc)
         #verify_scale_smearing(events.Electron, corrected_electrons, is_mc)
@@ -1369,11 +1433,11 @@ class WrAnalysis(processor.ProcessorABC):
         # Fill histograms.
         if resolved_selections is not None:
             self._fill_resolved(output, resolved_selections, process_name, ak4_jets, tight_leptons,
-                                weights, syst_weights, era, tight_muons, tight_electrons)
+                                weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc)
 
         if boosted_payload is not None:
             self._fill_boosted(output, boosted_payload, process_name, weights, syst_weights,
-                               era, tight_muons, tight_electrons, loose_muons, loose_electrons)
+                               era, tight_muons, tight_electrons, loose_muons, loose_electrons, is_mc=is_mc)
 
         # Shape systematics: re-run selections with shifted kinematics.
         if is_mc:
@@ -1418,10 +1482,10 @@ class WrAnalysis(processor.ProcessorABC):
 
         nested_output = {dataset: {**output}}
 
-        # When computing sumw on-the-fly, accumulate sum(genWeight) per dataset
+        # Accumulate the unfiltered sum even when every event was rejected,
         # so the caller can normalize after all chunks are processed.
-        if self._compute_sumw and is_mc:
-            nested_output[dataset]["_sumw"] = float(ak.sum(events.genWeight))
+        if chunk_sumw is not None:
+            nested_output[dataset]["_sumw"] = chunk_sumw
 
         return nested_output
 

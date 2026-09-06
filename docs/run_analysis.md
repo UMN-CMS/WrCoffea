@@ -139,12 +139,6 @@ Each variation produces a separate histogram under `syst_<name>_<region>/` direc
 | `--maxchunks N` | Max chunks per file (default: all). Use `1` for quick testing |
 | `--maxfiles N` | Max files per dataset (default: all). Use `1` for quick testing |
 
-### Reweighting
-
-| Flag | Description |
-|------|-------------|
-| `--reweight PATH` | Path to DY reweight JSON file (DYJets only) |
-
 ### XRootD Fallback
 
 These flags control redirector fallback during unskimmed preprocessing. Fallback is enabled by default when `--unskimmed` is used.

@@ -5,7 +5,7 @@ Critical functionality:
 - Pileup weight evaluation
 - Muon SF components (RECO, ID, ISO, trigger)
 - Electron SF components (Reco, ID, trigger)
-- Jet veto map evaluation (event filtering on the main path)
+- Jet veto map evaluation (per-event boolean masks)
 - Pt/eta clipping to valid bin edges
 - Era fallback handling
 
@@ -22,6 +22,7 @@ import pytest
 import numpy as np
 import awkward as ak
 from unittest.mock import patch, MagicMock
+from coffea.nanoevents.methods import base
 
 import wrcoffea.scale_factors as sf
 
@@ -81,8 +82,7 @@ def _make_events(n_events, nTrueInt_values=None):
 def _make_events_with_jets(jet_pt, jet_eta, jet_phi, jet_chEmEF=None, jet_neEmEF=None):
     """Build an awkward *events* array whose ``Jet`` field is a proper
     jagged record, supporting ``events.Jet``, ``len(events)``, and boolean
-    event indexing ``events[mask]`` (jet_veto_event_mask filters events on
-    its main path).
+    event indexing ``events[mask]``.
 
     Parameters
     ----------
@@ -355,6 +355,92 @@ class TestMuonScaleFactors:
 
         np.testing.assert_array_equal(nom, np.ones(1))
 
+    @staticmethod
+    def _patch_trigger_cset(corrections):
+        """Patch correctionlib with a CorrectionSet exposing exactly *corrections*."""
+        mock_cset = MagicMock()
+        # _has_correction() iterates the set, so provide __iter__ (not keys()).
+        mock_cset.__iter__ = MagicMock(side_effect=lambda: iter(list(corrections)))
+        mock_cset.__getitem__ = MagicMock(side_effect=lambda k: corrections[k])
+        mock_module = MagicMock()
+        mock_module.CorrectionSet.from_file.return_value = mock_cset
+        return patch.dict(sys.modules, {"correctionlib": mock_module})
+
+    @staticmethod
+    def _make_corr(evaluate_fn, first_input="abseta"):
+        corr = MagicMock()
+        corr.evaluate = MagicMock(side_effect=evaluate_fn)
+        inp = MagicMock()
+        inp.name = first_input
+        corr.inputs = [inp]
+        return corr
+
+    def test_muon_trigger_sf_efficiency_payload(self):
+        """Payloads with DATAeff/MCeff use the dilepton OR efficiency formula."""
+        tight_muons = _make_tight_leptons([[100.0, 80.0], [100.0]], [[0.5, -0.5], [0.5]])
+        corrections = {
+            "NUM_HLT_DEN_HighPtLooseRelIsoProbes_DATAeff": self._make_corr(
+                _mock_correction_evaluate_factory(0.9)),
+            "NUM_HLT_DEN_HighPtLooseRelIsoProbes_MCeff": self._make_corr(
+                _mock_correction_evaluate_factory(0.8)),
+            "NUM_HLT_DEN_HighPtLooseRelIsoProbes": self._make_corr(
+                _mock_correction_evaluate_factory(0.5)),  # must NOT be used
+        }
+
+        with self._patch_trigger_cset(corrections):
+            nom, up, down = sf.muon_trigger_sf(tight_muons, "RunIII2024Summer24")
+
+        # two muons: (1 - 0.1*0.1) / (1 - 0.2*0.2); one muon: 0.9 / 0.8
+        assert nom[0] == pytest.approx(0.99 / 0.96, rel=1e-9)
+        assert nom[1] == pytest.approx(0.9 / 0.8, rel=1e-9)
+        assert not corrections["NUM_HLT_DEN_HighPtLooseRelIsoProbes"].evaluate.called
+
+    def test_muon_trigger_sf_leading_muon_fallback(self):
+        """Payloads with only a per-lepton SF apply the leading-pT muon's SF once."""
+        tight_muons = _make_tight_leptons(
+            [[80.0, 100.0], [60.0], []],
+            [[0.5, -1.5], [0.5], []],
+        )
+
+        def sf_from_pt(eta, pt, variation):
+            base = np.asarray(pt, dtype=np.float64) / 100.0
+            if variation == "systup":
+                return base + 0.01
+            if variation == "systdown":
+                return base - 0.01
+            return base
+
+        corr = self._make_corr(sf_from_pt, first_input="abseta")
+        corrections = {"NUM_HLT_DEN_HighPtLooseRelIsoProbes": corr}
+
+        with self._patch_trigger_cset(corrections):
+            nom, up, down = sf.muon_trigger_sf(tight_muons, "Run3Summer22")
+
+        # Leading muon (pt=100) is the second entry in event 0: SF = 1.00,
+        # not the product (0.8) and not the first-listed muon (0.8).
+        assert nom[0] == pytest.approx(1.00)
+        assert nom[1] == pytest.approx(0.60)
+        assert nom[2] == pytest.approx(1.0)
+        assert up[0] == pytest.approx(1.01)
+        assert down[1] == pytest.approx(0.59)
+
+        # abseta payload: eta must be passed as |eta|.
+        eta_arg = corr.evaluate.call_args_list[0][0][0]
+        assert np.all(np.asarray(eta_arg) >= 0.0)
+
+    def test_muon_trigger_sf_signed_eta_payload(self):
+        """POG-style payloads binned in signed eta receive signed eta."""
+        tight_muons = _make_tight_leptons([[70.0]], [[-1.5]])
+        corr = self._make_corr(_mock_correction_evaluate_factory(0.97), first_input="eta")
+        corrections = {"NUM_HLT_DEN_HighPtLooseRelIsoProbes": corr}
+
+        with self._patch_trigger_cset(corrections):
+            nom, _, _ = sf.muon_trigger_sf(tight_muons, "RunIISummer20UL18")
+
+        assert nom[0] == pytest.approx(0.97)
+        eta_arg = corr.evaluate.call_args_list[0][0][0]
+        assert np.asarray(eta_arg)[0] == pytest.approx(-1.5)
+
 
 # ---------------------------------------------------------------------------
 # Tests: Electron scale factors
@@ -513,21 +599,10 @@ class TestElectronScaleFactors:
 # ---------------------------------------------------------------------------
 
 class TestJetVetoMap:
-    """Test jet veto map evaluation.
-
-    Current contract of ``jet_veto_event_mask(events, ak4_id_mask, era)``:
-
-    - Main path (era configured AND >= 1 preselected jet): returns the
-      FILTERED events array (``events[~any_vetoed]``).
-    - Early exits (era not configured, or zero preselected jets): returns
-      an all-True boolean mask of length ``len(events)`` instead.
-
-    NOTE: this dual return-type contract (filtered events vs. boolean mask)
-    is a known, reviewed inconsistency; these tests pin the current behavior.
-    """
+    """Jet veto evaluation always returns a NumPy boolean mask per event."""
 
     def test_jet_veto_event_mask(self):
-        """Main path with no vetoed jets returns all events (filtered array)."""
+        """All events pass when none of their jets is vetoed."""
         n_events = 20
         events = _make_events_with_jets(
             jet_pt=[[100.0, 80.0]] * n_events,
@@ -541,19 +616,20 @@ class TestJetVetoMap:
         with ctx:
             result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        # Main path returns filtered events, not a boolean mask.
-        assert isinstance(result, ak.Array)
-        assert len(result) == n_events
-        assert ak.to_list(result.Jet.pt) == ak.to_list(events.Jet.pt)
+        assert isinstance(result, np.ndarray)
+        assert result.dtype == bool
+        np.testing.assert_array_equal(result, np.ones(n_events, dtype=bool))
 
     def test_jet_veto_some_vetoed(self):
-        """Events containing a vetoed jet are removed from the returned events."""
-        # 3 events, each with 1 jet.
+        """The mask filters events without losing their fields or metadata."""
         events = _make_events_with_jets(
-            jet_pt=[[100.0], [200.0], [150.0]],
-            jet_eta=[[2.0], [3.0], [1.0]],
-            jet_phi=[[1.5], [-1.0], [0.5]],
+            jet_pt=[[100.0], [200.0, 80.0], [150.0]],
+            jet_eta=[[2.0], [1.0, 3.0], [1.0]],
+            jet_phi=[[1.5], [0.5, -1.0], [0.5]],
         )
+        events = ak.with_field(events, ak.Array([101, 102, 103]), "event")
+        events = ak.with_name(events, "NanoEvents", behavior=base.behavior)
+        events = ak.with_parameter(events, "metadata", {"era": TEST_ERA, "sample": "test"})
         ak4_id_mask = _all_true_ak4_id_mask(events)
 
         def evaluate_fn(*args):
@@ -568,14 +644,19 @@ class TestJetVetoMap:
         with ctx:
             result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        # eta=3.0 event is vetoed; eta=2.0 and eta=1.0 events survive.
-        assert len(result) == 2
-        assert ak.to_list(result.Jet.eta) == [[2.0], [1.0]]
-        assert ak.to_list(result.Jet.pt) == [[100.0], [150.0]]
+        # One vetoed jet rejects its whole event, even if another jet passes.
+        assert isinstance(result, np.ndarray)
+        assert result.dtype == bool
+        np.testing.assert_array_equal(result, [True, False, True])
+        filtered = events[result]
+        assert filtered.fields == events.fields
+        assert filtered.metadata == events.metadata
+        assert ak.to_list(filtered.event) == [101, 103]
+        assert ak.to_list(filtered.Jet.pt) == [[100.0], [150.0]]
+        assert len(events) == 3
 
-    def test_jet_veto_empty_events(self):
-        """Events with no jets should survive the veto (main path is taken
-        because another event has a preselected jet)."""
+    def test_jet_veto_events_without_jets(self):
+        """Jet-less events pass even when another event has qualifying jets."""
         events = _make_events_with_jets(
             jet_pt=[[], [100.0], []],
             jet_eta=[[], [2.0], []],
@@ -587,28 +668,54 @@ class TestJetVetoMap:
         with ctx:
             result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        # All 3 events survive, including the jet-less ones.
-        assert len(result) == 3
-        assert ak.to_list(result.Jet.pt) == [[], [100.0], []]
+        np.testing.assert_array_equal(result, [True, True, True])
+        assert ak.to_list(events[result].Jet.pt) == [[], [100.0], []]
 
-    def test_jet_veto_no_preselected_jets_returns_bool_mask(self):
-        """Early exit: when ZERO jets pass preselection, the function returns
-        an all-True boolean mask rather than filtered events (known reviewed
-        contract inconsistency with the main path)."""
+    def test_jet_veto_empty_chunk(self):
+        """Empty input returns a typed empty mask without loading a payload."""
+        events = _make_events_with_jets([[100.0]], [[2.0]], [[1.5]])[:0]
+        ctx, mock_module, _ = _patch_correctionlib()
+        with ctx:
+            result = sf.jet_veto_event_mask(events, _all_true_ak4_id_mask(events), TEST_ERA)
+
+        assert isinstance(result, np.ndarray)
+        assert result.dtype == bool
+        assert result.shape == (0,)
+        assert events[result].fields == events.fields
+        mock_module.CorrectionSet.from_file.assert_not_called()
+
+    def test_jet_veto_all_events_vetoed(self):
+        """Rejecting every event still returns a mask aligned with the input."""
+        events = _make_events_with_jets([[100.0], [200.0]], [[2.0], [3.0]], [[1.5], [-1.0]])
+        ctx, _, _ = _patch_correctionlib(_mock_correction_evaluate_factory(1.0))
+        with ctx:
+            result = sf.jet_veto_event_mask(events, _all_true_ak4_id_mask(events), TEST_ERA)
+
+        assert isinstance(result, np.ndarray)
+        assert result.dtype == bool
+        np.testing.assert_array_equal(result, [False, False])
+        assert len(events[result]) == 0
+        assert events[result].fields == events.fields
+
+    @pytest.mark.parametrize("jet_pt", [[[5.0], [10.0]], [[], []]])
+    def test_jet_veto_no_preselected_jets_returns_bool_mask(self, jet_pt):
+        """A chunk with no qualifying jets passes without evaluating the map."""
         events = _make_events_with_jets(
-            jet_pt=[[5.0], [10.0]],  # all below jet_veto_pt_min = 15
-            jet_eta=[[2.0], [1.0]],
-            jet_phi=[[1.5], [0.5]],
+            jet_pt=jet_pt,
+            jet_eta=[[2.0] * len(row) for row in jet_pt],
+            jet_phi=[[1.5] * len(row) for row in jet_pt],
         )
         ak4_id_mask = _all_true_ak4_id_mask(events)
 
-        ctx, _, _ = _patch_correctionlib(_mock_correction_evaluate_factory(0.0))
+        ctx, _, mock_correction = _patch_correctionlib(_mock_correction_evaluate_factory(0.0))
         with ctx:
             result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
         assert isinstance(result, np.ndarray)
         assert result.dtype == bool
         np.testing.assert_array_equal(result, np.ones(2, dtype=bool))
+        assert ak.to_list(events[result].Jet.pt) == jet_pt
+        mock_correction.evaluate.assert_not_called()
 
     def test_jet_veto_low_pt_jets_excluded(self):
         """Jets below the veto map pT threshold should not be evaluated."""
@@ -629,8 +736,7 @@ class TestJetVetoMap:
         with ctx:
             result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
-        # Main path: event survives (its evaluated jet is not vetoed).
-        assert len(result) == 1
+        np.testing.assert_array_equal(result, [True])
         # Only 1 jet should have been evaluated (the one above threshold).
         assert calls[0] == 1
 
@@ -656,12 +762,10 @@ class TestJetVetoMap:
             result = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
 
         # The event survives because the bad-eta jet failed ID preselection.
-        assert len(result) == 1
+        np.testing.assert_array_equal(result, [True])
 
     def test_jet_veto_unconfigured_era(self):
-        """Early exit: when era is not in JETVETO_JSONS, an all-True boolean
-        mask is returned (not filtered events -- known reviewed contract
-        inconsistency with the main path)."""
+        """An unconfigured era returns an all-True mask."""
         events = _make_events_with_jets(
             jet_pt=[[100.0]],
             jet_eta=[[2.0]],
@@ -812,9 +916,120 @@ class TestEraFallback:
         nom, _, _ = sf.electron_trigger_sf(tight_leptons, fake_era)
         np.testing.assert_array_equal(nom, np.ones(n_events))
 
-        # jet_veto_event_mask: unconfigured era takes the early exit, which
-        # returns an all-True boolean mask (NOT filtered events as on the
-        # main path -- known reviewed contract inconsistency).
+        # jet_veto_event_mask: an unconfigured era passes all events.
         ak4_id_mask = _all_true_ak4_id_mask(events_with_jets)
         mask = sf.jet_veto_event_mask(events_with_jets, ak4_id_mask, fake_era)
         np.testing.assert_array_equal(mask, np.ones(n_events, dtype=bool))
+
+
+# ---------------------------------------------------------------------------
+# Tests: CorrectionSet membership helper
+# ---------------------------------------------------------------------------
+
+class TestHasCorrection:
+    """_has_correction must not rely on the Mapping ``in`` operator, which
+    correctionlib breaks by raising IndexError from __getitem__."""
+
+    @pytest.fixture
+    def real_cset(self):
+        correctionlib = pytest.importorskip("correctionlib")
+        from wrcoffea.analysis_config import PILEUP_JSONS, PILEUP_CORRECTION_NAMES
+        era = "Run3Summer22"
+        return (
+            correctionlib.CorrectionSet.from_file(PILEUP_JSONS[era]),
+            PILEUP_CORRECTION_NAMES[era],
+        )
+
+    def test_in_operator_raises_on_real_correctionset(self, real_cset):
+        cset, _ = real_cset
+        with pytest.raises(IndexError):
+            "definitely_not_a_correction" in cset
+        with pytest.raises(IndexError):
+            "definitely_not_a_correction" in cset.keys()
+
+    def test_has_correction_present_and_absent(self, real_cset):
+        cset, present = real_cset
+        assert sf._has_correction(cset, present) is True
+        assert sf._has_correction(cset, "definitely_not_a_correction") is False
+
+    def test_has_correction_with_mock_correctionset(self):
+        mock_cset = MagicMock()
+        mock_cset.__iter__ = MagicMock(side_effect=lambda: iter(["a", "b"]))
+        assert sf._has_correction(mock_cset, "a")
+        assert not sf._has_correction(mock_cset, "c")
+
+
+# ---------------------------------------------------------------------------
+# Tests: jet correction shape variations are only computed on request
+# ---------------------------------------------------------------------------
+
+def _make_jec_events(jet_counts=(2, 1, 3, 2)):
+    """Minimal jagged MC NanoAOD-like events for apply_jet_corrections (no SubJet)."""
+    rng = np.random.default_rng(1)
+    n_events = len(jet_counts)
+
+    def jagged(low, high):
+        return ak.Array([rng.uniform(low, high, n).tolist() for n in jet_counts])
+
+    def coll(idx_name):
+        return ak.zip({
+            "pt": jagged(60, 400),
+            "eta": jagged(-2.0, 2.0),
+            "phi": jagged(-3.0, 3.0),
+            "mass": jagged(5, 40),
+            "area": ak.Array([[0.5] * n for n in jet_counts]),
+            "rawFactor": ak.Array([[0.05] * n for n in jet_counts]),
+            # Match jet i to gen jet i; the gen collections below have 3 entries.
+            idx_name: ak.Array([list(range(n)) for n in jet_counts]),
+        })
+
+    gen = ak.zip({"pt": ak.Array([[100.0, 80.0, 70.0]] * n_events)})
+    return ak.zip({
+        "Jet": coll("genJetIdx"),
+        "FatJet": coll("genJetAK8Idx"),
+        "GenJet": gen,
+        "GenJetAK8": gen,
+        "Rho": ak.zip({"fixedGridRhoFastjetAll": ak.Array([20.0] * n_events)}),
+        "event": ak.Array(list(range(n_events))),
+        # The 2024 data residual correction is binned in run number.
+        "run": ak.Array([380000] * n_events),
+    }, depth_limit=1)
+
+
+class TestJetVariationGating:
+    """apply_jet_corrections attaches only the requested variation fields."""
+
+    ERA = "RunIII2024Summer24"
+
+    @pytest.fixture(autouse=True)
+    def _real_correctionlib(self):
+        pytest.importorskip("correctionlib")
+
+    @staticmethod
+    def _var_fields(coll):
+        return {f for f in coll.fields if f.startswith(("pt_", "mass_"))}
+
+    def test_no_variations_by_default(self):
+        out = sf.apply_jet_corrections(_make_jec_events(), self.ERA, True)
+        assert self._var_fields(out.Jet) == set()
+        assert self._var_fields(out.FatJet) == set()
+
+    def test_jer_only(self):
+        out = sf.apply_jet_corrections(_make_jec_events(), self.ERA, True, variations={"jer"})
+        expected = {"pt_jer_up", "pt_jer_down", "mass_jer_up", "mass_jer_down"}
+        assert self._var_fields(out.Jet) == expected
+        assert self._var_fields(out.FatJet) == expected
+
+    def test_jes_only(self):
+        out = sf.apply_jet_corrections(_make_jec_events(), self.ERA, True, variations={"jes"})
+        expected = {"pt_CMS_scale_j_Total_up", "pt_CMS_scale_j_Total_down",
+                    "mass_CMS_scale_j_Total_up", "mass_CMS_scale_j_Total_down"}
+        assert self._var_fields(out.Jet) == expected
+        assert self._var_fields(out.FatJet) == expected
+        # JES up must move pt above nominal and down below it.
+        assert ak.all(out.Jet.pt_CMS_scale_j_Total_up > out.Jet.pt)
+        assert ak.all(out.Jet.pt_CMS_scale_j_Total_down < out.Jet.pt)
+
+    def test_data_never_gets_variations(self):
+        out = sf.apply_jet_corrections(_make_jec_events(), self.ERA, False, variations={"jer", "jes"})
+        assert self._var_fields(out.Jet) == set()

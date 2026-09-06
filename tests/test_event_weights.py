@@ -6,8 +6,8 @@ Current API (after the per-region SF refactor):
   MC normalization (genWeight * xsec * lumi * 1000 / genEventSumw), pileup,
   and the optional lumi systematic.  It no longer accepts lepton collections.
 - Lepton SFs moved to _lepton_sfs_for_region(region, syst_weights, era,
-  tight_muons, tight_electrons, loose_muons=None, loose_electrons=None),
-  which multiplies region-appropriate SFs into the syst_weights dict.
+  tight_muons, tight_electrons, loose_muons=None, loose_electrons=None, *, is_mc),
+  which multiplies region-appropriate SFs into the syst_weights dict for MC.
 """
 
 import pytest
@@ -223,7 +223,7 @@ class TestLeptonSFsForRegion:
         base = _base_syst_weights(n, 2.0)
 
         result = analyzer._lepton_sfs_for_region(
-            "mumu_resolved_sr", base, ERA, tight_muons, None,
+            "mumu_resolved_sr", base, ERA, tight_muons, None, is_mc=True,
         )
 
         sf_product = 0.98 * 0.95 * 0.97 * 0.93
@@ -235,35 +235,85 @@ class TestLeptonSFsForRegion:
         mock_mu_sf.assert_called_once()
         mock_mu_trig.assert_called_once()
 
+    @patch("wrcoffea.analyzer.electron_trigger_sf")
     @patch("wrcoffea.analyzer.electron_id_sf")
     @patch("wrcoffea.analyzer.electron_reco_sf")
-    def test_electron_sf_components(self, mock_e_reco, mock_e_id, analyzer):
-        """Electron RECO and HEEP ID SFs multiply the ee-region syst_weights."""
+    def test_electron_sf_components(self, mock_e_reco, mock_e_id, mock_e_trig, analyzer):
+        """Electron RECO, HEEP ID, and trigger SFs multiply the ee-region syst_weights."""
         n = N_EVENTS
         mock_e_reco.return_value = _sf_triple(n, 0.98, 0.99, 0.97)
         mock_e_id.return_value = _sf_triple(n, 0.95, 0.96, 0.94)
+        mock_e_trig.return_value = _sf_triple(n, 0.93, 0.94, 0.92)
 
         tight_electrons = _make_tight_electrons(n)
         base = _base_syst_weights(n, 3.0)
 
         result = analyzer._lepton_sfs_for_region(
-            "ee_resolved_sr", base, ERA, None, tight_electrons,
+            "ee_resolved_sr", base, ERA, None, tight_electrons, is_mc=True,
         )
 
         np.testing.assert_allclose(
-            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]) * 0.98 * 0.95,
+            np.asarray(result["Nominal"]), np.asarray(base["Nominal"]) * 0.98 * 0.95 * 0.93,
             rtol=1e-4,
-            err_msg="Electron RECO x ID SF not applied correctly",
+            err_msg="Electron RECO x ID x trigger SF not applied correctly",
         )
         mock_e_reco.assert_called_once()
         mock_e_id.assert_called_once()
+        mock_e_trig.assert_called_once()
 
+    @patch("wrcoffea.analyzer.electron_trigger_sf")
     @patch("wrcoffea.analyzer.electron_id_sf")
     @patch("wrcoffea.analyzer.electron_reco_sf")
     @patch("wrcoffea.analyzer.muon_trigger_sf")
     @patch("wrcoffea.analyzer.muon_sf")
-    def test_both_lepton_flavors(self, mock_mu_sf, mock_mu_trig, mock_e_reco, mock_e_id, analyzer):
-        """Flavor CR applies both muon and electron SFs."""
+    def test_flavor_cr_trigger_sf_follows_region_trigger(
+        self, mock_mu_sf, mock_mu_trig, mock_e_reco, mock_e_id, mock_e_trig, analyzer,
+    ):
+        """Flavor CRs get the trigger SF of the trigger that selects them.
+
+        The boosted e+mu-jet CR (leading electron) is selected by the electron
+        triggers; the boosted mu+e-jet CR and the resolved flavor CR by the
+        muon triggers.
+        """
+        n = N_EVENTS
+        mock_mu_sf.return_value = {
+            "reco": _sf_triple(n, 1.0, 1.0, 1.0),
+            "id":   _sf_triple(n, 1.0, 1.0, 1.0),
+            "iso":  _sf_triple(n, 1.0, 1.0, 1.0),
+        }
+        mock_mu_trig.return_value = _sf_triple(n, 0.90, 0.91, 0.89)
+        mock_e_reco.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
+        mock_e_id.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
+        mock_e_trig.return_value = _sf_triple(n, 0.80, 0.81, 0.79)
+
+        tight_muons = _make_tight_muons(n)
+        tight_electrons = _make_tight_electrons(n)
+
+        expected = {
+            "wr_emu_boosted_flavor_cr": 0.80,   # electron triggers
+            "wr_mue_boosted_flavor_cr": 0.90,   # muon triggers
+            "wr_resolved_flavor_cr": 0.90,      # muon triggers
+        }
+        for region, trig_sf in expected.items():
+            mock_mu_trig.reset_mock()
+            mock_e_trig.reset_mock()
+            result = analyzer._lepton_sfs_for_region(
+                region, _base_syst_weights(n, 1.0), ERA, tight_muons, tight_electrons, is_mc=True,
+            )
+            np.testing.assert_allclose(
+                np.asarray(result["Nominal"]), np.full(n, trig_sf), rtol=1e-6,
+                err_msg=f"wrong trigger SF applied in {region}",
+            )
+            assert mock_e_trig.called == (trig_sf == 0.80), region
+            assert mock_mu_trig.called == (trig_sf == 0.90), region
+
+    @patch("wrcoffea.analyzer.electron_trigger_sf")
+    @patch("wrcoffea.analyzer.electron_id_sf")
+    @patch("wrcoffea.analyzer.electron_reco_sf")
+    @patch("wrcoffea.analyzer.muon_trigger_sf")
+    @patch("wrcoffea.analyzer.muon_sf")
+    def test_both_lepton_flavors(self, mock_mu_sf, mock_mu_trig, mock_e_reco, mock_e_id, mock_e_trig, analyzer):
+        """Resolved flavor CR applies both lepton SFs and only the muon trigger SF."""
         n = N_EVENTS
         mock_mu_sf.return_value = {
             "reco": _sf_triple(n, 0.95, 1.0, 0.90),
@@ -279,7 +329,7 @@ class TestLeptonSFsForRegion:
         base = _base_syst_weights(n, 1.0)
 
         result = analyzer._lepton_sfs_for_region(
-            "flavor_cr_resolved", base, ERA, tight_muons, tight_electrons,
+            "flavor_cr_resolved", base, ERA, tight_muons, tight_electrons, is_mc=True,
         )
 
         sf_product = 0.95 * 0.94 * 0.98 * 0.97
@@ -290,6 +340,29 @@ class TestLeptonSFsForRegion:
         mock_mu_sf.assert_called_once()
         mock_e_reco.assert_called_once()
         mock_e_id.assert_called_once()
+        mock_mu_trig.assert_called_once()
+        mock_e_trig.assert_not_called()
+
+    @patch("wrcoffea.analyzer.electron_trigger_sf")
+    @patch("wrcoffea.analyzer.electron_id_sf")
+    @patch("wrcoffea.analyzer.electron_reco_sf")
+    def test_electron_trigger_sf_variations(self, mock_e_reco, mock_e_id, mock_e_trig):
+        """ElectronTrigSfUp/Down appear for ee regions when 'sf' systs are enabled."""
+        n = N_EVENTS
+        mock_e_reco.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
+        mock_e_id.return_value = _sf_triple(n, 1.0, 1.0, 1.0)
+        mock_e_trig.return_value = _sf_triple(n, 0.95, 0.97, 0.93)
+
+        analyzer = WrAnalysis(mass_point=None, enabled_systs=["sf"], region="both")
+        result = analyzer._lepton_sfs_for_region(
+            "wr_ee_boosted_sr", _base_syst_weights(n, 1.0), ERA, None, _make_tight_electrons(n),
+            is_mc=True,
+        )
+
+        nominal = np.asarray(result["Nominal"])
+        np.testing.assert_allclose(nominal, np.full(n, 0.95), rtol=1e-6)
+        np.testing.assert_allclose(np.asarray(result["ElectronTrigSfUp"]), nominal * (0.97 / 0.95), rtol=1e-6)
+        np.testing.assert_allclose(np.asarray(result["ElectronTrigSfDown"]), nominal * (0.93 / 0.95), rtol=1e-6)
 
     @patch("wrcoffea.analyzer.muon_trigger_sf")
     @patch("wrcoffea.analyzer.muon_sf")
@@ -308,7 +381,7 @@ class TestLeptonSFsForRegion:
 
         analyzer = WrAnalysis(mass_point=None, enabled_systs=["sf"], region="both")
         result = analyzer._lepton_sfs_for_region(
-            "mumu_resolved_sr", base, ERA, tight_muons, None,
+            "mumu_resolved_sr", base, ERA, tight_muons, None, is_mc=True,
         )
 
         assert "MuonRecoSfUp" in result

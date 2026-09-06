@@ -132,7 +132,6 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `--dir` | `<directory>` | Create output subdirectory under rootfiles path |
 | `--name` | `<suffix>` | Append suffix to output ROOT filename |
 | `--debug` | | Run without saving histograms (for testing) |
-| `--reweight` | `<json_file>` | Path to DY reweight JSON file (DYJets only) |
 | `--unskimmed` | | Use unskimmed filesets instead of default skimmed files |
 | `--condor` | | Submit jobs to HTCondor at LPC (requires Apptainer shell, see [Running on Condor](#running-on-condor)) |
 | `--fileset` | `<path>` | Override automatic fileset path with a custom fileset JSON |

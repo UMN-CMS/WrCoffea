@@ -178,24 +178,32 @@ jerc_jsons:
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
 # JSON POG payloads — Muon
+#
+# TRIGGER payloads come in two shapes and muon_trigger_sf() picks the
+# treatment from what the file contains:
+#   - with <name>_DATAeff / <name>_MCeff corrections (2024): the event SF is
+#     built from per-lepton efficiencies with the dilepton OR formula;
+#   - with the per-lepton SF only (UL18 POG file, 2022/2023 high-pT HLT files):
+#     the leading-pT tight muon's SF is applied once per event.
 muon_jsons:
   RunIISummer20UL18:
     RECO: data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz
+    TRIGGER: data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz
   Run3Summer22:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22/ScaleFactors_Muon_highPt_HLT_2022_schemaV2.json
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22/muon_scalesmearing.json.gz
   Run3Summer22EE:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22EE/ScaleFactors_Muon_highPt_HLT_2022_EE_schemaV2.json
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_scalesmearing.json.gz
   Run3Summer23:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23/ScaleFactors_Muon_highPt_HLT_2023_schemaV2.json
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23/muon_scalesmearing.json.gz
   Run3Summer23BPix:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23BPix/ScaleFactors_Muon_highPt_HLT_2023_BPix_schemaV2.json
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_scalesmearing.json.gz
   RunIII2024Summer24:
     RECO: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json.gz

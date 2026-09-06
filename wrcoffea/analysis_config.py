@@ -93,6 +93,7 @@ SEL_MLLJJ_LT800 = "mlljj_lt800"
 SEL_MLL_GT400 = "mll_gt400"
 
 # Resolved region selection keys
+SEL_TWO_TIGHT_LEPTONS = "two_tight_leptons"
 SEL_TWO_TIGHT_ELECTRONS = "two_tight_electrons"
 SEL_TWO_TIGHT_MUONS = "two_tight_muons"
 SEL_TWO_TIGHT_EM = "two_tight_em"

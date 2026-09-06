@@ -67,7 +67,12 @@ lumi_jsons:
 
 ```yaml
 muon_jsons:
-  Run3Summer23: data/jsonpog/MUO/Run3/Run3Summer23/muon_HighPt.json.gz
+  Run3Summer23:
+    RECO: data/jsonpog/MUO/Run3/Run3Summer23/muon_HighPt.json.gz
+    # Per-era high-pT HLT payload. If it only carries a per-lepton SF (no
+    # _DATAeff/_MCeff corrections) the leading-muon SF is applied; the POG
+    # muon_HighPt.json.gz also works here as a fallback.
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23/ScaleFactors_Muon_highPt_HLT_2023_schemaV2.json
 
 pileup_jsons:
   Run3Summer23: data/jsonpog/LUM/Run3/Run3Summer23/puWeights.json.gz

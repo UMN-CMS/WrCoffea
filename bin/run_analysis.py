@@ -132,8 +132,6 @@ def validate_arguments(args, sig_points):
     if is_composite:
         if args.mass:
             raise ValueError("--mass is not valid for composite modes.")
-        if args.reweight:
-            raise ValueError("--reweight is not valid for composite modes.")
         if args.dy is not None and "DYJets" not in COMPOSITE_SAMPLES[args.sample]:
             raise ValueError("--dy is only valid when DYJets is included in the composite mode.")
     else:
@@ -146,9 +144,6 @@ def validate_arguments(args, sig_points):
         if args.sample != "Signal" and args.mass:
             logging.error("The --mass option is only valid for 'Signal' samples.")
             raise ValueError("Mass argument provided for non-signal sample.")
-        if args.reweight and args.sample != "DYJets":
-            logging.error("Reweighting can only be applied to DY")
-            raise ValueError("Invalid sample for reweighting.")
         if args.dy is not None and args.sample != "DYJets":
             raise ValueError(
                 f"Trying to specify a DY sample for a non-DY background"
@@ -503,7 +498,6 @@ if __name__ == "__main__":
     optional.add_argument("--dir", type=str, default=None, help="Create a new output directory.")
     optional.add_argument("--name", type=str, default=None, help="Append the filenames of the output ROOT files.")
     optional.add_argument("--debug", action='store_true', help="Debug mode (don't compute histograms)")
-    optional.add_argument("--reweight", type=str, default=None, help="Path to json file of DY reweights")
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
     optional.add_argument("--condor", action='store_true', help="Run on Condor. Without this flag, composite modes run locally in sequential order.")
     optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 500).")

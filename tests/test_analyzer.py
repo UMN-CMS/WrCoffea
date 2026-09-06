@@ -339,7 +339,22 @@ def _make_integration_events(n_events=5, *,
     j_pts = jet_pts or [100.0] * n_jets
 
     class MockEvents:
-        pass
+        def __len__(self):
+            return len(self.run)
+
+        def __getitem__(self, mask):
+            filtered = type(self)()
+            for name, value in vars(self).items():
+                if name == "metadata":
+                    setattr(filtered, name, value)
+                elif isinstance(value, ak.Array):
+                    setattr(filtered, name, value[mask])
+                else:
+                    collection = type(value)()
+                    for field, values in vars(value).items():
+                        setattr(collection, field, values[mask])
+                    setattr(filtered, name, collection)
+            return filtered
 
     ev = MockEvents()
 
@@ -496,8 +511,6 @@ def _make_integration_events(n_events=5, *,
         default_metadata.update(metadata)
     ev.metadata = default_metadata
 
-    type(ev).__len__ = lambda self: n_events
-
     return ev
 
 
@@ -508,13 +521,7 @@ def _sf_ones(n):
 
 
 def _mock_jet_veto(events, ak4_id_mask, era):
-    # NOTE (known contract inconsistency, reviewed): the production
-    # jet_veto_event_mask returns FILTERED EVENTS on the main path, but an
-    # all-True boolean mask on early exits (era not configured, or zero
-    # preselected jets).  process() reassigns ``events`` from its return
-    # value, so this mock must be a passthrough that returns the events
-    # object unchanged.
-    return events
+    return np.ones(len(events), dtype=bool)
 
 
 def _mock_pileup_weight(events, era):
@@ -550,7 +557,15 @@ def _mock_electron_reco_sf(tight_electrons, era):
     return _sf_ones(len(tight_electrons))
 
 
-def _mock_apply_jet_corrections(events, era, isMC, save_all_variations=False):
+def _mock_electron_id_sf(tight_electrons, era):
+    return _sf_ones(len(tight_electrons))
+
+
+def _mock_electron_trigger_sf(tight_electrons, era):
+    return _sf_ones(len(tight_electrons))
+
+
+def _mock_apply_jet_corrections(events, era, isMC, variations=()):
     # Passthrough: no JEC/JER applied to mock events.
     return events
 
@@ -560,9 +575,7 @@ def _mock_apply_muon_scale_smearing(events, era, is_mc):
     return None
 
 
-# All correction patches applied to every test in this class.  Only names the
-# analyzer actually imports are patched (electron_id_sf/electron_trigger_sf
-# are no longer imported by wrcoffea.analyzer).
+# All correction patches applied to every test in this class.
 _SF_PATCHES = {
     "wrcoffea.analyzer.jet_veto_event_mask": _mock_jet_veto,
     "wrcoffea.analyzer.pileup_weight": _mock_pileup_weight,
@@ -570,15 +583,16 @@ _SF_PATCHES = {
     "wrcoffea.analyzer.muon_sf_loose": _mock_muon_sf_loose,
     "wrcoffea.analyzer.muon_trigger_sf": _mock_muon_trigger_sf,
     "wrcoffea.analyzer.electron_reco_sf": _mock_electron_reco_sf,
+    "wrcoffea.analyzer.electron_id_sf": _mock_electron_id_sf,
+    "wrcoffea.analyzer.electron_trigger_sf": _mock_electron_trigger_sf,
     "wrcoffea.analyzer.apply_jet_corrections": _mock_apply_jet_corrections,
     "wrcoffea.analyzer.apply_muon_scale_smearing": _mock_apply_muon_scale_smearing,
-    # The golden-JSON lumi mask and noise filters subscript events
-    # (``events[mask]``), which the plain MockEvents object cannot support;
-    # patch them out at the method level (they are unit-tested elsewhere).
+    # Isolate the processor from lumi/noise filtering, which has separate
+    # coverage and requires additional event fields or payloads.
     "wrcoffea.analyzer.WrAnalysis.apply_lumi_mask":
         lambda self, events, mc_campaign, is_data: events,
     "wrcoffea.analyzer.WrAnalysis.apply_noise_filter":
-        lambda self, events, mc_campaign, is_signal: events,
+        lambda self, events, mc_campaign: events,
 }
 
 
@@ -625,15 +639,58 @@ class TestProcessIntegration:
         cum = ds["cutflow"]["mumu"]["cumulative_unweighted"]
         assert cum.values()[0] == 3.0  # no_cuts bin
 
+    @pytest.mark.parametrize("systs, expected", [
+        ([], set()),
+        (["lumi", "sf"], set()),
+        (["jer"], {"jer"}),
+        (["jes", "elescale"], {"jes"}),
+        (["jer", "jes", "pileup"], {"jer", "jes"}),
+    ])
+    @_apply_sf_patches
+    def test_process_requests_only_enabled_jet_variations(self, systs, expected):
+        """apply_jet_corrections is asked for exactly the enabled JER/JES variations."""
+        proc = WrAnalysis(mass_point=None, enabled_systs=systs, region="resolved")
+        events = _make_integration_events(n_events=3, n_muons=2, n_jets=2)
+        events.genWeight = ak.Array([1.0, 1.0, 1.0])
+
+        with patch("wrcoffea.analyzer.apply_jet_corrections",
+                   side_effect=lambda ev, era, is_mc, variations=(): ev) as jec:
+            proc.process(events)
+
+        assert jec.call_count == 1
+        assert set(jec.call_args.kwargs["variations"]) == expected
+
+    @pytest.mark.parametrize("keep_mask", [[True, False, True], [False, False, False]])
+    @_apply_sf_patches
+    def test_process_applies_jet_veto_mask(self, keep_mask):
+        """Downstream corrections receive filtered events, including an empty chunk."""
+        proc = WrAnalysis(mass_point=None, region="resolved")
+        events = _make_integration_events(n_events=3, n_muons=2, n_jets=2)
+        events.genWeight = ak.Array([1.0, 2.0, 3.0])
+        mask = np.asarray(keep_mask, dtype=bool)
+
+        with patch("wrcoffea.analyzer.jet_veto_event_mask", return_value=mask), \
+             patch("wrcoffea.analyzer.apply_electron_scale_smearing", return_value={}) as correction:
+            output = proc.process(events)
+
+        filtered = correction.call_args.args[0]
+        assert filtered.metadata == events.metadata
+        assert len(filtered) == np.count_nonzero(mask)
+        np.testing.assert_array_equal(filtered.genWeight, np.asarray(events.genWeight)[mask])
+        assert len(filtered.Jet) == len(filtered.Muon) == len(filtered.HLT.Mu50) == len(filtered)
+        cum = output["DYJetsToLL_M-50"]["cutflow"]["mumu"]["cumulative_unweighted"]
+        assert cum.values()[0] == np.count_nonzero(mask)
+
     # ------------------------------------------------------------------
     # Data (no genWeight)
     # ------------------------------------------------------------------
+    @pytest.mark.parametrize("compute_sumw", [False, True])
     @_apply_sf_patches
-    def test_process_data_no_genweight(self, *_mocks):
+    def test_process_data_no_genweight(self, compute_sumw):
         """process() handles data (no genWeight) correctly."""
-        proc = WrAnalysis(mass_point=None, region="resolved")
-        # apply_lumi_mask is patched to a passthrough (all eras now have a
-        # golden JSON configured, and MockEvents is not subscriptable).
+        proc = WrAnalysis(mass_point=None, region="resolved", compute_sumw=compute_sumw)
+        # apply_lumi_mask is patched to a passthrough so these synthetic
+        # run/lumi values do not need to appear in the golden JSON.
         events = _make_integration_events(
             n_events=3, n_muons=2, n_jets=2,
             metadata={"datatype": "data", "physics_group": "SingleMuon",
@@ -651,21 +708,138 @@ class TestProcessIntegration:
         assert counts["no_cuts"] == 3.0
         assert counts["mu_trigger"] == 3.0
 
+    @pytest.mark.parametrize("flavor", ["ee", "mumu"])
+    @pytest.mark.parametrize("topology", ["resolved", "boosted"])
+    @pytest.mark.parametrize("tf_low", [False, True], ids=["sr", "tf-low"])
+    @_apply_sf_patches
+    def test_process_data_skips_lepton_sfs(self, flavor, topology, tf_low):
+        """Selected data retains unit weights without evaluating efficiency payloads."""
+        from contextlib import ExitStack
+
+        proc = WrAnalysis(
+            mass_point=None, region="both", tf_study=True,
+            enabled_systs=["sf", "lumi", "pileup", "jes", "jer", "elescale", "muscale"],
+        )
+        n = 3
+        events = _make_integration_events(
+            n_events=n, n_muons=2 if flavor == "mumu" else 0,
+            n_electrons=2 if flavor == "ee" else 0, n_jets=2, n_fatjets=1,
+            metadata={"datatype": "data", "physics_group": "Observed", "sample": "Observed"},
+            include_genweight=False,
+        )
+        collection = "Muon" if flavor == "mumu" else "Electron"
+        leptons = getattr(events, collection)
+        leptons = ak.with_field(leptons, ak.Array([[300.0, 250.0]] * n), "pt")
+        leptons = ak.with_field(leptons, ak.zeros_like(leptons.eta), "eta")
+        leptons = ak.with_field(leptons, ak.Array([[0.0, np.pi]] * n), "phi")
+        if topology == "boosted":
+            # The second lepton is loose and embedded in the AK8 jet.
+            if collection == "Muon":
+                leptons = ak.with_field(leptons, ak.Array([[0.05, 0.2]] * n), "tkRelIso")
+            else:
+                leptons = ak.with_field(leptons, ak.Array([[True, False]] * n), "cutBased_HEEP")
+                leptons = ak.with_field(leptons, ak.Array([[4, 2]] * n), "cutBased")
+        setattr(events, collection, leptons)
+        jet_pt = 60.0 if tf_low else 300.0
+        events.Jet = ak.with_field(events.Jet, ak.full_like(events.Jet.pt, jet_pt), "pt")
+        events.Jet = ak.with_field(events.Jet, ak.zeros_like(events.Jet.eta), "eta")
+        events.Jet = ak.with_field(events.Jet, ak.Array([[np.pi / 2, -np.pi / 2]] * n), "phi")
+        events.FatJet = ak.with_field(
+            events.FatJet, ak.full_like(events.FatJet.pt, 300.0 if tf_low else 600.0), "pt",
+        )
+        events.FatJet = ak.with_field(events.FatJet, ak.zeros_like(events.FatJet.eta), "eta")
+        events.FatJet = ak.with_field(events.FatJet, ak.full_like(events.FatJet.phi, np.pi), "phi")
+
+        with ExitStack() as stack:
+            for name in ("muon_sf", "muon_sf_loose", "muon_trigger_sf",
+                         "electron_reco_sf", "electron_id_sf", "electron_trigger_sf"):
+                stack.enter_context(patch(
+                    f"wrcoffea.analyzer.{name}",
+                    side_effect=AssertionError(f"{name} must not be called for data"),
+                ))
+            output = proc.process(events)["Observed"]
+
+        suffix = "sr_tf_low" if tf_low else "sr"
+        selected = output["mass_dilepton"][{
+            "process": "Observed", "region": f"wr_{flavor}_{topology}_{suffix}", "syst": "Nominal",
+        }]
+        assert selected.sum(flow=True).value == pytest.approx(n)
+        assert selected.sum(flow=True).variance == pytest.approx(n)
+        for obj in output.values():
+            if hasattr(obj, "axes"):
+                # Booked but unfilled histograms can have an empty category axis.
+                assert set(obj.axes["syst"]) <= {"Nominal"}
+        assert "_sumw" not in output
+
     # ------------------------------------------------------------------
     # compute_sumw=True accumulates genWeight sum
     # ------------------------------------------------------------------
+    @pytest.mark.parametrize("noise_keep, veto_keep", [
+        ([True] * 5, [True] * 5),
+        ([True, False, True, False, True], [True] * 3),
+        ([True] * 5, [True, False, True, False, True]),
+        ([True, False, True, False, True], [True, False, True]),
+        ([False] * 5, []),
+        ([True] * 5, [False] * 5),
+        ([], []),
+    ], ids=["no-rejection", "noise", "jet-veto", "both", "all-noise", "all-veto", "empty"])
     @_apply_sf_patches
-    def test_process_compute_sumw_true(self, *_mocks):
-        """_sumw is accumulated when compute_sumw=True."""
+    def test_process_compute_sumw_true(self, noise_keep, veto_keep):
+        """Normalization includes signed weights before noise filtering and jet veto."""
         proc = WrAnalysis(mass_point=None, region="resolved", compute_sumw=True)
-        events = _make_integration_events(n_events=5, n_muons=2, n_jets=2)
-        events.genWeight = ak.Array([1.0, 2.0, 3.0, -1.0, 0.5])
+        events = _make_integration_events(n_events=len(noise_keep), n_muons=2, n_jets=2)
+        genweights = np.array([1.0, 2.0, 3.0, -1.0, 0.5])[:len(events)]
+        events.genWeight = ak.Array(genweights)
+        noise_mask = np.asarray(noise_keep, dtype=bool)
+        veto_mask = np.asarray(veto_keep, dtype=bool)
 
-        output = proc.process(events)
+        with patch.object(proc, "apply_noise_filter", side_effect=lambda ev, era: ev[noise_mask]), \
+             patch("wrcoffea.analyzer.jet_veto_event_mask", return_value=veto_mask):
+            output = proc.process(events)
 
         ds = output["DYJetsToLL_M-50"]
-        assert "_sumw" in ds
-        assert abs(ds["_sumw"] - 5.5) < 1e-6
+        assert ds["_sumw"] == pytest.approx(genweights.sum())
+        cutflow = ds["cutflow"]["mumu"]
+        assert cutflow["cumulative_unweighted"].values()[0] == np.count_nonzero(veto_mask)
+        scale = events.metadata["xsec"] * LUMIS[events.metadata["era"]] * 1000.0
+        assert cutflow["cumulative"].values()[0] == pytest.approx(
+            genweights[noise_mask][veto_mask].sum() * scale
+        )
+
+    @_apply_sf_patches
+    def test_process_sumw_normalization_across_filtered_chunks(self, monkeypatch):
+        """Merged unskimmed output matches normalization using the full sample sumw."""
+        from pathlib import Path
+        from coffea.processor import accumulate
+
+        monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "bin"))
+        from run_analysis import normalize_by_sumw
+
+        events = _make_integration_events(n_events=4, metadata={"genEventSumw": 3.5})
+        events.genWeight = ak.Array([3.0, -1.0, 2.0, -0.5])
+        unskimmed = WrAnalysis(mass_point=None, region="resolved", compute_sumw=True)
+        precomputed = WrAnalysis(mass_point=None, region="resolved", compute_sumw=False)
+        chunks = (events[:1], events[1:2], events[2:])
+
+        with patch("wrcoffea.analyzer.WrAnalysis.apply_noise_filter",
+                   new=lambda self, ev, era: ev[ev.genWeight != -1.0]), \
+             patch("wrcoffea.analyzer.jet_veto_event_mask",
+                   side_effect=lambda ev, mask, era: ak.to_numpy(ev.genWeight > 0)):
+            # The middle chunk is fully rejected but still contributes -1 to sumw.
+            merged = accumulate(unskimmed.process(chunk) for chunk in chunks)
+            reference = accumulate(precomputed.process(chunk) for chunk in chunks)
+
+        dataset = events.metadata["sample"]
+        assert merged[dataset]["_sumw"] == pytest.approx(3.5)
+        normalized = normalize_by_sumw(merged)
+        assert "_sumw" not in normalized[dataset]
+        for name, expected in reference[dataset]["cutflow"]["mumu"].items():
+            actual = normalized[dataset]["cutflow"]["mumu"][name]
+            np.testing.assert_allclose(actual.values(), expected.values())
+            if expected.variances() is None:
+                assert actual.variances() is None
+            else:
+                np.testing.assert_allclose(actual.variances(), expected.variances())
 
     # ------------------------------------------------------------------
     # compute_sumw=False (default) -- no _sumw key
@@ -683,6 +857,70 @@ class TestProcessIntegration:
     # ------------------------------------------------------------------
     # Resolved-only region
     # ------------------------------------------------------------------
+    @pytest.mark.parametrize("flavor", ["ee", "mumu"])
+    @pytest.mark.parametrize("region", ["dy_cr", "sr", "sr_tf_low"])
+    @_apply_sf_patches
+    @patch("wrcoffea.analyzer.electron_id_sf", new=_mock_electron_reco_sf)
+    def test_resolved_same_flavor_requires_two_total_tight_leptons(self, flavor, region):
+        """Extra tight leptons are vetoed; an extra loose lepton remains allowed."""
+        proc = WrAnalysis(mass_point=None, region="resolved", tf_study=True)
+        events = _make_integration_events(
+            n_events=4, n_muons=2, n_electrons=2,
+            metadata={"xsec": 1.0, "genEventSumw": LUMIS["RunIISummer20UL18"] * 1000.0},
+        )
+        # Distinct weights identify which events reach the region histograms.
+        events.genWeight = ak.Array([1.0, 10.0, 100.0, 1000.0])
+        pair_name, extra_name = ("Electron", "Muon") if flavor == "ee" else ("Muon", "Electron")
+        pair = getattr(events, pair_name)
+        pts, phis = ([100.0, 90.0], [0.0, 1.0]) if region == "dy_cr" else (
+            [300.0, 250.0], [0.0, np.pi],
+        )
+        pair = ak.with_field(pair, ak.Array([pts] * 4), "pt")
+        pair = ak.with_field(pair, ak.Array([phis] * 4), "phi")
+        pair = ak.with_field(pair, ak.zeros_like(pair.eta), "eta")
+        setattr(events, pair_name, pair)
+
+        extra = getattr(events, extra_name)
+        extra = ak.with_field(extra, ak.Array([[70.0, 65.0]] * 4), "pt")
+        if extra_name == "Muon":
+            extra = ak.with_field(extra, ak.Array([
+                [0.05] * 2, [0.05] * 2, [0.2] * 2, [0.05] * 2,
+            ]), "tkRelIso")
+        else:
+            extra = ak.with_field(extra, ak.Array([
+                [True] * 2, [True] * 2, [False] * 2, [True] * 2,
+            ]), "cutBased_HEEP")
+            extra = ak.with_field(extra, ak.full_like(extra.cutBased, 2), "cutBased")
+        # Same-flavor pair plus: nothing, one tight, one loose, two tight.
+        extra = extra[ak.Array([[False, False], [True, False], [True, False], [True, True]])]
+        setattr(events, extra_name, extra)
+        tight, loose, _ = proc.select_leptons(events)
+        assert ak.to_list(ak.num(tight)) == [2, 3, 2, 4]
+        assert ak.to_list(ak.num(loose)) == [0, 0, 1, 0]
+
+        jet_pt = {"dy_cr": 500.0, "sr": 300.0, "sr_tf_low": 60.0}[region]
+        events.Jet = ak.with_field(events.Jet, ak.full_like(events.Jet.pt, jet_pt), "pt")
+        events.Jet = ak.with_field(events.Jet, ak.zeros_like(events.Jet.eta), "eta")
+        events.Jet = ak.with_field(events.Jet, ak.Array([[np.pi / 2, -np.pi / 2]] * 4), "phi")
+
+        output = proc.process(events)[events.metadata["sample"]]
+        # Shape variations rebuild selections and must enforce the same veto.
+        proc._run_shape_systematic(
+            events, output, events.metadata, True, "JERUp",
+            proc.build_trigger_masks(events, events.metadata["era"]),
+        )
+        hist = output["mass_dilepton"]
+        for syst in ("Nominal", "JERUp"):
+            selected = hist[{
+                "process": "DYJets", "region": f"wr_{flavor}_resolved_{region}", "syst": syst,
+            }]
+            assert selected.sum(flow=True).value == pytest.approx(101.0)
+
+        cutflow = output["cutflow"][flavor]
+        for name, expected in (("cumulative_unweighted", 2.0), ("cumulative", 101.0)):
+            counts = dict(zip(list(cutflow[name].axes[0]), cutflow[name].values()))
+            assert counts["two_tight_leptons"] == pytest.approx(expected)
+
     @_apply_sf_patches
     def test_process_region_resolved_only(self, *_mocks):
         """region='resolved' produces resolved histograms."""
@@ -989,3 +1227,103 @@ class TestProcessIntegration:
         output = proc.process(events)
 
         assert "DYJetsToLL_M-50" in output
+
+
+# ---------------------------------------------------------------------------
+# MET noise filters
+# ---------------------------------------------------------------------------
+
+_COMMON_NOISE_FLAGS = (
+    "goodVertices", "globalSuperTightHalo2016Filter",
+    "EcalDeadCellTriggerPrimitiveFilter", "BadPFMuonFilter", "eeBadScFilter",
+)
+
+
+def _make_noise_filter_events(flag_values, *, run=1, met_pt=None, met_phi=None, jets=None):
+    """Awkward events with a ``Flag`` record plus the run/event/Jet/MET fields
+    that ``ecal_bad_calib_filter`` reads.  *flag_values* maps flag name to a
+    list of booleans (one per event)."""
+    n = len(next(iter(flag_values.values())))
+    if jets is None:
+        jets = {"pt": [[10.0]] * n, "eta": [[0.0]] * n, "phi": [[0.0]] * n,
+                "neEmEF": [[0.0]] * n, "chEmEF": [[0.0]] * n}
+    return ak.zip({
+        "Flag": ak.zip({k: ak.Array(v) for k, v in flag_values.items()}),
+        "run": ak.Array([run] * n),
+        "event": ak.Array(list(range(n))),
+        "Jet": ak.zip({k: ak.Array(v) for k, v in jets.items()}),
+        "MET": ak.zip({
+            "pt": ak.Array(met_pt if met_pt is not None else [0.0] * n),
+            "phi": ak.Array(met_phi if met_phi is not None else [0.0] * n),
+        }),
+    }, depth_limit=1)
+
+
+class TestNoiseFilter:
+    """apply_noise_filter is applied to every sample type, signal included."""
+
+    @staticmethod
+    def _flags(n, **overrides):
+        flags = {k: [True] * n for k in _COMMON_NOISE_FLAGS}
+        flags.update(overrides)
+        return flags
+
+    def test_signal_is_filtered_like_background(self):
+        proc = WrAnalysis(mass_point="WR2000_N1000", region="resolved")
+        flags = self._flags(3, goodVertices=[True, False, True], ecalBadCalibFilter=[True] * 3)
+        events = _make_noise_filter_events(flags)
+
+        out = proc.apply_noise_filter(events, "RunIII2024Summer24")
+
+        assert ak.to_list(out.event) == [0, 2]
+
+    def test_ul18_requires_hbhe_and_ecal_flags(self):
+        flags = self._flags(
+            4,
+            HBHENoiseFilter=[True, False, True, True],
+            HBHENoiseIsoFilter=[True, True, False, True],
+            ecalBadCalibFilter=[True, True, True, False],
+        )
+        events = _make_noise_filter_events(flags)
+
+        out = WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIISummer20UL18")
+
+        assert ak.to_list(out.event) == [0]
+
+    def test_optional_flags_applied_when_present(self):
+        flags = self._flags(2, ecalBadCalibFilter=[True, True], hfNoisyHitsFilter=[True, False])
+        events = _make_noise_filter_events(flags)
+
+        out = WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIII2024Summer24")
+
+        assert ak.to_list(out.event) == [0]
+
+    def test_missing_required_flag_passes_with_warning(self, caplog):
+        import logging
+        import wrcoffea.analyzer as analyzer_module
+
+        flags = self._flags(2, ecalBadCalibFilter=[True, True])
+        del flags["eeBadScFilter"]
+        events = _make_noise_filter_events(flags)
+        analyzer_module._WARN_ONCE.clear()
+
+        with caplog.at_level(logging.WARNING, logger="wrcoffea.analyzer"):
+            out = WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIII2024Summer24")
+
+        assert ak.to_list(out.event) == [0, 1]
+        assert "eeBadScFilter" in caplog.text
+
+    def test_run3_2022_applies_manual_ecal_veto(self):
+        # Event 0: EM-dominated jet in the affected eta/phi window, back-to-back
+        # with MET > 100 GeV, in the affected run range -> rejected.
+        # Event 1: same jet but outside the eta window -> kept.
+        flags = self._flags(2)
+        jets = {"pt": [[80.0], [80.0]], "eta": [[-0.3], [1.0]], "phi": [[-2.0], [-2.0]],
+                "neEmEF": [[0.95], [0.95]], "chEmEF": [[0.0], [0.0]]}
+        events = _make_noise_filter_events(
+            flags, run=363000, met_pt=[150.0, 150.0], met_phi=[1.2, 1.2], jets=jets,
+        )
+
+        out = WrAnalysis(mass_point=None).apply_noise_filter(events, "Run3Summer22")
+
+        assert ak.to_list(out.event) == [1]

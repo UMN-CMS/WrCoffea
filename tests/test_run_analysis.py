@@ -251,7 +251,6 @@ def _dy_args(era, dy):
         era=era,
         sample="DYJets",
         mass=None,
-        reweight=None,
         dy=dy,
         max_workers=None,
         threads_per_worker=None,

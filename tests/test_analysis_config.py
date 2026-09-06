@@ -34,6 +34,16 @@ class TestConfigConsistency:
                 f"ELECTRON_SF_ERA_KEYS missing era '{era}'"
             )
 
+    def test_muon_trigger_payloads_are_per_era(self):
+        """Each era's muon TRIGGER payload must exist and live in that era's directory."""
+        for era, payloads in MUON_JSONS.items():
+            trig = payloads.get("TRIGGER")
+            assert trig is not None, f"MUON_JSONS['{era}'] has no TRIGGER payload"
+            assert Path(trig).exists(), f"missing muon TRIGGER payload: {trig}"
+            assert Path(trig).parent.name == era, (
+                f"{era} muon TRIGGER payload points at another era's file: {trig}"
+            )
+
     def test_cuts_values_are_numeric(self):
         for key, val in CUTS.items():
             assert isinstance(val, (int, float)), f"CUTS['{key}'] is {type(val)}"
