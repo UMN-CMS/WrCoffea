@@ -75,6 +75,8 @@ jerc_jsons:
         Run_D: "Summer19UL18_RunD_V5_DATA"
       algo: "AK4PFchs"
       JR_tag_MC: "Summer19UL18_JRV2"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
     JERC_AK8:
       json: data/jsonpog/JME/RunII/RunIISummer20UL18/fatJet_jerc.json.gz
       tag_MC: "Summer19UL18_V5_MC"
@@ -85,6 +87,8 @@ jerc_jsons:
         Run_D: "Summer19UL18_RunD_V5_DATA"
       algo: "AK8PFPuppi"
       JR_tag_MC: "Summer19UL18_JRV2"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
     JMAR: data/jsonpog/JME/RunII/RunIISummer20UL18/jmar.json.gz    
   Run3Summer22:
     JERC_AK4:
@@ -231,6 +235,9 @@ pileup_correction_names:
 electron_jsons:
   RunIISummer20UL18:
     RECO: data/jsonpog/EGM/RunII/RunIISummer20UL18/electron.json.gz
+    # Run 2 WR HEEP trigger efficiencies (SKFlat HNWR/Run2Legacy_v4), converted
+    # by scripts/convert_run2_electron_trigger_sf.py to the EGM HLT signature.
+    TRIGGER: data/jsonpog/EGM/RunII/RunIISummer20UL18/electronHlt_WREGammaTrigger_run2legacy_v4.json.gz
   Run3Summer22:
     RECO: data/jsonpog/EGM/Run3/Run3Summer22/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/Run3Summer22/electronHlt.json.gz
@@ -251,6 +258,17 @@ electron_jsons:
     RECO: data/jsonpog/EGM/Run3/RunIII2024Summer24/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronHlt.json.gz
     ScaleNSmear: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronSS_EtDependent.json.gz
+
+# Trigger path name looked up in the electron TRIGGER payload.  Run 3 uses the
+# single-electron Ele30_TightID efficiencies as a proxy for the full trigger
+# OR; UL18 uses the Run 2 measurement of the OR itself on HEEP electrons.
+electron_hlt_paths:
+  RunIISummer20UL18: WREGammaTrigger
+  Run3Summer22: HLT_SF_Ele30_TightID
+  Run3Summer22EE: HLT_SF_Ele30_TightID
+  Run3Summer23: HLT_SF_Ele30_TightID
+  Run3Summer23BPix: HLT_SF_Ele30_TightID
+  RunIII2024Summer24: HLT_SF_Ele30_TightID
 
 # correctionlib era key used inside EGM JSON payloads (differs from analysis era name)
 electron_sf_era_keys:
@@ -302,6 +320,66 @@ lumi_unc:
   Run3Summer23: 0.014          # placeholder — update when 2023 lumi is finalized
   Run3Summer23BPix: 0.014      # placeholder — update when 2023 lumi is finalized
   RunIII2024Summer24: 0.014    # placeholder until 2024 lumi is finalized
+
+# Drell-Yan Z-pT reweighting (QCD NLO/LO ratio x EW correction) evaluated on
+# the generator-level Z pT of DYJets events.  Payloads are produced by
+# scripts/convert_run2_dy_reweight.py from the Run 2 HNWRAnalyzer inputs
+# (SKFlatAnalyzer HNWR/Run2Legacy_v4).  The nominal weight is applied to
+# DYJets whenever an era is listed here (disable with --no-dy-zpt-reweight);
+# --systs dyzpt adds the QCD scale/PDF/alphaS and EW variations.
+#
+# The 2018 payload was derived for the 13 TeV LO madgraphMLM HT-binned
+# DYJetsToLL_M-50 samples (our UL18 dy_lo_ht fileset).  It is deliberately
+# not mapped to the 13.6 TeV Run 3 eras: point a Run 3 era at it only for a
+# study, never for a result.
+dy_zpt_reweight:
+  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_zpt_reweight_run2legacy_v4_2018.json
+
+# DY reshape: data-driven (data - non-DY MC)/DY ratio vs leading AK4 jet pT
+# (resolved) or DY-candidate AK8 jet pT (boosted), measured in the DY CRs with
+# ee and mumu combined (Run 2 DYReshapeJetPt) and applied to every DY event in
+# every region.  Derive with scripts/derive_dy_reshape.py from a production
+# that had the Z-pT reweighting on; the reshape is only applied together with
+# it.  Disable with --no-dy-reshape; --systs dyreshape adds the stat and
+# ee-vs-mumu variations.
+#
+# UL18: derived 2026-09-07 from the local production dyreshape_20260907 (data +
+# bkg, DY lo_ht, Z-pT reweight on).  Its overall level (~1.5 at low jet pT
+# falling to ~0.85) absorbs the NNLO/LO normalization that Run 2 carried in
+# its DY cross sections (~1.35x ours); the product is what matters.
+dy_reshape:
+  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_reshape_run2jetpt_20260907.json
+
+# Signal NLO/LO k-factor vs generator-level m(lN), applied as k(m_lN)/<k>
+# (shape only: the signal cross sections in the configs are AN-19-083 LO x <k>).
+# Payload from scripts/convert_run2_signal_kfactor.py (SKFlat HNWR/Run2Legacy_v4,
+# AN-19-083 Appendix A).  Disable with --no-signal-kfactor.  Eras absent here
+# apply no k-factor reweighting.
+signal_kfactor:
+  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_run2legacy_v4_2018.json
+
+# HEM 15/16 veto (2018 only).  Ported from the Run 2 HNWRAnalyzer
+# (``isHEMVetoEvent``): an event is dropped when one of the two leptons the
+# region is built from is an electron with eta < eta_max and
+# phi_min < phi < phi_max.  Applied to data and MC alike for the whole year,
+# on electron eta (not supercluster eta), exactly as in Run 2.  Eras absent
+# here apply no veto.
+hem_veto:
+  RunIISummer20UL18:
+    eta_max: -1.25
+    phi_min: -1.62
+    phi_max: -0.82
+
+# LSF scale factor: data/MC efficiency of the LSF3 > 0.75 requirement on the
+# AK8 jet that contains the sub-leading lepton, keyed by the flavour of that
+# lepton.  Applied to the boosted SR and flavour-CR regions (not the boosted
+# DY CR, which has no LSF requirement).  Values from AN-19-083 Table 60
+# (injected-lepton method), as hard-coded in HNWRAnalyzer::LSFSF.  Eras absent
+# here apply no LSF scale factor; Run 3 needs its own measurement.
+lsf_sf:
+  RunIISummer20UL18:
+    electron: {value: 1.05, err_up: 0.07, err_down: 0.06}
+    muon:     {value: 1.04, err_up: 0.06, err_down: 0.05}
 
 # Physics thresholds (single source of truth for analysis cuts)
 cuts:

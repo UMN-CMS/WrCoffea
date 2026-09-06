@@ -10,7 +10,7 @@ import awkward as ak
 import numpy as np
 
 from wrcoffea.analysis_config import (
-    CUTS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS,
+    CUTS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS, LSF_SF,
     JETVETO_CORRECTION_NAMES, JETVETO_JSONS, MUON_JSONS,
     PILEUP_CORRECTION_NAMES, PILEUP_JSONS, JERC_JSONS
 )
@@ -559,10 +559,13 @@ def electron_trigger_sf(tight_electrons, era):
     Returns (nominal, up, down) arrays of shape (n_events,).
     Events with no tight electrons get SF = 1.0.
 
-    Note: the EGM HLT payloads only provide the single-electron
+    Note: the Run 3 EGM HLT payloads only provide the single-electron
     ``HLT_SF_Ele30_TightID`` efficiencies, which are used as a proxy for the
     full Run 3 electron trigger OR (Ele30_WPTight || Photon200 || Ele115 ||
-    Ele50_PFJet165).  Efficiencies are evaluated at supercluster eta.
+    Ele50_PFJet165).  UL18 uses the Run 2 WR measurement of the trigger OR on
+    HEEP electrons (``WREGammaTrigger``).  The path name per era comes from
+    ``electron_hlt_paths`` in ``config.yaml``.  Efficiencies are evaluated at
+    supercluster eta.
     """
     n_events = len(tight_electrons)
     ones = np.ones(n_events, dtype=np.float64)
@@ -604,8 +607,9 @@ def electron_trigger_sf(tight_electrons, era):
     hlt_eta = np.clip(flat_eta + flat_deltaEtaSC, -2.499, 2.499)
     hlt_pt = np.clip(flat_pt, 30.001, 1e6)
 
-    # Use Ele30_TightID as proxy for Ele32_WPTight_Gsf.
-    trigger_path = "HLT_SF_Ele30_TightID"
+    trigger_path = ELECTRON_HLT_PATHS.get(era)
+    if trigger_path is None:
+        raise KeyError(f"No electron_hlt_paths entry in config.yaml for era '{era}'")
 
     # Get per-electron efficiencies in data and MC.
     eff_data_nom = data_eff_corr.evaluate(sf_era_key, "nom", trigger_path, hlt_eta, hlt_pt)
@@ -1499,12 +1503,6 @@ def apply_jet_corrections(events, era, isMC, variations=()):
         # ==========================================
         want_jer = "jer" in variations
         want_jes = "jes" in variations
-        if era == "RunIISummer20UL18" and (want_jer or want_jes):
-            key = f"jet_variations_unsupported::{era}"
-            if key not in _WARN_ONCE:
-                _WARN_ONCE.add(key)
-                logger.warning("Jet shape variations are not configured for era '%s'; skipping.", era)
-            want_jer = want_jes = False
 
         if want_jer:
             for jer_dir in ["up", "down"]:
@@ -1558,3 +1556,27 @@ def apply_jet_corrections(events, era, isMC, variations=()):
         events = ak.with_field(events, fatjets, "FatJet")
         
     return events
+
+
+def lsf_sf(era, jet_lepton_flavor, n_events):
+    """Flat LSF scale factor for the lepton-in-jet flavour of a boosted region.
+
+    Returns ``(nominal, up, down)`` arrays of length *n_events*, or ``None``
+    when *era* has no ``lsf_sf`` entry in ``config.yaml``.  *jet_lepton_flavor*
+    is ``"electron"`` or ``"muon"``: the flavour of the sub-leading lepton
+    inside the AK8 jet (the one the LSF requirement acts on).  The values
+    are per-year constants measured with the injected-lepton method
+    (AN-19-083 Appendix M); the uncertainties are asymmetric.
+    """
+    table = LSF_SF.get(era)
+    if table is None:
+        return None
+    try:
+        entry = table[jet_lepton_flavor]
+    except KeyError as e:
+        raise KeyError(f"lsf_sf for era '{era}' has no entry for flavour '{jet_lepton_flavor}'") from e
+    value = float(entry["value"])
+    nom = np.full(n_events, value, dtype=np.float64)
+    up = np.full(n_events, value + float(entry["err_up"]), dtype=np.float64)
+    down = np.full(n_events, value - float(entry["err_down"]), dtype=np.float64)
+    return nom, up, down

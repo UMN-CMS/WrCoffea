@@ -62,9 +62,24 @@ PILEUP_CORRECTION_NAMES = _cfg["pileup_correction_names"]
 
 ELECTRON_JSONS = _cfg["electron_jsons"]
 ELECTRON_SF_ERA_KEYS = _cfg["electron_sf_era_keys"]
+# era -> Path name evaluated in the electron TRIGGER payload.
+ELECTRON_HLT_PATHS = _cfg["electron_hlt_paths"]
 ELECTRON_RECO_CONFIG = _cfg["electron_reco_config"]
 
 LUMI_UNC = _cfg["lumi_unc"]
+# era -> JSON payload for the DY Z-pT (QCD x EW) reweighting; eras absent here
+# are not reweighted.
+DY_ZPT_REWEIGHT_JSONS = _cfg.get("dy_zpt_reweight") or {}
+# era -> JSON payload for the data-driven DY reshape vs jet pT.
+DY_RESHAPE_JSONS = _cfg.get("dy_reshape") or {}
+# era -> JSON payload for the signal k(m_lN)/<k> reweighting.
+SIGNAL_KFACTOR_JSONS = _cfg.get("signal_kfactor") or {}
+# era -> {eta_max, phi_min, phi_max}: HEM 15/16 electron veto window; eras
+# absent here apply no veto.
+HEM_VETO = _cfg.get("hem_veto") or {}
+# era -> {electron: {value, err_up, err_down}, muon: {...}}: LSF scale factor
+# keyed by the flavour of the lepton inside the AK8 jet.
+LSF_SF = _cfg.get("lsf_sf") or {}
 CUTS = _cfg["cuts"]
 
 # ---------------------------------------------------------------------------
@@ -87,6 +102,9 @@ SEL_MU_TRIGGER = "mu_trigger"
 SEL_EMU_TRIGGER = "emu_trigger"
 
 SEL_DR_ALL_PAIRS_GT0P4 = "dr_all_pairs_gt0p4"
+# No selected electron inside the HEM 15/16 window (always True for eras
+# without a ``hem_veto`` entry).
+SEL_HEM_VETO = "hem_veto"
 SEL_MLL_GT200 = "mll_gt200"
 SEL_MLLJJ_GT800 = "mlljj_gt800"
 SEL_MLLJJ_LT800 = "mlljj_lt800"
