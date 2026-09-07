@@ -1451,6 +1451,27 @@ def apply_jet_corrections(events, era, isMC, variations=()):
     algoAK4, algoAK8 = cfgAK4["algo"], cfgAK8["algo"]
     jets, fatjets = events.Jet, events.FatJet
 
+    # Every correction level below needs the event rho.  Without it the
+    # helpers return their inputs unchanged, which would silently leave the
+    # NanoAOD-level JEC in place, skip JER smearing, and make any JER
+    # variation an exact copy of nominal.  Say so once, and refuse to
+    # produce JER templates that cannot be real.
+    if "Rho" not in events.fields and "fixedGridRhoFastjetAll" not in events.fields:
+        key = f"jec_no_rho::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.warning(
+                "Input for era '%s' has no rho branch (Rho or fixedGridRhoFastjetAll): jet "
+                "energy corrections are not re-applied and JER smearing is skipped. Re-skim "
+                "with the current skimmer to restore them.", era,
+            )
+        if "jer" in variations:
+            raise RuntimeError(
+                f"JER variations were requested for era '{era}' but the input has no rho "
+                "branch, so JER smearing cannot run and the JER templates would be copies of "
+                "nominal. Re-skim with the current skimmer or drop 'jer' from --systs."
+            )
+
     if isMC:
         tagAK4, tagAK8 = cfgAK4["tag_MC"], cfgAK8["tag_MC"]
     else:

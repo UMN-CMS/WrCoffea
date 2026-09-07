@@ -20,6 +20,11 @@ This script:
   - computes sum(Runs.genEventSumw) across all files
   - compares with the JSON value (tolerance-based)
   - updates payload["genEventSumw"] if different (or missing)
+  - also collapses the ratio-valued theory-weight sums (LHEScaleSumw,
+    LHEPdfSumw, PSSumw) as genEventSumw-weighted means over all files and
+    writes them to the payload (disable with --no-lhe-sums).  Skims made
+    before 2026-09 carry element-wise *sums* of these ratios, so this is the
+    way to obtain correct values without re-skimming.
   - writes the same config JSON in place WITHOUT reordering any keys
   - fails fast on unreadable/corrupt files by default (opt-in lenient mode available)
 
@@ -38,7 +43,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 import logging
 import math
@@ -61,11 +66,43 @@ DEFAULT_REDIRECTORS = [
 ]
 
 
+# Runs-tree branches NanoAOD stores as ratios to genEventSumw.
+RATIO_RUNS_BRANCHES = ("LHEScaleSumw", "LHEPdfSumw", "PSSumw")
+
+
+def weighted_lhe_sum(sumw_entries, rows) -> np.ndarray:
+    """Return sum_i sumw_i * ratio_i (element-wise) over the Runs entries of one file.
+
+    *sumw_entries* is the per-entry genEventSumw, *rows* the per-entry jagged
+    ratio branch.  Dividing the total over all files by the total genEventSumw
+    gives the dataset-level ratio (see :func:`finalize_lhe`).
+    """
+    sumw = np.asarray(sumw_entries, dtype=np.float64)
+    rows = [np.asarray(r, dtype=np.float64) for r in (rows.tolist() if hasattr(rows, "tolist") else rows)]
+    if len(rows) != len(sumw):
+        raise ValueError(f"{len(rows)} ratio entries but {len(sumw)} genEventSumw entries")
+    if not rows:
+        return np.zeros(0, dtype=np.float64)
+    lengths = {len(r) for r in rows}
+    if len(lengths) != 1:
+        raise ValueError(f"ratio entries have different lengths {sorted(lengths)}")
+    return (np.vstack(rows) * sumw[:, None]).sum(axis=0)
+
+
+def finalize_lhe(weighted: Dict[str, np.ndarray], total_sumw: float) -> Dict[str, List[float]]:
+    """Turn accumulated weighted sums into dataset-level ratios (lists for JSON)."""
+    if total_sumw <= 0:
+        return {}
+    return {name: (np.asarray(v, dtype=np.float64) / total_sumw).tolist() for name, v in weighted.items()}
+
+
 @dataclass
 class FileReadResult:
     sumw: float
     bad: bool
     zero_events: bool
+    # branch -> sum_i sumw_i * ratio_i for this file (see weighted_lhe_sum)
+    lhe: Dict[str, np.ndarray] = field(default_factory=dict)
 
 
 @dataclass
@@ -74,6 +111,10 @@ class DatasetSumwResult:
     nfiles_used: int
     bad_files: int
     zero_event_files: int
+    # branch -> weighted sum over every good file that carries the branch
+    lhe: Dict[str, np.ndarray] = field(default_factory=dict)
+    # branches present in some good files but not all (not written)
+    lhe_incomplete: List[str] = field(default_factory=list)
 
 
 def das_query_lines(query: str) -> List[str]:
@@ -145,7 +186,16 @@ def file_genEventSumw(
             except Exception as e:
                 logger.debug("Could not inspect Events tree for %s: %s", url, e)
 
-        return FileReadResult(sumw=float(np.sum(arr)), bad=False, zero_events=zero_events)
+        lhe: Dict[str, np.ndarray] = {}
+        for bname in RATIO_RUNS_BRANCHES:
+            if bname not in runs.keys():
+                continue
+            try:
+                lhe[bname] = weighted_lhe_sum(arr, runs[bname].array(library="ak"))
+            except Exception as e:
+                logger.warning("Failed reading %s from %s: %s", bname, url, e)
+
+        return FileReadResult(sumw=float(np.sum(arr)), bad=False, zero_events=zero_events, lhe=lhe)
     except Exception as e:
         logger.warning("Failed reading genEventSumw from: %s\n  %s", url, e)
         return FileReadResult(sumw=0.0, bad=True, zero_events=False)
@@ -212,6 +262,9 @@ def compute_dataset_genEventSumw(
     total = 0.0
     bad_files = 0
     zero_event_files = 0
+    good_files = 0
+    lhe_sums: Dict[str, np.ndarray] = {}
+    lhe_counts: Dict[str, int] = {}
     for i, lf in enumerate(files, start=1):
         logger.debug("[%d/%d] %s", i, len(files), lf)
         result = file_genEventSumw_with_fallback(
@@ -224,14 +277,27 @@ def compute_dataset_genEventSumw(
         total += result.sumw
         if result.bad:
             bad_files += 1
+        else:
+            good_files += 1
+            for bname, v in result.lhe.items():
+                if bname in lhe_sums and lhe_sums[bname].shape != v.shape:
+                    logger.warning("%s has inconsistent length across files of %s; dropping it", bname, dataset)
+                    lhe_counts[bname] = -1
+                    continue
+                lhe_sums[bname] = lhe_sums.get(bname, 0.0) + v
+                lhe_counts[bname] = lhe_counts.get(bname, 0) + 1
         if result.zero_events:
             zero_event_files += 1
 
+    complete = {b: v for b, v in lhe_sums.items() if lhe_counts.get(b) == good_files}
+    incomplete = sorted(b for b in lhe_sums if lhe_counts.get(b) != good_files)
     return DatasetSumwResult(
         sumw=total,
         nfiles_used=len(files),
         bad_files=bad_files,
         zero_event_files=zero_event_files,
+        lhe=complete,
+        lhe_incomplete=incomplete,
     )
 
 
@@ -290,6 +356,8 @@ def main() -> None:
     )
     ap.add_argument("--rel-tol", type=float, default=1e-6, help="Relative tolerance for comparing sums")
     ap.add_argument("--abs-tol", type=float, default=1e-3, help="Absolute tolerance for comparing sums")
+    ap.add_argument("--no-lhe-sums", action="store_true",
+                    help="Do not compute/write the ratio-valued LHEScaleSumw/LHEPdfSumw/PSSumw entries")
     ap.add_argument("--dry-run", action="store_true", help="Do not write changes; still prints what would happen")
     ap.add_argument("--verbose", action="store_true", help="Show DEBUG-level messages (file-by-file progress)")
     ap.add_argument("--strict", action="store_true",
@@ -400,6 +468,25 @@ def main() -> None:
         if args.strict and computed == 0.0:
             logger.critical("Strict mode: computed genEventSumw=0 for %s (likely read failures)", ds)
             sys.exit(1)
+
+        if not args.no_lhe_sums:
+            if result.lhe_incomplete:
+                logger.warning("  %s present in only some files of %s; not written", result.lhe_incomplete, ds)
+            for bname, ratios in finalize_lhe(result.lhe, computed).items():
+                existing = payload.get(bname)
+                same = (
+                    isinstance(existing, list) and len(existing) == len(ratios)
+                    and all(nearly_equal(float(a), float(b), rel_tol=args.rel_tol, abs_tol=args.abs_tol)
+                            for a, b in zip(existing, ratios))
+                )
+                if same:
+                    logger.info("  OK: %s (%d entries)", bname, len(ratios))
+                    continue
+                logger.warning("  %s: %s -> writing %d weighted-mean ratios (first: %.4f)",
+                               bname, "MISMATCH" if existing is not None else "missing", len(ratios), ratios[0] if ratios else float("nan"))
+                if not args.dry_run:
+                    payload[bname] = ratios
+                updated += 1
 
         current = parse_float(payload.get("genEventSumw", None))
         if current is None:

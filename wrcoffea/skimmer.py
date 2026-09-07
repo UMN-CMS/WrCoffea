@@ -185,9 +185,16 @@ _patch_uproot_shared_counters()
 # Constants
 # ---------------------------------------------------------------------------
 
-XROOTD_TIMEOUT = 10  # seconds
-os.environ.setdefault("XRD_REQUESTTIMEOUT", str(XROOTD_TIMEOUT))
-os.environ.setdefault("XRD_CONNECTIONTIMEOUT", str(XROOTD_TIMEOUT))
+# XRootD client timeouts for the whole process.  The request timeout bounds
+# every read; the streaming pass reads ~1000 branches for 50k events per
+# request and a 10 s deadline made routine WAN reads fail with "Operation
+# expired", which the retry logic then treated as network errors.  Connection
+# timeouts stay short so a dead redirector fails over quickly.
+XROOTD_REQUEST_TIMEOUT = 120  # seconds
+XROOTD_CONNECTION_TIMEOUT = 30  # seconds
+XROOTD_TIMEOUT = XROOTD_REQUEST_TIMEOUT  # backwards-compatible name
+os.environ.setdefault("XRD_REQUESTTIMEOUT", str(XROOTD_REQUEST_TIMEOUT))
+os.environ.setdefault("XRD_CONNECTIONTIMEOUT", str(XROOTD_CONNECTION_TIMEOUT))
 
 # Retries within one redirector before failing over to the next; a
 # seconds-long site/network blip must not permanently mark a file failed.
@@ -219,6 +226,18 @@ KEPT_BRANCHES = {
     "Flag", "genTtbarId", "GenProton",
     "HLTriggerFinalPath", "HLTriggerFirstPath",
     "Rho", "PV", "SV", "SubGenJetAK8", "SubJet", "OtherPV",
+    # Pre-NanoAODv10 (UL, NanoAODv9) store rho as flat branches with no
+    # collection prefix; without them the JEC/JER code cannot run.
+    "fixedGridRhoFastjetAll", "fixedGridRhoFastjetCentral",
+    "fixedGridRhoFastjetCentralCalo", "fixedGridRhoFastjetCentralChargedPileUp",
+    "fixedGridRhoFastjetCentralNeutral",
+    # MET variants: PuppiMET is the Run 3 recommendation and NanoAODv15
+    # renames PF MET to PFMET; keep the raw collections for type-1 studies.
+    "PuppiMET", "RawPuppiMET", "RawMET", "PFMET", "RawPFMET",
+    # Run 2 L1 prefiring weights (2016/2017 ECAL, 2016-2018 muon); tiny.
+    "L1PreFiringWeight",
+    # Trigger objects, needed for any trigger-matching or efficiency study.
+    "TrigObj",
 }
 
 # Runs-tree branches whose values should be *summed* when collapsing
@@ -230,8 +249,70 @@ SUMMED_RUNS_BRANCHES = {
     "nEvents",
 }
 
-# Jagged Runs branches that should be element-wise summed when collapsing.
-SUMMED_RUNS_JAGGED = {"LHEScaleSumw", "LHEPdfSumw", "PSSumw"}
+# Jagged Runs branches that NanoAOD stores as *ratios* to genEventSumw
+# (sum(genWeight * LHEScaleWeight[i]) / genEventSumw, and likewise for the
+# PDF and parton-shower weights).  Collapsing entries must therefore take the
+# genEventSumw-weighted mean, never the element-wise sum.
+RATIO_RUNS_JAGGED = {"LHEScaleSumw", "LHEPdfSumw", "PSSumw"}
+# Backwards-compatible alias (the old name described the old, wrong behaviour).
+SUMMED_RUNS_JAGGED = RATIO_RUNS_JAGGED
+
+
+def _sumw_per_entry(arrays: dict):
+    """Per-entry genEventSumw as a float64 NumPy array, or None if absent."""
+    for name in ("genEventSumw", "genEventSumw_"):
+        if name in arrays:
+            return np.asarray(ak.to_numpy(arrays[name]), dtype=np.float64)
+    return None
+
+
+def _weighted_mean_jagged(bname: str, arr, sumw):
+    """genEventSumw-weighted, element-wise mean of a ratio-valued jagged branch."""
+    rows = [np.asarray(r, dtype=np.float64) for r in ak.to_list(arr)]
+    flat = ak.to_numpy(ak.flatten(arr, axis=None)) if len(rows) else np.zeros(0)
+    dtype = flat.dtype if getattr(flat.dtype, "kind", "") == "f" else np.float64
+    if not rows:
+        return np.zeros(0, dtype=dtype)
+    lengths = {len(r) for r in rows}
+    if len(lengths) != 1:
+        raise ValueError(
+            f"Runs branch '{bname}' has entries of different lengths {sorted(lengths)}; "
+            "cannot collapse them into one entry."
+        )
+    mat = np.vstack(rows)
+    if sumw is None or len(sumw) != len(rows) or not np.any(sumw):
+        # No usable weights (data, or every entry empty): a plain mean keeps
+        # the ratio scale instead of inflating it by the number of entries.
+        return mat.mean(axis=0).astype(dtype)
+    w = sumw[:, None]
+    return ((mat * w).sum(axis=0) / w.sum()).astype(dtype)
+
+
+def collapse_runs_entries(arrays: dict) -> dict:
+    """Collapse multi-entry Runs branches into one entry each.
+
+    *arrays* maps branch name -> awkward array with one element per Runs
+    entry.  Returns a dict of length-1 awkward arrays:
+
+    - count / sum branches (``SUMMED_RUNS_BRANCHES``): summed;
+    - ratio-valued jagged branches (``RATIO_RUNS_JAGGED``):
+      genEventSumw-weighted element-wise mean, so the result is again a
+      ratio to the collapsed ``genEventSumw``;
+    - everything else: first entry.
+
+    Used by both the per-file skim and the post-skim merge, so a skim and a
+    merge of skims agree with a direct merge of the original files.
+    """
+    sumw = _sumw_per_entry(arrays)
+    out: dict = {}
+    for bname, arr in arrays.items():
+        if any(s in bname for s in SUMMED_RUNS_BRANCHES):
+            out[bname] = ak.Array([ak.sum(arr)])
+        elif bname in RATIO_RUNS_JAGGED:
+            out[bname] = ak.Array([_weighted_mean_jagged(bname, arr, sumw)])
+        else:
+            out[bname] = arr[:1]
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -294,9 +375,10 @@ def read_runs_tree(src_path: str) -> tuple[dict, dict] | None:
     Runs entries (one per original production file).  Copying them all leads
     to inflated genEventSumw totals after a second hadd during skim merging.
 
-    This function collapses:
+    This function collapses (see :func:`collapse_runs_entries`):
     - ``genEventSumw``, ``genEventCount``, etc. → **summed** into one value
-    - ``LHEScaleSumw``, ``LHEPdfSumw``, ``PSSumw`` → **element-wise summed**
+    - ``LHEScaleSumw``, ``LHEPdfSumw``, ``PSSumw`` → **genEventSumw-weighted
+      mean** (they are stored as ratios to genEventSumw)
     - All other branches → first entry kept
 
     Returns
@@ -331,18 +413,7 @@ def read_runs_tree(src_path: str) -> tuple[dict, dict] | None:
             # Read with awkward library to properly handle jagged branches
             runs_ak = runs_tree.arrays(list(branch_types.keys()), library="ak")
 
-            collapsed: dict = {}
-            for bname in branch_types:
-                arr = runs_ak[bname]
-                if any(s in bname for s in SUMMED_RUNS_BRANCHES):
-                    # Flat branches to sum (genEventSumw, genEventCount, etc.)
-                    collapsed[bname] = ak.Array([ak.sum(arr)])
-                elif bname in SUMMED_RUNS_JAGGED:
-                    # Jagged branches to element-wise sum
-                    collapsed[bname] = ak.Array([ak.sum(arr, axis=0)])
-                else:
-                    collapsed[bname] = arr[:1]
-
+            collapsed = collapse_runs_entries({bname: runs_ak[bname] for bname in branch_types})
             return collapsed, branch_types
     except Exception as e:
         logger.warning("Failed to read Runs from %s: %s", src_path, e)
@@ -361,6 +432,10 @@ def apply_skim_selection(events):
         with per-lepton preselection: pT > 45 GeV, |eta| < 2.5
       - (>= 2 AK4 jets with pT > 32 GeV) OR (>= 1 FatJet with pT > 180 GeV)
 
+    Muons are ranked and cut on max(PF pT, TuneP pT).  The analysis selects
+    high-pT muons on the TuneP momentum, which can exceed the PF value, so
+    cutting on PF pT alone could drop muons the analysis would keep.
+
     Returns
     -------
     skimmed : awkward array
@@ -373,6 +448,10 @@ def apply_skim_selection(events):
     # --- Lepton preselection ---
     e = events.Electron
     m = events.Muon
+    if "tunepRelPt" in m.fields:
+        # TuneP pT = PF pT * tunepRelPt; keep whichever is larger for the skim.
+        tunep_pt = m.pt * m.tunepRelPt
+        m = ak.with_field(m, ak.where(tunep_pt > m.pt, tunep_pt, m.pt), "pt")
 
     loose_electrons = e[(abs(e.eta) < c["lepton_eta_max"]) & (e.pt > c["lepton_pt_min"])]
     loose_muons = m[(abs(m.eta) < c["lepton_eta_max"]) & (m.pt > c["lepton_pt_min"])]
@@ -521,6 +600,13 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
     os.makedirs(os.path.dirname(dest_path) or ".", exist_ok=True)
     STEP = 50_000  # source entries per chunk (before cut)
 
+    # Write to a temporary name and rename at the end, so an interrupted or
+    # failed job never leaves a partial file that looks like a finished skim
+    # to the completeness checks.
+    tmp_path = dest_path + ".partial"
+    if os.path.exists(tmp_path):
+        os.remove(tmp_path)
+
     with uproot.open(src_path) as fin:
         tree = fin["Events"]
         total_entries = tree.num_entries
@@ -547,7 +633,7 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
             logger.info("    %d shared counters detected (auto-generated by mktree)",
                         len(counter_branches))
 
-        with uproot.recreate(dest_path) as fout:
+        with uproot.recreate(tmp_path) as fout:
             # Build TTree branch types from the source tree so the output
             # uses TTree (not RNTuple, which uproot 5.7+ writes by default
             # for dict assignment).  This preserves the original NanoAOD
@@ -609,6 +695,7 @@ def _skim_impl(src_path: str, dest_path: str, progress=None) -> SkimResult:
 
     del mask_np
     gc.collect()
+    os.replace(tmp_path, dest_path)
     _step("writing")
 
     file_size = os.path.getsize(dest_path)

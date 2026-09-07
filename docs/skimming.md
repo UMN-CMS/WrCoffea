@@ -19,10 +19,38 @@ The skim keeps events passing a loose lepton + jet preselection. These cuts are 
 
 **Selection logic:** (>= 2 leptons passing pT/eta, lead > 52, sublead > 45) AND (>= 2 AK4 jets OR >= 1 AK8 jet)
 
+Muon pT in the skim is the larger of the PF pT (`Muon_pt`) and the TuneP pT (`Muon_pt * Muon_tunepRelPt`). The analysis selects high-pT muons on TuneP, which can exceed the PF value, so cutting on PF pT alone would drop muons the analysis keeps.
+
 To print these from the command line:
 ```bash
 python3 bin/skim.py --cuts
 ```
+
+## Kept Branches
+
+Only the collections the analysis (or a foreseeable study) needs are written; everything else is dropped to keep the skims small. The list lives in `KEPT_BRANCHES` in `wrcoffea/skimmer.py`. A name matches either a whole collection (`Jet` keeps every `Jet_*` branch and `nJet`) or one flat branch (`genWeight`).
+
+| Group | Kept |
+|-------|------|
+| Event | `run`, `event`, `luminosityBlock`, `bunchCrossing`, `Flag`, `HLT`, `HLTriggerFinalPath`, `HLTriggerFirstPath`, `TrigObj` |
+| Leptons | `Electron`, `Muon` |
+| Jets | `Jet`, `FatJet`, `SubJet`, `GenJet`, `GenJetAK8`, `SubGenJetAK8` |
+| Event density | `Rho` (NanoAOD v10+) **and** the flat `fixedGridRhoFastjet*` branches (UL / NanoAOD v9). The jet energy corrections and JER smearing need rho; without it they silently do nothing |
+| MET | `MET`, `PFMET`, `RawMET`, `RawPFMET`, `PuppiMET`, `RawPuppiMET` (names differ between NanoAOD versions; PuppiMET is the Run 3 recommendation) |
+| Vertices | `PV`, `OtherPV`, `SV` |
+| Generator | `genWeight`, `Generator`, `GenPart`, `GenDressedLepton`, `GenMET`, `GenProton`, `genTtbarId`, `LHE`, `LHEPart`, `LHEWeight`, `LHEScaleWeight`, `LHEPdfWeight`, `LHEReweightingWeight`, `PSWeight`, `Pileup`, `L1PreFiringWeight` |
+
+> **Skims made before September 2026** (all UL18 skims) lack the flat rho branches, so JEC re-application and JER smearing do not run on them and the analyzer refuses `--systs jer` for such inputs. Re-skim to restore them.
+
+## Runs Tree
+
+Each skim keeps a Runs tree collapsed to a single entry, and the merge collapses again across files, using one shared rule (`collapse_runs_entries` in `wrcoffea/skimmer.py`):
+
+- `genEventSumw`, `genEventSumw2`, `genEventCount`, `nEvents`: **summed**.
+- `LHEScaleSumw`, `LHEPdfSumw`, `PSSumw`: NanoAOD stores these as *ratios* to `genEventSumw` (`sum(genWeight * LHEScaleWeight[i]) / genEventSumw`), so they are combined as the **genEventSumw-weighted mean**, which keeps them ratios to the collapsed `genEventSumw`.
+- Everything else: first entry.
+
+> **Skims made before September 2026** summed the ratio branches element-wise, so their `LHEScaleSumw` / `LHEPdfSumw` / `PSSumw` values are inflated by the number of merged entries. Correct dataset-level values can be recovered without re-skimming by running `scripts/gen_event_sumw.py`, which reads the original NanoAOD Runs trees and writes the weighted means into the config JSON (then regenerate the skimmed filesets so the analyzer metadata picks them up).
 
 ---
 
@@ -100,7 +128,7 @@ python3 bin/skim.py resubmit-failures --era Run3Summer22 --dry-run
 
 ## Step 3: Merge outputs (`merge-era`)
 
-Each Condor skim job produces one small ROOT file per input file. Coffea and XRootD are inefficient when opening many small files, so `merge` combines them into larger files of ~1M events each. Tarballs are extracted incrementally one at a time and merged in batches using uproot, with individual skim files deleted after each successful merge to keep disk usage bounded. Files are grouped by HLT path to avoid schema mismatches. After all files are merged, event counts and `genEventSumw` totals are validated.
+Each Condor skim job produces one small ROOT file per input file. Coffea and XRootD are inefficient when opening many small files, so `merge` combines them into larger files of ~1M events each. All tarballs of a dataset are extracted first (so the extracted skims and the merged parts coexist on disk until validation passes), files are grouped by HLT path to avoid schema mismatches, merged in batches with uproot, and the individual skim files are deleted only after the event counts and `genEventSumw` totals of inputs and outputs agree. Budget scratch space for roughly twice the skim size of the largest dataset.
 
 ```bash
 python3 bin/skim.py merge-era --era Run3Summer22 --workers 4
@@ -271,7 +299,8 @@ This mirrors the directory convention used for configs (`data/configs/Run3/2024/
 
 - **`wrcoffea/skimmer.py`** — Core skim selection logic (`apply_skim_selection`), streaming I/O with uproot (`_skim_impl`), and the single-file entry point (`skim_single_file`). Uses coffea/dask to compute the selection mask, then uproot for branch-filtered streaming writes.
 - **`wrcoffea/das_utils.py`** — DAS dataset path validation, `dasgoclient` queries, XRootD URL construction with redirector fallback.
-- **`wrcoffea/skim_merge.py`** — Post-skim tarball extraction, HLT-aware grouping, uproot-based merge, and validation of event counts and Runs tree `genEventSumw`.
+- **`wrcoffea/skim_merge.py`** — Post-skim tarball extraction, HLT-aware grouping, uproot-based merge (Runs trees collapsed with `skimmer.collapse_runs_entries`), and validation of event counts and Runs tree `genEventSumw`.
+- **`scripts/gen_event_sumw.py`** — Validates `genEventSumw` in a config JSON against the original NanoAOD files on DAS and writes the ratio-valued `LHEScaleSumw` / `LHEPdfSumw` / `PSSumw` weighted means alongside it.
 - **`bin/skim.py`** — CLI entry point with `run`, `check`, `merge` (single-dataset) and `run-era`, `check-era`, `resubmit-failures`, `merge-era`, `upload` (era-level) subcommands. Handles Condor job generation (JDL, arguments, tarball creation), era failure-state tracking, and targeted failed-job resubmission.
 - **`bin/skim_job.sh`** — Condor worker script. Extracts the repo tarball, activates the `.env` venv, runs the skimmer on one file, and tars the output for transfer back.
 

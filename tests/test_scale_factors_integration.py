@@ -1067,3 +1067,38 @@ class TestJerScaleFactorSchemas:
     def test_jrv2_uses_sfuncertainty_symmetrically(self):
         vals = self._eval("RunIII2024Summer24")
         np.testing.assert_allclose(vals["up"] - vals["nom"], vals["nom"] - vals["down"], rtol=1e-9)
+
+
+# ---------------------------------------------------------------------------
+# Tests: jet corrections without a rho branch
+# ---------------------------------------------------------------------------
+
+class TestJetCorrectionsWithoutRho:
+    """Inputs without rho (pre-fix UL18 skims) must never yield silent null JER templates."""
+
+    ERA = "RunIII2024Summer24"
+
+    @pytest.fixture(autouse=True)
+    def _real_correctionlib(self):
+        pytest.importorskip("correctionlib")
+
+    @staticmethod
+    def _events_without_rho():
+        ev = _make_jec_events()
+        return ak.zip({f: ev[f] for f in ev.fields if f != "Rho"}, depth_limit=1)
+
+    def test_nominal_run_warns_and_leaves_kinematics_unchanged(self, caplog):
+        import logging
+        ev = self._events_without_rho()
+        with caplog.at_level(logging.WARNING, logger="wrcoffea.scale_factors"):
+            out = sf.apply_jet_corrections(ev, self.ERA, True)
+        assert "no rho branch" in caplog.text
+        assert ak.all(out.Jet.pt == ev.Jet.pt)
+
+    def test_jer_request_is_refused(self):
+        with pytest.raises(RuntimeError, match="no rho"):
+            sf.apply_jet_corrections(self._events_without_rho(), self.ERA, True, variations={"jer"})
+
+    def test_jes_alone_still_runs(self):
+        out = sf.apply_jet_corrections(self._events_without_rho(), self.ERA, True, variations={"jes"})
+        assert "pt_CMS_scale_j_Total_up" in out.Jet.fields

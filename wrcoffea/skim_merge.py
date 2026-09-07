@@ -216,11 +216,9 @@ def group_by_hlt(
 # Merge via uproot (handles both TTree and RNTuple inputs)
 # ---------------------------------------------------------------------------
 
-# Branches that should be summed (not copied) when merging the Runs tree.
-_SUMMED_RUNS_BRANCHES = ("genEventSumw", "genEventCount", "nEvents", "LHEWeight")
-
-# Jagged Runs branches that should be element-wise summed when collapsing.
-_SUMMED_RUNS_JAGGED = {"LHEScaleSumw", "LHEPdfSumw", "PSSumw"}
+# Runs-tree collapsing (which branches are summed, which are ratio-valued
+# and need a genEventSumw-weighted mean) lives in one place, shared with the
+# per-file skim: wrcoffea.skimmer.collapse_runs_entries.
 
 _CHUNK_SIZE = 100_000  # entries per read chunk during merge
 
@@ -356,11 +354,13 @@ def merge_files(
 def _merge_runs(input_files: list[str], fout) -> None:
     """Merge Runs trees from *input_files*, writing a single collapsed entry to *fout*.
 
-    Uses mktree + extend to produce a TTree (not RNTuple).  Jagged branches
-    (LHEScaleSumw, LHEPdfSumw, PSSumw) are element-wise summed; scalar
-    weight branches are summed; all others keep the first value.
+    Uses mktree + extend to produce a TTree (not RNTuple).  Scalar count and
+    sum branches are summed; the ratio-valued jagged branches (LHEScaleSumw,
+    LHEPdfSumw, PSSumw) get the genEventSumw-weighted mean; all others keep
+    the first value.  See ``wrcoffea.skimmer.collapse_runs_entries``.
     """
     import awkward as ak
+    from wrcoffea.skimmer import collapse_runs_entries
 
     all_data: dict[str, list] = {}
     branch_types: dict | None = None
@@ -402,17 +402,9 @@ def _merge_runs(input_files: list[str], fout) -> None:
     if branch_types is None or not all_data:
         return
 
-    collapsed: dict = {}
-    for bname in branch_types:
-        if bname not in all_data:
-            continue
-        combined = ak.concatenate(all_data[bname])
-        if any(s in bname for s in _SUMMED_RUNS_BRANCHES):
-            collapsed[bname] = ak.Array([ak.sum(combined)])
-        elif bname in _SUMMED_RUNS_JAGGED:
-            collapsed[bname] = ak.Array([ak.sum(combined, axis=0)])
-        else:
-            collapsed[bname] = combined[:1]
+    collapsed = collapse_runs_entries({
+        bname: ak.concatenate(all_data[bname]) for bname in branch_types if bname in all_data
+    })
 
     fout.mktree("Runs", branch_types)
     fout["Runs"].extend(collapsed)

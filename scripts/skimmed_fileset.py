@@ -79,7 +79,9 @@ def deduplicate_by_dataset(fileset: dict) -> dict:
 def replace_files_in_json(data: dict, run: str, year: str, era: str, umn: bool, sample: str) -> dict:
     metadata_keys = (["das_name", "run", "year", "era", "dataset", "physics_group", "datatype"]
                      if sample == "data"
-                     else ["das_name", "run", "year", "era", "dataset", "physics_group", "xsec", "total_uncertainty", "genEventSumw" ,"datatype", "nevts"])
+                     else ["das_name", "run", "year", "era", "dataset", "physics_group", "xsec", "total_uncertainty", "genEventSumw", "datatype", "nevts",
+                           # Optional: ratio-valued theory-weight sums written by scripts/gen_event_sumw.py
+                           "LHEScaleSumw", "LHEPdfSumw", "PSSumw"])
 
     for key, entry in data.items():
         metadata = {k: entry.pop(k) for k in metadata_keys if k in entry}

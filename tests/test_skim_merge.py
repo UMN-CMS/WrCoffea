@@ -172,3 +172,43 @@ class TestMergeDatasetChunking:
         # then f2 (100) in chunk 2, f3 would push to 200 > 150 so flush,
         # then f3 (100) as remaining -> 3 output files
         assert result.output_files == 3
+
+
+# ---------------------------------------------------------------------------
+# Runs-tree merge on real files
+# ---------------------------------------------------------------------------
+
+import awkward as ak
+import numpy as np
+import uproot
+
+from wrcoffea.skim_merge import _merge_runs
+
+
+def _write_runs_file(path, sumw, scale, pdf=None):
+    types = {"run": np.uint32, "genEventSumw": np.float64, "genEventCount": np.int64,
+             "LHEScaleSumw": "var * float32"}
+    data = {"run": np.array([1], dtype=np.uint32), "genEventSumw": np.array([sumw]),
+            "genEventCount": np.array([int(sumw)]), "LHEScaleSumw": ak.Array([np.asarray(scale, dtype=np.float32)])}
+    if pdf is not None:
+        types["LHEPdfSumw"] = "var * float32"
+        data["LHEPdfSumw"] = ak.Array([np.asarray(pdf, dtype=np.float32)])
+    with uproot.recreate(path) as f:
+        f.mktree("Runs", types)
+        f["Runs"].extend(data)
+
+
+class TestMergeRuns:
+    def test_sums_counts_and_weights_ratio_branches(self, tmp_path):
+        a = tmp_path / "a.root"; b = tmp_path / "b.root"; out = tmp_path / "merged.root"
+        _write_runs_file(a, 100.0, [1.0, 2.0], pdf=[0.5, 0.5])
+        _write_runs_file(b, 300.0, [2.0, 4.0], pdf=[1.5, 0.5])
+        with uproot.recreate(out) as fout:
+            _merge_runs([str(a), str(b)], fout)
+        with uproot.open(out) as f:
+            r = f["Runs"].arrays(library="ak")
+        assert len(r["genEventSumw"]) == 1
+        assert float(r["genEventSumw"][0]) == 400.0
+        assert int(r["genEventCount"][0]) == 400
+        assert ak.to_list(r["LHEScaleSumw"]) == [[pytest.approx(1.75, rel=1e-6), pytest.approx(3.5, rel=1e-6)]]
+        assert ak.to_list(r["LHEPdfSumw"]) == [[pytest.approx(1.25, rel=1e-6), pytest.approx(0.5, rel=1e-6)]]

@@ -170,7 +170,7 @@ class TestReadRunsTree:
         assert int(data["genEventCount_"][0]) == 60
         assert len(data["run"]) == 1
 
-    def test_jagged_branches_summed_elementwise(self):
+    def test_ratio_branches_take_the_sumw_weighted_mean(self):
         branch_data = {
             "genEventSumw_": [100.0, 200.0],
             "nLHEScaleSumw": [np.int32(3), np.int32(3)],
@@ -188,9 +188,10 @@ class TestReadRunsTree:
 
         assert result is not None
         data, types = result
-        # LHEScaleSumw should be element-wise summed: [5.0, 7.0, 9.0]
-        summed = ak.to_list(data["LHEScaleSumw"])
-        assert summed == [[5.0, 7.0, 9.0]]
+        # LHEScaleSumw is a ratio to genEventSumw, so collapsing two entries
+        # takes the sumw-weighted mean: (100*[1,2,3] + 200*[4,5,6]) / 300.
+        collapsed = ak.to_list(data["LHEScaleSumw"])
+        assert collapsed == [[pytest.approx(3.0), pytest.approx(4.0), pytest.approx(5.0)]]
         # nLHEScaleSumw is not in SUMMED_RUNS_BRANCHES, just take first
         assert int(data["nLHEScaleSumw"][0]) == 3
         # Branch types should include jagged spec
@@ -313,3 +314,218 @@ class TestSkimSingleFileRetryFlow:
                 skimmer.skim_single_file("root://host//store/mc/f.root", "out.root")
 
         sleep_mock.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# collapse_runs_entries (shared by the skim and the merge)
+# ---------------------------------------------------------------------------
+
+from wrcoffea.skimmer import collapse_runs_entries, _kept_branch_names, RATIO_RUNS_JAGGED
+
+
+class TestCollapseRunsEntries:
+    def test_ratio_branches_are_weighted_by_sumw_and_counts_summed(self):
+        out = collapse_runs_entries({
+            "genEventSumw": ak.Array([100.0, 300.0]),
+            "genEventCount": ak.Array([10, 30]),
+            "LHEScaleSumw": ak.Array([[1.0, 2.0], [2.0, 4.0]]),
+            "PSSumw": ak.Array([[0.5], [1.0]]),
+            "run": ak.Array([1, 1]),
+        })
+        assert float(out["genEventSumw"][0]) == 400.0
+        assert int(out["genEventCount"][0]) == 40
+        # (100*1 + 300*2)/400, (100*2 + 300*4)/400
+        assert ak.to_list(out["LHEScaleSumw"]) == [[pytest.approx(1.75), pytest.approx(3.5)]]
+        assert ak.to_list(out["PSSumw"]) == [[pytest.approx(0.875)]]
+        assert len(out["run"]) == 1
+
+    def test_single_entry_is_unchanged(self):
+        out = collapse_runs_entries({
+            "genEventSumw": ak.Array([50.0]),
+            "LHEPdfSumw": ak.Array([[0.9, 1.1, 1.0]]),
+        })
+        assert ak.to_list(out["LHEPdfSumw"]) == [[pytest.approx(0.9), pytest.approx(1.1), pytest.approx(1.0)]]
+
+    def test_no_sumw_falls_back_to_plain_mean(self):
+        out = collapse_runs_entries({"LHEScaleSumw": ak.Array([[1.0, 3.0], [3.0, 5.0]])})
+        assert ak.to_list(out["LHEScaleSumw"]) == [[pytest.approx(2.0), pytest.approx(4.0)]]
+
+    def test_mismatched_lengths_raise(self):
+        with pytest.raises(ValueError, match="different lengths"):
+            collapse_runs_entries({
+                "genEventSumw": ak.Array([1.0, 1.0]),
+                "LHEScaleSumw": ak.Array([[1.0, 2.0], [1.0]]),
+            })
+
+    def test_ratio_branch_set_covers_the_nanoaod_names(self):
+        assert RATIO_RUNS_JAGGED == {"LHEScaleSumw", "LHEPdfSumw", "PSSumw"}
+
+
+class TestKeptBranchNames:
+    """Branch-name mapping, including the flat pre-v10 rho and the MET variants."""
+
+    NANOAOD_V9 = [
+        "run", "event", "fixedGridRhoFastjetAll", "fixedGridRhoFastjetCentralCalo",
+        "nJet", "Jet_pt", "nMuon", "Muon_pt", "MET_pt", "PuppiMET_pt", "RawPuppiMET_pt",
+        "L1PreFiringWeight_Nom", "nTrigObj", "TrigObj_pt", "SoftActivityJetHT", "nPhoton", "Photon_pt",
+    ]
+    NANOAOD_V15 = ["Rho_fixedGridRhoFastjetAll", "PFMET_pt", "RawPFMET_pt", "PuppiMET_pt", "nTrigObj", "TrigObj_pt"]
+
+    def test_flat_rho_is_kept_for_nanoaod_v9(self):
+        kept = set(_kept_branch_names(self.NANOAOD_V9))
+        assert {"fixedGridRhoFastjetAll", "fixedGridRhoFastjetCentralCalo"} <= kept
+
+    def test_rho_collection_is_kept_for_nanoaod_v15(self):
+        assert "Rho_fixedGridRhoFastjetAll" in _kept_branch_names(self.NANOAOD_V15)
+
+    def test_met_variants_prefiring_and_trigger_objects_are_kept(self):
+        kept = set(_kept_branch_names(self.NANOAOD_V9 + self.NANOAOD_V15))
+        assert {"MET_pt", "PuppiMET_pt", "RawPuppiMET_pt", "PFMET_pt", "RawPFMET_pt",
+                "L1PreFiringWeight_Nom", "nTrigObj", "TrigObj_pt"} <= kept
+
+    def test_unwanted_collections_are_still_dropped(self):
+        kept = set(_kept_branch_names(self.NANOAOD_V9))
+        assert not {"SoftActivityJetHT", "nPhoton", "Photon_pt"} & kept
+
+
+# ---------------------------------------------------------------------------
+# apply_skim_selection: muon pT uses max(PF, TuneP)
+# ---------------------------------------------------------------------------
+
+from wrcoffea.skimmer import apply_skim_selection
+
+
+def _skim_events(muon_pt, muon_tunep_rel, electron_pt=(), jet_pt=(80.0, 60.0)):
+    """One event with the given muons/electrons/jets (eta = 0 everywhere)."""
+    def coll(pts, extra=None):
+        # Full four-vector fields: once the vector library's behaviours are
+        # registered (scale_factors imports them), the PtEtaPhiMCandidate
+        # name the skimmer assigns needs pt/eta/phi/mass to be present.
+        n = len(pts)
+        fields = {"pt": ak.Array([list(pts)]), "eta": ak.Array([[0.0] * n]),
+                  "phi": ak.Array([[0.0] * n]), "mass": ak.Array([[0.1] * n]), "charge": ak.Array([[1] * n])}
+        if extra:
+            fields.update({k: ak.Array([list(v)]) for k, v in extra.items()})
+        return ak.zip(fields)
+    return ak.zip({
+        "Muon": coll(muon_pt, {"tunepRelPt": muon_tunep_rel}),
+        "Electron": coll(electron_pt),
+        "Jet": coll(jet_pt),
+        "FatJet": coll([]),
+    }, depth_limit=1)
+
+
+class TestSkimSelectionMuonMomentum:
+    def test_muon_below_pf_threshold_but_above_on_tunep_is_kept(self):
+        # PF pT 40 (fails 45) but TuneP = 40 * 1.5 = 60 (passes); partner at 60.
+        events = _skim_events(muon_pt=[60.0, 40.0], muon_tunep_rel=[1.0, 1.5])
+        _, mask, _ = apply_skim_selection(events)
+        assert ak.to_list(mask) == [True]
+
+    def test_muon_failing_both_is_dropped(self):
+        events = _skim_events(muon_pt=[60.0, 40.0], muon_tunep_rel=[1.0, 1.05])
+        _, mask, _ = apply_skim_selection(events)
+        assert ak.to_list(mask) == [False]
+
+    def test_leading_lepton_ranking_uses_the_larger_momentum(self):
+        # Only the TuneP value of the second muon exceeds the 52 GeV lead cut.
+        events = _skim_events(muon_pt=[46.0, 45.5], muon_tunep_rel=[1.0, 1.2])
+        _, mask, _ = apply_skim_selection(events)
+        assert ak.to_list(mask) == [True]
+
+    def test_without_tunep_branch_pf_pt_is_used(self):
+        events = _skim_events(muon_pt=[60.0, 40.0], muon_tunep_rel=[1.0, 1.5])
+        muon = events.Muon
+        events = ak.zip({"Muon": ak.zip({f: muon[f] for f in muon.fields if f != "tunepRelPt"}),
+                         "Electron": events.Electron, "Jet": events.Jet, "FatJet": events.FatJet}, depth_limit=1)
+        _, mask, _ = apply_skim_selection(events)
+        assert ak.to_list(mask) == [False]
+
+
+# ---------------------------------------------------------------------------
+# End-to-end skim of a synthetic NanoAOD file
+# ---------------------------------------------------------------------------
+
+import os
+import uproot
+from wrcoffea import skimmer as skimmer_module
+from wrcoffea.skimmer import _skim_impl, XROOTD_REQUEST_TIMEOUT, XROOTD_CONNECTION_TIMEOUT
+
+
+def _write_nano_file(path, n_events=6):
+    """A minimal NanoAODv9-like file: three events pass the skim, three do not."""
+    rng = np.random.default_rng(3)
+    # events 0-2: two 60 GeV muons + two 50 GeV jets (pass); 3-5: one muon only (fail)
+    mu_pt = [[60.0, 55.0]] * 3 + [[60.0]] * 3
+    jet_pt = [[50.0, 45.0]] * 6
+    def jag(vals, dtype=np.float32):
+        return ak.values_astype(ak.Array(vals), dtype)
+    def zeros_like(vals, dtype=np.float32):
+        return ak.values_astype(ak.Array([[0.0] * len(v) for v in vals]), dtype)
+    events = {
+        "run": np.full(n_events, 1, dtype=np.uint32),
+        "event": np.arange(n_events, dtype=np.uint64),
+        "luminosityBlock": np.full(n_events, 1, dtype=np.uint32),
+        "genWeight": np.ones(n_events, dtype=np.float32),
+        "fixedGridRhoFastjetAll": np.full(n_events, 20.0, dtype=np.float32),
+        "SoftActivityJetHT": np.zeros(n_events, dtype=np.float32),
+        "Muon_pt": jag(mu_pt), "Muon_eta": zeros_like(mu_pt), "Muon_phi": zeros_like(mu_pt),
+        "Muon_mass": zeros_like(mu_pt), "Muon_charge": zeros_like(mu_pt, np.int32),
+        "Muon_tunepRelPt": ak.values_astype(ak.Array([[1.0] * len(v) for v in mu_pt]), np.float32),
+        "Electron_pt": jag([[]] * n_events), "Electron_eta": jag([[]] * n_events), "Electron_phi": jag([[]] * n_events),
+        "Electron_mass": jag([[]] * n_events), "Electron_charge": jag([[]] * n_events, np.int32),
+        "Jet_pt": jag(jet_pt), "Jet_eta": zeros_like(jet_pt), "Jet_phi": zeros_like(jet_pt), "Jet_mass": zeros_like(jet_pt),
+        "FatJet_pt": jag([[]] * n_events), "FatJet_eta": jag([[]] * n_events), "FatJet_phi": jag([[]] * n_events),
+        "FatJet_mass": jag([[]] * n_events),
+    }
+    def spec(v):
+        # Jagged branches must be given as "var * <dtype>" strings: that is
+        # what the skimmer's uproot shared-counter patch keys on.
+        if isinstance(v, ak.Array):
+            return "var * " + str(ak.to_numpy(ak.flatten(v, axis=None)).dtype)
+        return v.dtype
+    with uproot.recreate(path) as f:
+        f.mktree("Events", {k: spec(v) for k, v in events.items()},
+                 counter_name=lambda counted: "n" + counted.split("_")[0])
+        f["Events"].extend(events)
+        f.mktree("Runs", {"run": np.uint32, "genEventSumw": np.float64, "genEventCount": np.int64,
+                          "LHEScaleSumw": "var * float32"})
+        f["Runs"].extend({"run": np.array([1, 1], dtype=np.uint32),
+                          "genEventSumw": np.array([100.0, 300.0]), "genEventCount": np.array([100, 300]),
+                          "LHEScaleSumw": ak.Array([np.array([1.0, 2.0], np.float32), np.array([2.0, 4.0], np.float32)])})
+
+
+class TestSkimEndToEnd:
+    def test_skim_writes_selected_events_rho_and_collapsed_runs(self, tmp_path):
+        src = tmp_path / "nano.root"; dest = tmp_path / "out" / "nano_skim.root"
+        _write_nano_file(src)
+        result = _skim_impl(str(src), str(dest))
+        assert result.status == "success"
+        assert (result.n_events_before, result.n_events_after) == (6, 3)
+        assert dest.exists() and not (tmp_path / "out" / "nano_skim.root.partial").exists()
+        with uproot.open(dest) as f:
+            keys = f["Events"].keys()
+            assert "fixedGridRhoFastjetAll" in keys and "Muon_tunepRelPt" in keys
+            assert "SoftActivityJetHT" not in keys
+            assert f["Events"].num_entries == 3
+            runs = f["Runs"].arrays(library="ak")
+            assert float(runs["genEventSumw"][0]) == 400.0
+            assert ak.to_list(runs["LHEScaleSumw"]) == [[pytest.approx(1.75, rel=1e-6), pytest.approx(3.5, rel=1e-6)]]
+
+    def test_failed_skim_leaves_no_finished_looking_output(self, tmp_path, monkeypatch):
+        src = tmp_path / "nano.root"; dest = tmp_path / "out" / "nano_skim.root"
+        _write_nano_file(src)
+        def boom(*a, **k):
+            raise RuntimeError("simulated read failure")
+        monkeypatch.setattr(skimmer_module, "read_runs_tree", boom)
+        with pytest.raises(RuntimeError, match="simulated"):
+            _skim_impl(str(src), str(dest))
+        assert not dest.exists()
+
+
+class TestXrootdTimeouts:
+    def test_request_timeout_is_not_seconds_scale(self):
+        # The streaming pass issues one vector read per 50k events x ~1000
+        # branches; a 10 s request deadline made routine reads expire.
+        assert XROOTD_REQUEST_TIMEOUT >= 60
+        assert XROOTD_CONNECTION_TIMEOUT >= 10
