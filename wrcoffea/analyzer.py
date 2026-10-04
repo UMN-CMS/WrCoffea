@@ -186,7 +186,7 @@ class WrAnalysis(processor.ProcessorABC):
         elif mc_campaign in ("Run3Summer22", "Run3Summer23BPix","Run3Summer22EE", "Run3Summer23"):
             mask = common_flags & ~self.ecal_bad_calib_filter(events)
             
-        elif (mc_campaign == "RunIII2024Summer24"):
+        elif (mc_campaign in ("RunIII2024Summer24", "RunIII2025")): #### ecalBadCalibFilter must be verified for 2025
             mask = common_flags & events.Flag.ecalBadCalibFilter
             
         else:
@@ -249,9 +249,10 @@ class WrAnalysis(processor.ProcessorABC):
         # --- Combine and sort by pT ---
         # Slim to common fields before concatenating so awkward creates a
         # regular record (not a union), avoiding field-access issues.
-        def _to_candidate(col):
+        def _to_candidate(col, default_pdg_id):
             # If the collection has deltaEtaSC (Electrons), use it. Otherwise (Muons), fill with 0s.
             d_eta_sc = col.deltaEtaSC if hasattr(col, "deltaEtaSC") else ak.zeros_like(col.eta)           
+            pdg_id = col.pdgId if "pdgId" in col.fields else default_pdg_id * col.charge
             return ak.zip(
                 {
                     "pt": col.pt, 
@@ -260,16 +261,16 @@ class WrAnalysis(processor.ProcessorABC):
                     "mass": col.mass, 
                     "charge": col.charge, 
                     "flavor": col.flavor,
-                    "pdgId" : col.pdgId,
+                    "pdgId" : pdg_id,
                     "deltaEtaSC": d_eta_sc
                 },
                 with_name="PtEtaPhiMCandidate",
             )
         tight_leptons = ak.concatenate(
-            [_to_candidate(tight_electrons), _to_candidate(tight_muons)], axis=1,
+            [_to_candidate(tight_electrons, -11), _to_candidate(tight_muons, -13)], axis=1,
         )
         loose_leptons = ak.concatenate(
-            [_to_candidate(loose_electrons), _to_candidate(loose_muons)], axis=1,
+            [_to_candidate(loose_electrons, -11), _to_candidate(loose_muons, -13)], axis=1,
         )
 
         tight_leps = tight_leptons[ak.argsort(tight_leptons.pt, axis=1, ascending=False)]
@@ -668,8 +669,9 @@ class WrAnalysis(processor.ProcessorABC):
         tightMuons_inc = tightMuons_inc[ak.argsort(tightMuons_inc.pt, axis=1, ascending=False)]
 
         # Slim to common fields before concatenating to avoid UnionArrays
-        def _to_candidate(col):
+        def _to_candidate(col, default_pdg_id):
             d_eta_sc = col.deltaEtaSC if hasattr(col, "deltaEtaSC") else ak.zeros_like(col.eta)            
+            pdg_id = col.pdgId if "pdgId" in col.fields else default_pdg_id * col.charge
             return ak.zip(
                 {
                     "pt": col.pt, 
@@ -678,15 +680,15 @@ class WrAnalysis(processor.ProcessorABC):
                     "mass": col.mass, 
                     "charge": col.charge, 
                     "flavor": col.flavor,
-                    "pdgId" : col.pdgId,
+                    "pdgId" : pdg_id,
                     "deltaEtaSC": d_eta_sc
                 },
                 with_name="PtEtaPhiMCandidate",
             )
-        looseLeptons = ak.concatenate((_to_candidate(looseElectrons), _to_candidate(looseMuons)), axis=1)
+        looseLeptons = ak.concatenate((_to_candidate(looseElectrons, -11), _to_candidate(looseMuons, -13)), axis=1)
         looseLeptons = looseLeptons[ak.argsort(looseLeptons.pt, axis=1, ascending=False)]
         
-        tightLeptons_inc = ak.concatenate((_to_candidate(tightElectrons_inc), _to_candidate(tightMuons_inc)), axis=1)
+        tightLeptons_inc = ak.concatenate((_to_candidate(tightElectrons_inc, -11), _to_candidate(tightMuons_inc, -13)), axis=1)
         tightLeptons_inc = tightLeptons_inc[ak.argsort(tightLeptons_inc.pt, axis=1, ascending=False)]
         # Define a resolved-like tag and take boosted as the complement.
         has_two_leptons = ak.num(tightLeptons_inc) >= 2
@@ -1213,7 +1215,11 @@ class WrAnalysis(processor.ProcessorABC):
                 ak4_id_mask = events.Jet.isTightLeptonVeto
             else:
                 ak4_id_mask = events.Jet.jetId >= 6
-        events = jet_veto_event_mask(events,ak4_id_mask,mc_campaign)
+        jet_veto_result = jet_veto_event_mask(events, ak4_id_mask, mc_campaign)
+        if isinstance(jet_veto_result, np.ndarray) and jet_veto_result.dtype == bool:
+            events = events[jet_veto_result]
+        else:
+            events = jet_veto_result
 
         # corrected_electrons = apply_electron_scale_smearing(events, mc_campaign, is_mc)
         # #verify_scale_smearing(events.Electron, corrected_electrons, is_mc)

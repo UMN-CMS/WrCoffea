@@ -23,6 +23,7 @@ ERA_SUBDIRS = {
     "Run3Summer23": "Run3/2023/Run3Summer23",
     "Run3Summer23BPix": "Run3/2023/Run3Summer23BPix",
     "RunIII2024Summer24": "Run3/2024/RunIII2024Summer24",
+    "RunIII2025": "Run3/2025/RunIII2025"
 }
 
 REDIRECTOR = "root://cmsxrootd.fnal.gov/"

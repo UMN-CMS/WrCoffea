@@ -145,7 +145,7 @@ python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/
 python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json
 ```
 
-This queries Wisconsin via `gfal-ls`, rebuilds the file list for all datasets in the config, and writes the output to `data/filesets/Run3/2022/Run3Summer22/skimmed/`.
+This lists the FNAL EOS skim area via `xrdfs` under `/store/user/spatra1/skims/`, rebuilds the file list for all datasets in the config, and writes the output to `data/filesets/Run3/2022/Run3Summer22/skimmed/`.
 
 ---
 

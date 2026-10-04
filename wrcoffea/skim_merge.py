@@ -10,11 +10,13 @@ import json
 import logging
 import os
 import tarfile
+import sys
 from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 import uproot
+from tqdm import tqdm
 from uproot.behaviors.TTree import TTree
 
 logger = logging.getLogger(__name__)
@@ -52,6 +54,8 @@ class MergeResult:
     events_match: bool
     sumw_match: bool
     output_paths: list[str] = field(default_factory=list)
+    complete: bool = True
+    skipped_files: list[dict[str, str]] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         """Serialize to a JSON-friendly dict."""
@@ -280,7 +284,13 @@ def merge_files(
     try:
         with uproot.recreate(output_path) as fout:
             tree_created = False
-            for fpath in input_files:
+            progress = tqdm(
+                input_files,
+                desc=f"Merging {Path(output_path).name}",
+                unit="file",
+                leave=False,
+            )
+            for fpath in progress:
                 with uproot.open(fpath) as fin:
                     if "Events" not in fin:
                         logger.warning("No Events tree in %s — skipping", fpath)
@@ -564,6 +574,8 @@ def merge_dataset_incremental(
     hlt_aware: bool = True,
     output_dir: str | Path | None = None,
     file_pattern: str = "*_skim.root",
+    allow_incomplete: bool = False,
+    expected_files: list[str] | None = None,
 ) -> MergeResult:
     """Merge pipeline: extract all tarballs, group by HLT, chunk, merge.
 
@@ -573,8 +585,10 @@ def merge_dataset_incremental(
     3. Group files by HLT branch signature.
     4. Chunk each group by *max_events*.
     5. Merge each chunk and validate.
-    6. Delete original skim files after all merges succeed.
-    7. Write ``merge_summary.json`` next to the merged part files.
+    6. Delete readable original skim files after validation succeeds.
+     7. Write ``merge_summary.json`` next to the merged part files. When
+         ``allow_incomplete`` is true, unreadable or missing files are recorded
+         and the result is marked incomplete.
 
     Returns a MergeResult summarizing the operation.
     """
@@ -617,24 +631,85 @@ def merge_dataset_incremental(
             events_match=True, sumw_match=True,
         )
 
-    # 3. Tally input totals
+    # 3. Inspect inputs individually so tolerant merges can discard only
+    # unreadable files instead of losing the whole dataset.
+    valid_files: list[tuple[str, int, float]] = []
+    skipped_files: list[dict[str, str]] = []
+
+
+    with tqdm(
+        input_files,
+        desc=f"Inspecting {dataset_name}",
+        unit="file",
+        disable=not sys.stderr.isatty(),
+    ) as progress:
+        for fpath in progress:
+            progress.set_postfix_str(Path(fpath).name, refresh=False)
+            try:
+                nev = count_events(fpath)
+                sw = read_runs_sumw(fpath)
+                get_hlt_signature(fpath)
+                valid_files.append((fpath, nev, sw))
+            except Exception as e:
+                if not allow_incomplete:
+                    raise
+                reason = f"input inspection failed: {e}"
+                logger.warning("Skipping %s (%s)", fpath, reason)
+                skipped_files.append({"path": fpath, "reason": reason})
+
+    if expected_files is not None:
+        present_names = {Path(fpath).name for fpath, _nev, _sw in valid_files}
+        for expected in expected_files:
+            if expected not in present_names:
+                skipped_files.append({"path": expected, "reason": "missing input file"})
+
+    if not valid_files:
+        logger.error("No readable skim files remain for %s", dataset_name)
+        return MergeResult(
+            dataset=dataset_name, input_files=0, output_files=0,
+            total_events_in=0, total_events_out=0,
+            total_sumw_in=0.0, total_sumw_out=0.0,
+            events_match=False, sumw_match=False,
+            complete=not skipped_files, skipped_files=skipped_files,
+        )
+
+    #logger.info("Found %d readable skim files", len(valid_files))
+
     total_events_in = 0
     total_sumw_in = 0.0
-    for fpath in input_files:
-        total_events_in += count_events(fpath)
-        total_sumw_in += read_runs_sumw(fpath)
+    for _fpath, nev, sw in valid_files:
+        total_events_in += nev
+        total_sumw_in += sw
 
     logger.info(
         "Input: %d files, %d events, sumw=%.2f",
-        len(input_files), total_events_in, total_sumw_in,
+        len(valid_files), total_events_in, total_sumw_in,
     )
 
     # 4. Group by HLT signature
     if hlt_aware:
-        groups = group_by_hlt(input_files)
+        groups = defaultdict(list)
+        with tqdm(
+            valid_files,
+            desc=f"Grouping HLT {dataset_name}",
+            unit="file",
+            disable=not sys.stderr.isatty(),
+        ) as progress:
+            for fpath, nev, _sw in progress:
+                progress.set_postfix_str(Path(fpath).name, refresh=False)
+                try:
+                    groups[get_hlt_signature(fpath)].append((fpath, nev))
+                except Exception as e:
+                    if not allow_incomplete:
+                        raise
+                    logger.warning("Skipping %s during HLT grouping: %s", fpath, e)
+                    skipped_files.append({"path": fpath, "reason": f"HLT inspection failed: {e}"})
+        groups = dict(groups)
         logger.info("Found %d distinct HLT signature group(s)", len(groups))
     else:
-        groups = {(): [(f, count_events(f)) for f in input_files]}
+        groups = {(): [(fpath, nev) for fpath, nev, _sw in valid_files]}
+
+    logger.info("Starting merge: %d group(s), max_events=%d", len(groups), max_events)
 
     # 5. Chunk within each group and merge
     output_paths: list[str] = []
@@ -664,12 +739,19 @@ def merge_dataset_incremental(
                 output_paths.append(outpath)
             part += 1
 
+    logger.info("Merge finished: %d output files", len(output_paths))
+
     # 6. Validate
     total_events_out = 0
     total_sumw_out = 0.0
     for op in output_paths:
         total_events_out += count_events(op)
         total_sumw_out += read_runs_sumw(op)
+
+    logger.info(
+        "Output: %d files, %d events, sumw=%.2f",
+        len(output_paths), total_events_out, total_sumw_out,
+    )
 
     events_match = total_events_in == total_events_out
     sumw_match = (
@@ -693,7 +775,7 @@ def merge_dataset_incremental(
 
     # 7. Clean up skim files if all merges succeeded
     if events_match and sumw_match:
-        for f in input_files:
+        for f in (fpath for fpath, _nev, _sw in valid_files):
             try:
                 os.remove(f)
             except OSError:
@@ -702,7 +784,7 @@ def merge_dataset_incremental(
     else:
         logger.error(
             "Merge validation failed — keeping %d skim files for retry",
-            len(input_files),
+            len(valid_files),
         )
 
     logger.info(
@@ -712,7 +794,7 @@ def merge_dataset_incremental(
 
     result = MergeResult(
         dataset=dataset_name,
-        input_files=len(input_files),
+        input_files=len(valid_files),
         output_files=len(output_paths),
         total_events_in=total_events_in,
         total_events_out=total_events_out,
@@ -721,6 +803,8 @@ def merge_dataset_incremental(
         events_match=events_match,
         sumw_match=sumw_match,
         output_paths=output_paths,
+        complete=not skipped_files,
+        skipped_files=skipped_files,
     )
 
     save_merge_summary(result, output_dir)

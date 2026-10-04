@@ -172,3 +172,35 @@ class TestMergeDatasetChunking:
         # then f2 (100) in chunk 2, f3 would push to 200 > 150 so flush,
         # then f3 (100) as remaining -> 3 output files
         assert result.output_files == 3
+
+
+class TestIncompleteMerge:
+    @pytest.mark.usefixtures("_skip_uproot_patch")
+    def test_skips_corrupt_and_missing_inputs(self, tmp_path):
+        """Opt-in partial merges retain valid output and record omissions."""
+        from wrcoffea.skim_merge import merge_dataset_incremental
+
+        valid = tmp_path / "f1_skim.root"
+        _make_skim_file(valid, 10, ["HLT_Mu50"])
+        corrupt = tmp_path / "f2_skim.root"
+        corrupt.write_text("not a ROOT file")
+
+        result = merge_dataset_incremental(
+            tmp_path,
+            "testds",
+            allow_incomplete=True,
+            expected_files=["f1_skim.root", "f2_skim.root", "f3_skim.root"],
+        )
+
+        assert result.complete is False
+        assert result.events_match
+        assert result.sumw_match
+        assert result.input_files == 1
+        assert result.total_events_in == 10
+        assert result.total_events_out == 10
+        assert {entry["path"] for entry in result.skipped_files} == {
+            str(corrupt), "f3_skim.root",
+        }
+        assert (tmp_path / "testds_part1.root").exists()
+        assert not valid.exists()
+        assert corrupt.exists()

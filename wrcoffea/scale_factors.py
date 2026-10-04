@@ -976,6 +976,11 @@ def _safe_eval(corr_obj, jets, events, pt_current, rho_val):
     """
     # Ask the correction object what inputs it requires, in what order
     expected_inputs = [inp.name for inp in corr_obj.inputs]
+    # Correctionlib does not always broadcast event-level arrays against
+    # jagged jet inputs.  Do it here so empty per-event jet collections are
+    # represented with the same (events, jets) layout as the other inputs.
+    def _broadcast_to_jets(value):
+        return ak.broadcast_arrays(value, jets.pt)[0]
     
     args = []
     for inp in expected_inputs:
@@ -988,9 +993,9 @@ def _safe_eval(corr_obj, jets, events, pt_current, rho_val):
         elif inp == "JetPt":
             args.append(pt_current)
         elif inp == "Rho":
-            args.append(rho_val)
+            args.append(_broadcast_to_jets(rho_val))
         elif inp == "run":
-            args.append(events.run)
+            args.append(_broadcast_to_jets(events.run))
         else:
             raise ValueError(f"Unknown input requested by JEC JSON: {inp}")
             
@@ -1490,13 +1495,13 @@ def apply_jet_corrections(events, era, isMC,save_all_variations=False):
     # ==========================================
     # STEP 3: Correct Subjets
     # ==========================================
-    events = ak.with_field(events, jets, "Jet")
-    events = ak.with_field(events, fatjets, "FatJet")
+    events["Jet"] = jets
+    events["FatJet"] = fatjets
     
     if "SubJet" in events.fields and "area" in events.SubJet.fields:
         subjets = _correct_subjets(events.SubJet, events, cevalAK8, tagAK8, algoAK8, isMC)
-        events = ak.with_field(events, subjets, "SubJet")
+        events["SubJet"] = subjets
         fatjets = _recompute_softdrop(events)
-        events = ak.with_field(events, fatjets, "FatJet")
+        events["FatJet"] = fatjets
         
     return events

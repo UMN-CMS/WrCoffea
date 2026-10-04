@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 #
 # -----------------------------------------------------------------------------
 # Example usage:
@@ -17,6 +19,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="coffea.*")
 
 import argparse
+import json
 import subprocess
 import logging
 from pathlib import Path
@@ -27,7 +30,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 repo_root = os.path.abspath(os.path.join(current_dir, "../"))
 sys.path.insert(0, repo_root)
 
-from wrcoffea.era_utils import get_era_details, load_json
+from wrcoffea.era_utils import load_json
+from wrcoffea.das_utils import base_dir_for_era
 from wrcoffea.fileset_utils import (
     output_dir,
     parse_config_path,
@@ -35,6 +39,9 @@ from wrcoffea.fileset_utils import (
     sample_from_config_filename,
     write_fileset_json,
 )
+
+EOS_HOST = "cmseos.fnal.gov"
+EOS_SKIMS_ROOT = "/store/user/spatra1/skims"
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -76,7 +83,34 @@ def deduplicate_by_dataset(fileset: dict) -> dict:
     return deduped
 
 
-def replace_files_in_json(data: dict, run: str, year: str, era: str, umn: bool, sample: str) -> dict:
+def _merged_root_files(files: list[str]) -> list[str]:
+    """Keep merged part files and exclude raw per-job skim ROOT files."""
+    return sorted(fp for fp in files if Path(fp).stem.rsplit("_part", 1)[-1].isdigit())
+
+
+def _local_merge_status(dataset: str, mc_campaign: str) -> dict | None:
+    """Read a local merge summary when building from UMN storage."""
+    summary_path = (
+        base_dir_for_era(mc_campaign, scratch=True)
+        / "files"
+        / dataset
+        / "merge_summary.json"
+    )
+    if not summary_path.exists():
+        return None
+    try:
+        with summary_path.open(encoding="utf-8") as f:
+            summary = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        logging.warning("Could not read merge summary %s: %s", summary_path, e)
+        return None
+    return summary if isinstance(summary, dict) else None
+
+
+def replace_files_in_json(
+    data: dict, run: str, year: str, era: str, umn: bool, sample: str,
+    allow_incomplete: bool = False,
+) -> dict:
     metadata_keys = (["das_name", "run", "year", "era", "dataset", "physics_group", "datatype"]
                      if sample == "data"
                      else ["das_name", "run", "year", "era", "dataset", "physics_group", "xsec", "total_uncertainty", "genEventSumw" ,"datatype", "nevts"])
@@ -104,30 +138,60 @@ def replace_files_in_json(data: dict, run: str, year: str, era: str, umn: bool, 
             continue
 
         if umn:
+            summary = _local_merge_status(dataset, era)
+            if summary and not summary.get("complete", True) and not allow_incomplete:
+                raise RuntimeError(
+                    f"Dataset {dataset} has an incomplete merge; rerun with "
+                    "--allow-incomplete to use its available merged files"
+                )
             root_files = get_root_files_from_umn(dataset, era)
         else:
-            root_files = get_root_files_from_wisc(dataset, run, year, era)
+            root_files = get_root_files_from_eos(dataset, run, year, era)
 
+        root_files = _merged_root_files(root_files)
         if root_files:
             for fp in root_files:
                 ds_info["files"].setdefault(fp, "Events")
+            if umn and summary and not summary.get("complete", True):
+                ds_info["metadata"]["skim_complete"] = False
+                ds_info["metadata"]["skim_skipped_files"] = summary.get(
+                    "skipped_files", []
+                )
         else:
             logging.warning(f"No ROOT files found for dataset {ds_name}")
 
     return data
 
 
-def get_root_files_from_umn(dataset: str, mc_campaign: str) -> list[str]:
-    # mc_campaign eg. "Run3Summer22"
-    run, year, era = get_era_details(mc_campaign)
-    base = Path(f"/local/cms/user/jack1851/skims/2025/{run}/{year}/{mc_campaign}/{dataset}/")
+def get_root_files_from_umn(dataset: str, era: str) -> list[str]:
+    """List merged ROOT files from the user's 3DayLifetime scratch area."""
+    base = base_dir_for_era(era, scratch=True) / "files" / dataset
     files = []
     if base.exists():
         for p in base.rglob("*.root"):
             files.append(str(p))
-        logging.info(f"Found {len(files)} ROOT files for {dataset} in UMN skims")
+        logging.info(f"Found {len(files)} ROOT files for {dataset} in scratch")
     else:
-        logging.error(f"UMN base path '{base}' not found")
+        logging.error(f"Scratch base path '{base}' not found")
+    return files
+
+
+def get_root_files_from_eos(
+    dataset: str, run: str, year: str, era: str
+) -> list[str]:
+    """List merged ROOT files from the FNAL EOS skim area via XRootD."""
+    if "WR" in dataset:
+        category = "signals"
+    elif "EGamma" in dataset or "Muon" in dataset:
+        category = "files"
+    else:
+        category = "backgrounds"
+
+    base = (
+        f"{EOS_SKIMS_ROOT}/{run}/{year}/{era}/{category}/{dataset}"
+    )
+    files = xrdfs_list_root_files(EOS_HOST, base)
+    logging.info(f"Found {len(files)} ROOT files for {dataset} on EOS")
     return files
 
 def xrdfs_list_root_files(host: str, base_path: str) -> list[str]:
@@ -260,6 +324,11 @@ def main():
         action="store_true",
         help="Fetch ROOT files from UMN skims instead of EOS"
     )
+    parser.add_argument(
+        "--allow-incomplete",
+        action="store_true",
+        help="Use merged files from an incomplete merge (records skipped inputs)",
+    )
     args = parser.parse_args()
 
     input_path = args.config
@@ -275,7 +344,14 @@ def main():
 
 
     fileset = load_json(str(input_path))
-    fileset = replace_files_in_json(fileset, run, year, era, args.umn, sample)
+    try:
+        fileset = replace_files_in_json(
+            fileset, run, year, era, args.umn, sample,
+            allow_incomplete=args.allow_incomplete,
+        )
+    except RuntimeError as e:
+        logging.error("%s", e)
+        sys.exit(1)
     fileset = deduplicate_by_dataset(fileset)
     fileset = rename_dataset_key_to_sample(fileset)
 

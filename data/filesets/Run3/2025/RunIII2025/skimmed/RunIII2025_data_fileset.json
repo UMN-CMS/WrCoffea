@@ -1,0 +1,421 @@
+{
+  "/EGamma0/Run2025B-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025B/EGamma0_Run2025B_part1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma0/Run2025B-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma0_Run2025B",
+      "year": "2025"
+    }
+  },
+  "/EGamma0/Run2025C-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025C/EGamma0_Run2025C_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025C/EGamma0_Run2025C_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025C/EGamma0_Run2025C_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025C/EGamma0_Run2025C_part4.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma0/Run2025C-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma0_Run2025C",
+      "year": "2025"
+    }
+  },
+  "/EGamma0/Run2025D-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025D/EGamma0_Run2025D_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025D/EGamma0_Run2025D_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025D/EGamma0_Run2025D_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025D/EGamma0_Run2025D_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025D/EGamma0_Run2025D_part5.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma0/Run2025D-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma0_Run2025D",
+      "year": "2025"
+    }
+  },
+  "/EGamma0/Run2025E-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025E/EGamma0_Run2025E_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025E/EGamma0_Run2025E_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025E/EGamma0_Run2025E_part3.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma0/Run2025E-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma0_Run2025E",
+      "year": "2025"
+    }
+  },
+  "/EGamma0/Run2025F-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025F/EGamma0_Run2025F_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025F/EGamma0_Run2025F_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025F/EGamma0_Run2025F_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025F/EGamma0_Run2025F_part4.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma0/Run2025F-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma0_Run2025F",
+      "year": "2025"
+    }
+  },
+  "/EGamma0/Run2025G-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025G/EGamma0_Run2025G_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025G/EGamma0_Run2025G_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025G/EGamma0_Run2025G_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma0_Run2025G/EGamma0_Run2025G_part4.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma0/Run2025G-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma0_Run2025G",
+      "year": "2025"
+    }
+  },
+  "/EGamma1/Run2025B-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025B/EGamma1_Run2025B_part1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma1/Run2025B-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma1_Run2025B",
+      "year": "2025"
+    }
+  },
+  "/EGamma1/Run2025C-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025C/EGamma1_Run2025C_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025C/EGamma1_Run2025C_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025C/EGamma1_Run2025C_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025C/EGamma1_Run2025C_part4.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma1/Run2025C-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma1_Run2025C",
+      "year": "2025"
+    }
+  },
+  "/EGamma1/Run2025D-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025D/EGamma1_Run2025D_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025D/EGamma1_Run2025D_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025D/EGamma1_Run2025D_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025D/EGamma1_Run2025D_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025D/EGamma1_Run2025D_part5.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma1/Run2025D-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma1_Run2025D",
+      "year": "2025"
+    }
+  },
+  "/EGamma1/Run2025E-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025E/EGamma1_Run2025E_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025E/EGamma1_Run2025E_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025E/EGamma1_Run2025E_part3.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma1/Run2025E-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma1_Run2025E",
+      "year": "2025"
+    }
+  },
+  "/EGamma1/Run2025F-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025F/EGamma1_Run2025F_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025F/EGamma1_Run2025F_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025F/EGamma1_Run2025F_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025F/EGamma1_Run2025F_part4.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma1/Run2025F-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma1_Run2025F",
+      "year": "2025"
+    }
+  },
+  "/EGamma1/Run2025G-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025G/EGamma1_Run2025G_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025G/EGamma1_Run2025G_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025G/EGamma1_Run2025G_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025G/EGamma1_Run2025G_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/EGamma1_Run2025G/EGamma1_Run2025G_part5.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma1/Run2025G-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma1_Run2025G",
+      "year": "2025"
+    }
+  },
+  "/Muon0/Run2025B-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025B/Muon0_Run2025B_part1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon0/Run2025B-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon0_Run2025B",
+      "year": "2025"
+    }
+  },
+  "/Muon0/Run2025C-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025C/Muon0_Run2025C_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025C/Muon0_Run2025C_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025C/Muon0_Run2025C_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025C/Muon0_Run2025C_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025C/Muon0_Run2025C_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025C/Muon0_Run2025C_part6.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon0/Run2025C-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon0_Run2025C",
+      "year": "2025"
+    }
+  },
+  "/Muon0/Run2025D-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025D/Muon0_Run2025D_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025D/Muon0_Run2025D_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025D/Muon0_Run2025D_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025D/Muon0_Run2025D_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025D/Muon0_Run2025D_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025D/Muon0_Run2025D_part6.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025D/Muon0_Run2025D_part7.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon0/Run2025D-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon0_Run2025D",
+      "year": "2025"
+    }
+  },
+  "/Muon0/Run2025E-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025E/Muon0_Run2025E_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025E/Muon0_Run2025E_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025E/Muon0_Run2025E_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025E/Muon0_Run2025E_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025E/Muon0_Run2025E_part5.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon0/Run2025E-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon0_Run2025E",
+      "year": "2025"
+    }
+  },
+  "/Muon0/Run2025F-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025F/Muon0_Run2025F_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025F/Muon0_Run2025F_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025F/Muon0_Run2025F_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025F/Muon0_Run2025F_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025F/Muon0_Run2025F_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025F/Muon0_Run2025F_part6.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon0/Run2025F-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon0_Run2025F",
+      "year": "2025"
+    }
+  },
+  "/Muon0/Run2025G-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025G/Muon0_Run2025G_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025G/Muon0_Run2025G_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025G/Muon0_Run2025G_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025G/Muon0_Run2025G_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025G/Muon0_Run2025G_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025G/Muon0_Run2025G_part6.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon0_Run2025G/Muon0_Run2025G_part7.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon0/Run2025G-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon0_Run2025G",
+      "year": "2025"
+    }
+  },
+  "/Muon1/Run2025B-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025B/Muon1_Run2025B_part1.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon1/Run2025B-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon1_Run2025B",
+      "year": "2025"
+    }
+  },
+  "/Muon1/Run2025C-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025C/Muon1_Run2025C_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025C/Muon1_Run2025C_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025C/Muon1_Run2025C_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025C/Muon1_Run2025C_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025C/Muon1_Run2025C_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025C/Muon1_Run2025C_part6.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon1/Run2025C-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon1_Run2025C",
+      "year": "2025"
+    }
+  },
+  "/Muon1/Run2025D-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025D/Muon1_Run2025D_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025D/Muon1_Run2025D_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025D/Muon1_Run2025D_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025D/Muon1_Run2025D_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025D/Muon1_Run2025D_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025D/Muon1_Run2025D_part6.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025D/Muon1_Run2025D_part7.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon1/Run2025D-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon1_Run2025D",
+      "year": "2025"
+    }
+  },
+  "/Muon1/Run2025E-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025E/Muon1_Run2025E_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025E/Muon1_Run2025E_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025E/Muon1_Run2025E_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025E/Muon1_Run2025E_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025E/Muon1_Run2025E_part5.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon1/Run2025E-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon1_Run2025E",
+      "year": "2025"
+    }
+  },
+  "/Muon1/Run2025F-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025F/Muon1_Run2025F_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025F/Muon1_Run2025F_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025F/Muon1_Run2025F_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025F/Muon1_Run2025F_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025F/Muon1_Run2025F_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025F/Muon1_Run2025F_part6.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon1/Run2025F-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon1_Run2025F",
+      "year": "2025"
+    }
+  },
+  "/Muon1/Run2025G-PromptReco-v1/NANOAOD": {
+    "files": {
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025G/Muon1_Run2025G_part1.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025G/Muon1_Run2025G_part2.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025G/Muon1_Run2025G_part3.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025G/Muon1_Run2025G_part4.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025G/Muon1_Run2025G_part5.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025G/Muon1_Run2025G_part6.root": "Events",
+      "root://cmseos.fnal.gov//store/user/spatra1/skims/Run3/2025/RunIII2025/files/Muon1_Run2025G/Muon1_Run2025G_part7.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon1/Run2025G-PromptReco-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIII2025",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon1_Run2025G",
+      "year": "2025"
+    }
+  }
+}

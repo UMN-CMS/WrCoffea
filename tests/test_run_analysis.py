@@ -185,6 +185,31 @@ def test_preprocess_with_xrd_fallback_rewrites_fileset_and_retries(monkeypatch):
     assert "root://cmsxrootd.fnal.gov/" not in redirectors_used
 
 
+def test_preprocess_skips_only_dataset_with_xrootd_error():
+    fileset = {
+        "bad_dataset": {
+            "files": {"root://cmsxrootd.fnal.gov//store/data/bad.root": "Events"},
+        },
+        "good_dataset": {
+            "files": {"root://cmsxrootd.fnal.gov//store/data/good.root": "Events"},
+        },
+    }
+
+    class FakeRun:
+        def preprocess(self, fileset, treename):
+            dataset_name = next(iter(fileset))
+            if dataset_name == "bad_dataset":
+                raise OSError("Failed to open file: [FATAL] Redirect limit has been reached")
+            return [f"workitem:{dataset_name}"]
+
+    args = SimpleNamespace(unskimmed=True, xrd_fallback=False)
+    result = run_analysis._preprocess_with_xrd_fallback(
+        FakeRun(), fileset, treename="Events", args=args
+    )
+
+    assert result == ["workitem:good_dataset"]
+
+
 def test_preprocess_with_xrd_fallback_retries_when_same_redirector_resolves(monkeypatch):
     """When probe succeeds at the same redirector, retry preprocess instead of raising."""
     fileset = {

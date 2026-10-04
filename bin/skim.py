@@ -730,7 +730,7 @@ def _check_log_completion(log_dir: Path, primary_ds: str, expected_indices: set[
     return passed, failed
 
 
-def _is_already_merged(skim_dir: Path) -> bool:
+def _is_already_merged(skim_dir: Path, *, allow_incomplete: bool = False) -> bool:
     """Return True if merge_summary.json exists and records a successful merge."""
     summary_path = skim_dir / "merge_summary.json"
     if not summary_path.exists():
@@ -738,7 +738,12 @@ def _is_already_merged(skim_dir: Path) -> bool:
     try:
         with summary_path.open() as f:
             summary = json.load(f)
-        return bool(summary.get("events_match") and summary.get("sumw_match"))
+        complete = summary.get("complete", True)
+        return bool(
+            summary.get("events_match")
+            and summary.get("sumw_match")
+            and (complete or allow_incomplete)
+        )
     except Exception:
         return False
 
@@ -891,6 +896,11 @@ def _print_merge_result(result):
     print(f"{'Runs sumw (in):':<22} {result.total_sumw_in:.2f}")
     print(f"{'Runs sumw (out):':<22} {result.total_sumw_out:.2f}")
     print(f"{'Sumw match:':<22} {'YES' if result.sumw_match else 'NO'}")
+    if not result.complete:
+        print(f"{'Complete:':<22} NO")
+        print(f"{'Skipped inputs:':<22} {len(result.skipped_files)}")
+        for skipped in result.skipped_files:
+            print(f"  {skipped['path']}: {skipped['reason']}")
     if result.output_paths:
         print(f"{'Output files:':<22}")
         for p in result.output_paths:
@@ -1577,7 +1587,10 @@ def cmd_resubmit_failures(args):
         raise SystemExit(1)
 
 
-def _merge_one_dataset(das_path, meta, max_events, skip_check, dataset_name=None):
+def _merge_one_dataset(
+    das_path, meta, max_events, skip_check, dataset_name=None,
+    allow_incomplete=False, expected_files=None,
+):
     """Merge a single dataset. Returns (das_path, result, error_reason).
 
     Designed to be called from a ProcessPoolExecutor.
@@ -1596,6 +1609,7 @@ def _merge_one_dataset(das_path, meta, max_events, skip_check, dataset_name=None
     era = meta.get("era")
     if era:
         skim_dir = base_dir_for_era(era, scratch=True) / "files" / primary_ds
+        logger.info("getting from scratch dir for era %s: %s", era, skim_dir)
     else:
         skim_dir = infer_output_dir(das_path, scratch=True)
 
@@ -1603,7 +1617,7 @@ def _merge_one_dataset(das_path, meta, max_events, skip_check, dataset_name=None
         logger.warning("Skim directory not found for %s — skipping", primary_ds)
         return das_path, None, "skim directory not found"
 
-    if _is_already_merged(skim_dir):
+    if _is_already_merged(skim_dir, allow_incomplete=allow_incomplete):
         logger.info("Already merged %s — skipping", primary_ds)
         return das_path, None, None
 
@@ -1614,7 +1628,10 @@ def _merge_one_dataset(das_path, meta, max_events, skip_check, dataset_name=None
 
     result = merge_dataset_incremental(
         skim_dir, primary_ds, max_events=max_events,
+        allow_incomplete=allow_incomplete,
+        expected_files=expected_files,
     )
+    logger.info("Merge result for %s: %s", primary_ds, result)
     _print_merge_result(result)
 
     if not result.events_match or not result.sumw_match:
@@ -1635,6 +1652,32 @@ def _merge_one_dataset(das_path, meta, max_events, skip_check, dataset_name=None
     return das_path, result, None
 
 
+def _successful_status_expected_files(skim_dir: Path) -> list[str]:
+    """Return skim basenames recorded as successful by worker status files."""
+    expected_files = []
+    for status_path in sorted(skim_dir.glob("*_skim*.status.json")):
+        try:
+            with status_path.open("r", encoding="utf-8") as f:
+                payload = json.load(f)
+        except (OSError, json.JSONDecodeError) as e:
+            logger.warning("Could not read status file %s: %s", status_path, e)
+            continue
+
+        if not isinstance(payload, dict) or payload.get("status") != "success":
+            continue
+        dest_path = payload.get("dest_path")
+        if isinstance(dest_path, str) and dest_path:
+            basename = Path(dest_path).name
+            if (skim_dir / basename).is_file():
+                expected_files.append(basename)
+            else:
+                logger.warning(
+                    "Successful status %s has no scratch file %s",
+                    status_path.name, basename,
+                )
+    return expected_files
+
+
 def cmd_merge_era(args):
     """Merge all datasets in config(s) from scratch space.
 
@@ -1647,6 +1690,10 @@ def cmd_merge_era(args):
     all_datasets = _load_datasets_from_configs(args.config)
     groups = _group_by_primary_ds(all_datasets)
 
+    if args.allow_incomplete:
+        check_dasgoclient()
+        check_grid_proxy()
+
     # Build a deduplicated task list: one merge per unique (era, primary_ds).
     # Use the first DAS path as the representative. For multi-path groups
     # (data sub-eras), run a combined pre-merge check across all DAS paths
@@ -1656,14 +1703,27 @@ def cmd_merge_era(args):
     skipped = []
     for (era, primary_ds), group in groups.items():
         first_das_path, first_meta, _cfg = group[0]
-        skim_dir = base_dir_for_era(era, scratch=True) / "files" / primary_ds if era else None
+        skim_dir = (
+            base_dir_for_era(era, scratch=True) / "files" / primary_ds
+            if era else infer_output_dir(first_das_path, scratch=True)
+        )
 
-        if skim_dir and _is_already_merged(skim_dir):
+        if skim_dir and _is_already_merged(
+            skim_dir, allow_incomplete=args.allow_incomplete
+        ):
             logger.info("Already merged %s — skipping", primary_ds)
             skipped.append(primary_ds)
             continue
 
-        skip_check = args.skip_check
+        expected_files = None
+        if args.allow_incomplete:
+            expected_files = _successful_status_expected_files(skim_dir)
+            logger.info(
+                "Found %d successful skim status file(s) for %s",
+                len(expected_files), primary_ds,
+            )
+
+        skip_check = args.skip_check or args.allow_incomplete
         if len(group) > 1 and not skip_check:
             logger.info(
                 "%s has %d sub-eras — running combined pre-merge check before merge",
@@ -1675,7 +1735,9 @@ def cmd_merge_era(args):
                 continue
             # Already checked for this grouped dataset; skip worker-local single-path check.
             skip_check = True
-        merge_tasks.append((first_das_path, first_meta, skip_check, primary_ds))
+        merge_tasks.append(
+            (first_das_path, first_meta, skip_check, primary_ds, expected_files)
+        )
 
     results = []
     workers = getattr(args, "workers", 1)
@@ -1684,11 +1746,13 @@ def cmd_merge_era(args):
         logger.info("Merging %d datasets with %d parallel workers", len(merge_tasks), workers)
         futures = {}
         with ProcessPoolExecutor(max_workers=workers) as pool:
-            for das_path, meta, skip_check, ds_name in merge_tasks:
+            for das_path, meta, skip_check, ds_name, expected_files in merge_tasks:
                 fut = pool.submit(
                     _merge_one_dataset, das_path, meta,
                     args.max_events, skip_check,
                     dataset_name=ds_name,
+                    allow_incomplete=args.allow_incomplete,
+                    expected_files=expected_files,
                 )
                 futures[fut] = (das_path, ds_name)
 
@@ -1703,18 +1767,31 @@ def cmd_merge_era(args):
                 if error:
                     failed.append((das_path, error))
                 elif result:
+                    if not result.complete:
+                        logger.warning(
+                            "Merged %s incompletely; %d input(s) skipped",
+                            result.dataset, len(result.skipped_files),
+                        )
                     results.append(result)
                 else:
                     skipped.append(ds_name)
     else:
-        for das_path, meta, skip_check, ds_name in merge_tasks:
+        for das_path, meta, skip_check, ds_name, expected_files in merge_tasks:
             das_path, result, error = _merge_one_dataset(
                 das_path, meta, args.max_events, skip_check,
                 dataset_name=ds_name,
+                allow_incomplete=args.allow_incomplete,
+                expected_files=expected_files,
             )
+            logger.info("got here")
             if error:
                 failed.append((das_path, error))
             elif result:
+                if not result.complete:
+                    logger.warning(
+                        "Merged %s incompletely; %d input(s) skipped",
+                        result.dataset, len(result.skipped_files),
+                    )
                 results.append(result)
             else:
                 skipped.append(ds_name)
@@ -2008,6 +2085,10 @@ def main(argv=None):
                               help="Max events per merged file (default: 1000000)")
     p_merge_era.add_argument("--skip-check", action="store_true",
                               help="Skip pre-merge completeness check")
+    p_merge_era.add_argument(
+        "--allow-incomplete", action="store_true",
+        help="Merge readable files while recording missing or corrupt inputs",
+    )
     p_merge_era.add_argument("--workers", type=int, default=1,
                               help="Number of parallel merge workers (default: 1)")
     p_merge_era.set_defaults(func=cmd_merge_era)
