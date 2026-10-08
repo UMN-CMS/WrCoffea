@@ -137,7 +137,24 @@
       "sample": "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.587e-05,
-      "xsec": 0.1668,
+      "xsec": 0.1671,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1671,
+        "generator_unc": 0.0003159,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -279,7 +296,24 @@
       "sample": "WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.133e-05,
-      "xsec": 0.09102,
+      "xsec": 0.09028,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.09028,
+        "generator_unc": 0.0001525,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -421,7 +455,24 @@
       "sample": "WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.638e-05,
-      "xsec": 0.06591,
+      "xsec": 0.06629,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.06629,
+        "generator_unc": 0.0001209,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -564,6 +615,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.418e-05,
       "xsec": 0.04033,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.04033,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -706,6 +766,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 6.973e-06,
       "xsec": 0.01762,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.01762,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -847,7 +916,24 @@
       "sample": "WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.049e-06,
-      "xsec": 0.003042,
+      "xsec": 0.003049,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 26000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.003049,
+        "generator_unc": 1.897e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -989,7 +1075,24 @@
       "sample": "WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.204e-05,
-      "xsec": 0.1592,
+      "xsec": 0.1599,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1599,
+        "generator_unc": 0.0003471,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -1132,6 +1235,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 7.366e-05,
       "xsec": 0.1477,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.1477,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -1273,7 +1385,24 @@
       "sample": "WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.393e-05,
-      "xsec": 0.1326,
+      "xsec": 0.1329,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1329,
+        "generator_unc": 0.0003805,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -1415,7 +1544,24 @@
       "sample": "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.963e-05,
-      "xsec": 0.1136,
+      "xsec": 0.1144,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1144,
+        "generator_unc": 0.0003828,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -1557,7 +1703,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.776e-07,
-      "xsec": 0.002389,
+      "xsec": 0.002384,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.002384,
+        "generator_unc": 4.56e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -1700,6 +1863,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 7.249e-07,
       "xsec": 0.00166,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.00166,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -1841,7 +2013,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.22e-07,
-      "xsec": 0.001546,
+      "xsec": 0.001561,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001561,
+        "generator_unc": 4.061e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -1984,6 +2173,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 4.625e-07,
       "xsec": 0.00143,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.00143,
+        "generator_unc": 3.562e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -2125,7 +2331,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.273e-07,
-      "xsec": 0.001307,
+      "xsec": 0.001316,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001316,
+        "generator_unc": 2.133e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -2267,7 +2490,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.067e-07,
-      "xsec": 0.001181,
+      "xsec": 0.00118,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.00118,
+        "generator_unc": 2.037e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -2410,6 +2650,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 3.485e-07,
       "xsec": 0.001048,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.001048,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -2551,7 +2800,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.285e-07,
-      "xsec": 0.0009103,
+      "xsec": 0.0009134,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0009134,
+        "generator_unc": 2.044e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -2693,7 +2959,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.753e-07,
-      "xsec": 0.0007731,
+      "xsec": 0.0007671,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0007671,
+        "generator_unc": 1.594e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -2835,7 +3118,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.278e-07,
-      "xsec": 0.000628,
+      "xsec": 0.0006366,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0006366,
+        "generator_unc": 1.298e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -2978,6 +3278,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.485e-07,
       "xsec": 0.0004911,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.0004911,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -3119,7 +3428,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 9.709e-07,
-      "xsec": 0.002183,
+      "xsec": 0.002189,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.002189,
+        "generator_unc": 3.717e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -3261,7 +3587,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.243e-07,
-      "xsec": 0.0003566,
+      "xsec": 0.0003598,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0003598,
+        "generator_unc": 9.774e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -3404,6 +3747,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 8.255e-08,
       "xsec": 0.0002355,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.0002355,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -3545,7 +3897,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.874e-08,
-      "xsec": 0.0001309,
+      "xsec": 0.000132,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.000132,
+        "generator_unc": 2.952e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -3687,7 +4056,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.867e-08,
-      "xsec": 5.464e-05,
+      "xsec": 5.49e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.49e-05,
+        "generator_unc": 2.257e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -3829,7 +4215,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.752e-09,
-      "xsec": 1.207e-05,
+      "xsec": 1.208e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 33000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.208e-05,
+        "generator_unc": 6.764e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -3971,7 +4374,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 9.329e-07,
-      "xsec": 0.002024,
+      "xsec": 0.002027,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 35000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.002027,
+        "generator_unc": 1.489e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -4113,7 +4533,24 @@
       "sample": "WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.436e-07,
-      "xsec": 0.001894,
+      "xsec": 0.001904,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 9000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001904,
+        "generator_unc": 2.196e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -4256,6 +4693,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 7.626e-07,
       "xsec": 0.001779,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.001779,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -4398,6 +4844,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 6.581e-08,
       "xsec": 0.0001936,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.0001936,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -4539,7 +4994,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.295e-08,
-      "xsec": 9.075e-05,
+      "xsec": 9.13e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 9.13e-05,
+        "generator_unc": 2.615e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -4681,7 +5153,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.804e-08,
-      "xsec": 8.329e-05,
+      "xsec": 8.403e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 8.403e-05,
+        "generator_unc": 1.38e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -4823,7 +5312,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.925e-08,
-      "xsec": 7.697e-05,
+      "xsec": 7.782e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 7.782e-05,
+        "generator_unc": 1.987e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -4966,6 +5472,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 2.911e-08,
       "xsec": 7.163e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 7.163e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -5107,7 +5622,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.237e-08,
-      "xsec": 6.701e-05,
+      "xsec": 6.681e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.681e-05,
+        "generator_unc": 1.637e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -5249,7 +5781,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.993e-08,
-      "xsec": 6.269e-05,
+      "xsec": 6.266e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.266e-05,
+        "generator_unc": 1.579e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -5391,7 +5940,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.937e-08,
-      "xsec": 5.862e-05,
+      "xsec": 5.896e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 12000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.896e-05,
+        "generator_unc": 5.598e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -5534,6 +6100,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.697e-08,
       "xsec": 5.465e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 5.465e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -5676,6 +6251,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.566e-08,
       "xsec": 5.101e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 5.101e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -5817,7 +6401,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.513e-08,
-      "xsec": 4.738e-05,
+      "xsec": 4.672e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.672e-05,
+        "generator_unc": 1.003e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -5959,7 +6560,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.551e-08,
-      "xsec": 0.0001553,
+      "xsec": 0.0001554,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 15000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0001554,
+        "generator_unc": 1.556e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -6102,6 +6720,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.37e-08,
       "xsec": 4.354e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 4.354e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -6243,7 +6870,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.486e-08,
-      "xsec": 3.983e-05,
+      "xsec": 3.978e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.978e-05,
+        "generator_unc": 6.465e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -6385,7 +7029,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.283e-08,
-      "xsec": 3.598e-05,
+      "xsec": 3.601e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.601e-05,
+        "generator_unc": 4.825e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -6528,6 +7189,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.13e-08,
       "xsec": 3.222e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 34000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.222e-05,
+        "generator_unc": 1.718e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -6670,6 +7348,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 8.903e-09,
       "xsec": 2.833e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 2.833e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -6812,6 +7499,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 8.616e-09,
       "xsec": 2.452e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 2.452e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -6953,7 +7649,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.191e-09,
-      "xsec": 2.074e-05,
+      "xsec": 2.087e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.087e-05,
+        "generator_unc": 3.367e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -7096,6 +7809,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 5.31e-09,
       "xsec": 1.704e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 1.704e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -7237,7 +7959,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.489e-09,
-      "xsec": 1.351e-05,
+      "xsec": 1.355e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.355e-05,
+        "generator_unc": 4.341e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -7379,7 +8118,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.006e-09,
-      "xsec": 1.025e-05,
+      "xsec": 1.028e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 32000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.028e-05,
+        "generator_unc": 5.561e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -7522,6 +8278,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 4.709e-08,
       "xsec": 0.0001307,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.0001307,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -7663,7 +8428,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.473e-09,
-      "xsec": 7.277e-06,
+      "xsec": 7.283e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 7.283e-06,
+        "generator_unc": 1.544e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -7806,6 +8588,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.422e-09,
       "xsec": 4.684e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.684e-06,
+        "generator_unc": 1.039e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -7947,7 +8746,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.818e-10,
-      "xsec": 2.621e-06,
+      "xsec": 2.598e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.598e-06,
+        "generator_unc": 5.036e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -8089,7 +8905,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.381e-10,
-      "xsec": 1.134e-06,
+      "xsec": 1.142e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.142e-06,
+        "generator_unc": 1.862e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -8231,7 +9064,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 9.18e-11,
-      "xsec": 3.262e-07,
+      "xsec": 3.279e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.279e-07,
+        "generator_unc": 7.303e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -8373,7 +9223,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.953e-08,
-      "xsec": 0.0001132,
+      "xsec": 0.0001138,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0001138,
+        "generator_unc": 2.531e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -8515,7 +9382,24 @@
       "sample": "WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.437e-08,
-      "xsec": 0.0001006,
+      "xsec": 0.0001009,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0001009,
+        "generator_unc": 2.493e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -8657,7 +9541,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.376e-08,
-      "xsec": 4.23e-05,
+      "xsec": 4.242e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.242e-05,
+        "generator_unc": 6.715e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -8799,7 +9700,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.245e-09,
-      "xsec": 1.163e-05,
+      "xsec": 1.152e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.152e-05,
+        "generator_unc": 2.787e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -8941,7 +9859,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.413e-09,
-      "xsec": 9.758e-06,
+      "xsec": 9.722e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 9.722e-06,
+        "generator_unc": 2.781e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -9083,7 +10018,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.667e-09,
-      "xsec": 8.367e-06,
+      "xsec": 8.378e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 8.378e-06,
+        "generator_unc": 1.517e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -9225,7 +10177,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.552e-09,
-      "xsec": 7.355e-06,
+      "xsec": 7.352e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 7.352e-06,
+        "generator_unc": 1.441e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -9367,7 +10336,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.226e-09,
-      "xsec": 6.541e-06,
+      "xsec": 6.626e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.626e-06,
+        "generator_unc": 1.839e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -9509,7 +10495,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.029e-09,
-      "xsec": 5.934e-06,
+      "xsec": 5.915e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.915e-06,
+        "generator_unc": 1.328e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -9651,7 +10654,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.928e-09,
-      "xsec": 5.443e-06,
+      "xsec": 5.453e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.453e-06,
+        "generator_unc": 1.464e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -9793,7 +10813,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.735e-09,
-      "xsec": 5.036e-06,
+      "xsec": 5.005e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.005e-06,
+        "generator_unc": 1.307e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -9935,7 +10972,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.545e-09,
-      "xsec": 4.689e-06,
+      "xsec": 4.706e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.706e-06,
+        "generator_unc": 8.986e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -10077,7 +11131,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.505e-09,
-      "xsec": 4.391e-06,
+      "xsec": 4.365e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.365e-06,
+        "generator_unc": 1.232e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -10220,6 +11291,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 9.282e-09,
       "xsec": 3.043e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.043e-05,
+        "generator_unc": 4.66e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -10361,7 +11449,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.34e-09,
-      "xsec": 4.125e-06,
+      "xsec": 4.151e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.151e-06,
+        "generator_unc": 5.516e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -10503,7 +11608,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.121e-09,
-      "xsec": 3.874e-06,
+      "xsec": 3.876e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.876e-06,
+        "generator_unc": 9.133e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -10645,7 +11767,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.176e-09,
-      "xsec": 3.649e-06,
+      "xsec": 3.66e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.66e-06,
+        "generator_unc": 7.287e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -10787,7 +11926,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.119e-09,
-      "xsec": 3.433e-06,
+      "xsec": 3.418e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.418e-06,
+        "generator_unc": 7.996e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -10929,7 +12085,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 9.991e-10,
-      "xsec": 3.22e-06,
+      "xsec": 3.223e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.223e-06,
+        "generator_unc": 7.05e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -11071,7 +12244,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 9.626e-10,
-      "xsec": 3.016e-06,
+      "xsec": 3.033e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.033e-06,
+        "generator_unc": 6.845e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -11213,7 +12403,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.38e-10,
-      "xsec": 2.806e-06,
+      "xsec": 2.802e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.802e-06,
+        "generator_unc": 5.078e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -11355,7 +12562,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 7.939e-10,
-      "xsec": 2.604e-06,
+      "xsec": 2.602e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.602e-06,
+        "generator_unc": 4.86e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -11497,7 +12721,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 7.579e-10,
-      "xsec": 2.398e-06,
+      "xsec": 2.427e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.427e-06,
+        "generator_unc": 4.666e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -11639,7 +12880,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.714e-10,
-      "xsec": 2.189e-06,
+      "xsec": 2.196e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 22000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.196e-06,
+        "generator_unc": 1.357e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -11782,6 +13040,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 8.437e-09,
       "xsec": 2.282e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 2.282e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -11924,6 +13191,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 6.84e-10,
       "xsec": 1.987e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.987e-06,
+        "generator_unc": 4.458e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -12065,7 +13349,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.201e-10,
-      "xsec": 1.788e-06,
+      "xsec": 1.787e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.787e-06,
+        "generator_unc": 3.686e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -12207,7 +13508,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.49e-10,
-      "xsec": 1.59e-06,
+      "xsec": 1.594e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 11000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.594e-06,
+        "generator_unc": 1.445e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -12349,7 +13667,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.447e-10,
-      "xsec": 1.395e-06,
+      "xsec": 1.402e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.402e-06,
+        "generator_unc": 2.741e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -12491,7 +13826,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.569e-10,
-      "xsec": 1.206e-06,
+      "xsec": 1.202e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.202e-06,
+        "generator_unc": 1.696e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -12634,6 +13986,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 3.183e-10,
       "xsec": 1.023e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 1.023e-06,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -12775,7 +14136,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.794e-10,
-      "xsec": 8.486e-07,
+      "xsec": 8.454e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 4000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 8.454e-07,
+        "generator_unc": 1.128e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -12917,7 +14295,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.291e-10,
-      "xsec": 6.853e-07,
+      "xsec": 6.844e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.844e-07,
+        "generator_unc": 1.52e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -13059,7 +14454,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.643e-10,
-      "xsec": 5.323e-07,
+      "xsec": 5.339e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.339e-07,
+        "generator_unc": 9.856e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -13201,7 +14613,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.338e-10,
-      "xsec": 3.957e-07,
+      "xsec": 3.978e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.978e-07,
+        "generator_unc": 8.943e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -13344,6 +14773,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 6.235e-09,
       "xsec": 1.771e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 1.771e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -13485,7 +14923,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.28e-11,
-      "xsec": 2.743e-07,
+      "xsec": 2.736e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 32000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.736e-07,
+        "generator_unc": 1.747e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -13627,7 +15082,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.176e-11,
-      "xsec": 1.747e-07,
+      "xsec": 1.754e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.754e-07,
+        "generator_unc": 2.479e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -13769,7 +15241,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.168e-11,
-      "xsec": 9.523e-08,
+      "xsec": 9.504e-08,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 16000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 9.504e-08,
+        "generator_unc": 7.387e-11,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -13911,7 +15400,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.34e-11,
-      "xsec": 4.186e-08,
+      "xsec": 4.197e-08,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.197e-08,
+        "generator_unc": 8.555e-11,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -14053,7 +15559,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.209e-12,
-      "xsec": 1.244e-08,
+      "xsec": 1.243e-08,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.243e-08,
+        "generator_unc": 2.494e-11,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -14195,7 +15718,24 @@
       "sample": "WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.1e-09,
-      "xsec": 1.414e-05,
+      "xsec": 1.42e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.42e-05,
+        "generator_unc": 2.254e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -14337,7 +15877,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.686e-05,
-      "xsec": 0.1674,
+      "xsec": 0.1666,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 20000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1666,
+        "generator_unc": 0.0001371,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -14479,7 +16036,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.128e-05,
-      "xsec": 0.091,
+      "xsec": 0.09083,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.09083,
+        "generator_unc": 0.0001558,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -14621,7 +16195,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.59e-05,
-      "xsec": 0.06598,
+      "xsec": 0.06614,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 20000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.06614,
+        "generator_unc": 5.164e-05,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -14763,7 +16354,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.386e-05,
-      "xsec": 0.04032,
+      "xsec": 0.04037,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.04037,
+        "generator_unc": 6.622e-05,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -14906,6 +16514,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 6.99e-06,
       "xsec": 0.01766,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.01766,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -15048,6 +16665,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.074e-06,
       "xsec": 0.003045,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 12000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.003045,
+        "generator_unc": 2.792e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -15189,7 +16823,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.404e-05,
-      "xsec": 0.1592,
+      "xsec": 0.1593,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 7000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1593,
+        "generator_unc": 0.0002059,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -15331,7 +16982,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 7.462e-05,
-      "xsec": 0.1476,
+      "xsec": 0.1473,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1473,
+        "generator_unc": 0.0003121,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -15473,7 +17141,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.457e-05,
-      "xsec": 0.1325,
+      "xsec": 0.1351,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1351,
+        "generator_unc": 0.0003039,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -15615,7 +17300,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.825e-05,
-      "xsec": 0.1136,
+      "xsec": 0.1125,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.1125,
+        "generator_unc": 0.0002327,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -15757,7 +17459,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.645e-07,
-      "xsec": 0.002392,
+      "xsec": 0.00239,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 21000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.00239,
+        "generator_unc": 1.47e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -15899,7 +17618,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 7.417e-07,
-      "xsec": 0.001663,
+      "xsec": 0.001665,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001665,
+        "generator_unc": 2.356e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -16041,7 +17777,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.255e-07,
-      "xsec": 0.001546,
+      "xsec": 0.001552,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001552,
+        "generator_unc": 2.951e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -16183,7 +17936,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.732e-07,
-      "xsec": 0.001429,
+      "xsec": 0.001427,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 8000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001427,
+        "generator_unc": 1.708e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -16325,7 +18095,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.215e-07,
-      "xsec": 0.001307,
+      "xsec": 0.001306,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001306,
+        "generator_unc": 1.643e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -16468,6 +18255,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 4.004e-07,
       "xsec": 0.001181,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 32000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001181,
+        "generator_unc": 6.77e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -16610,6 +18414,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 3.533e-07,
       "xsec": 0.001049,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.001049,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -16751,7 +18564,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.155e-07,
-      "xsec": 0.0009136,
+      "xsec": 0.0009127,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0009127,
+        "generator_unc": 9.966e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -16893,7 +18723,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.643e-07,
-      "xsec": 0.0007709,
+      "xsec": 0.0007718,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0007718,
+        "generator_unc": 1.121e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -17035,7 +18882,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.231e-07,
-      "xsec": 0.0006299,
+      "xsec": 0.0006303,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 12000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0006303,
+        "generator_unc": 4.922e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -17177,7 +19041,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.505e-07,
-      "xsec": 0.0004911,
+      "xsec": 0.0004939,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0004939,
+        "generator_unc": 1.081e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -17319,7 +19200,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.735e-07,
-      "xsec": 0.002179,
+      "xsec": 0.002177,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.002177,
+        "generator_unc": 2.897e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -17461,7 +19359,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.174e-07,
-      "xsec": 0.0003574,
+      "xsec": 0.0003592,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0003592,
+        "generator_unc": 6.776e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -17603,7 +19518,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 7.892e-08,
-      "xsec": 0.0002355,
+      "xsec": 0.0002365,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0002365,
+        "generator_unc": 3.89e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -17745,7 +19677,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.662e-08,
-      "xsec": 0.000131,
+      "xsec": 0.0001326,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0001326,
+        "generator_unc": 2.569e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -17888,6 +19837,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.846e-08,
       "xsec": 5.48e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 5.48e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -18029,7 +19987,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.821e-09,
-      "xsec": 1.211e-05,
+      "xsec": 1.209e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.209e-05,
+        "generator_unc": 1.622e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -18171,7 +20146,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.315e-07,
-      "xsec": 0.002029,
+      "xsec": 0.00202,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.00202,
+        "generator_unc": 3.816e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -18313,7 +20305,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.2e-07,
-      "xsec": 0.001894,
+      "xsec": 0.001889,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001889,
+        "generator_unc": 4.579e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -18455,7 +20464,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 7.738e-07,
-      "xsec": 0.001772,
+      "xsec": 0.001778,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.001778,
+        "generator_unc": 3.742e-06,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -18597,7 +20623,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.753e-08,
-      "xsec": 0.0001938,
+      "xsec": 0.0001933,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0001933,
+        "generator_unc": 3.595e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -18739,7 +20782,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.4e-08,
-      "xsec": 9.105e-05,
+      "xsec": 9.099e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 9.099e-05,
+        "generator_unc": 1.471e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -18881,7 +20941,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.862e-08,
-      "xsec": 8.327e-05,
+      "xsec": 8.316e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 8.316e-05,
+        "generator_unc": 1.633e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -19023,7 +21100,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.988e-08,
-      "xsec": 7.698e-05,
+      "xsec": 7.721e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 7.721e-05,
+        "generator_unc": 1.818e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -19165,7 +21259,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.045e-08,
-      "xsec": 7.169e-05,
+      "xsec": 7.155e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 7.155e-05,
+        "generator_unc": 1.607e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -19307,7 +21418,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.251e-08,
-      "xsec": 6.697e-05,
+      "xsec": 6.695e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.695e-05,
+        "generator_unc": 8.364e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -19449,7 +21577,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.084e-08,
-      "xsec": 6.255e-05,
+      "xsec": 6.249e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.249e-05,
+        "generator_unc": 1.136e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -19592,6 +21737,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.956e-08,
       "xsec": 5.861e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 5.861e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -19733,7 +21887,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.759e-08,
-      "xsec": 5.477e-05,
+      "xsec": 5.513e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.513e-05,
+        "generator_unc": 9.808e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -19875,7 +22046,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.614e-08,
-      "xsec": 5.105e-05,
+      "xsec": 5.099e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 12000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.099e-05,
+        "generator_unc": 4.486e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -20017,7 +22205,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.511e-08,
-      "xsec": 4.738e-05,
+      "xsec": 4.747e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.747e-05,
+        "generator_unc": 7.89e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -20160,6 +22365,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 5.221e-08,
       "xsec": 0.0001556,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.0001556,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -20301,7 +22515,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.414e-08,
-      "xsec": 4.362e-05,
+      "xsec": 4.363e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 12000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.363e-05,
+        "generator_unc": 3.926e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -20443,7 +22674,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.523e-08,
-      "xsec": 3.978e-05,
+      "xsec": 3.949e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.949e-05,
+        "generator_unc": 9.87e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -20585,7 +22833,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.233e-08,
-      "xsec": 3.6e-05,
+      "xsec": 3.629e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.629e-05,
+        "generator_unc": 4.183e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -20727,7 +22992,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.139e-08,
-      "xsec": 3.217e-05,
+      "xsec": 3.241e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.241e-05,
+        "generator_unc": 4.764e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -20869,7 +23151,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.874e-09,
-      "xsec": 2.834e-05,
+      "xsec": 2.829e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.829e-05,
+        "generator_unc": 3.396e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -21011,7 +23310,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.552e-09,
-      "xsec": 2.449e-05,
+      "xsec": 2.439e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.439e-05,
+        "generator_unc": 3.938e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -21153,7 +23469,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.208e-09,
-      "xsec": 2.066e-05,
+      "xsec": 2.071e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.071e-05,
+        "generator_unc": 2.786e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -21295,7 +23628,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.391e-09,
-      "xsec": 1.703e-05,
+      "xsec": 1.709e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.709e-05,
+        "generator_unc": 2.864e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -21437,7 +23787,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.627e-09,
-      "xsec": 1.352e-05,
+      "xsec": 1.354e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 12000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.354e-05,
+        "generator_unc": 1.122e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -21579,7 +23946,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.411e-09,
-      "xsec": 1.026e-05,
+      "xsec": 1.03e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.03e-05,
+        "generator_unc": 1.377e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -21721,7 +24105,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.901e-08,
-      "xsec": 0.0001307,
+      "xsec": 0.0001302,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.0001302,
+        "generator_unc": 2.46e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -21863,7 +24264,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.531e-09,
-      "xsec": 7.283e-06,
+      "xsec": 7.274e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 7.274e-06,
+        "generator_unc": 1.164e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22005,7 +24423,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.416e-09,
-      "xsec": 4.685e-06,
+      "xsec": 4.666e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 11000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.666e-06,
+        "generator_unc": 3.482e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22147,7 +24582,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.976e-10,
-      "xsec": 2.618e-06,
+      "xsec": 2.613e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.613e-06,
+        "generator_unc": 3.59e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22289,7 +24741,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.381e-10,
-      "xsec": 1.137e-06,
+      "xsec": 1.157e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.157e-06,
+        "generator_unc": 2.784e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22431,7 +24900,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 9.383e-11,
-      "xsec": 3.269e-07,
+      "xsec": 3.258e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.258e-07,
+        "generator_unc": 9.808e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22573,7 +25059,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.226e-08,
-      "xsec": 0.0001132,
+      "xsec": 0.000114,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 0.000114,
+        "generator_unc": 3.119e-07,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22716,6 +25219,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 3.43e-08,
       "xsec": 0.0001007,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 0.0001007,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22858,6 +25370,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.328e-08,
       "xsec": 4.236e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 4.236e-05,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -22999,7 +25520,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 4.32e-09,
-      "xsec": 1.16e-05,
+      "xsec": 1.158e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.158e-05,
+        "generator_unc": 1.73e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -23141,7 +25679,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.512e-09,
-      "xsec": 9.748e-06,
+      "xsec": 9.739e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 9.739e-06,
+        "generator_unc": 2.062e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -23283,7 +25838,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.754e-09,
-      "xsec": 8.371e-06,
+      "xsec": 8.393e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 8.393e-06,
+        "generator_unc": 1.102e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -23425,7 +25997,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.565e-09,
-      "xsec": 7.343e-06,
+      "xsec": 7.377e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 7.377e-06,
+        "generator_unc": 1.452e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -23567,7 +26156,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.28e-09,
-      "xsec": 6.547e-06,
+      "xsec": 6.575e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.575e-06,
+        "generator_unc": 1.361e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -23709,7 +26315,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.065e-09,
-      "xsec": 5.926e-06,
+      "xsec": 5.975e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 15000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.975e-06,
+        "generator_unc": 5.566e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -23851,7 +26474,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.93e-09,
-      "xsec": 5.436e-06,
+      "xsec": 5.443e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.443e-06,
+        "generator_unc": 1.03e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -23993,7 +26633,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.767e-09,
-      "xsec": 5.038e-06,
+      "xsec": 5.026e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.026e-06,
+        "generator_unc": 1.064e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -24135,7 +26792,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.55e-09,
-      "xsec": 4.686e-06,
+      "xsec": 4.684e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.684e-06,
+        "generator_unc": 1.064e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -24277,7 +26951,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.537e-09,
-      "xsec": 4.392e-06,
+      "xsec": 4.376e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.376e-06,
+        "generator_unc": 1.047e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -24419,7 +27110,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 9.678e-09,
-      "xsec": 3.04e-05,
+      "xsec": 3.018e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.018e-05,
+        "generator_unc": 5.823e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -24561,7 +27269,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.418e-09,
-      "xsec": 4.122e-06,
+      "xsec": 4.139e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.139e-06,
+        "generator_unc": 7.132e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -24703,7 +27428,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.194e-09,
-      "xsec": 3.871e-06,
+      "xsec": 3.877e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.877e-06,
+        "generator_unc": 5.975e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -24845,7 +27587,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.199e-09,
-      "xsec": 3.653e-06,
+      "xsec": 3.643e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.643e-06,
+        "generator_unc": 6.745e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -24988,6 +27747,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 1.179e-09,
       "xsec": 3.434e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 6000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.434e-06,
+        "generator_unc": 4.273e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -25129,7 +27905,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.056e-09,
-      "xsec": 3.219e-06,
+      "xsec": 3.216e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.216e-06,
+        "generator_unc": 6.917e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -25271,7 +28064,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.034e-09,
-      "xsec": 3.015e-06,
+      "xsec": 3.042e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.042e-06,
+        "generator_unc": 5.591e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -25413,7 +28223,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.314e-10,
-      "xsec": 2.808e-06,
+      "xsec": 2.822e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 9000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.822e-06,
+        "generator_unc": 2.272e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -25555,7 +28382,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.231e-10,
-      "xsec": 2.598e-06,
+      "xsec": 2.604e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 29000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.604e-06,
+        "generator_unc": 1.356e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -25697,7 +28541,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 7.763e-10,
-      "xsec": 2.396e-06,
+      "xsec": 2.392e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.392e-06,
+        "generator_unc": 3.817e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -25839,7 +28700,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.758e-10,
-      "xsec": 2.189e-06,
+      "xsec": 2.191e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.191e-06,
+        "generator_unc": 3.365e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -25981,7 +28859,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.057e-09,
-      "xsec": 2.28e-05,
+      "xsec": 2.267e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.267e-05,
+        "generator_unc": 5.434e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -26124,6 +29019,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 7.205e-10,
       "xsec": 1.987e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 1.987e-06,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -26265,7 +29169,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.029e-10,
-      "xsec": 1.788e-06,
+      "xsec": 1.799e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.799e-06,
+        "generator_unc": 4.127e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -26407,7 +29328,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.51e-10,
-      "xsec": 1.586e-06,
+      "xsec": 1.587e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 12000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.587e-06,
+        "generator_unc": 1.383e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -26550,6 +29488,15 @@
       "skim_campaign": "v2",
       "total_uncertainty": 4.484e-10,
       "xsec": 1.394e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "kept_value": 1.394e-06,
+        "reason": "MiniAOD only on tape (no disk replica in Rucio); value kept on Billy's decision 2026-10-07: the 338 measured 2023 signal points agree with their config values to 0.986-1.020",
+        "status": "not measured",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -26692,6 +29639,23 @@
       "skim_campaign": "v2",
       "total_uncertainty": 3.572e-10,
       "xsec": 1.207e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.207e-06,
+        "generator_unc": 2.545e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -26833,7 +29797,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.262e-10,
-      "xsec": 1.022e-06,
+      "xsec": 1.019e-06,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.019e-06,
+        "generator_unc": 1.326e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -26975,7 +29956,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.846e-10,
-      "xsec": 8.489e-07,
+      "xsec": 8.437e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 8.437e-07,
+        "generator_unc": 2.084e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -27117,7 +30115,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 2.35e-10,
-      "xsec": 6.851e-07,
+      "xsec": 6.845e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 6.845e-07,
+        "generator_unc": 1.566e-09,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -27259,7 +30274,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.651e-10,
-      "xsec": 5.33e-07,
+      "xsec": 5.337e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 5.337e-07,
+        "generator_unc": 8.825e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -27401,7 +30433,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.365e-10,
-      "xsec": 3.952e-07,
+      "xsec": 3.969e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 5000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 3.969e-07,
+        "generator_unc": 5.167e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -27543,7 +30592,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 6.391e-09,
-      "xsec": 1.773e-05,
+      "xsec": 1.761e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.761e-05,
+        "generator_unc": 3.25e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -27685,7 +30751,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 8.395e-11,
-      "xsec": 2.74e-07,
+      "xsec": 2.743e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 2.743e-07,
+        "generator_unc": 6.803e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -27827,7 +30910,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.289e-11,
-      "xsec": 1.746e-07,
+      "xsec": 1.747e-07,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 15000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.747e-07,
+        "generator_unc": 1.556e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -27969,7 +31069,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.223e-11,
-      "xsec": 9.532e-08,
+      "xsec": 9.538e-08,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 9.538e-08,
+        "generator_unc": 1.961e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -28111,7 +31228,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 1.361e-11,
-      "xsec": 4.183e-08,
+      "xsec": 4.152e-08,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 4.152e-08,
+        "generator_unc": 1.033e-10,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -28253,7 +31387,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 3.275e-12,
-      "xsec": 1.245e-08,
+      "xsec": 1.227e-08,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 2000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.227e-08,
+        "generator_unc": 3.532e-11,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   },
@@ -28395,7 +31546,24 @@
       "sample": "WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8",
       "skim_campaign": "v2",
       "total_uncertainty": 5.076e-09,
-      "xsec": 1.416e-05,
+      "xsec": 1.421e-05,
+      "xsec_source": {
+        "copied_from": "Run3Summer23BPix",
+        "copy_note": "2024 signal placeholder: this is the Run3Summer23BPix sample (no 2024 WR signal production), so it carries the Run3Summer23BPix value; copied 2026-10-08",
+        "date": "2026-10-07",
+        "events_run": 3000,
+        "factor": 1.0,
+        "factor_reason": "generator value taken as is",
+        "generator": 1.421e-05,
+        "generator_unc": 2.713e-08,
+        "header": "inclusive",
+        "kfactor": 1.0,
+        "normalize": "reference",
+        "reference": null,
+        "reference_source": "",
+        "release": "CMSSW_13_0_13",
+        "tool": "GenXSecAnalyzer"
+      },
       "year": "2024"
     }
   }
