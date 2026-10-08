@@ -1,0 +1,153 @@
+# Branch policy for the skims (wrcoffea.skim.schema).
+#
+# Event-level filtering keeps whole events, so every per-object index branch
+# (Jet_genJetIdx, Electron_photonIdx, ...) stays valid as long as the
+# collection it points to is kept.  Collections are kept or dropped whole;
+# per-field drops are possible but not used so the skims stay general.
+#
+# The policy is intentionally loose: everything the analysis or a foreseeable
+# study might read is kept, and only collections that are both unused and a
+# significant share of the file size are dropped (measured 2026-10-04 on
+# NanoAOD v9/v12/v15 inputs; see docs/skimming.md for the table).
+version: 2
+
+# Collections (NanoAOD "n<Name>" + "<Name>_*" groups) written in full.
+keep_collections:
+  - Electron
+  - Muon
+  - Jet
+  - FatJet
+  - SubJet
+  - GenJet
+  - GenJetAK8
+  - SubGenJetAK8
+  - GenPart
+  - GenDressedLepton
+  - GenVtx
+  - GenMET
+  - GenIsolatedPhoton
+  - LHEPart
+  - LHE
+  - LHEWeight
+  - Generator
+  - Pileup
+  - PV
+  - OtherPV
+  - MET
+  - PFMET
+  - RawMET
+  - RawPFMET
+  - PuppiMET
+  - RawPuppiMET
+  - CaloMET
+  - ChsMET
+  - TkMET
+  - TrkMET
+  - DeepMETResolutionTune
+  - DeepMETResponseTune
+  - Rho
+  - Flag
+  - L1PreFiringWeight
+  - HTXS
+  - PVBS
+
+# Unused collections that are a significant share of every input file
+# (Tau 6-8 %, TrigObj 3-7 %, Photon 3-5 %, LowPtElectron 3-4 %, SV 3 %,
+# L1 bits 2-3 %, PFCand 2 %, PPS/Proton 7 % of data, ...).
+drop_collections:
+  - Tau
+  - boostedTau
+  - TauProd
+  - Photon
+  - LowPtElectron
+  - FsrPhoton
+  - IsoTrack
+  - SV
+  - TrigObj
+  - L1
+  - DST
+  - SoftActivityJet
+  - SoftActivityJetNjets2
+  - SoftActivityJetNjets5
+  - SoftActivityJetNjets10
+  - SoftActivityJetHT
+  - SoftActivityJetHT2
+  - SoftActivityJetHT5
+  - SoftActivityJetHT10
+  - CorrT1METJet
+  - PFCand
+  - TrackGenJetAK4
+  - Proton
+  - PPSLocalTrack
+  - GenProton
+  - GenVisTau
+  - GenCands
+  - btagWeight
+
+# Flat (non-collection) branches kept by exact name.
+keep_flat:
+  - run
+  - luminosityBlock
+  - event
+  - bunchCrossing
+  - genWeight
+  - genTtbarId
+  - HLTriggerFinalPath
+  - HLTriggerFirstPath
+  - LHEScaleWeight
+  - LHEPdfWeight
+  - LHEReweightingWeight
+  - PSWeight
+  - fixedGridRhoFastjetAll
+  - fixedGridRhoFastjetCentral
+  - fixedGridRhoFastjetCentralCalo
+  - fixedGridRhoFastjetCentralChargedPileUp
+  - fixedGridRhoFastjetCentralNeutral
+
+# Unknown branches: a branch that matches none of the rules above.
+# "keep" writes it (and the plan reports it); "drop" leaves it out.
+unknown_policy: keep
+
+# Trigger bits.  The output always contains every path listed under
+# "required" (filled with False in files that lack it, which is recorded in
+# the sidecar), plus every HLT_* branch of the sampled input files that
+# matches one of the "patterns".  Other HLT_* branches are dropped.
+triggers:
+  required:
+    # Run 2 and Run 3 single-muon paths
+    - HLT_Mu50
+    - HLT_TkMu50
+    - HLT_OldMu100
+    - HLT_TkMu100
+    - HLT_HighPtTkMu100
+    - HLT_CascadeMu100
+    - HLT_Mu55
+    - HLT_IsoMu24
+    - HLT_IsoMu27
+    # Run 2 and Run 3 single-electron and photon paths
+    - HLT_Ele27_WPTight_Gsf
+    - HLT_Ele30_WPTight_Gsf
+    - HLT_Ele32_WPTight_Gsf
+    - HLT_Ele35_WPTight_Gsf
+    - HLT_Ele115_CaloIdVT_GsfTrkIdT
+    - HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165
+    - HLT_Photon175
+    - HLT_Photon200
+    - HLT_Ele32_WPTight_Gsf_L1DoubleEG
+  patterns:
+    - "HLT_Mu*"
+    - "HLT_IsoMu*"
+    - "HLT_TkMu*"
+    - "HLT_OldMu*"
+    - "HLT_HighPtTkMu*"
+    - "HLT_CascadeMu*"
+    - "HLT_DoubleMu*"
+    - "HLT_Ele*"
+    - "HLT_DoubleEle*"
+    - "HLT_Photon*"
+    - "HLT_DoublePhoton*"
+    - "HLT_PFJet*"
+    - "HLT_AK8PFJet*"
+    - "HLT_PFHT*"
+    - "HLT_MET*"
+    - "HLT_PFMET*"

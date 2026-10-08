@@ -19,6 +19,7 @@ dependencies = [
     "dask-awkward>=2025.5,<2026",
     "uproot==5.7.1",
     "pyyaml==6.0.3",
+    "zstandard>=0.25.0",
 ]
 
 [project.optional-dependencies]
@@ -29,7 +30,7 @@ xrootd = ["xrootd", "fsspec-xrootd"]
 test = ["pytest>=7"]
 
 [tool.setuptools.package-data]
-wrcoffea = ["config.yaml"]
+wrcoffea = ["config.yaml", "skim/*.yaml"]
 
 [tool.setuptools.packages.find]
 include = ["wrcoffea*"]

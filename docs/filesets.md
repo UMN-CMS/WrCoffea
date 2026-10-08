@@ -29,6 +29,8 @@ python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy lo_inc
 
 ## Skimmed Filesets
 
+> For skims produced by the new campaign tooling (October 2026 onwards) the filesets are written by `python3 bin/skim.py fileset --plan-dir plans/<campaign>` directly from the campaign plan and the part sidecars, including `genEventSumw` and the theory-weight sums taken from the skims' own Runs trees. The script below remains for the earlier Wisconsin skims.
+
 Use `scripts/skimmed_fileset.py` to build filesets pointing to pre-existing skimmed NanoAOD files at Wisconsin or UMN storage. No `--dataset` argument is needed.
 
 ```bash

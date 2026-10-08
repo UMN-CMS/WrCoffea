@@ -105,16 +105,18 @@ See **[Running on Condor](docs/condor.md)** for full documentation: setup, worke
 
 ## Skimming
 
-The skimmer applies a loose event preselection to NanoAOD files, reducing file sizes for faster analysis iteration. It uses `bin/skim.py` with subcommands for the full workflow: skim locally or on Condor, check for failures, and merge outputs.
+The skims keep every event that could enter any analysis region (two leptons above 45 GeV with the leading one above 52 GeV, plus two AK4 jets or one AK8 jet) and every branch the analysis can use. The campaign tooling in `wrcoffea/skim/` plans a campaign from the config JSONs through DBS, downloads each input with checksum verification, skims it with two independent selection implementations that must agree, writes size-bounded parts with one schema per dataset, and validates every part against the inputs.
 
 ```bash
-python3 bin/skim.py --cuts                                           # show skim cuts
-python3 bin/skim.py run /TTto2L2Nu_.../NANOAODSIM                    # submit all to Condor
-python3 bin/skim.py check /TTto2L2Nu_.../NANOAODSIM                  # check for failures
-python3 bin/skim.py merge /TTto2L2Nu_.../NANOAODSIM                  # extract + hadd + validate
+python3 bin/skim.py cuts                                                     # selection and branch policy
+python3 bin/skim.py plan --campaign v2 --plan-dir plans/v2 --era RunIII2024Summer24
+python3 bin/skim.py run --plan-dir plans/v2 --dataset TTto2L2Nu --workers 3  # one dataset at a time
+python3 bin/skim.py status --plan-dir plans/v2
+python3 bin/skim.py validate --plan-dir plans/v2 --report plans/v2/validation.json
+python3 bin/skim.py upload --plan-dir plans/v2 && python3 bin/skim.py fileset --plan-dir plans/v2
 ```
 
-See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all subcommand flags, output layout, and architecture.
+See **[Skimming](docs/skimming.md)** for the selection, the branch policy, the output layout, the verification steps and the full workflow.
 
 ---
 
@@ -145,7 +147,7 @@ See **[Skimming](docs/skimming.md)** for full documentation: selection cuts, all
 | `--syst-observables` | `all` `fit` or `<hist names>` | Histograms that receive the variations (default: all) |
 | `--omit-systs` | `<source names>` | Record a deliberate omission of named sources (needed when an era lacks the inputs for a source) |
 | `--study` | `transfer-factor` | Add a study's extra regions to the output. `transfer-factor` adds SR / flavor-CR copies without the m > 800 GeV cut (suffix `_nomass`) for the eμ transfer-factor closure |
-| `--split-groups` | `tt_tW` | Composite runs: save these groups as one ROOT file per subgroup (e.g. `WRAnalyzer_TTbar.root` and `WRAnalyzer_tW.root`) |
+| `--split-groups` | `tt_tW`, `Nonprompt`, `Other` | Composite runs: save these groups as one ROOT file per subgroup (`tt_tW` → `TTbar`/`tW`; `Nonprompt` → `WJets`/`TTSemiLep`/`SingleTop`; `Other` → `Diboson`/`Triboson`/`ttV`) |
 | `--xrd-fallback` | | Enable XRootD redirector fallback during unskimmed preprocess |
 | `--xrd-fallback-timeout` | `<int>` | Seconds per fallback probe (default: 10) |
 | `--xrd-fallback-retries-per-redirector` | `<int>` | Probe attempts per redirector during fallback (default: 10) |
@@ -217,8 +219,7 @@ test/        # Development and validation scripts
 
 **`bin/`** - Production Scripts
 - [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script (single samples and composite modes)
-- [`skim.py`](bin/skim.py) - Skimming pipeline (`run`, `check`, `merge` subcommands)
-- [`skim_job.sh`](bin/skim_job.sh) - Condor worker shell script for skimming
+- [`skim.py`](bin/skim.py) - Skim campaign driver (`plan`, `run`, `group`, `status`, `validate`, `upload`, `fileset`, `cuts`)
 
 **`wrcoffea/`** - Installable Python Package
 - [`analyzer.py`](wrcoffea/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis (object selection, resolved/boosted regions, histogram filling, cutflows)
@@ -230,8 +231,7 @@ test/        # Development and validation scripts
 - [`fileset_utils.py`](wrcoffea/fileset_utils.py) - Fileset path construction, config parsing, JSON writing
 - [`fileset_validation.py`](wrcoffea/fileset_validation.py) - Schema and selection validation for filesets
 - [`save_hists.py`](wrcoffea/save_hists.py) - ROOT histogram serialization
-- [`skimmer.py`](wrcoffea/skimmer.py) - Skim selection, Runs tree handling, single-file skimming
-- [`skim_merge.py`](wrcoffea/skim_merge.py) - Post-skim merging, HLT grouping, hadd, validation
+- [`skim/`](wrcoffea/skim/) - Skim campaign toolkit: `catalog` (DBS/Rucio), `plan`, `fetch`, `selection` + `recount`, `schema` + `branches.yaml`, `writer`, `worker`, `validate`, `upload`
 - [`das_utils.py`](wrcoffea/das_utils.py) - DAS dataset path validation, dasgoclient queries, XRootD URL construction
 - [`xrootd_fallback.py`](wrcoffea/xrootd_fallback.py) - XRootD redirector fallback for unskimmed file preprocessing
 
@@ -255,7 +255,7 @@ test/        # Development and validation scripts
 - [`getting_started.md`](docs/getting_started.md) - Installation, environment setup, grid proxy
 - [`run_analysis.md`](docs/run_analysis.md) - Detailed analysis options and workflows
 - [`filesets.md`](docs/filesets.md) - Fileset creation instructions
-- [`skimming.md`](docs/skimming.md) - Skimming pipeline: cuts, subcommands, Condor jobs, output layout
+- [`skimming.md`](docs/skimming.md) - Skim campaign: selection, branch policy, workflow, verification, output layout
 - [`condor.md`](docs/condor.md) - HTCondor setup, worker defaults, tmux, logs
 - [`run_combine.md`](docs/run_combine.md) - Limit-setting with Combine framework
 
@@ -300,7 +300,7 @@ pip install -e ".[test]"
 - **[Getting Started](docs/getting_started.md)** - Installation, environment setup, and grid proxy
 - **[Running the Analyzer](docs/run_analysis.md)** - Detailed analysis options and workflows
 - **[Creating Filesets](docs/filesets.md)** - Instructions for generating NanoAOD file lists
-- **[Skimming](docs/skimming.md)** - Skimming pipeline: selection cuts, CLI reference, Condor job details
+- **[Skimming](docs/skimming.md)** - Skim campaign: selection, branch policy, workflow, verification
 - **[Running on Condor](docs/condor.md)** - HTCondor setup, worker defaults, tmux tips, log locations
 - **[Expected Limits](docs/run_combine.md)** - Limit-setting with Higgs Combine framework
 - **[WR Plotter](WR_Plotter/README.md)** - Plotting ROOT histograms and making stackplots
