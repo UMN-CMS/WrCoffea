@@ -81,7 +81,7 @@ FIT_KEYWORD = "fit"
 # Public CLI families, in the order they are documented.
 FAMILIES: tuple[str, ...] = (
     "lumi", "pileup", "sf", "jer", "jes", "elescale", "elesmear", "muscale", "musmear",
-    "dyzpt", "lsf", "dyreshape",
+    "dyzpt", "lsf", "dyreshape", "scale", "ps",
 )
 
 # The JES source that keeps the historical bare "JES" label.
@@ -314,8 +314,23 @@ _MUON_TUNEP_NOTE = (
     "replace with the Muon POG generalized-endpoint prescription before use in a fit."
 )
 
+_THEORY_NOTE = (
+    "Per-event generator weight divided by the dataset-level ratio from the config "
+    "(scripts/gen_event_sumw.py), so the total yield is unchanged and only acceptance "
+    "and shape move. A sample generated without the branch (pure-Pythia 8 WW/WZ/ZZ have no "
+    "LHEScaleWeight) gets the nominal weight with a warning, and so do single events without "
+    "the weights (one file each in 2022 ZZZ and WR MWR6000_N1500 22EE, see docs/skimming.md)."
+)
+
 _STATIC_SOURCES: dict[str, list[Systematic]] = {
     "lumi": [Systematic("Lumi", "lumi", NORMALIZATION, available_in=lambda e: e in LUMI_UNC)],
+    # QCD renormalization / factorization scales (LHEScaleWeight, 9-weight NanoAOD order)
+    "scale": [Systematic("ScaleMuR", "scale", WEIGHT, note=_THEORY_NOTE),
+              Systematic("ScaleMuF", "scale", WEIGHT, note=_THEORY_NOTE),
+              Systematic("ScaleMuRF", "scale", WEIGHT, note=_THEORY_NOTE)],
+    # parton-shower ISR / FSR (PSWeight: [ISR x2, FSR x2, ISR x0.5, FSR x0.5])
+    "ps": [Systematic("PSISR", "ps", WEIGHT, note=_THEORY_NOTE),
+           Systematic("PSFSR", "ps", WEIGHT, note=_THEORY_NOTE)],
     "pileup": [Systematic("Pileup", "pileup", WEIGHT, available_in=lambda e: e in PILEUP_JSONS)],
     "sf": _sf_sources(),
     "jer": [Systematic("JER", "jer", SHAPE, available_in=_has_jer_variations,

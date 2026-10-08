@@ -467,6 +467,7 @@ def _process_fileset(args, fileset, *, client, condor=False):
         region_variants=resolve_studies(args.study),
         syst_observables=getattr(args, "syst_observables", None),
         omit_systs=getattr(args, "omit_systs", None),
+        save_events=bool(getattr(args, "save_events", False)),
         dy_zpt_reweight=not getattr(args, "no_dy_zpt_reweight", False),
         signal_kfactor=not getattr(args, "no_signal_kfactor", False),
         dy_reshape=not getattr(args, "no_dy_reshape", False),
@@ -584,7 +585,7 @@ if __name__ == "__main__":
     optional.add_argument("--maxfiles", type=int, default=None, help="Max files per dataset (default: all). Use 1 for quick testing.")
     optional.add_argument("--systs", nargs="*", default=[], choices=list(FAMILIES), metavar="FAMILY",
                           help=f"Enable systematic histogram variations (choices: {', '.join(FAMILIES)}). "
-                               "Weight-based: pileup, sf, dyzpt, lsf, dyreshape. Shape (re-run selections): jer, jes, elescale, "
+                               "Weight-based: pileup, sf, dyzpt, lsf, dyreshape, scale (QCD muR/muF), ps (ISR/FSR). Shape (re-run selections): jer, jes, elescale, "
                                "elesmear, muscale, musmear. Normalization (scaled at export): lumi. "
                                "A family the era cannot produce is an error, not a silent skip.")
     optional.add_argument("--omit-systs", nargs="*", default=[], metavar="SOURCE",
@@ -617,6 +618,9 @@ if __name__ == "__main__":
                                "adds SR/flavor-CR copies without the m > 800 GeV cut (suffix _nomass).")
     optional.add_argument("--split-groups", nargs="*", default=[], choices=SPLITTABLE_GROUPS, metavar="GROUP",
                           help=f"Composite runs: save these physics groups as one file per subgroup (choices: {', '.join(SPLITTABLE_GROUPS)}).")
+    optional.add_argument("--save-events", action="store_true",
+                          help="Also write the per-event (mass, nominal weight) of the signal regions as TTrees "
+                               "events_<region> (resolved: mass_fourobject, boosted: mass_twoobject) into the output files.")
     optional.add_argument("--preflight-only", action="store_true", help="Validate fileset path/schema and selection, then exit without processing.")
     optional.add_argument(
         "--xrd-fallback",

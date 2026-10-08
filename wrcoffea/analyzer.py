@@ -71,6 +71,7 @@ from wrcoffea.histograms import (
 
 ak.behavior.update(vector.behavior)
 logger = logging.getLogger(__name__)
+_WARN_ONCE_ANALYZER: set = set()
 
 # Cache correctionlib payloads per worker process (avoid re-reading JSON every chunk).
 _CORRECTIONSET_CACHE = {}
@@ -121,9 +122,14 @@ class WrAnalysis(processor.ProcessorABC):
     """
     def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False,
                  region_variants=None, syst_observables=None, omit_systs=None,
-                 dy_zpt_reweight=True, signal_kfactor=True, dy_reshape=True):
+                 dy_zpt_reweight=True, signal_kfactor=True, dy_reshape=True,
+                 save_events=False):
         self._signal_sample = mass_point
         self._compute_sumw = compute_sumw
+        # --save-events: also keep the per-event (mass, nominal weight) of the
+        # signal regions (resolved: mass_fourobject, boosted: mass_twoobject),
+        # written as TTrees next to the histograms (save_hists).
+        self._save_events = bool(save_events)
         self._dy_zpt_reweight = bool(dy_zpt_reweight)
         self._dy_reshape = bool(dy_reshape) and self._dy_zpt_reweight
         self._signal_kfactor = bool(signal_kfactor)
@@ -1008,10 +1014,21 @@ class WrAnalysis(processor.ProcessorABC):
 
             weights.add("event_weight", event_weight)
 
-            # Pileup reweighting.
+            # Pileup reweighting.  The "2024" signal is a Run3Summer23BPix
+            # placeholder (no 2024 signal production yet): weight it with its
+            # own campaign's pileup profile, as the jet-ID remap already does;
+            # the 2024 profile on a 2023 sample gave +260%/-60% variations.
             era = metadata.get("era")
-            if era in PILEUP_JSONS:
-                pu_nom, pu_up, pu_down = pileup_weight(events, era)
+            pu_era = era
+            if era == "RunIII2024Summer24" and metadata.get("physics_group") == SIGNAL_PROCESS_GROUP:
+                pu_era = "Run3Summer23BPix"
+                key = f"pileup_placeholder_era::{era}"
+                if key not in _WARN_ONCE_ANALYZER:
+                    _WARN_ONCE_ANALYZER.add(key)
+                    logger.info("Placeholder 2024 signal: pileup weights evaluated with the "
+                                "%s profile (sample campaign); lumi stays %s.", pu_era, era)
+            if pu_era in PILEUP_JSONS:
+                pu_nom, pu_up, pu_down = pileup_weight(events, pu_era)
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
             # DY Z-pT reweighting (QCD NLO/LO x EW, ported from the Run 2
@@ -1041,6 +1058,12 @@ class WrAnalysis(processor.ProcessorABC):
                 syst_weights["PileupUp"] = weights.weight(modifier="pileupUp")
                 syst_weights["PileupDown"] = weights.weight(modifier="pileupDown")
 
+            # Theory weights (QCD scales, parton shower): normalized per-event
+            # ratios, relative to the nominal like the DY variations below.
+            for name, (w_up, w_dn) in self._theory_variations(events, metadata, era).items():
+                syst_weights[f"{name}Up"] = syst_weights[NOMINAL] * w_up
+                syst_weights[f"{name}Down"] = syst_weights[NOMINAL] * w_dn
+
             # DY Z-pT variations: swap the nominal reweight for the varied one.
             if dy is not None:
                 allowed = self._producible_names(era, WEIGHT)
@@ -1057,6 +1080,83 @@ class WrAnalysis(processor.ProcessorABC):
             }
 
         return weights, syst_weights
+
+    # (up, down) indices in the NanoAOD 9-weight LHEScaleWeight order
+    # [muR,muF] = [0.5,0.5] [0.5,1] [0.5,2] [1,0.5] [1,1] [1,2] [2,0.5] [2,1] [2,2]
+    _SCALE_INDEX = {"ScaleMuR": (7, 1), "ScaleMuF": (5, 3), "ScaleMuRF": (8, 0)}
+    # PSWeight order: [ISR x2, FSR x2, ISR x0.5, FSR x0.5]
+    _PS_INDEX = {"PSISR": (0, 2), "PSFSR": (1, 3)}
+
+    def _theory_variations(self, events, metadata, era):
+        """{name: (w_up, w_down)} per-event multiplicative variations for the
+        enabled theory sources.  Each weight is the generator ratio divided by
+        the dataset-level ratio from the config metadata (``LHEScaleSumw`` /
+        ``PSSumw`` written by scripts/gen_event_sumw.py), so the dataset's
+        total yield is unchanged.  Missing config ratios are errors.  A dataset
+        without the branch (pure-Pythia 8 WW/WZ/ZZ have no LHEScaleWeight) gets
+        the nominal weight with one warning per dataset.  Within a dataset, an
+        event with NO weights (one file each in 2022 ZZZ and the 22EE WR
+        MWR6000_N1500 point, see docs/skimming.md) also gets the nominal weight,
+        with a warning; any other count mismatch is an error."""
+        allowed = self._producible_names(era, WEIGHT)
+        out = {}
+        sample = metadata.get("sample") or metadata.get("dataset")
+        for family, index, branch, key in (("scale", self._SCALE_INDEX, "LHEScaleWeight", "LHEScaleSumw"),
+                                           ("ps", self._PS_INDEX, "PSWeight", "PSSumw")):
+            names = [n for n in index if n in allowed]
+            if not names:
+                continue
+            if branch not in events.fields:
+                # A sample generated without that step (pure Pythia 8 dibosons
+                # have no LHE scale weights) carries no such variation: fill it
+                # with the nominal weight so the group's varied histogram keeps
+                # the sample, and say so loudly, once per dataset.
+                key_w = f"theory_nominal::{family}::{sample}"
+                if key_w not in _WARN_ONCE_ANALYZER:
+                    _WARN_ONCE_ANALYZER.add(key_w)
+                    logger.warning("--systs %s: dataset '%s' has no %s branch; its %s variations "
+                                   "are filled with the NOMINAL weight (no theory uncertainty "
+                                   "defined for this sample).", family, sample, branch, "/".join(names))
+                ones = np.ones(len(events), dtype=np.float64)
+                for name in names:
+                    out[name] = (ones, ones)
+                continue
+            ratios = metadata.get(key)
+            n_exp = 9 if family == "scale" else 4
+            if not ratios or len(ratios) != n_exp:
+                raise ValueError(
+                    f"--systs {family}: config metadata of '{sample}' has no {n_exp}-entry "
+                    f"'{key}'. Run scripts/gen_event_sumw.py on the config and regenerate the "
+                    "fileset; the skims' Runs-tree values are summed over files and must not be used.")
+            counts = ak.to_numpy(ak.num(events[branch]))
+            if len(counts) and not np.all((counts == n_exp) | (counts == 0)):
+                raise ValueError(
+                    f"--systs {family}: '{sample}' has {sorted(set(counts.tolist()))} {branch} "
+                    f"entries per event, expected {n_exp}.")
+            # Events with NO weights at all come from a production file written without
+            # them (one file each in 2022 ZZZ and the 22EE WR MWR6000_N1500 point; see
+            # docs/skimming.md "Known input defects"). They get the nominal weight (factor
+            # exactly 1): the dataset-level ratio in the metadata is computed from the
+            # files that do have the weights, so the total yield stays unchanged.
+            missing = counts == 0
+            if missing.any():
+                key_w = f"theory_partial::{family}::{sample}"
+                if key_w not in _WARN_ONCE_ANALYZER:
+                    _WARN_ONCE_ANALYZER.add(key_w)
+                    logger.warning("--systs %s: %d of %d events of '%s' in this chunk have no %s; "
+                                   "their %s variations use the NOMINAL weight (see docs/skimming.md, "
+                                   "\"Known input defects\").", family, int(missing.sum()), len(counts),
+                                   sample, branch, "/".join(names))
+            w = ak.to_numpy(ak.fill_none(ak.pad_none(events[branch], n_exp, clip=True), 1.0))
+            r = np.asarray(ratios, dtype=np.float64)
+            for name in names:
+                iu, idn = index[name]
+                up, down = w[:, iu] / r[iu], w[:, idn] / r[idn]
+                if missing.any():
+                    up = np.where(missing, 1.0, up)
+                    down = np.where(missing, 1.0, down)
+                out[name] = (up, down)
+        return out
 
     def _dy_reshape_for_region(self, syst_weights, kind, jet_pt, era, process_name, is_mc):
         """Multiply the DY reshape ratio (and its variations) into region weights.
@@ -1378,7 +1478,7 @@ class WrAnalysis(processor.ProcessorABC):
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
-                       *, is_mc, skip_cutflows=False):
+                       *, is_mc, skip_cutflows=False, event_lists=None):
         """Build resolved region masks and fill histograms + cutflows.
 
         Regions (and any enabled variants) come from ``wrcoffea.regions``.
@@ -1399,7 +1499,7 @@ class WrAnalysis(processor.ProcessorABC):
             )
             coverage[region] = fill_resolved_histograms(
                 output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst,
-                syst_observables=self._syst_observables,
+                syst_observables=self._syst_observables, event_lists=event_lists,
             )
 
         if not skip_cutflows:
@@ -1420,7 +1520,7 @@ class WrAnalysis(processor.ProcessorABC):
         return col[pdg == 13], col[pdg == 11]
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
-                      era, *, is_mc, skip_cutflows=False):
+                      era, *, is_mc, skip_cutflows=False, event_lists=None):
         """Unpack boosted payload, build region masks, and fill histograms.
 
         Returns ``{region: set(labels filled)}``.
@@ -1468,7 +1568,7 @@ class WrAnalysis(processor.ProcessorABC):
             )
             coverage[region] = fill_boosted_histograms(
                 output, region, cuts, process_name, tight_lep, ak8, sublead, weights, region_syst,
-                syst_observables=self._syst_observables,
+                syst_observables=self._syst_observables, event_lists=event_lists,
             )
         return coverage
 
@@ -1602,17 +1702,20 @@ class WrAnalysis(processor.ProcessorABC):
             for label in nominal_aliases:
                 syst_weights[label] = weights.weight()
 
-        # Fill histograms.
+        # Fill histograms (and, with --save-events, the per-event SR lists).
+        event_lists = output.setdefault("event_lists", {}) if self._save_events else None
         coverage = {}
         if resolved_selections is not None:
             coverage.update(self._fill_resolved(
                 output, resolved_selections, process_name, ak4_jets, tight_leptons,
                 weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
+                event_lists=event_lists,
             ))
 
         if boosted_payload is not None:
             coverage.update(self._fill_boosted(
                 output, boosted_payload, process_name, weights, syst_weights, era, is_mc=is_mc,
+                event_lists=event_lists,
             ))
 
         # Shape systematics: re-run selections with shifted kinematics.

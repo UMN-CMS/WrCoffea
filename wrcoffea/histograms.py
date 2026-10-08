@@ -21,6 +21,7 @@ from typing import Callable
 import awkward as ak
 import hist
 import numpy as np
+from coffea.processor import column_accumulator
 
 from wrcoffea.analysis_config import (
     CUTS,
@@ -162,8 +163,23 @@ def create_hist2D(name_x, bins_x, label_x,
         .Reg(*bins_y, name=name_y, label=label_y)
         .Weight()
     )
+
+def record_events(event_lists, region, values, weights):
+    """Append the per-event (mass, nominal weight) of one region to the
+    ``event_lists`` accumulator dict ({region: {"mass": column_accumulator,
+    "weight": column_accumulator}}), used by --save-events."""
+    vals = np.asarray(ak.to_numpy(values), dtype=np.float64)
+    wts = np.asarray(ak.to_numpy(weights), dtype=np.float64)
+    cols = event_lists.setdefault(region, {})
+    for key, arr in (("mass", vals), ("weight", wts)):
+        if key in cols:
+            cols[key].add(column_accumulator(arr))
+        else:
+            cols[key] = column_accumulator(arr)
+
+
 def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, weights, syst_weights,
-                             syst_observables=None):
+                             syst_observables=None, event_lists=None):
     """Fill all resolved-region histograms for a given region selection mask.
 
     Returns the set of syst labels completed for *region*.
@@ -181,6 +197,9 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
         if not labels:
             continue
         vals = expr(leptons_cut, jets_cut, dilepton, dijet)
+        if (event_lists is not None and hist_name == "mass_fourobject"
+                and region.endswith("_sr") and NOMINAL in syst_weights_cut):
+            record_events(event_lists, region, vals, syst_weights_cut[NOMINAL])
         for syst_label in labels:
             sw = syst_weights_cut[syst_label]
             output[hist_name].fill(
@@ -217,7 +236,7 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
 
 
 def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets, looseleptons, weights, syst_weights,
-                            syst_observables=None):
+                            syst_observables=None, event_lists=None):
     """Fill all boosted-region histograms for a given region selection mask.
 
     Returns the set of syst labels completed for *region*.
@@ -250,6 +269,9 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
         if not labels:
             continue
         vals = vals_all[cut]
+        if (event_lists is not None and hist_name == "mass_twoobject"
+                and region.endswith("_sr") and NOMINAL in syst_weights_cut):
+            record_events(event_lists, region, vals, syst_weights_cut[NOMINAL])
         for syst_label in labels:
             sw = syst_weights_cut[syst_label]
             output[hist_name].fill(

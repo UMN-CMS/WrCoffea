@@ -182,6 +182,33 @@ def _save_cutflows(root_file, cutflow_summed: Dict[str, dict], prefix: str):
     _recurse(prefix, cutflow_summed)
 
 
+def _save_event_lists(root_file, my_hists):
+    """Write the --save-events per-event lists as TTrees ``events_<region>``
+    (branches ``mass`` and ``weight``), concatenated over the datasets of
+    this output file.  No-op when the run was made without --save-events."""
+    merged: Dict[str, Dict[str, list]] = {}
+    for payload in my_hists.values():
+        lists = payload.get("event_lists") if isinstance(payload, dict) else None
+        if not lists:
+            continue
+        for region, cols in lists.items():
+            dst = merged.setdefault(region, {"mass": [], "weight": []})
+            for key in ("mass", "weight"):
+                acc = cols.get(key)
+                if acc is not None:
+                    dst[key].append(np.asarray(getattr(acc, "value", acc), dtype=np.float64))
+    for region, cols in sorted(merged.items()):
+        mass = np.concatenate(cols["mass"]) if cols["mass"] else np.zeros(0)
+        weight = np.concatenate(cols["weight"]) if cols["weight"] else np.zeros(0)
+        if len(mass) != len(weight):
+            raise RuntimeError(f"event list for {region}: {len(mass)} masses vs {len(weight)} weights")
+        # a classic TTree (not an RNTuple), readable by every ROOT in use
+        tree = root_file.mktree(f"events_{region}", {"mass": np.float64, "weight": np.float64})
+        if len(mass):
+            tree.extend({"mass": mass, "weight": weight})
+        logger.info("  event list %s: %d events, sum of weights %.3f", region, len(mass), weight.sum())
+
+
 # ---------------------------------------------------------------------------
 # Coverage records
 # ---------------------------------------------------------------------------
@@ -728,6 +755,7 @@ def save_histograms(histograms, args):
 
         _save_cutflows(root_file, cutflow_resolved_summed, "/cutflow_resolved")
         _save_cutflows(root_file, cutflow_boosted_summed, "/cutflow_boosted")
+        _save_event_lists(root_file, histograms)
 
     manifest = build_manifest(
         report, era=era, sample=(f"signal_{hnwr_mass}" if sample == "Signal" else sample),

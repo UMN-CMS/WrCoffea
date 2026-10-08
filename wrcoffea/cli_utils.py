@@ -20,12 +20,26 @@ COMPOSITE_SAMPLES: dict[str, list[str]] = {
     "mc":     ["DYJets", "tt_tW", "Nonprompt", "Other", "Signal"],
 }
 
-# Sub-samples within tt_tW, filtered by dataset name pattern.
-# Use "TTto2L2Nu" (dileptonic) specifically — semileptonic ttbar
-# (e.g. TTtoLNu2Q) belongs in Nonprompt, not here.
+# Sub-samples within a physics group, filtered by dataset-name prefix
+# (metadata['sample']); prefixes cover both the Run3 and the RunII-UL naming.
+# subgroup -> (parent group, [name prefixes]).  Matching is restricted to the
+# parent group, and the first matching subgroup wins, so keep the prefixes
+# unambiguous within a parent (e.g. diboson "WW_" vs triboson "WWW").
+# Use "TTto2L2Nu"/"TTTo2L2Nu" (dileptonic) for TTbar specifically —
+# semileptonic ttbar (TTtoLNu2Q / TTToSemiLeptonic) belongs in Nonprompt.
 _PHYSICS_SUBGROUPS: dict[str, tuple[str, list[str]]] = {
-    "TTbar": ("tt_tW", ["TTto2L2Nu"]),
-    "tW":    ("tt_tW", ["TWminus", "TbarWplus"]),
+    # tt_tW
+    "TTbar":     ("tt_tW",     ["TTto2L2Nu", "TTTo2L2Nu"]),
+    "tW":        ("tt_tW",     ["TWminus", "TbarWplus", "ST_tW_"]),
+    # Nonprompt
+    "WJets":     ("Nonprompt", ["WJetsToLNu", "WtoLNu"]),
+    "TTSemiLep": ("Nonprompt", ["TTtoLNu2Q", "TTToSemiLeptonic"]),
+    "SingleTop": ("Nonprompt", ["ST_s-channel", "ST_t-channel",
+                                "TBbarQ", "TbarBQ", "TBbarto", "TbarBto"]),
+    # Other
+    "Diboson":   ("Other",     ["WW_", "WZ_", "ZZ_"]),
+    "Triboson":  ("Other",     ["WWW", "WWZ", "WZZ", "ZZZ"]),
+    "ttV":       ("Other",     ["ttZJets", "ttWJets", "TTLL", "TTLNu", "TTZ", "TTW"]),
 }
 
 # Physics groups that can be split into separate output files (--split-groups).
@@ -79,7 +93,15 @@ def list_eras() -> list[str]:
 def list_samples() -> list[str]:
     """Return supported top-level sample choices for the CLI."""
 
-    return ["DYJets", "tt_tW", "TTbar", "tW", "Nonprompt", "Other", "EGamma", "Muon", "Signal"]
+    # the physics groups plus every sub-sample of _PHYSICS_SUBGROUPS (TTbar, tW,
+    # WJets, TTSemiLep, SingleTop, Diboson, Triboson, ttV), each runnable on
+    # its own: the output is WRAnalyzer_<sample>.root
+    base = ["DYJets", "tt_tW", "Nonprompt", "Other", "EGamma", "Muon", "Signal"]
+    out = []
+    for name in base:
+        out.append(name)
+        out.extend(sub for sub, (parent, _) in _PHYSICS_SUBGROUPS.items() if parent == name)
+    return out
 
 
 def normalize_mass_point(mass: str | None) -> str | None:

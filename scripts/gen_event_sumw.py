@@ -240,10 +240,14 @@ def compute_dataset_genEventSumw(
     sleep_s: float,
     max_files: int,
     exclude_lfns: Optional[List[str]] = None,
+    workers: int = 1,
 ) -> DatasetSumwResult:
     """
     Returns dataset-level sumw and file status counts.
     If max_files>0, uses only first max_files files.
+    With workers>1 the files are opened concurrently (the Runs-tree read is
+    latency bound); the sums are accumulated in the calling thread in file
+    order, so the result is identical to the sequential one.
     """
     files = das_files_for_dataset(dataset)
     if not files:
@@ -265,15 +269,25 @@ def compute_dataset_genEventSumw(
     good_files = 0
     lhe_sums: Dict[str, np.ndarray] = {}
     lhe_counts: Dict[str, int] = {}
-    for i, lf in enumerate(files, start=1):
-        logger.debug("[%d/%d] %s", i, len(files), lf)
-        result = file_genEventSumw_with_fallback(
+    def _one(lf: str) -> FileReadResult:
+        return file_genEventSumw_with_fallback(
             lf,
             redirectors=redirectors,
             timeout=timeout,
             retries=retries,
             sleep_s=sleep_s,
         )
+
+    if workers > 1:
+        from concurrent.futures import ThreadPoolExecutor
+        pool = ThreadPoolExecutor(max_workers=workers)
+        results_iter = pool.map(_one, files)
+    else:
+        pool = None
+        results_iter = map(_one, files)
+    for i, result in enumerate(results_iter, start=1):
+        if i % 200 == 0 or i == len(files):
+            logger.info("  [%d/%d files] %s", i, len(files), dataset.split("/")[1][:50])
         total += result.sumw
         if result.bad:
             bad_files += 1
@@ -289,6 +303,8 @@ def compute_dataset_genEventSumw(
         if result.zero_events:
             zero_event_files += 1
 
+    if pool is not None:
+        pool.shutdown(wait=True)
     complete = {b: v for b, v in lhe_sums.items() if lhe_counts.get(b) == good_files}
     incomplete = sorted(b for b in lhe_sums if lhe_counts.get(b) != good_files)
     return DatasetSumwResult(
@@ -337,6 +353,8 @@ def main() -> None:
     ap.add_argument("--retries", type=int, default=10, help="Retries per redirector, per file")
     ap.add_argument("--sleep", type=float, default=10.0, help="Seconds to wait between retries")
     ap.add_argument("--max-files", type=int, default=0, help="Process only first N files per dataset (0=all)")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="Concurrent file opens per dataset (default 1 = sequential; the result does not depend on it)")
     ap.add_argument(
         "--allow-file-failures",
         action="store_true",
@@ -424,6 +442,7 @@ def main() -> None:
             sleep_s=args.sleep,
             max_files=args.max_files,
             exclude_lfns=args.exclude_lfn or None,
+            workers=args.workers,
         )
         computed = result.sumw
         nfiles = result.nfiles_used
