@@ -1084,6 +1084,11 @@ class WrAnalysis(processor.ProcessorABC):
     # (up, down) indices in the NanoAOD 9-weight LHEScaleWeight order
     # [muR,muF] = [0.5,0.5] [0.5,1] [0.5,2] [1,0.5] [1,1] [1,2] [2,0.5] [2,1] [2,2]
     _SCALE_INDEX = {"ScaleMuR": (7, 1), "ScaleMuF": (5, 3), "ScaleMuRF": (8, 0)}
+    # Samples that store the variations without the nominal have 8 weights
+    # (e.g. TTLNu-1Jets; branch title: [0] MUF=0.5 MUR=0.5, [1] MUF=1 MUR=0.5,
+    # [2] MUF=2 MUR=0.5, [3] MUF=0.5 MUR=1, [4] MUF=2 MUR=1, [5] MUF=0.5 MUR=2,
+    # [6] MUF=1 MUR=2, [7] MUF=2 MUR=2), i.e. the 9-weight order without [1,1].
+    _SCALE_INDEX_8 = {"ScaleMuR": (6, 1), "ScaleMuF": (4, 3), "ScaleMuRF": (7, 0)}
     # PSWeight order: [ISR x2, FSR x2, ISR x0.5, FSR x0.5]
     _PS_INDEX = {"PSISR": (0, 2), "PSFSR": (1, 3)}
 
@@ -1097,7 +1102,9 @@ class WrAnalysis(processor.ProcessorABC):
         the nominal weight with one warning per dataset.  Within a dataset, an
         event with NO weights (one file each in 2022 ZZZ and the 22EE WR
         MWR6000_N1500 point, see docs/skimming.md) also gets the nominal weight,
-        with a warning; any other count mismatch is an error."""
+        with a warning; any other count mismatch is an error.  Samples that
+        store 8 scale weights (no nominal, e.g. TTLNu-1Jets) use the 8-weight
+        order; the dataset ratio then has 8 entries as well."""
         allowed = self._producible_names(era, WEIGHT)
         out = {}
         sample = metadata.get("sample") or metadata.get("dataset")
@@ -1122,12 +1129,16 @@ class WrAnalysis(processor.ProcessorABC):
                     out[name] = (ones, ones)
                 continue
             ratios = metadata.get(key)
-            n_exp = 9 if family == "scale" else 4
-            if not ratios or len(ratios) != n_exp:
+            n_allowed = (9, 8) if family == "scale" else (4,)
+            if not ratios or len(ratios) not in n_allowed:
                 raise ValueError(
-                    f"--systs {family}: config metadata of '{sample}' has no {n_exp}-entry "
-                    f"'{key}'. Run scripts/gen_event_sumw.py on the config and regenerate the "
-                    "fileset; the skims' Runs-tree values are summed over files and must not be used.")
+                    f"--systs {family}: metadata of '{sample}' has no "
+                    f"{' or '.join(map(str, n_allowed))}-entry '{key}' (found "
+                    f"{len(ratios) if ratios else 0}). Regenerate the fileset from skims that carry "
+                    "the per-dataset weighted means, or run scripts/gen_event_sumw.py on the config.")
+            n_exp = len(ratios)
+            if family == "scale" and n_exp == 8:
+                index = self._SCALE_INDEX_8
             counts = ak.to_numpy(ak.num(events[branch]))
             if len(counts) and not np.all((counts == n_exp) | (counts == 0)):
                 raise ValueError(

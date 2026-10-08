@@ -109,3 +109,33 @@ def test_dataset_without_the_branch_gets_nominal(caplog):
         np.testing.assert_array_equal(out[name][0], 1.0)
         np.testing.assert_array_equal(out[name][1], 1.0)
     assert any("has no LHEScaleWeight branch" in r.getMessage() for r in caplog.records)
+
+
+def test_eight_weight_samples_use_the_eight_weight_order():
+    """TTLNu-1Jets stores 8 scale weights (no nominal): [0.5,0.5] [0.5,1] [0.5,2] [1,0.5]
+    [1,2] [2,0.5] [2,1] [2,2] in (muR, muF)."""
+    rng = np.random.default_rng(4)
+    rows = rng.uniform(0.8, 1.2, size=(6, 8))
+    ratios = rng.uniform(0.9, 1.1, size=8)
+    out = _analyzer()._theory_variations(_events(rows.tolist()), _metadata(ratios), ERA)
+    expected = {"ScaleMuR": (6, 1), "ScaleMuF": (4, 3), "ScaleMuRF": (7, 0)}
+    assert WrAnalysis._SCALE_INDEX_8 == expected
+    for name, (iu, idn) in expected.items():
+        np.testing.assert_allclose(out[name][0], rows[:, iu] / ratios[iu])
+        np.testing.assert_allclose(out[name][1], rows[:, idn] / ratios[idn])
+
+
+def test_eight_weight_order_matches_the_nine_weight_order_without_the_nominal():
+    nine = [(0.5, 0.5), (0.5, 1), (0.5, 2), (1, 0.5), (1, 1), (1, 2), (2, 0.5), (2, 1), (2, 2)]
+    eight = [p for p in nine if p != (1, 1)]
+    for name in WrAnalysis._SCALE_INDEX:
+        for i9, i8 in zip(WrAnalysis._SCALE_INDEX[name], WrAnalysis._SCALE_INDEX_8[name]):
+            assert nine[i9] == eight[i8]
+
+
+def test_metadata_and_event_weight_counts_must_agree():
+    rows = [[1.0] * 9] * 3
+    with pytest.raises(ValueError, match="entries per event, expected 8"):
+        _analyzer()._theory_variations(_events(rows), _metadata([1.0] * 8), ERA)
+    with pytest.raises(ValueError, match="9 or 8-entry 'LHEScaleSumw'"):
+        _analyzer()._theory_variations(_events(rows), _metadata([1.0] * 7), ERA)
