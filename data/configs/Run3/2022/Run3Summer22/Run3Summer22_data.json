@@ -1,4 +1,22 @@
 {
+  "/SingleMuon/Run2022B-22Sep2023-v1/NANOAOD": {
+    "das_name": "/SingleMuon/Run2022B-22Sep2023-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22",
+    "dataset": "SingleMuon_Run2022B",
+    "physics_group": "Muon",
+    "datatype": "data"
+  },
+  "/EGamma/Run2022B-22Sep2023-v2/NANOAOD": {
+    "das_name": "/EGamma/Run2022B-22Sep2023-v2/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22",
+    "dataset": "EGamma_Run2022B",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
   "/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD": {
     "das_name": "/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD",
     "run": "Run3",

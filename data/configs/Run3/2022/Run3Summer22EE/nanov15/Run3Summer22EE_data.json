@@ -1,0 +1,56 @@
+{
+  "/Muon/Run2022E-NanoAODv15-v1/NANOAOD": {
+    "das_name": "/Muon/Run2022E-NanoAODv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22EE",
+    "dataset": "Muon_Run2022E",
+    "physics_group": "Muon",
+    "datatype": "data"
+  },
+  "/Muon/Run2022F-NanoAODv15-v1/NANOAOD": {
+    "das_name": "/Muon/Run2022F-NanoAODv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22EE",
+    "dataset": "Muon_Run2022F",
+    "physics_group": "Muon",
+    "datatype": "data"
+  },
+  "/Muon/Run2022G-NanoAODv15-v1/NANOAOD": {
+    "das_name": "/Muon/Run2022G-NanoAODv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22EE",
+    "dataset": "Muon_Run2022G",
+    "physics_group": "Muon",
+    "datatype": "data"
+  },
+  "/EGamma/Run2022E-NanoAODv15-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2022E-NanoAODv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22EE",
+    "dataset": "EGamma_Run2022E",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma/Run2022F-NanoAODv15-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2022F-NanoAODv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22EE",
+    "dataset": "EGamma_Run2022F",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma/Run2022G-NanoAODv15-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2022G-NanoAODv15-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2022",
+    "era": "Run3Summer22EE",
+    "dataset": "EGamma_Run2022G",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  }
+}

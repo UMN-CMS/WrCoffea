@@ -1,6 +1,6 @@
 {
-  "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
-    "das_name": "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+  "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",
@@ -8,8 +8,8 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-  "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
-    "das_name": "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+  "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",
@@ -17,8 +17,8 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-  "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
-    "das_name": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+  "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",
@@ -26,8 +26,8 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-  "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
-    "das_name": "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+  "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",
@@ -35,8 +35,8 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-  "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
-    "das_name": "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+  "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",
@@ -44,8 +44,8 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-  "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
-    "das_name": "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+  "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",
@@ -53,8 +53,8 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-  "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
-    "das_name": "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+  "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",
@@ -62,8 +62,8 @@
     "physics_group": "Muon",
     "datatype": "data"
   },
-  "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD": {
-    "das_name": "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD",
+  "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
+    "das_name": "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
     "run": "RunII",
     "year": "2018",
     "era": "RunIISummer20UL18",

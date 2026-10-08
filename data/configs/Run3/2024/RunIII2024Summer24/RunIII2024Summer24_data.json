@@ -286,5 +286,45 @@
     "dataset": "EGamma1_Run2024I",
     "physics_group": "EGamma",
     "datatype": "data"
+  },
+  "/Muon0/Run2024B-PromptReco-v1/NANOAOD": {
+    "das_name": "/Muon0/Run2024B-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "Muon0_Run2024B",
+    "physics_group": "Muon",
+    "datatype": "data",
+    "note": "edge era 2024B (0.13 fb-1 golden); PromptReco NanoAOD, not the MINIv6NANOv15 reprocessing used for C-I; added 2026-10-04"
+  },
+  "/Muon1/Run2024B-PromptReco-v1/NANOAOD": {
+    "das_name": "/Muon1/Run2024B-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "Muon1_Run2024B",
+    "physics_group": "Muon",
+    "datatype": "data",
+    "note": "edge era 2024B (0.13 fb-1 golden); PromptReco NanoAOD, not the MINIv6NANOv15 reprocessing used for C-I; added 2026-10-04"
+  },
+  "/EGamma0/Run2024B-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma0/Run2024B-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "EGamma0_Run2024B",
+    "physics_group": "EGamma",
+    "datatype": "data",
+    "note": "edge era 2024B (0.13 fb-1 golden); PromptReco NanoAOD, not the MINIv6NANOv15 reprocessing used for C-I; added 2026-10-04"
+  },
+  "/EGamma1/Run2024B-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma1/Run2024B-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2024",
+    "era": "RunIII2024Summer24",
+    "dataset": "EGamma1_Run2024B",
+    "physics_group": "EGamma",
+    "datatype": "data",
+    "note": "edge era 2024B (0.13 fb-1 golden); PromptReco NanoAOD, not the MINIv6NANOv15 reprocessing used for C-I; added 2026-10-04"
   }
 }
