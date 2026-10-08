@@ -1,0 +1,128 @@
+{
+ "byls_table": "/Users/billy/work/skims_v2/lumi/golden2023_byls_physics.csv",
+ "channel_by_period": {
+  "electron": {
+   "Run2023B": 0.623992999,
+   "Run2023C": 17.9633117985,
+   "Run2023D": 9.673206852500002
+  },
+  "muon": {
+   "Run2023B": 0.623992999,
+   "Run2023C": 17.96399433,
+   "Run2023D": 9.6767371985
+  }
+ },
+ "channel_total_fb": {
+  "electron": 28.26051165,
+  "muon": 28.264724527499997
+ },
+ "golden_by_period": {
+  "Run2023B": 0.640419065,
+  "Run2023C": 17.964217969,
+  "Run2023D": 9.676737892
+ },
+ "golden_in_dataset_runs_fb": 28.281374926,
+ "golden_json": "data/lumis/Run3/2023/Cert_Collisions2023_366442_370790_Golden.json",
+ "golden_runs_in_no_dataset": [],
+ "golden_runs_in_no_dataset_fb": 0,
+ "golden_total_fb": 28.281374926,
+ "normtag": "normtag_PHYSICS.json",
+ "per_stream": {
+  "EGamma0_Run2023B": {
+   "golden_ls": 6705,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 0.623992999,
+   "pd": "EGamma",
+   "period": "Run2023B"
+  },
+  "EGamma0_Run2023C": {
+   "golden_ls": 55462,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 17.964217822,
+   "pd": "EGamma",
+   "period": "Run2023C"
+  },
+  "EGamma0_Run2023D": {
+   "golden_ls": 27797,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 9.675017884,
+   "pd": "EGamma",
+   "period": "Run2023D"
+  },
+  "EGamma1_Run2023B": {
+   "golden_ls": 6705,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 0.623992999,
+   "pd": "EGamma",
+   "period": "Run2023B"
+  },
+  "EGamma1_Run2023C": {
+   "golden_ls": 55458,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 17.962405775,
+   "pd": "EGamma",
+   "period": "Run2023C"
+  },
+  "EGamma1_Run2023D": {
+   "golden_ls": 27787,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 9.671395821,
+   "pd": "EGamma",
+   "period": "Run2023D"
+  },
+  "Muon0_Run2023B": {
+   "golden_ls": 6705,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 0.623992999,
+   "pd": "Muon",
+   "period": "Run2023B"
+  },
+  "Muon0_Run2023C": {
+   "golden_ls": 55463,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 17.964217856,
+   "pd": "Muon",
+   "period": "Run2023C"
+  },
+  "Muon0_Run2023D": {
+   "golden_ls": 27813,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 9.67673718,
+   "pd": "Muon",
+   "period": "Run2023D"
+  },
+  "Muon1_Run2023B": {
+   "golden_ls": 6705,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 0.623992999,
+   "pd": "Muon",
+   "period": "Run2023B"
+  },
+  "Muon1_Run2023C": {
+   "golden_ls": 55461,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 17.963770804,
+   "pd": "Muon",
+   "period": "Run2023C"
+  },
+  "Muon1_Run2023D": {
+   "golden_ls": 27813,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 9.676737217,
+   "pd": "Muon",
+   "period": "Run2023D"
+  }
+ }
+}

@@ -1,79 +1,128 @@
 {
+  "/EGamma/Run2022B-22Sep2023-v2/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022B/EGamma_Run2022B_g0000p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma/Run2022B-22Sep2023-v2/NANOAOD",
+      "datatype": "data",
+      "era": "Run3Summer22",
+      "nevts": 59195,
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma_Run2022B",
+      "skim_campaign": "v2",
+      "year": "2022"
+    }
+  },
   "/EGamma/Run2022C-22Sep2023-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_part5.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_part6.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0004p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0005p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0006p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0007p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022C/EGamma_Run2022C_g0008p01.root": "Events"
     },
     "metadata": {
       "das_name": "/EGamma/Run2022C-22Sep2023-v1/NANOAOD",
       "datatype": "data",
       "era": "Run3Summer22",
+      "nevts": 4129125,
       "physics_group": "EGamma",
       "run": "Run3",
       "sample": "EGamma_Run2022C",
+      "skim_campaign": "v2",
       "year": "2022"
     }
   },
   "/EGamma/Run2022D-22Sep2023-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022D/EGamma_Run2022D_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/EGamma_Run2022D/EGamma_Run2022D_part2.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022D/EGamma_Run2022D_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022D/EGamma_Run2022D_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/EGamma_Run2022D/EGamma_Run2022D_g0002p01.root": "Events"
     },
     "metadata": {
       "das_name": "/EGamma/Run2022D-22Sep2023-v1/NANOAOD",
       "datatype": "data",
       "era": "Run3Summer22",
+      "nevts": 1855904,
       "physics_group": "EGamma",
       "run": "Run3",
       "sample": "EGamma_Run2022D",
+      "skim_campaign": "v2",
       "year": "2022"
     }
   },
   "/Muon/Run2022C-22Sep2023-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/Muon_Run2022C/Muon_Run2022C_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/Muon_Run2022C/Muon_Run2022C_part2.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/Muon_Run2022C/Muon_Run2022C_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/Muon_Run2022C/Muon_Run2022C_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/Muon_Run2022C/Muon_Run2022C_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/Muon_Run2022C/Muon_Run2022C_g0003p01.root": "Events"
     },
     "metadata": {
       "das_name": "/Muon/Run2022C-22Sep2023-v1/NANOAOD",
       "datatype": "data",
       "era": "Run3Summer22",
+      "nevts": 1946512,
       "physics_group": "Muon",
       "run": "Run3",
       "sample": "Muon_Run2022C",
+      "skim_campaign": "v2",
       "year": "2022"
     }
   },
   "/Muon/Run2022D-22Sep2023-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/Muon_Run2022D/Muon_Run2022D_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/Muon_Run2022D/Muon_Run2022D_part2.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/Muon_Run2022D/Muon_Run2022D_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/Muon_Run2022D/Muon_Run2022D_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/Muon_Run2022D/Muon_Run2022D_g0002p01.root": "Events"
     },
     "metadata": {
       "das_name": "/Muon/Run2022D-22Sep2023-v1/NANOAOD",
       "datatype": "data",
       "era": "Run3Summer22",
+      "nevts": 1190950,
       "physics_group": "Muon",
       "run": "Run3",
       "sample": "Muon_Run2022D",
+      "skim_campaign": "v2",
+      "year": "2022"
+    }
+  },
+  "/SingleMuon/Run2022B-22Sep2023-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/SingleMuon_Run2022B/SingleMuon_Run2022B_g0000p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SingleMuon/Run2022B-22Sep2023-v1/NANOAOD",
+      "datatype": "data",
+      "era": "Run3Summer22",
+      "nevts": 31625,
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "SingleMuon_Run2022B",
+      "skim_campaign": "v2",
       "year": "2022"
     }
   },
   "/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2022/Run3Summer22/data/SingleMuon_Run2022C/SingleMuon_Run2022C_part1.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/Run3/2022/Run3Summer22/data/SingleMuon_Run2022C/SingleMuon_Run2022C_g0000p01.root": "Events"
     },
     "metadata": {
       "das_name": "/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD",
       "datatype": "data",
       "era": "Run3Summer22",
+      "nevts": 226713,
       "physics_group": "Muon",
       "run": "Run3",
       "sample": "SingleMuon_Run2022C",
+      "skim_campaign": "v2",
       "year": "2022"
     }
   }

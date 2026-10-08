@@ -67,6 +67,8 @@ ELECTRON_HLT_PATHS = _cfg["electron_hlt_paths"]
 ELECTRON_RECO_CONFIG = _cfg["electron_reco_config"]
 
 LUMI_UNC = _cfg["lumi_unc"]
+# era -> era whose MC skims the data-only era reuses (see config.yaml mc_alias).
+MC_ALIAS = _cfg.get("mc_alias") or {}
 # era -> JSON payload for the DY Z-pT (QCD x EW) reweighting; eras absent here
 # are not reweighted.
 DY_ZPT_REWEIGHT_JSONS = _cfg.get("dy_zpt_reweight") or {}

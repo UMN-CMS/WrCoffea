@@ -3,12 +3,17 @@ import json
 import logging
 # Mapping of eras to dataset paths
 ERA_MAPPING = {
+    "RunIISummer20UL16APV": {"run": "RunII", "year": "2016"},
+    "RunIISummer20UL16": {"run": "RunII", "year": "2016"},
+    "RunIISummer20UL17": {"run": "RunII", "year": "2017"},
     "RunIISummer20UL18": {"run": "RunII", "year": "2018"},
     "Run3Summer22": {"run": "Run3", "year": "2022"},
     "Run3Summer22EE": {"run": "Run3", "year": "2022"},
     "Run3Summer23": {"run": "Run3", "year": "2023"},
     "Run3Summer23BPix": {"run": "Run3", "year": "2023"},
     "RunIII2024Summer24": {"run": "Run3", "year": "2024"},
+    # 2025 is a data-only era: PdmV recommends the RunIII2024Summer24 MC for it.
+    "RunIII2025Summer25": {"run": "Run3", "year": "2025"},
 }
 
 def get_era_details(era):

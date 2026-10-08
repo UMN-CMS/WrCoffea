@@ -1,0 +1,76 @@
+{
+  "/EGamma0/Run2023C-22Sep2023_v1-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma0_Run2023C/EGamma0_part1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma0_Run2023C/EGamma0_part2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma0_Run2023C/EGamma0_part3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma0_Run2023C/EGamma0_part4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma0_Run2023C/EGamma0_part5.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma0_Run2023C/EGamma0_part6.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma0/Run2023C-22Sep2023_v1-v1/NANOAOD",
+      "datatype": "data",
+      "era": "Run3Summer23",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma0_Run2023C",
+      "year": "2023"
+    }
+  },
+  "/EGamma1/Run2023C-22Sep2023_v1-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma1_Run2023C/EGamma1_part1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma1_Run2023C/EGamma1_part2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma1_Run2023C/EGamma1_part3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma1_Run2023C/EGamma1_part4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma1_Run2023C/EGamma1_part5.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/EGamma1_Run2023C/EGamma1_part6.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/EGamma1/Run2023C-22Sep2023_v1-v1/NANOAOD",
+      "datatype": "data",
+      "era": "Run3Summer23",
+      "physics_group": "EGamma",
+      "run": "Run3",
+      "sample": "EGamma1_Run2023C",
+      "year": "2023"
+    }
+  },
+  "/Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon0_Run2023C/Muon0_part1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon0_Run2023C/Muon0_part2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon0_Run2023C/Muon0_part3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon0_Run2023C/Muon0_part4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon0_Run2023C/Muon0_part5.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD",
+      "datatype": "data",
+      "era": "Run3Summer23",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon0_Run2023C",
+      "year": "2023"
+    }
+  },
+  "/Muon1/Run2023C-22Sep2023_v1-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon1_Run2023C/Muon1_part1.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon1_Run2023C/Muon1_part2.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon1_Run2023C/Muon1_part3.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon1_Run2023C/Muon1_part4.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/Run3/2023/Run3Summer23/data/Muon1_Run2023C/Muon1_part5.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/Muon1/Run2023C-22Sep2023_v1-v1/NANOAOD",
+      "datatype": "data",
+      "era": "Run3Summer23",
+      "physics_group": "Muon",
+      "run": "Run3",
+      "sample": "Muon1_Run2023C",
+      "year": "2023"
+    }
+  }
+}

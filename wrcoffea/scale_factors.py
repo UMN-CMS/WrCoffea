@@ -698,10 +698,6 @@ def electron_id_sf(tight_electrons, era):
             )
         flat_sc_eta = flat_eta
 
-    # The HEEP ID JSON bins start at 35.0 GeV and flow is set to "error".
-    # Clip to prevent correctionlib from throwing out-of-bounds exceptions.
-    safe_pt = np.maximum(flat_pt, 35.01)
-
     # 4. Fetch lookup keys using your imported config dictionaries
     sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
     if sf_era_key is None:
@@ -712,6 +708,17 @@ def electron_id_sf(tight_electrons, era):
     if reco_cfg is None:
         logger.warning("No ELECTRON_RECO_CONFIG for '%s'; returning SF=1.", era)
         return ones, ones.copy(), ones.copy()
+
+    # The HEEP ID JSON bins start at 35.0 GeV and flow is set to "error".
+    # Clip to prevent correctionlib from throwing out-of-bounds exceptions.
+    # At the HIGH end the Run 3 payloads carry a placeholder bin above the
+    # last measurement (HEEPID: pt > 1000 GeV -> SF = 1 +- 20%); clip to the
+    # last measured bin (`id_pt_max` in electron_reco_config) so TeV
+    # electrons take the last measured SF and uncertainty instead.
+    id_pt_max = reco_cfg.get("id_pt_max")
+    safe_pt = np.maximum(flat_pt, 35.01)
+    if id_pt_max is not None:
+        safe_pt = np.minimum(safe_pt, float(id_pt_max) - 0.01)
 
     correction_name = reco_cfg["correction"]
     
@@ -879,9 +886,13 @@ def electron_reco_sf(tight_electrons, era):
     wp_high = reco_cfg["wp_high"]
     is_low_pt = flat_pt < pt_split
 
-    # Clip pT to valid bin ranges for each WP.
+    # Clip pT to valid bin ranges for each WP. The Run 3 payloads end their
+    # measured RecoAbove75 bins at `pt_max` (500 GeV) and carry a placeholder
+    # SF = 1 +- 20% above it; clip to the last measured bin so TeV electrons
+    # take its SF and uncertainty (the POG prescription) instead.
+    pt_max = float(reco_cfg.get("pt_max", 1e6))
     pt_low = np.clip(flat_pt, 10.001, pt_split - 0.001)
-    pt_high = np.clip(flat_pt, pt_split + 0.001, 1e6)
+    pt_high = np.clip(flat_pt, pt_split + 0.001, pt_max - 0.001)
 
     # Check if correction requires phi (Run3Summer23+ format)
     # Run3Summer22/22EE: 5 inputs (year, ValType, WorkingPoint, eta, pt)

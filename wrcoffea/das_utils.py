@@ -17,12 +17,16 @@ logger = logging.getLogger(__name__)
 
 # Map analysis era name → subdirectory under data/skims/ (and data/configs/, etc.)
 ERA_SUBDIRS = {
+    "RunIISummer20UL16APV": "RunII/2016/RunIISummer20UL16APV",
+    "RunIISummer20UL16": "RunII/2016/RunIISummer20UL16",
+    "RunIISummer20UL17": "RunII/2017/RunIISummer20UL17",
     "RunIISummer20UL18": "RunII/2018/RunIISummer20UL18",
     "Run3Summer22": "Run3/2022/Run3Summer22",
     "Run3Summer22EE": "Run3/2022/Run3Summer22EE",
     "Run3Summer23": "Run3/2023/Run3Summer23",
     "Run3Summer23BPix": "Run3/2023/Run3Summer23BPix",
     "RunIII2024Summer24": "Run3/2024/RunIII2024Summer24",
+    "RunIII2025Summer25": "Run3/2025/RunIII2025Summer25",
 }
 
 REDIRECTOR = "root://cmsxrootd.fnal.gov/"

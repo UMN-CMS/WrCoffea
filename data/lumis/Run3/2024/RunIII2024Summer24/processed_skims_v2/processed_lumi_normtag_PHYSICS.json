@@ -1,0 +1,307 @@
+{
+ "byls_table": "/Users/billy/work/skims_v2/lumi/golden2024_byls_physics.csv",
+ "channel_by_period": {
+  "electron": {
+   "Run2024B": 0.13165966699999998,
+   "Run2024C": 7.248645699000001,
+   "Run2024D": 7.9680210285,
+   "Run2024E": 11.4143073455,
+   "Run2024F": 27.999563904,
+   "Run2024G": 38.033870392,
+   "Run2024H": 5.4874801615,
+   "Run2024I": 11.438518355500001
+  },
+  "muon": {
+   "Run2024B": 0.13166212649999998,
+   "Run2024C": 7.2521626855,
+   "Run2024D": 7.9653520145000005,
+   "Run2024E": 11.3036404675,
+   "Run2024F": 28.0355902105,
+   "Run2024G": 38.045016481999994,
+   "Run2024H": 5.489661526000001,
+   "Run2024I": 11.4522305915
+  }
+ },
+ "channel_total_fb": {
+  "electron": 109.72206655299999,
+  "muon": 109.67531610399999
+ },
+ "golden_by_period": {
+  "Run2024B": 0.13166215,
+  "Run2024C": 7.261429371,
+  "Run2024D": 7.976147559,
+  "Run2024E": 11.423203203,
+  "Run2024F": 28.037825286,
+  "Run2024G": 38.070022475,
+  "Run2024H": 5.489667891,
+  "Run2024I": 11.452949905
+ },
+ "golden_in_dataset_runs_fb": 109.84290784000001,
+ "golden_json": "data/lumis/Run3/2024/RunIII2024Summer24/Cert_Collisions2024_378981_386951_Golden.json",
+ "golden_runs_in_no_dataset": [
+  386615,
+  386616,
+  386617
+ ],
+ "golden_runs_in_no_dataset_fb": 0.105269728,
+ "golden_total_fb": 109.948177568,
+ "normtag": "normtag_PHYSICS.json",
+ "per_stream": {
+  "EGamma0_Run2024B": {
+   "golden_ls": 5877,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 0.131659696,
+   "pd": "EGamma",
+   "period": "Run2024B"
+  },
+  "EGamma0_Run2024C": {
+   "golden_ls": 24221,
+   "golden_ls_without_lumi": 28,
+   "half": "0",
+   "lumi_fb": 7.236619883,
+   "pd": "EGamma",
+   "period": "Run2024C"
+  },
+  "EGamma0_Run2024D": {
+   "golden_ls": 23165,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 7.974803895,
+   "pd": "EGamma",
+   "period": "Run2024D"
+  },
+  "EGamma0_Run2024E": {
+   "golden_ls": 31423,
+   "golden_ls_without_lumi": 7,
+   "half": "0",
+   "lumi_fb": 11.412620778,
+   "pd": "EGamma",
+   "period": "Run2024E"
+  },
+  "EGamma0_Run2024F": {
+   "golden_ls": 69732,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 28.001362644,
+   "pd": "EGamma",
+   "period": "Run2024F"
+  },
+  "EGamma0_Run2024G": {
+   "golden_ls": 92218,
+   "golden_ls_without_lumi": 5,
+   "half": "0",
+   "lumi_fb": 38.035247856,
+   "pd": "EGamma",
+   "period": "Run2024G"
+  },
+  "EGamma0_Run2024H": {
+   "golden_ls": 13024,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 5.485308448,
+   "pd": "EGamma",
+   "period": "Run2024H"
+  },
+  "EGamma0_Run2024I": {
+   "golden_ls": 26649,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 11.438518458,
+   "pd": "EGamma",
+   "period": "Run2024I"
+  },
+  "EGamma1_Run2024B": {
+   "golden_ls": 5876,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 0.131659638,
+   "pd": "EGamma",
+   "period": "Run2024B"
+  },
+  "EGamma1_Run2024C": {
+   "golden_ls": 24299,
+   "golden_ls_without_lumi": 28,
+   "half": "1",
+   "lumi_fb": 7.260671515,
+   "pd": "EGamma",
+   "period": "Run2024C"
+  },
+  "EGamma1_Run2024D": {
+   "golden_ls": 23130,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 7.961238162,
+   "pd": "EGamma",
+   "period": "Run2024D"
+  },
+  "EGamma1_Run2024E": {
+   "golden_ls": 31435,
+   "golden_ls_without_lumi": 7,
+   "half": "1",
+   "lumi_fb": 11.415993913,
+   "pd": "EGamma",
+   "period": "Run2024E"
+  },
+  "EGamma1_Run2024F": {
+   "golden_ls": 69697,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 27.997765164,
+   "pd": "EGamma",
+   "period": "Run2024F"
+  },
+  "EGamma1_Run2024G": {
+   "golden_ls": 92215,
+   "golden_ls_without_lumi": 5,
+   "half": "1",
+   "lumi_fb": 38.032492928,
+   "pd": "EGamma",
+   "period": "Run2024G"
+  },
+  "EGamma1_Run2024H": {
+   "golden_ls": 13040,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 5.489651875,
+   "pd": "EGamma",
+   "period": "Run2024H"
+  },
+  "EGamma1_Run2024I": {
+   "golden_ls": 26646,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 11.438518253,
+   "pd": "EGamma",
+   "period": "Run2024I"
+  },
+  "Muon0_Run2024B": {
+   "golden_ls": 5907,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 0.131662125,
+   "pd": "Muon",
+   "period": "Run2024B"
+  },
+  "Muon0_Run2024C": {
+   "golden_ls": 24270,
+   "golden_ls_without_lumi": 31,
+   "half": "0",
+   "lumi_fb": 7.250889678,
+   "pd": "Muon",
+   "period": "Run2024C"
+  },
+  "Muon0_Run2024D": {
+   "golden_ls": 23170,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 7.975235545,
+   "pd": "Muon",
+   "period": "Run2024D"
+  },
+  "Muon0_Run2024E": {
+   "golden_ls": 30984,
+   "golden_ls_without_lumi": 30,
+   "half": "0",
+   "lumi_fb": 11.204109532,
+   "pd": "Muon",
+   "period": "Run2024E"
+  },
+  "Muon0_Run2024F": {
+   "golden_ls": 69815,
+   "golden_ls_without_lumi": 2,
+   "half": "0",
+   "lumi_fb": 28.036705029,
+   "pd": "Muon",
+   "period": "Run2024F"
+  },
+  "Muon0_Run2024G": {
+   "golden_ls": 92246,
+   "golden_ls_without_lumi": 14,
+   "half": "0",
+   "lumi_fb": 38.046056775,
+   "pd": "Muon",
+   "period": "Run2024G"
+  },
+  "Muon0_Run2024H": {
+   "golden_ls": 13034,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 5.489661434,
+   "pd": "Muon",
+   "period": "Run2024H"
+  },
+  "Muon0_Run2024I": {
+   "golden_ls": 26675,
+   "golden_ls_without_lumi": 0,
+   "half": "0",
+   "lumi_fb": 11.452230633,
+   "pd": "Muon",
+   "period": "Run2024I"
+  },
+  "Muon1_Run2024B": {
+   "golden_ls": 5908,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 0.131662128,
+   "pd": "Muon",
+   "period": "Run2024B"
+  },
+  "Muon1_Run2024C": {
+   "golden_ls": 24281,
+   "golden_ls_without_lumi": 31,
+   "half": "1",
+   "lumi_fb": 7.253435693,
+   "pd": "Muon",
+   "period": "Run2024C"
+  },
+  "Muon1_Run2024D": {
+   "golden_ls": 23122,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 7.955468484,
+   "pd": "Muon",
+   "period": "Run2024D"
+  },
+  "Muon1_Run2024E": {
+   "golden_ls": 31425,
+   "golden_ls_without_lumi": 30,
+   "half": "1",
+   "lumi_fb": 11.403171403,
+   "pd": "Muon",
+   "period": "Run2024E"
+  },
+  "Muon1_Run2024F": {
+   "golden_ls": 69800,
+   "golden_ls_without_lumi": 2,
+   "half": "1",
+   "lumi_fb": 28.034475392,
+   "pd": "Muon",
+   "period": "Run2024F"
+  },
+  "Muon1_Run2024G": {
+   "golden_ls": 92245,
+   "golden_ls_without_lumi": 12,
+   "half": "1",
+   "lumi_fb": 38.043976189,
+   "pd": "Muon",
+   "period": "Run2024G"
+  },
+  "Muon1_Run2024H": {
+   "golden_ls": 13038,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 5.489661618,
+   "pd": "Muon",
+   "period": "Run2024H"
+  },
+  "Muon1_Run2024I": {
+   "golden_ls": 26674,
+   "golden_ls_without_lumi": 0,
+   "half": "1",
+   "lumi_fb": 11.45223055,
+   "pd": "Muon",
+   "period": "Run2024I"
+  }
+ }
+}

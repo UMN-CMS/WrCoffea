@@ -1,0 +1,145 @@
+{
+ "byls_table": "/Users/billy/work/skims_v2/lumi/golden2022_byls_physics.csv",
+ "channel_by_period": {
+  "electron": {
+   "Run2022B": 0.09598649899999975,
+   "Run2022C": 5.019369174000023,
+   "Run2022D": 2.9673107720000087,
+   "Run2022E": 5.757264640999985,
+   "Run2022F": 17.778092717000042,
+   "Run2022G": 3.0819237730000077
+  },
+  "muon": {
+   "Run2022B": 0.09651343199999976,
+   "Run2022C": 5.012980251999983,
+   "Run2022D": 2.9660595590000085,
+   "Run2022E": 5.804730861999989,
+   "Run2022F": 17.781033329000046,
+   "Run2022G": 3.0827530690000073
+  }
+ },
+ "channel_total_fb": {
+  "electron": 34.69994757600006,
+  "muon": 34.74407050300003
+ },
+ "golden_by_period": {
+  "Run2022B": 0.096555512,
+  "Run2022C": 5.02219603,
+  "Run2022D": 2.967317667,
+  "Run2022E": 5.806382611,
+  "Run2022F": 17.782549243,
+  "Run2022G": 3.085992191
+ },
+ "golden_in_dataset_runs_fb": 34.760993254,
+ "golden_json": "data/lumis/Run3/2022/Cert_Collisions2022_355100_362760_Golden.json",
+ "golden_runs_in_no_dataset": [],
+ "golden_runs_in_no_dataset_fb": 0,
+ "golden_total_fb": 34.760993254,
+ "normtag": "normtag_PHYSICS.json",
+ "per_stream": {
+  "EGamma_Run2022B": {
+   "golden_ls": 4613,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 0.095986499,
+   "pd": "EGamma",
+   "period": "Run2022B"
+  },
+  "EGamma_Run2022C": {
+   "golden_ls": 25898,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 5.019369174,
+   "pd": "EGamma",
+   "period": "Run2022C"
+  },
+  "EGamma_Run2022D": {
+   "golden_ls": 10862,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 2.967310772,
+   "pd": "EGamma",
+   "period": "Run2022D"
+  },
+  "EGamma_Run2022E": {
+   "golden_ls": 21609,
+   "golden_ls_without_lumi": 111,
+   "half": "",
+   "lumi_fb": 5.757264641,
+   "pd": "EGamma",
+   "period": "Run2022E"
+  },
+  "EGamma_Run2022F": {
+   "golden_ls": 51485,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 17.778092717,
+   "pd": "EGamma",
+   "period": "Run2022F"
+  },
+  "EGamma_Run2022G": {
+   "golden_ls": 8235,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 3.081923773,
+   "pd": "EGamma",
+   "period": "Run2022G"
+  },
+  "Muon_Run2022C": {
+   "golden_ls": 19170,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 4.472040814,
+   "pd": "Muon",
+   "period": "Run2022C"
+  },
+  "Muon_Run2022D": {
+   "golden_ls": 10856,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 2.966059559,
+   "pd": "Muon",
+   "period": "Run2022D"
+  },
+  "Muon_Run2022E": {
+   "golden_ls": 21773,
+   "golden_ls_without_lumi": 111,
+   "half": "",
+   "lumi_fb": 5.804730862,
+   "pd": "Muon",
+   "period": "Run2022E"
+  },
+  "Muon_Run2022F": {
+   "golden_ls": 51494,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 17.781033329,
+   "pd": "Muon",
+   "period": "Run2022F"
+  },
+  "Muon_Run2022G": {
+   "golden_ls": 8237,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 3.082753069,
+   "pd": "Muon",
+   "period": "Run2022G"
+  },
+  "SingleMuon_Run2022B": {
+   "golden_ls": 4633,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 0.096513432,
+   "pd": "SingleMuon",
+   "period": "Run2022B"
+  },
+  "SingleMuon_Run2022C": {
+   "golden_ls": 6705,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 0.540939438,
+   "pd": "SingleMuon",
+   "period": "Run2022C"
+  }
+ }
+}
