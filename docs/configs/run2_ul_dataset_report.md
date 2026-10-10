@@ -1305,3 +1305,116 @@ All exist in the four standard campaigns unless noted. Listed so nothing is sile
 - `configs_run2/RunIISummer20UL18_mc_dy_nlo_njet_mll.json`
 - `configs_run2/RunIISummer20UL18_mc_dy_nlo_ptll.json`
 - `configs_run2/RunIISummer20UL18_signal.json`
+
+## UL18 cross-section campaign (2026-10-08/09)
+
+`scripts/genxsec_campaign.py` measured the UL18 samples with GenXSecAnalyzer (one MiniAOD file per sample, Condor at
+the LPC, CMSSW_10_6_30 in the cc7 image). The raw records are in the campaign work directory
+(`~/work/skims_v2/_genxsec/genxsec_results.json`, keyed `primary|energy|era`); each written config entry carries its own
+`xsec_source`. Nothing below is in the configs until the campaign is applied with `--write`.
+
+### LO Drell-Yan k-factor: 1.136 (NNLO / LO MLM; 1.199 before)
+
+The LO madgraphMLM DY samples (inclusive, jet- and HT-binned) are scaled by the ratio of the two inclusive M > 50 GeV
+samples of the same campaign, both measured with GenXSecAnalyzer on UL18 MiniAOD (the "After filter: final cross
+section", i.e. after FxFx merging / MLM matching; both are three-flavour values):
+
+| sample | generator | cross section [pb] | events used |
+|---|---|---|---|
+| `DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8` | NLO, FxFx | 6415.0 ± 22.5 | 166,028 |
+| `DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8` | LO, MLM | 5350.0 ± 13.4 | 94,313 |
+
+Decision 2026-10-10 (every era): each DY sample is scaled to the inclusive NNLO cross section for m(ll) > 50 GeV by
+k = NNLO / inclusive header of its own generator class, so LO MLM and FxFX share one total. At 13 TeV the reference is
+FEWZ NNLO 6077.22 pb (twiki StandardModelCrossSectionsat13TeV, `docs/xsec/`): k = 6077.22 / 5350.0 = **1.136** for the
+LO MLM samples (`order` `LO x k(NNLO)`) and 6077.22 / 6415.0 = **0.947** for the FxFX ones (`NLO x k(NNLO)`); written
+with the UL18 campaign. At 13.6 TeV the reference is MATRIX NNLO QCD, 6340.2 pb (2024: LO 1.162, FxFX 0.950). The
+earlier definition, NLO FxFX / LO MLM = 6415.0 / 5350.0 = 1.199 (Run 3 2024: 1.22289), scaled LO to the FxFX header,
+which sits 5.6 % above NNLO at 13 TeV and 5.2 % at 13.6 TeV. Run 2 (AN-19-083, SKFlat) used a flat 1.23
+from the k-factor column of the generator group's SummaryTable1G25ns twiki (`docs/xsec/CMS_SummaryTable1G25ns.pdf`),
+which states no derivation. A flat inclusive ratio does not correct the shape: the Z-pT reweight and the DY reshape do.
+
+### Official signal: LO x k_point
+
+The official `WRtoN{El,Mu}to..JJ` samples get their GenXSecAnalyzer LO value times the point's own NLO/LO k-factor
+(`order` `LO x k(NLO)`, `xsec_source.reference_source` "direct per-point sigma_NLO / sigma_LO = k"): k_point =
+c x sigma_NLO / sigma_LO from our own MG5_aMC 2.9.18 runs of p p > N l with the official gridpack model, parameter and
+run cards (fixed-order NLO [QCD] against the LO of the official card; c = 1.0184 +- 0.0043 restores the 2.1 % of
+the N resonance that the samples' decay chain truncates at bwcutoff = 15), i.e. the NLO cross section of that
+mass point. The method is
+AN-19-083 App. A; the derivation, the comparison with Run 2's <k> (within 1-3 % at the shared points) and the
+payloads are in `docs/signal_kfactor.md`. k rises from 1.24 at m_WR = 1 TeV to 1.42 at 4 TeV and 1.45 to 1.66 at
+8 TeV. The analyzer applies the same point's k(m_lN) / <k> as a shape-only weight
+(`data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json`).
+
+History: on 2026-10-09 the 97 official points missing from Run 2's <k> table had been given the genWeight-weighted
+mean of Run 2's shared k(m_lN) over their generated events (`"source": "ul18_official"` in
+`signal_kfactor_run2legacy_v4_2018.json`, kept for reference). That shared-curve average overshoots the direct ratio
+by 2-12 % at high mass (neighbouring points' tails leak into each core), so the write of 2026-10-10 uses the direct
+per-point k instead ("option 2").
+
+### The 24 official points measured on UL17 / UL16
+
+Their UL18 MiniAOD cannot be opened (tape only). The UL campaigns use the same 13 TeV gridpacks, so these points take
+the value measured on the UL17 MiniAOD (UL16 for one point), recorded as `xsec_source.copied_from`:
+
+| sample | measured on | LO [pb] | k_point | LO x k_point [pb] |
+|---|---|---|---|---|
+| `WRtoNEltoElElJJ_MWR4000_N900` | RunIISummer20UL17 | 0.001369 | 1.4133 | 0.0019349 |
+| `WRtoNEltoElElJJ_MWR6000_N1500` | RunIISummer20UL17 | 6.029e-05 | 1.4381 | 8.6702e-05 |
+| `WRtoNEltoElElJJ_MWR6000_N700` | RunIISummer20UL17 | 9.104e-05 | 1.3973 | 0.00012721 |
+| `WRtoNEltoElElJJ_MWR8000_N100` | RunIISummer20UL17 | 3.713e-05 | 1.2704 | 4.7169e-05 |
+| `WRtoNEltoElElJJ_MWR8000_N1100` | RunIISummer20UL17 | 8.805e-06 | 1.4379 | 1.2661e-05 |
+| `WRtoNEltoElElJJ_MWR8000_N300` | RunIISummer20UL17 | 2.591e-05 | 1.3094 | 3.3928e-05 |
+| `WRtoNEltoElElJJ_MWR8000_N3900` | RunIISummer20UL17 | 2.1e-06 | 1.6012 | 3.3625e-06 |
+| `WRtoNEltoElElJJ_MWR8000_N5900` | RunIISummer20UL17 | 7.599e-07 | 1.6116 | 1.2247e-06 |
+| `WRtoNMutoMuMuJJ_MWR1000_N100` | RunIISummer20UL17 | 3.495 | 1.2356 | 4.3183 |
+| `WRtoNMutoMuMuJJ_MWR2000_N1500` | RunIISummer20UL16 | 0.03556 | 1.3105 | 0.046603 |
+| `WRtoNMutoMuMuJJ_MWR2000_N1900` | RunIISummer20UL17 | 0.00261 | 1.3147 | 0.0034313 |
+| `WRtoNMutoMuMuJJ_MWR4000_N3100` | RunIISummer20UL17 | 0.0002749 | 1.4167 | 0.00038945 |
+| `WRtoNMutoMuMuJJ_MWR6000_N3700` | RunIISummer20UL17 | 2.48e-05 | 1.4429 | 3.5783e-05 |
+| `WRtoNMutoMuMuJJ_MWR6000_N4100` | RunIISummer20UL17 | 1.88e-05 | 1.4390 | 2.7054e-05 |
+| `WRtoNMutoMuMuJJ_MWR6000_N4500` | RunIISummer20UL17 | 1.307e-05 | 1.4422 | 1.885e-05 |
+| `WRtoNMutoMuMuJJ_MWR6000_N5500` | RunIISummer20UL17 | 1.986e-06 | 1.4443 | 2.8684e-06 |
+| `WRtoNMutoMuMuJJ_MWR8000_N1900` | RunIISummer20UL17 | 4.62e-06 | 1.5353 | 7.0931e-06 |
+| `WRtoNMutoMuMuJJ_MWR8000_N3500` | RunIISummer20UL17 | 2.303e-06 | 1.5953 | 3.674e-06 |
+| `WRtoNMutoMuMuJJ_MWR8000_N3700` | RunIISummer20UL17 | 2.22e-06 | 1.5989 | 3.5494e-06 |
+| `WRtoNMutoMuMuJJ_MWR8000_N4700` | RunIISummer20UL17 | 1.522e-06 | 1.6070 | 2.4459e-06 |
+| `WRtoNMutoMuMuJJ_MWR8000_N4900` | RunIISummer20UL17 | 1.381e-06 | 1.6029 | 2.2136e-06 |
+| `WRtoNMutoMuMuJJ_MWR8000_N6900` | RunIISummer20UL17 | 2.442e-07 | 1.6130 | 3.9388e-07 |
+| `WRtoNMutoMuMuJJ_MWR8000_N7900` | RunIISummer20UL17 | 7.242e-09 | 1.6557 | 1.199e-08 |
+| `WRtoNMutoMuMuJJ_MWR8000_N900` | RunIISummer20UL17 | 1.11e-05 | 1.4045 | 1.559e-05 |
+
+Control points measured in both UL18 and UL17/UL16 agree within 0.2-1.2 % (UL17 slightly higher), which is the
+precision of the gridpack's own integration (0.7 % for WR2000_N100 in its `results.dat`):
+
+| control sample | UL18 [pb] | other UL era [pb] | ratio |
+|---|---|---|---|
+| `WRtoNEltoElElJJ_MWR2000_N100` | 0.1447 | 0.1464 (RunIISummer20UL17) | 1.0117 |
+| `WRtoNEltoElElJJ_MWR4000_N2100` | 0.0008077 | 0.0008133 (RunIISummer20UL17) | 1.0069 |
+| `WRtoNMutoMuMuJJ_MWR2000_N100` | 0.1445 | 0.145 (RunIISummer20UL17) | 1.0035 |
+| `WRtoNMutoMuMuJJ_MWR2000_N100` | 0.1445 | 0.145 (RunIISummer20UL16) | 1.0035 |
+| `WRtoNMutoMuMuJJ_MWR4000_N100` | 0.001935 | 0.001941 (RunIISummer20UL17) | 1.0031 |
+| `WRtoNMutoMuMuJJ_MWR6000_N100` | 0.0001648 | 0.0001652 (RunIISummer20UL17) | 1.0024 |
+| `WRtoNMutoMuMuJJ_MWR6000_N5900` | 2.433e-07 | 2.444e-07 (RunIISummer20UL17) | 1.0045 |
+
+### Official UL grid vs the private (Run 2) grid
+
+At the 8 shared points the official per-flavour LO x <k> is above the AN-19-083 value (the private config value / 2):
+x1.10 at WR2000_N100, x1.19 at WR4000_N100, x1.78 at WR6000_N5900. Both use the MG5_aMC model `EffLRSM_NLO` and the
+process `p p > N l, N > l j j`; the gridpack cards (official
+`/cvmfs/cms.cern.ch/phys_generator/gridpacks/RunII/13TeV/MadGraph5_aMCatNLO/v265/WRtoNLtoLLJJ_emu/`, private
+`.../2017/13TeV/madgraph/V5_2.6.5/WRtoNLtoLLJJ/`) differ in two ways:
+
+1. **Light heavy neutrinos.** The official samples decouple the other flavour's N (mass 10^6 GeV); the private grid has
+   N_e and N_mu degenerate. The W_R width is 10 % larger in the private grid and BR(W_R -> l N) per flavour is 9.09 %
+   instead of 10.0 %: a factor 1.10 everywhere. The paper (CMS-EXO-20-002) states the N "couple exclusively to leptons
+   of the corresponding flavor, and have different masses".
+2. **PDF.** The private gridpacks use `NNPDF31_nnlo_hessian_pdfas` (306000), negative at large x: they produce
+   negative-weight events, and the signed cross section falls below |sigma| by 1 % (WR2000_N100), 10 % (WR4000_N100)
+   and 40 % (WR6000_N5900). The AN values are the signed ones. The official gridpacks use the UL standard
+   `NNPDF31_nnlo_as_0118_mc_hessian_pdfas` (325300) and have no negative weights.
+
+The product reproduces the measured ratios (1.09, 1.18, 1.77). Each private sample is consistent with its own AN cross
+section (its events carry the same negative weights), but the two grids are different models: do not mix them in one
+limit scan or interpolation without accounting for both effects.
