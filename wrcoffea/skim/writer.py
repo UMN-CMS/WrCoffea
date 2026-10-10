@@ -26,7 +26,7 @@ import numpy as np
 import uproot
 
 from wrcoffea.skim.fetch import adler32_of
-from wrcoffea.skim.runs import collapse_runs, concat_runs, merge_lumiblocks
+from wrcoffea.skim.runs import collapse_runs, collapse_scan_runs, concat_runs, is_scan_runs, merge_lumiblocks, pad_scan_runs
 from wrcoffea.skim.schema import OutputSchema, BranchSpec
 
 logger = logging.getLogger(__name__)
@@ -299,8 +299,11 @@ class PartWriter:
     def _write_runs(self) -> dict:
         if not self._runs_tables:
             return {}
-        cat = concat_runs(self._runs_tables)
-        collapsed = collapse_runs(cat)
+        if any(is_scan_runs(t) for t in self._runs_tables):
+            # multi-model scan inputs: per-model branches that differ from file to file
+            collapsed = collapse_scan_runs(concat_runs(pad_scan_runs(self._runs_tables)))
+        else:
+            collapsed = collapse_runs(concat_runs(self._runs_tables))
         types = {}
         for name, arr in collapsed.items():
             if arr.ndim > 1:

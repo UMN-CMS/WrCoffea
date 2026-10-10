@@ -57,6 +57,27 @@ def test_make_groups_and_dataset_key():
     assert dataset_key_for("/TTto2L2Nu_X/Run3/NANOAODSIM", {}) == "TTto2L2Nu_X"
 
 
+def test_private_sample_plan_keeps_file_bookkeeping_out_of_metadata(tmp_path):
+    from wrcoffea.skim.plan import build_plan
+    url = "root://site.example//store/user/x/WRtoNMutoMuMuJJ_MWR_2000_MN_100_merged.root"
+    name = "WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8"
+    cfg = tmp_path / "RunIII2024Summer24_signal.json"
+    cfg.write_text(json.dumps({name: {
+        "das_name": name, "run": "Run3", "year": "2024", "era": "RunIII2024Summer24", "dataset": name,
+        "physics_group": "Signal", "xsec": 0.1672, "genEventSumw": 39000.0, "datatype": "mc",
+        "files": [url], "file_sizes": {url: 4.5e8}, "file_events": {url: 39000}, "file_adler32": {url: "62b1df76"},
+    }}))
+    plan = build_plan([cfg], "unit", dbs=object(), cache_dir=tmp_path / "cache")
+    ds = plan.datasets[name]
+    assert ds.category == "signals" and ds.schema_id == "lazy" and ds.das_paths == [name]
+    assert ds.files == [{"lfn": url, "size": 450000000, "events": 39000, "adler32": "62b1df76", "valid": True,
+                         "dataset": name}]
+    assert ds.dbs_summary == {"num_file": 1, "num_event": 39000, "file_size": 450000000}
+    assert not {"files", "file_sizes", "file_events", "file_adler32"} & set(ds.metadata)
+    assert ds.metadata["xsec"] == 0.1672
+    assert any("1 with adler32" in n for n in ds.notes)
+
+
 def test_process_group_mc_end_to_end(tmp_path):
     plan, key = _local_plan(tmp_path, n_files=3)
     out_root = tmp_path / "out"

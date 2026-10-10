@@ -30,9 +30,16 @@ def _write_scan_file(path, n, seed, models_present):
     data = _collections(ev)
     with uproot.recreate(str(path)) as f:
         f.mktree("Events", _types(data)); f["Events"].extend(data)
+        # as in the real pre-legacy scans: run + per-model sums only, for the models this file holds
         w = ev["genWeight"].astype(np.float64)
-        runs = {"run": np.array([1], np.uint32), "genEventCount": np.array([n], np.int64), "genEventSumw": np.array([w.sum()]),
-                "genEventSumw2": np.array([(w * w).sum()]), "LHEScaleSumw": ak.Array([np.ones(9, np.float32)]), "PSSumw": ak.Array([np.ones(4, np.float32)])}
+        runs = {"run": np.array([1], np.uint32)}
+        for m in models_present:
+            sfx, sel = m[len("GenModel_"):], ev[m]
+            runs[f"genEventCount_{sfx}"] = np.array([int(sel.sum())], np.uint64)
+            runs[f"genEventSumw_{sfx}"] = np.array([w[sel].sum()])
+            runs[f"genEventSumw2_{sfx}"] = np.array([(w[sel] ** 2).sum()])
+            runs[f"nLHEScaleSumw_{sfx}"] = np.array([9], np.uint32)
+            runs[f"LHEScaleSumw_{sfx}"] = ak.Array([np.full(9, 1.0 + seed, np.float32)])
         f.mktree("Runs", _types(runs)); f["Runs"].extend(runs)
     return ev
 
@@ -61,6 +68,17 @@ def test_scan_sums_and_split(tmp_path):
     st = process_group(plan, "WRscan", 0, out_root=out, scratch=tmp_path / "scr", prefetch=False)
     assert st.status == "done", st.error
     sc = read_sidecar(st.parts[0]["sidecar"])
+    # the part's Runs entry holds every model with its sums added over the inputs that carry it
+    with uproot.open(st.parts[0]["path"]) as f:
+        pr = f["Runs"].arrays(library="ak")
+    for m in MODELS:
+        sfx = m[len("GenModel_"):]
+        truth = sum(float(e["genWeight"][e[m]].sum()) for e, have in ((ev0, MODELS[:2]), (ev1, MODELS[1:])) if m in have)
+        assert np.isclose(float(pr[f"genEventSumw_{sfx}"][0]), truth)
+        assert int(pr[f"nLHEScaleSumw_{sfx}"][0]) == 9
+    mid = MODELS[1][len("GenModel_"):]   # in both files: LHEScaleSumw is the sumw-weighted mean of 2.0 and 3.0
+    w0, w1 = float(ev0["genWeight"][ev0[MODELS[1]]].sum()), float(ev1["genWeight"][ev1[MODELS[1]]].sum())
+    assert np.allclose(ak.to_numpy(pr[f"LHEScaleSumw_{mid}"][0]), (2.0 * w0 + 3.0 * w1) / (w0 + w1), rtol=1e-6)
     recs = {r["lfn"].split("/")[-1]: r for r in sc["part"]["inputs"]}
     # generated sums per model match the truth (before any selection)
     for name, ev, present in (("s0.root", ev0, MODELS[:2]), ("s1.root", ev1, MODELS[1:])):

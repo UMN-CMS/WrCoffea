@@ -19,7 +19,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from wrcoffea.skim.plan import Plan, DatasetPlan, load_config_entries, dataset_key_for, ERA_SUBDIRS
+from wrcoffea.skim.plan import Plan, DatasetPlan, load_config_entries, dataset_key_for, ERA_SUBDIRS, FILE_LIST_KEYS
 from wrcoffea.skim.worker import load_group_status
 from wrcoffea.skim.writer import read_sidecar
 
@@ -181,7 +181,7 @@ def _weighted_ratio_mean(parts: list[dict], name: str) -> list[float] | None:
 
 def dataset_metadata_from_parts(ds: DatasetPlan, parts: list[dict]) -> dict:
     """Analyzer metadata for one dataset, with sums taken from the skims."""
-    meta = {k: v for k, v in ds.metadata.items() if k not in ("files", "file_sizes", "note")}
+    meta = {k: v for k, v in ds.metadata.items() if k not in (*FILE_LIST_KEYS, "note")}
     meta.setdefault("das_name", ds.das_paths[0] if ds.das_paths else ds.key)
     meta["sample"] = ds.key
     meta.pop("dataset", None)
@@ -207,6 +207,43 @@ def _mc_alias() -> dict:
         return dict(MC_ALIAS)
     except Exception:
         return {}
+
+
+def combine_extension_sumw(fileset: dict) -> list[str]:
+    """Normalise the datasets of one physics sample together.
+
+    A sample can be split over several fileset entries when its nominal and extension datasets were
+    planned under different ``dataset`` names (e.g. ``X`` and ``X_ext1``).  Each entry is then
+    weighted by ``xsec / genEventSumw`` on its own, which would count the sample once per dataset.
+    MC entries that share a primary dataset name get the combined ``genEventSumw`` (and
+    ``genEventCount``) of all of them, so the sample is normalised once; the entry's own sum is kept
+    as ``genEventSumw_own``.  Returns one note per combined sample.
+    """
+    by_primary: dict[str, list[str]] = {}
+    for das, entry in fileset.items():
+        meta = entry.get("metadata", {})
+        if meta.get("datatype") == "data" or not das.startswith("/"):
+            continue
+        by_primary.setdefault(das.split("/")[1], []).append(das)
+    notes = []
+    for primary, keys in sorted(by_primary.items()):
+        if len(keys) < 2:
+            continue
+        metas = [fileset[k]["metadata"] for k in keys]
+        xsecs = {m.get("xsec") for m in metas}
+        if len(xsecs) != 1:
+            raise ValueError(f"{primary}: datasets of one sample carry different cross sections {sorted(map(str, xsecs))}")
+        total = sum(float(m.get("genEventSumw_own", m.get("genEventSumw")) or 0.0) for m in metas)
+        count = sum(int(m.get("genEventCount") or 0) for m in metas)
+        samples = sorted(str(m.get("sample")) for m in metas)
+        for m in metas:
+            m.setdefault("genEventSumw_own", m.get("genEventSumw"))
+            m["genEventSumw"] = total
+            if count:
+                m["genEventCount"] = count
+            m["normalised_with"] = samples
+        notes.append(f"{primary}: {len(keys)} datasets ({', '.join(samples)}) normalised together, genEventSumw {total:.6g}")
+    return notes
 
 
 def write_filesets(args) -> int:
@@ -266,6 +303,8 @@ def write_filesets(args) -> int:
             if not fileset:
                 logger.warning("%s: no finished datasets; fileset not written", cfg.name)
                 continue
+            for note in combine_extension_sumw(fileset):
+                logger.info("%s: %s", cfg.name, note)
             out = fileset_dir / sub / "skimmed" / f"{era}_{family}_fileset.json"
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(json.dumps(fileset, indent=2, sort_keys=True) + "\n")

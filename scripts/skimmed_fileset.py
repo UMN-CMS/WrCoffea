@@ -3,14 +3,16 @@
 # -----------------------------------------------------------------------------
 # Example usage:
 #   # Takes in config JSON, and populates it with a list of skimmed ROOT files from EOS:
-#   python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_lo_dy.json
+#   python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_ht.json
 #   python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_data.json
-#   python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json 
+#   python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json
 #
 # These commands will produce:
-#   data/jsons/Run3/2022/Run3Summer22/skimmed/Run3Summer22_mc_lo_dy_skimmed_fileset.json
-#   data/jsons/Run3/2022/Run3Summer22/skimmed/Run3Summer22_data_skimmed_fileset.json
-#   data/jsons/Run3/2022/Run3Summer22/skimmed/Run3Summer22_signal_skimmed_fileset.json
+#   data/filesets/Run3/2022/Run3Summer22/skimmed/Run3Summer22_mc_dy_lo_ht_fileset.json
+#   data/filesets/Run3/2022/Run3Summer22/skimmed/Run3Summer22_data_fileset.json
+#   data/filesets/Run3/2022/Run3Summer22/skimmed/Run3Summer22_signal_fileset.json
+#
+# Skims from the October 2026 campaign get their filesets from `bin/skim.py fileset` instead.
 # -----------------------------------------------------------------------------
 
 import warnings

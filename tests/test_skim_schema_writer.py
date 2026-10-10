@@ -243,3 +243,40 @@ def test_collapse_runs_input_with_events_but_no_lhe_weights():
     assert float(out["genEventSumw"][0]) == 450.0                 # every input counts for the normalisation
     assert int(out["nLHEScaleSumw"][0]) == 3                      # counter from an input that has the weights
     np.testing.assert_allclose(ak.to_numpy(out["LHEScaleSumw"][0]), [2.5, 2.0, 1.5])
+
+
+def _scan_runs_table(models, sumw, scale):
+    """One input's Runs table as in the pre-legacy NanoAODv7 scans: run + per-model branches only."""
+    t = {"run": ak.Array(np.array([1], np.uint32))}
+    for m, w, sc in zip(models, sumw, scale):
+        t[f"genEventCount_{m}"] = ak.Array(np.array([100], np.uint64))
+        t[f"genEventSumw_{m}"] = ak.Array(np.array([w], np.float64))
+        t[f"genEventSumw2_{m}"] = ak.Array(np.array([w * 2.0], np.float64))
+        t[f"nLHEScaleSumw_{m}"] = ak.Array(np.array([3], np.uint32))
+        t[f"LHEScaleSumw_{m}"] = ak.Array([np.array(sc, np.float32)])
+    return t
+
+
+def test_scan_runs_with_different_models_per_input_are_padded_and_collapsed_per_model():
+    from wrcoffea.skim.runs import is_scan_runs, pad_scan_runs, collapse_scan_runs, per_model_branch
+    a, b, c = ("WRtoNLtoLLJJ_MWR5200_MN1000_TuneCP5_13TeV_madgraph_pythia8",
+               "WRtoNLtoLLJJ_MWR5200_MN1200_TuneCP5_13TeV_madgraph_pythia8",
+               "WRtoNLtoLLJJ_MWR5400_MN1000_TuneCP5_13TeV_madgraph_pythia8")
+    t1 = _scan_runs_table([a, b], [10.0, 30.0], [[1.0, 2.0, 3.0], [1.0, 1.0, 1.0]])
+    t2 = _scan_runs_table([b, c], [10.0, 5.0], [[3.0, 3.0, 3.0], [2.0, 2.0, 2.0]])
+    assert is_scan_runs(t1) and not is_scan_runs({"genEventSumw": ak.Array([1.0]), "genEventSumw_": ak.Array([1.0])})
+    assert per_model_branch(f"genEventSumw2_{a}") == ("genEventSumw2", a) and per_model_branch("genEventSumw_") is None
+    with pytest.raises(ValueError):
+        concat_runs([t1, t2])          # what the worker used to hit
+    padded = pad_scan_runs([t1, t2])
+    assert set(padded[0]) == set(padded[1])
+    out = collapse_scan_runs(concat_runs(padded))
+    assert int(out["run"][0]) == 1
+    assert float(out[f"genEventSumw_{a}"][0]) == 10.0 and float(out[f"genEventSumw_{b}"][0]) == 40.0
+    assert float(out[f"genEventSumw2_{c}"][0]) == 10.0
+    assert int(out[f"genEventCount_{b}"][0]) == 200 and out[f"genEventCount_{b}"].type.content.primitive == "uint64"
+    assert f"nLHEScaleSumw_{c}" not in out   # counters are written by uproot from the vectors
+    # ratios: mean weighted by the model's own sumw over the inputs that contain it
+    assert np.allclose(ak.to_numpy(out[f"LHEScaleSumw_{a}"][0]), [1.0, 2.0, 3.0])
+    assert np.allclose(ak.to_numpy(out[f"LHEScaleSumw_{b}"][0]), [(30 * 1 + 10 * 3) / 40.0] * 3)
+    assert np.allclose(ak.to_numpy(out[f"LHEScaleSumw_{c}"][0]), [2.0, 2.0, 2.0])

@@ -32,6 +32,11 @@ PLAN_VERSION = 1
 # Default group sizes in input bytes; a group is one unit of work.
 DEFAULT_GROUP_INPUT_BYTES = {"data": 60e9, "mc": 30e9, "signal": 1e12}
 
+# Per-file bookkeeping of private samples (``{url: value}`` maps next to the
+# ``files`` list): it describes the inputs, not the dataset, so it never
+# reaches the plan or fileset metadata.
+FILE_LIST_KEYS = ("files", "file_sizes", "file_events", "file_adler32")
+
 ERA_SUBDIRS = {
     "RunIISummer20UL16APV": "RunII/2016/RunIISummer20UL16APV",
     "RunIISummer20UL16": "RunII/2016/RunIISummer20UL16",
@@ -364,9 +369,17 @@ def build_plan(config_paths: list[str | Path], campaign: str, *, out_settings: d
                         continue
                     raise ValueError(msg)
                 das_paths.append(key)
-                files.extend(FileRecord(lfn=u, size=int(meta.get("file_sizes", {}).get(u, 0)), events=0,
-                                        adler32="", valid=True, dataset=key) for u in urls)
-                notes.append(f"{key}: private sample with {len(urls)} explicit files (no DBS checksums)")
+                sizes, events, cksums = (meta.get(k) or {} for k in ("file_sizes", "file_events", "file_adler32"))
+                recs = [FileRecord(lfn=u, size=int(sizes.get(u, 0)), events=int(events.get(u, 0)),
+                                   adler32=str(cksums.get(u, "")), valid=True, dataset=key) for u in urls]
+                files.extend(recs)
+                if all(r.events for r in recs):
+                    summary["num_file"] += len(recs)
+                    summary["num_event"] += sum(r.events for r in recs)
+                    summary["file_size"] += sum(r.size for r in recs)
+                n_ck = sum(1 for r in recs if r.adler32)
+                notes.append(f"{key}: private sample with {len(urls)} explicit files"
+                             + (f" ({n_ck} with adler32)" if n_ck else " (no checksums)"))
         if not files:
             logger.warning("%s/%s has no files; skipped", era, dkey)
             continue
@@ -384,7 +397,7 @@ def build_plan(config_paths: list[str | Path], campaign: str, *, out_settings: d
         datasets[dkey if dkey not in datasets else f"{dkey}__{era}"] = DatasetPlan(
             key=dkey, era=era, run=run, year=year, datatype=datatype, physics_group=pg,
             category=category, das_paths=das_paths,
-            metadata={k: v for k, v in meta0.items() if k not in ("files", "file_sizes")},
+            metadata={k: v for k, v in meta0.items() if k not in FILE_LIST_KEYS},
             files=[f.to_dict() for f in files], groups=groups, schema_id=sid,
             dbs_summary=summary, out_dir=f"{subdir}/{category}/{dkey}", notes=notes, scan=scan,
         )
@@ -413,7 +426,7 @@ def refresh_metadata(plan: "Plan", config_paths: list[str | Path], *, keys: tupl
         metas = [fresh[d] for d in ds.das_paths if d in fresh]
         if not metas:
             continue
-        new_meta = {k: v for k, v in metas[0].items() if k not in ("files", "file_sizes")}
+        new_meta = {k: v for k, v in metas[0].items() if k not in FILE_LIST_KEYS}
         if keys:
             new_meta = {k: v for k, v in new_meta.items() if k in keys}
         diff = {}
