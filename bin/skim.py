@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 """Skim campaign driver.
 
-    skim.py plan      build the campaign plan from config JSONs (DBS + branch sampling)
-    skim.py run       process plan groups locally with N workers (fetch, skim, verify)
-    skim.py group     process one group (the unit a Condor job runs)
-    skim.py status    summarize progress and problems from the group status files
-    skim.py validate  whole-campaign validation against the plan, DBS and the golden JSON
-    skim.py upload    copy finished parts to remote storage with checksum verification
-    skim.py fileset   write the analyzer fileset JSONs from the plan and sidecars
-    skim.py cuts      print the skim selection and branch policy
+    skim.py plan              build the campaign plan from config JSONs (DBS + branch sampling)
+    skim.py run               process plan groups locally with N workers (fetch, skim, verify)
+    skim.py group             process one group (the unit a Condor job runs)
+    skim.py refresh-metadata  copy the current config metadata (xsec etc.) into an existing plan
+    skim.py condor            write (and with --submit, submit) one Condor job per pending group
+    skim.py ship              copy one finished group to the remote campaign root (Condor job side)
+    skim.py mirror            pull the sidecars and group statuses of a remote campaign into a local root
+    skim.py bad-files         list bad inputs; --classify marks files without any replica as unavailable
+    skim.py status            summarize progress and problems from the group status files
+    skim.py validate          whole-campaign validation against the plan, DBS and the golden JSON
+    skim.py upload            copy finished parts to remote storage with checksum verification
+    skim.py split-scan        split skimmed multi-model scan samples into one dataset per mass point
+    skim.py fileset           write the analyzer fileset JSONs from the plan and sidecars
+    skim.py cuts              print the skim selection and branch policy
 
 See docs/skimming.md for the workflow.
 """
@@ -215,7 +221,7 @@ def cmd_group(args) -> int:
 
 
 # ---------------------------------------------------------------------------
-# status
+# refresh-metadata / condor / ship / mirror / bad-files / status
 # ---------------------------------------------------------------------------
 
 def cmd_refresh_metadata(args) -> int:

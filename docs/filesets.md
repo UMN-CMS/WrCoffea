@@ -29,25 +29,26 @@ python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy lo_inc
 
 ## Skimmed Filesets
 
-> For skims produced by the new campaign tooling (October 2026 onwards) the filesets are written by `python3 bin/skim.py fileset --plan-dir plans/<campaign>` directly from the campaign plan and the part sidecars, including `genEventSumw` and the theory-weight sums taken from the skims' own Runs trees. The script below remains for the earlier Wisconsin skims.
-
-Use `scripts/skimmed_fileset.py` to build filesets pointing to pre-existing skimmed NanoAOD files at Wisconsin or UMN storage. No `--dataset` argument is needed.
+The skim campaign writes the skimmed filesets itself, from the campaign plan and the part sidecars (see [Skimming](skimming.md)):
 
 ```bash
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_inc.json
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_data.json
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_signal.json
+python3 bin/skim.py fileset --plan-dir plans/v2 --out ~/work/skims_v2 --era RunIII2024Summer24
 ```
 
-For UMN storage instead of Wisconsin, add the `--umn` flag:
-```bash
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/Run3Summer22_data.json --umn
+- **Files:** the entries point at the skims_v2 parts at Wisconsin (`--local` points at the local parts instead).
+- **Normalisation:** `genEventSumw`, `genEventCount` and the theory-weight sums (`LHEScaleSumw`, `LHEPdfSumw`, `PSSumw`) are taken from the skims' own Runs trees, so no DAS pass is needed. Nominal and extension datasets of one sample are normalised together.
+- **Metadata:** cross sections, `order` and `xsec_source` come from the configs through the plan; after a config change, run `bin/skim.py refresh-metadata --plan-dir ...` first.
+- **Output:** one file per config family, written into `data/filesets/` (`--fileset-dir` overrides), e.g.
+
+```
+data/filesets/Run3/2024/RunIII2024Summer24/skimmed/RunIII2024Summer24_mc_dy_lo_ht_fileset.json
 ```
 
-Output path:
-```
-data/filesets/Run3/2022/Run3Summer22/skimmed/Run3Summer22_mc_dy_lo_inc_fileset.json
-```
+Every active skimmed fileset (2022-2024, UL18) points at skims_v2.
+
+### Earlier skims (skims_v1)
+
+The filesets of the skims made before October 2026 are kept under `skimmed/archived/skims_v1/` for reference. Pass one with `--fileset` to run on those files; nothing writes new ones.
 
 ## Config Files
 

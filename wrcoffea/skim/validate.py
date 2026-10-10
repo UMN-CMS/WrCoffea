@@ -11,10 +11,18 @@ Checks, per dataset of the plan:
 3. **Per part (re-read)**: the file's checksum equals the sidecar's; the
    (run, luminosityBlock, event) triples stored in each input's entry range
    reproduce the digests; the Runs tree sums equal the per-input sums.
-4. **Dataset totals**: entries in == DBS events of the dataset; for MC the
-   summed genEventSumw and genEventCount; for data the processed lumisections
-   (from the LuminosityBlocks trees) cover every golden-JSON lumisection of
-   the dataset's runs.
+4. **Dataset totals**:
+   - entries in == DBS events of the dataset;
+   - for MC, the summed genEventSumw and genEventCount;
+   - for data, the merged LuminosityBlocks trees hold exactly the lumisections
+     DBS lists for the dataset's files (lost or extra lumisections are a
+     problem). Certified lumisections of the dataset's runs that exist in no
+     file at all are a warning. The processed lumisections are written as
+     ``<dataset>_processed_lumis.json`` (golden-JSON format) next to the parts.
+
+Parts written by Condor jobs exist only at the remote root: with ``--remote``
+(and ``--skip-reread``) every remote part is stat-ed against its sidecar size,
+and ``--remote-lumis`` reads the data LuminosityBlocks trees through XRootD.
 
 The result is a JSON report plus a console summary; the exit code is nonzero
 if any dataset has a problem (unreachable inputs count as a problem unless

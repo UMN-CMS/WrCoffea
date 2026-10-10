@@ -110,4 +110,9 @@ condor_history        # recently completed jobs
 
 ### Skim job logs
 
-Skim Condor logs are written to `data/skims/logs/<primary_dataset>/`. See [Skimming](skimming.md) for details.
+Skim jobs are submitted with `bin/skim.py condor`, through `bin/lpc_condor.sh` at the LPC.
+
+- Each job writes `logs/<dataset>_g<gid>.out` and `.err` in the jobs directory given by `--jobs-dir`, plus a shared `logs/condor.log`.
+- The group's status file (done or failed, bad inputs with their attempt logs) is shipped to `<campaign root>/<run>/<year>/<era>/<category>/<dataset>/_groups/`.
+
+See [Running on Condor at the LPC](skimming.md#running-on-condor-at-the-lpc).

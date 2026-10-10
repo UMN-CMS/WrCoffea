@@ -248,7 +248,7 @@ studies/            # One-off studies (m(ll) cut optimization)
 - [`systematics.py`](wrcoffea/systematics.py) - Systematic registry (families, sources, coverage)
 - [`dy_reweight.py`](wrcoffea/dy_reweight.py), [`dy_reshape.py`](wrcoffea/dy_reshape.py), [`signal_kfactor.py`](wrcoffea/signal_kfactor.py) - DY Z-pT reweight, DY reshape vs jet pT, signal NLO k-factor
 - [`MuonScaRe.py`](wrcoffea/MuonScaRe.py) - Muon POG momentum scale and resolution corrections
-- [`skim/`](wrcoffea/skim/) - Skim campaign toolkit: `catalog` (DBS/Rucio), `plan`, `fetch`, `selection` + `recount`, `schema` + `branches.yaml`, `writer`, `worker`, `validate`, `upload`
+- [`skim/`](wrcoffea/skim/) - Skim campaign toolkit: `catalog` (DBS/Rucio), `plan`, `fetch`, `selection` + `recount`, `schema` + `branches.yaml`, `writer` + `runs` (Runs/LuminosityBlocks trees), `worker`, `validate`, `upload` (filesets too), `condor` (LPC jobs), `scan` (multi-model scan samples)
 - [`das_utils.py`](wrcoffea/das_utils.py) - DAS dataset path validation, dasgoclient queries, XRootD URL construction
 - [`xrootd_fallback.py`](wrcoffea/xrootd_fallback.py) - XRootD redirector fallback for unskimmed file preprocessing
 

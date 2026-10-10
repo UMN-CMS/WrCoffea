@@ -1,8 +1,8 @@
 """Rolling writer for skim parts.
 
 A :class:`PartWriter` receives the selected events of one input file after
-another and writes them, in input order, into ``<dataset>_partNNNN.root``
-files of bounded size.  Every part has the same :class:`~wrcoffea.skim.schema.OutputSchema`
+another and writes them, in input order, into ``<dataset>_gNNNNpNN.root``
+files of bounded size (group index, then part index within the group).  Every part has the same :class:`~wrcoffea.skim.schema.OutputSchema`
 (branches an input lacks are filled with defaults and recorded), a collapsed
 ``Runs`` tree, for data a merged ``LuminosityBlocks`` tree, and a JSON sidecar
 with full provenance: which inputs it holds, in which entry ranges, how many

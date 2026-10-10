@@ -8,6 +8,14 @@ downloaded with checksum verification, skimmed from local scratch, written into
 size-bounded parts with one fixed schema per dataset, and verified twice before
 the local copy is deleted.
 
+Status (2026-10-10):
+
+- The skims_v2 campaign is done for 2022, 2023, 2024 and UL18, and every active
+  skimmed fileset of those eras points at it
+  (`root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/`).
+- UL17 is running on LPC Condor.
+- UL16, UL16APV and the 2025 data have plans but no skims yet.
+
 ## Selection
 
 Looser than every analysis cut (`wrcoffea/config.yaml`), so the skims survive
@@ -44,7 +52,7 @@ python3 bin/skim.py cuts
 or dropped whole, so every cross-reference index stays valid:
 
 - **kept**: Electron, Muon, Jet, FatJet, SubJet, GenJet, GenJetAK8,
-  SubGenJetAK8, GenPart, GenDressedLepton, GenVtx, GenMET, LHEPart, LHE,
+  SubGenJetAK8, GenPart, GenDressedLepton, GenIsolatedPhoton, GenVtx, GenMET, LHEPart, LHE,
   LHEWeight, Generator, Pileup, PV, OtherPV, every MET variant, Rho and the
   flat `fixedGridRho*` branches, Flag, L1PreFiringWeight, HTXS, PVBS, the
   event identifiers, genWeight, genTtbarId, bunchCrossing, LHEScaleWeight,
@@ -52,7 +60,7 @@ or dropped whole, so every cross-reference index stays valid:
 - **dropped** (unused and measured at 35-45 % of every input): Tau, boostedTau,
   TauProd, Photon, LowPtElectron, FsrPhoton, IsoTrack, SV, TrigObj, all `L1_*`
   and `DST_*` bits, SoftActivityJet*, CorrT1METJet, PFCand, TrackGenJetAK4,
-  Proton, PPSLocalTrack, GenProton, GenVisTau, btagWeight_*.
+  Proton, PPSLocalTrack, GenProton, GenVisTau, GenCands, btagWeight_*.
 - **unknown** branches (new in a NanoAOD version) are kept and reported.
 - **triggers**: every `HLT_*` path matching the single-lepton, photon, jet,
   HT and MET patterns found in the sampled input files, plus a required list
@@ -91,8 +99,8 @@ all survive.
 
 ```bash
 # 1. Plan: resolve configs through DBS, sample branch layouts, group files into jobs
-python3 bin/skim.py plan --campaign v2 --plan-dir plans/v2 --era RunIII2024Summer24 \
-    --compression zstd:3 --part-max-gb 2
+#    (defaults: zstd:19 compression, 2 GB parts; see "Output format study")
+python3 bin/skim.py plan --campaign v2 --plan-dir plans/v2 --era RunIII2024Summer24
 
 # 2. Run locally, dataset by dataset (3 workers, each prefetching the next file)
 python3 bin/skim.py run --plan-dir plans/v2 --dataset TTto2L2Nu --workers 3 \
@@ -113,8 +121,18 @@ python3 bin/skim.py upload  --plan-dir plans/v2 --out ~/work/skims_v2
 python3 bin/skim.py fileset --plan-dir plans/v2 --out ~/work/skims_v2 --era RunIII2024Summer24
 ```
 
-`skim.py group --dataset KEY --gid N` processes a single group and is what a
-Condor job will run; the plan directory is the only input it needs.
+Steps 2 and 6 can also run on the LPC; most groups of the 2022-2024 and UL18
+campaigns did.
+
+- `skim.py condor` submits one job per pending group.
+- Each job runs `skim.py group` and then `skim.py ship`, which copies the
+  parts to Wisconsin.
+- `skim.py mirror` brings the sidecars and statuses back to a local root,
+  where `status`, `validate` and `fileset` work as usual.
+
+See [Running on Condor at the LPC](#running-on-condor-at-the-lpc).
+`skim.py group --dataset KEY --gid N` processes a single group (the unit of a
+Condor job); the plan directory is the only input it needs.
 
 Config entries flagged `"optional": true` (the low-mass `MLL-10to50` DY
 companions, about 1.5 billion events in 2024 alone and outside every analysis
@@ -129,10 +147,9 @@ Everything on disk is written atomically (parts, sidecars, group statuses),
 so the laptop can be shut down at any moment. On restart, `skim.py run` with
 the same arguments skips finished groups, redoes groups left in `running` or
 `failed`, deletes any `.partial` leftovers, and reuses inputs still in scratch
-whose checksum matches. `~/work/skims_v2/_logs/resume.sh` restarts the
-approved 2024 sequence and the cross-section campaign in one go. Keep the lid
-open and the power connected: `caffeinate -i` prevents idle sleep but not
-lid-close sleep, and a sleeping laptop stalls the downloads.
+whose checksum matches. Keep the lid open and the power connected:
+`caffeinate -i` prevents idle sleep but not lid-close sleep, and a sleeping
+laptop stalls the downloads.
 
 A transfer whose output file has not grown for 180 s (`fetch.STALL_TIMEOUT`)
 is killed and the file is fetched from the next source: a redirector can hand
@@ -172,17 +189,19 @@ The retry round at the LPC is therefore: `skim.py mirror` on the laptop,
 `bin/lpc_condor.sh ... --submit`, whose plan slices carry the permanently bad
 inputs so the jobs skip them from the start.
 
-To stop deliberately, send `SIGTERM` to the `run` process (`pause.sh` does
-this): it terminates its worker pool, and each worker kills the transfer in
-flight, records its group as `failed` and removes its partial parts and
-scratch files, so the next `run` redoes exactly those groups. Workers are
-separate `spawn` processes whose command line does not contain `skim.py`;
-`pkill -f "bin/skim.py run"` alone (the pre-2026-10-05 `pause.sh`) killed the
-parent and left the workers running as orphans. Orphans are now harmless in
-two ways: `pause.sh` finds them through the `pid` recorded in every `running`
-group status and terminates them, and `run` refuses to start a group whose
-status says `running` while that pid is still a live Python process (use
-`--force` to override), so a group can never be processed twice at once.
+To stop deliberately, send `SIGTERM` to the `run` process.
+
+- It terminates its worker pool. Each worker kills the transfer in flight,
+  records its group as `failed` and removes its partial parts and scratch
+  files, so the next `run` redoes exactly those groups.
+- Workers are separate `spawn` processes whose command line does not contain
+  `skim.py`, so `pkill -f "bin/skim.py run"` stops only the parent and leaves
+  the workers running as orphans.
+- Every `running` group status records its worker's `pid`, so a stop script
+  can terminate orphans too.
+- An orphan cannot cause a double run: `run` refuses to start a group whose
+  status says `running` while that pid is still a live Python process (use
+  `--force` to override).
 
 ### Plan
 
@@ -263,59 +282,46 @@ private-grid filesets always were, so the raw scan never reaches the analyzer.
 
 ### Cross sections
 
-`scripts/genxsec_campaign.py run` runs GenXSecAnalyzer on one MiniAOD file per
-unique MC sample (two for aMC@NLO) inside the OrbStack VM and records what the
-events contain (LHE lepton flavours, W decay modes from GenPart). The header
-value is never taken at face value, and the dataset name is only used to find
-siblings and references; `review` decides from evidence what the header is:
+The configs' cross sections are measured, not copied, by
+`scripts/genxsec_campaign.py`. The normalisation rules that turn a generator
+number into the `xsec` the analyzer uses are documented with the config keys
+in [`docs/dataset_configs.md`](dataset_configs.md) ("How `xsec` is built"):
 
-- **per flavour** (POWHEG `DYto2E`/`DYto2Mu` mass bins): factor 1. Cross-check
-  printed with the review: the nine POWHEG bins above 50 GeV sum to 2244 pb
-  per flavour, the FxFX three-flavour header divided by three is 2228 pb.
-- **three-flavour** (MG5_aMC `DYto2E-*`/`DYto2Mu-*` with one flavour in the
-  events): factor 1/3 (`DYto2E-2Jets_MLL-50` header 6685 pb = XSDB 6688 pb).
-- **inclusive** although every event is one decay channel (POWHEG `hvq`
-  ttbar, `ST_wtch` tW): the sibling samples of the other channels carry the
-  same header value, so the factor is the branching fraction, with
-  BR(W to l nu) = 0.3258 including taus; without a sibling the header is
-  compared with the inclusive reference (`REFERENCES`: ttbar 923.6 / 833.9 pb,
-  tW 43.95 / 35.85 pb per charge, t-channel 145.0 / 87.2 pb at 13.6 / 13 TeV).
-- **includes decay** (MG5_aMC, which generates the decay in the matrix
-  element, and POWHEG `ST_tch_4f`): factor 1; evidence is the header matching
-  reference x BR (38.6 pb = 0.82 x 145.0 x 0.3258) rather than the reference.
-- **LO DY** (madgraphMLM: inclusive, HT-binned and the low-mass companions)
-  additionally gets a flat k-factor to the NLO inclusive value measured at the
-  same energy, NLO FxFX header / LO MLM header (1.223 at 13.6 TeV from the
-  2024 samples), the Run 2 convention of LO x k with the number now derived
-  rather than quoted. Without both inclusive headers at that energy the
-  k-factor stays 1 and the row is marked CHECK.
-- undecidable cases (POWHEG, restricted decays, no sibling, no reference) are
-  left with no factor and marked CHECK.
+- the NNLO references for DY, W+jets, ttbar, tW, t-channel and the dibosons;
+- the branching fractions;
+- the `order` labels.
 
-`apply` writes `xsec` = header x factor x k-factor into the configs (dry run
-unless `--write`; `--normalize reference` scales to the reference where one
-exists, which is the convention the configs already used for ttbar and tW,
-`--normalize generator` keeps the generator order) and records the whole
-derivation next to it in `xsec_source` (generator value and statistical
-uncertainty, header type, factor and its reason, k-factor, reference and its
-source, release, date). `total_uncertainty` becomes the generator's
-statistical uncertainty propagated through factor and k-factor; it is not a
-theory uncertainty and nothing in the analysis reads it. Results are keyed
-by primary dataset and centre-of-mass energy, as XSDB does: a sample already
-measured for another campaign (same gridpack and fragment, hence the same
-header) is reused and recorded as standing for the new run's eras too. A
-result applies only to the eras it stands for (`--any-era` overrides). Plans built before
-an `apply` keep the old numbers until `bin/skim.py refresh-metadata
---plan-dir ...` copies the config fields in (files, groups and schemas are
-untouched; `fileset` then picks them up).
+This section covers only the tool.
 
-Decisions taken on 2026-10-05 for RunIII2024Summer24 (`apply --normalize
-reference --write`, 238 entries in the six 2024 configs): NLO DY at the
-generator value (2228 / 2219 pb per flavour for the FxFX MLL-50 samples);
-LO DY scaled by the measured k = 1.223; ttbar, tW and t-channel at the
-NNLO reference times BR with BR(W to l nu) = 0.3258 (98.0 / 405.8 pb for
-ttbar, 4.67 / 19.3 pb per tW charge, 47.2 / 28.4 pb for t-channel top /
-antitop); everything else at the generator value.
+- **Measure.** `run` runs GenXSecAnalyzer on one MiniAOD file per unique MC
+  sample (two for aMC@NLO) in a CMSSW container (the OrbStack VM on the
+  laptop). It records what the events contain: LHE lepton flavours, W decay
+  modes from GenPart. `prepare-condor` and `collect` do the same as LPC Condor
+  jobs that stream the MiniAOD.
+- **Review.** `review` decides from the events and the sibling samples what
+  the generator header is; it never takes the header at face value:
+  - **per flavour** (POWHEG `DYto2E`/`DYto2Mu` mass bins): factor 1;
+  - **three-flavour** (MG5_aMC `DYto2E-*`/`DYto2Mu-*` with one flavour in the
+    events): factor 1/3;
+  - **inclusive** although every event is one decay channel (POWHEG `hvq`
+    ttbar, `ST_wtch` tW): factor = the branching fraction, with
+    BR(W to l nu) = 0.3258 including taus;
+  - **includes decay** (MG5_aMC, POWHEG `ST_tch_4f`): factor 1.
+
+  Undecidable cases are marked CHECK.
+- **Apply.** `apply` writes `xsec`, `order`, `total_uncertainty` and the whole
+  derivation (`xsec_source`) into the configs (dry run unless `--write`).
+  `annotate-order` fills `order` into configs written before the key existed.
+  - Results are keyed by primary dataset and centre-of-mass energy, as XSDB
+    does. A sample measured for another campaign (same gridpack, same header)
+    stands for the other eras too, but only for the eras it is recorded for
+    (`--any-era` overrides).
+  - `total_uncertainty` is the generator's statistical uncertainty, not a
+    theory uncertainty; nothing in the analysis reads it.
+- **Propagate.** Plans built before an `apply` keep the old numbers until
+  `bin/skim.py refresh-metadata --plan-dir ...` copies the config fields in
+  (files, groups and schemas are untouched); `skim.py fileset` then writes them
+  into the filesets.
 
 ## Luminosity of the skimmed data
 
@@ -355,6 +361,15 @@ lacks 0.88 % of its certified lumisections in the dataset itself). 2022C has
 both `SingleMuon` and `Muon` (disjoint run ranges), so the script takes the
 union of the two per lumisection. Masks and result in
 `data/lumis/Run3/2022/processed_skims_v2/`.
+
+UL18 (normtag_PHYSICS, 2026-10-09): golden JSON 59.561 fb⁻¹; in the skims ee
+59.500 / mumu 59.544 (2018A 13.96, B 7.02, C 6.87, D 31.65 / 31.69).
+
+- Certified lumisections that exist in no file of the dataset: SingleMuon
+  2018C 46 (0.18 %), EGamma 2018D 963 (0.76 %).
+- `wrcoffea/config.yaml` and `lumi.yaml` still use 59.83 fb⁻¹, the value
+  before the reskim. Switching to the processed value is an open decision.
+- The UL18 masks and result are not in `data/lumis/` yet.
 
 ## Edge eras (2022B, 2023B, 2024B)
 
@@ -430,7 +445,7 @@ validity of the data residuals. Smoke tests after the switch (muon and
 electron data, signal, ttbar with `--systs jes jer`, one chunk each, all
 four eras) ran cleanly with filled, finite histograms.
 
-## Known input defects (skims_v2, Run 3)
+## Known input defects (skims_v2)
 
 Inputs that could not be skimmed normally are recorded per group (`bad_files`
 in `_groups/gNNNN.json`, tallied by `skim.py bad-files`); every input that
@@ -473,6 +488,20 @@ Samples without LHE weights by design: the pure-Pythia 8 dibosons
 Run 3 era (they do have the 4 `PSWeight` entries). The analyzer fills their
 `scale` variations with the nominal weight and warns once per dataset.
 
+UL18 (skim completed 2026-10-09: 742 groups, 318 datasets, 5.51 billion
+events in, 280.6 million kept, 474 GB):
+
+- Three official signal files could not be read, costing 1-3 % of the events
+  of three mass points.
+- The three pre-legacy scan samples validated with per-model event counts
+  equal to DBS.
+- `validate --remote-lumis` passes 315 of 318 datasets. The three failures,
+  SingleMuon 2018A and 2018D and EGamma 2018A, are expected: the skims hold
+  lumisections (612, 2799 and 38) that no DBS file lists. DBS's per-file
+  lumisection lists are incomplete there (for example run 316240 of EGamma:
+  DBS lists 1184 of its 1222 lumisections), while the planned files equal the
+  current valid DBS files. Nothing is lost.
+
 ## Running on Condor at the LPC
 
 One job per group, in the coffea container on the worker, writing straight to
@@ -501,15 +530,33 @@ bin/lpc_condor.sh --jobs-dir ~/nobackup/skimjobs/v2 --cpus 2 --decompression-thr
 
 (`SKIM_PLAN`, `SKIM_OUT`, `SKIM_PROXY` and `SKIM_IMAGE` override the defaults.)
 
-`condor` lists the pending groups exactly like `run` does, leaves out the
-groups `condor_q` still shows (ClassAd `SkimGroup`), and writes the JDL
-(`+SingularityImage`, `+SingularityBindCVMFS`, `--cpus` CPUs, 4 GB, 20 GB
-disk; the job is CPU-bound by the LZMA decompression of the input, which
-releases the GIL, so `--cpus 4 --decompression-threads 4` makes a job about
-1.7 times faster than one core),
-`run_group.sh`, a 140 kB code tarball, one plan slice per dataset and
-`groups.txt`; rerunning it later submits only what is still pending, so it is
-also the retry command. Each job runs `skim.py group` on its slice, then
+`condor` lists the pending groups exactly like `run` does and leaves out the
+groups `condor_q` still shows (ClassAd `SkimGroup` = `era/dataset:gid`). It
+writes:
+
+- the JDL;
+- `run_group.sh`;
+- a 140 kB code tarball;
+- one plan slice per dataset;
+- `groups.txt`.
+
+Rerunning it later submits only what is still pending, so it is also the retry
+command.
+
+The JDL:
+
+- **Container:** `coffeateam/coffea-almalinux9-noml:2026.9.0-py3.12` from
+  `/cvmfs/unpacked.cern.ch`.
+- **Resources:** `--cpus` CPUs, `--memory-mb` (default 4000) and `--disk-gb`
+  (default 20). A job is CPU-bound by the LZMA decompression of its input,
+  which releases the GIL, so `--cpus 4 --decompression-threads 4` makes it
+  about 1.7 times faster than one core.
+- **Slow nodes:** a job running longer than `--max-hours` (default 8) is held
+  and released to restart elsewhere, at most 4 starts. A restart avoids the
+  last three machines the job ran on, and `--avoid-hosts` excludes nodes
+  outright.
+- **Logs:** `logs/<dataset>_g<gid>.out|.err` and `logs/condor.log` in the jobs
+  directory. Each job runs `skim.py group` on its slice, then
 `skim.py ship`, which copies parts (adler32-verified), sidecars and finally the
 group status to `<remote>/<out_dir>/`. Afterwards `skim.py mirror` pulls the
 JSON files of the remote tree into a local root (LPC or laptop), where
@@ -567,7 +614,13 @@ GB and because uploads and validation are per part.
 ## Earlier skims
 
 Skims made before October 2026 (the `skims/` tree at Wisconsin) were produced
-by the previous tooling: 1209 branches at about 3.2 kB per event, ZLIB level 1,
-no `LuminosityBlocks` tree, `genEventSumw` taken from a separate DAS pass. They
-stay in use until a dataset of the new campaign is validated and its fileset
-regenerated.
+by the previous tooling:
+
+- 1209 branches at about 3.2 kB per event, ZLIB level 1;
+- no `LuminosityBlocks` tree;
+- `genEventSumw` taken from a separate DAS pass;
+- the UL18 ones without rho.
+
+No active fileset uses them any more. The filesets that pointed at them are
+kept under `data/filesets/<run>/<year>/<era>/skimmed/archived/skims_v1/` for
+reference.

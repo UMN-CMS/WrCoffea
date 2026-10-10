@@ -20,7 +20,7 @@ For every unique (primary dataset, centre-of-mass energy) in the configs:
    and a proposed factor (1/3 for single-flavour samples whose header carries
    the three-flavour cross section, a branching fraction for samples whose
    decays are restricted while the header is inclusive). Nothing is written
-   to the configs: ``--apply`` does that after the table has been reviewed.
+   to the configs: ``apply`` does that after the table has been reviewed.
 
     python3 scripts/genxsec_campaign.py run --era RunIII2024Summer24 --work ~/work/skims_v2/_genxsec
     python3 scripts/genxsec_campaign.py review --work ~/work/skims_v2/_genxsec

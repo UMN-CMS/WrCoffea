@@ -3,8 +3,9 @@
 ``xrdcp`` is used (it is on every CMS node and in Homebrew), with the DBS
 adler32 passed as ``--cksum adler32:<value>`` so a corrupt transfer fails the
 copy instead of producing a broken skim.  Sources are tried in the order
-:func:`wrcoffea.skim.catalog.xrootd_sources` returns them: a redirector, then
-every disk replica Rucio knows about, then the other redirectors.  Each
+:func:`wrcoffea.skim.catalog.xrootd_sources` returns them: the redirectors
+(FNAL, global, INFN), then every disk replica Rucio knows about, as HTTPS
+WebDAV with the grid proxy.  Each
 attempt is logged with its classification so a file that fails everywhere
 can be reported with evidence.
 """

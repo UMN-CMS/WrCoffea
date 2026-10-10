@@ -170,9 +170,8 @@ python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run
 python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_signal.json
 python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_mc_dy_lo_inc.json
 
-# Skimmed filesets (from Wisconsin/UMN storage, after skimming)
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_data.json
-python3 scripts/skimmed_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_signal.json
+# Skimmed filesets: written by the skim campaign once the era is skimmed (step 5)
+python3 bin/skim.py fileset --plan-dir plans/v2_Run3Summer23 --era Run3Summer23
 ```
 
 The resulting fileset JSONs land under:
@@ -212,12 +211,21 @@ or `all`.
 
 ## 5. Skim (if using skimmed files)
 
-Follow `docs/skimming.md` to submit Condor skimming jobs and merge
-the output.  Skimmed NanoAOD files are stored under:
+Run a skim campaign for the era ([Skimming](skimming.md) has the details):
 
-```
-data/skims/Run3/2023/Run3Summer23/<sample>/
-```
+1. Build its plan: `bin/skim.py plan --campaign v2 --plan-dir plans/v2_Run3Summer23 --era Run3Summer23`.
+2. Process the groups, locally with `run` or as LPC Condor jobs with
+   `bin/lpc_condor.sh`.
+3. `validate`, then `upload` (local runs; Condor jobs ship their parts
+   themselves).
+4. Write the filesets with `fileset`.
+5. For data, compute the processed luminosity with
+   `scripts/processed_lumi.py` and use it in `config.yaml` and
+   `WR_Plotter/data/lumi.yaml`.
+
+The parts live at Wisconsin under
+`/store/user/wijackso/WRAnalyzer/skims_v2/<run>/<year>/<era>/<category>/<dataset>/`
+(and in the local campaign root, `~/work/skims_v2` by default).
 
 ---
 
