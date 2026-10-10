@@ -279,27 +279,38 @@ def write_filesets(args) -> int:
                     continue
                 if args.dataset and not any(s in dkey for s in args.dataset):
                     continue
-                parts = finished_parts(plan, dkey, out_root, allow_bad=False)
-                if parts is None:
-                    missing.append(dkey)
-                    continue
-                if any(e.get("metadata", {}).get("sample") == dkey for e in fileset.values()):
-                    continue  # data sub-eras share one dataset
-                files = {}
-                for sc in sorted(parts, key=lambda s: s["part"]["path"]):
-                    local = sc["part"]["path"]
-                    if remote_root:
-                        files[f"{remote_root}/{ds.out_dir}/{Path(local).name}"] = "Events"
-                    else:
-                        files[local] = "Events"
-                meta_out = dataset_metadata_from_parts(ds, parts)
-                if cfg_era != era:
-                    # Borrowed MC: the analyzer must treat it as the data-only era.
-                    meta_out["era"] = era
-                    meta_out["year"] = str(plan.datasets[next(k for k, d in plan.datasets.items() if d.era == era)].year) \
-                        if any(d.era == era for d in plan.datasets.values()) else meta_out.get("year")
-                    meta_out["skims_from_era"] = cfg_era
-                fileset[das] = {"files": files, "metadata": meta_out}
+                targets = [(das, ds)]
+                if ds.scan:
+                    # A multi-model scan sample is analysed as its per-model datasets (``skim.py split-scan``),
+                    # keyed by the model name as the private-grid filesets always were.
+                    models = sorted((k, d) for k, d in plan.datasets.items()
+                                    if d.metadata.get("scan_source") == dkey and d.era == cfg_era)
+                    if not models:
+                        missing.append(f"{dkey} (scan not split)")
+                        continue
+                    targets = [(d.metadata.get("das_name", k), d) for k, d in models]
+                for das_t, ds_t in targets:
+                    parts = finished_parts(plan, ds_t.key, out_root, allow_bad=False)
+                    if parts is None:
+                        missing.append(ds_t.key)
+                        continue
+                    if any(e.get("metadata", {}).get("sample") == ds_t.key for e in fileset.values()):
+                        continue  # data sub-eras share one dataset
+                    files = {}
+                    for sc in sorted(parts, key=lambda s: s["part"]["path"]):
+                        local = sc["part"]["path"]
+                        if remote_root:
+                            files[f"{remote_root}/{ds_t.out_dir}/{Path(local).name}"] = "Events"
+                        else:
+                            files[local] = "Events"
+                    meta_out = dataset_metadata_from_parts(ds_t, parts)
+                    if cfg_era != era:
+                        # Borrowed MC: the analyzer must treat it as the data-only era.
+                        meta_out["era"] = era
+                        meta_out["year"] = str(plan.datasets[next(k for k, d in plan.datasets.items() if d.era == era)].year) \
+                            if any(d.era == era for d in plan.datasets.values()) else meta_out.get("year")
+                        meta_out["skims_from_era"] = cfg_era
+                    fileset[das_t] = {"files": files, "metadata": meta_out}
             if not fileset:
                 logger.warning("%s: no finished datasets; fileset not written", cfg.name)
                 continue

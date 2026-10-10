@@ -194,7 +194,11 @@ applies the branch policy, and splits the files into groups by input size
 (defaults: 60 GB for data, 30 GB for MC, one group per signal point). Data
 sub-eras that share a `dataset` name in the config (for example the `v1` and
 `v2` versions of a prompt era) become one dataset. Config entries that are
-not DAS paths need an explicit `files` list, otherwise `--skip-private`.
+not DAS paths need an explicit `files` list, otherwise `--skip-private`;
+with `file_sizes`, `file_events` and `file_adler32` next to it (written by
+`scripts/private_signal_config.py`) such private files get the same checksum
+and event-count checks as DBS files, and their schema is derived from the
+first input by the worker.
 The plan (`plan.json` + `schemas.json`) is the single source of truth for
 every later step; nothing re-queries DAS.
 
@@ -252,7 +256,10 @@ generated-event count and the sums of genWeight and genWeight² before the
 selection. `skim.py split-scan` then reads the skimmed parts once per batch of
 models and writes one ordinary dataset per mass point (Runs tree from the
 recorded sums, sidecars, group status, plan entry), taking the per-model
-metadata such as the cross section from `--model-config`.
+metadata such as the cross section from `--model-config`. `skim.py fileset`
+then writes the scan's config entry as its model datasets (plan entries whose
+`metadata.scan_source` is the scan), keyed by the model name as the
+private-grid filesets always were, so the raw scan never reaches the analyzer.
 
 ### Cross sections
 
@@ -556,13 +563,6 @@ by event count: size is what transfers, opens and retries see, while the
 analyzer's chunking already bounds memory per task. One file per dataset was
 rejected because a single failed transfer or corrupt file would cost tens of
 GB and because uploads and validation are per part.
-
-## Running on LPC Condor
-
-Not wired yet. The intended shape: `skim.py plan` on the LPC, one Condor job
-per group running `skim.py group --plan-dir ... --dataset ... --gid ...` with
-`_CONDOR_SCRATCH_DIR` as scratch and the output root on EOS or the 3DayLifetime
-area; `status`, `validate`, `upload` and `fileset` are unchanged.
 
 ## Earlier skims
 
