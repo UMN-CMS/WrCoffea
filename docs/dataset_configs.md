@@ -110,7 +110,7 @@ Besides the 200 points of the official Run 3 grid it has an electron-only
 MWR = 3200 GeV scan in N; four of its files (N = 100, 250, 2910, 3070) are
 empty or lack the generator branches and are not in the config.
 `data/signal_points/RunIII2024Summer24_mass_points.csv` lists the 137 usable
-(WR, N) pairs, so `--mass` and `run_all_signals.py` accept the MWR = 3200
+(WR, N) pairs, so `--mass` and `--signal-points` accept the MWR = 3200
 points (they select the electron dataset only). Event IDs
 repeat across the merged jobs (every job wrote run 1, lumi 1, events from 1),
 which nothing in the skim or the analyzer relies on. The Run3Summer23BPix

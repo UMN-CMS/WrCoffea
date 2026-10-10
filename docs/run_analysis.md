@@ -25,7 +25,7 @@ Composite modes process multiple samples. Locally, they run sequentially (one sa
 | `all` | EGamma, Muon, DYJets, tt_tW, Nonprompt, Other, Signal |
 | `data` | EGamma, Muon |
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
-| `signal` | Signal (default subset of mass points) |
+| `signal` | Signal (the default grid of mass points, or `--signal-points`) |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
 
 Single samples: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal`.
@@ -34,7 +34,17 @@ Single samples: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Sign
 python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir my_study
 python3 bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
 python3 bin/run_analysis.py RunIII2024Summer24 all --condor              # parallel on Condor
+python3 bin/run_analysis.py RunIISummer20UL18 signal --signal-points all --mwr-range 1000 6000 --condor --dir my_signals
 ```
+
+Which signal points a composite mode with Signal (`signal`, `mc`, `all`) runs:
+
+- **Default:** a 9-point grid, the lowest, median and highest N for WR = 2, 4 and 6 TeV (`SIGNAL_WR_GRID` in `wrcoffea/cli_utils.py`).
+- **`--signal-points all`:** every point of `data/signal_points/<era>_mass_points.csv`.
+- **`--signal-points WR2000_N100 WR4000_N2100 ...`:** an explicit list.
+- **`--mwr-range MIN MAX`:** restricts any of these to MIN ≤ M_WR ≤ MAX.
+
+Each point is written to its own ROOT file, as for the default grid.
 
 When a sample fails during local composite processing, the error is logged and the next sample continues.
 
@@ -162,6 +172,8 @@ Each variation is written under `syst_<name>_<region>/`. Variations that do not 
 | Flag | Description |
 |------|-------------|
 | `--mass MASS` | Signal mass point (e.g., `WR4000_N2100`). **Required for Signal sample** |
+| `--signal-points POINT [POINT ...]` | Signal points of a composite mode with Signal (`signal`, `mc`, `all`): `default` (the 9-point grid), `all` (every point of the era's mass-point CSV) or a list of `WR<wr>_N<n>` tags |
+| `--mwr-range MIN MAX` | Keep only the signal points with MIN ≤ M_WR ≤ MAX (composite modes with Signal) |
 | `--dy VARIANT` | DY sample variant (only valid for DYJets). Available variants are configured per era in `config.yaml` (`dy_variants`). Without it every era uses the LO HT-binned set (`lo_ht`, `default_mc_tag`); `lo_inc` for LO inclusive, `nlo_inc` for NLO inclusive |
 | `--region {resolved,boosted,both}` | Analysis region to run (default: `both`) |
 | `--unblind` | Fill the data signal regions (and their variants) and the full data cutflows. Run 2 eras only; refused for every Run 3 era. Default: data is blinded, see [Blinding](#blinding). MC is never blinded |

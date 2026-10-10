@@ -232,3 +232,53 @@ class TestBuildFilesetPath:
         path = build_fileset_path(era="RunIISummer20UL18", sample="DYJets", unskimmed=True, dy=None)
         assert path.name == "RunIISummer20UL18_mc_dy_lo_ht_fileset.json"
         assert "unskimmed" in path.parts
+
+
+# ---------------------------------------------------------------------------
+# select_signal_points (run_analysis --signal-points / --mwr-range)
+# ---------------------------------------------------------------------------
+
+class TestSelectSignalPoints:
+    ERA = "RunIII2024Summer24"
+
+    def _csv_points(self):
+        from pathlib import Path
+        from wrcoffea.cli_utils import load_masses_from_csv
+        return load_masses_from_csv(Path(f"data/signal_points/{self.ERA}_mass_points.csv"))
+
+    def test_default_is_the_default_grid(self):
+        from wrcoffea.cli_utils import select_default_signal_points, select_signal_points
+        assert select_signal_points(self.ERA) == select_default_signal_points(self.ERA)
+        assert select_signal_points(self.ERA, ["default"]) == select_default_signal_points(self.ERA)
+
+    def test_all_is_every_csv_point(self):
+        from wrcoffea.cli_utils import select_signal_points
+        assert select_signal_points(self.ERA, ["all"]) == self._csv_points()
+
+    def test_mwr_range_filters_on_wr(self):
+        from wrcoffea.cli_utils import select_signal_points
+        pts = select_signal_points(self.ERA, ["all"], [2000, 4000])
+        wrs = [int(p.split("_")[0][2:]) for p in pts]
+        assert pts and all(2000 <= wr <= 4000 for wr in wrs)
+        assert len(pts) == sum(1 for p in self._csv_points() if 2000 <= int(p.split("_")[0][2:]) <= 4000)
+
+    def test_explicit_points_are_normalized_and_deduplicated(self):
+        from wrcoffea.cli_utils import select_signal_points
+        tag = self._csv_points()[0]
+        wr, n = tag[2:].split("_N")
+        assert select_signal_points(self.ERA, [tag, f"MWR{wr}_MN{n}"]) == [tag]
+
+    def test_unknown_point_raises(self):
+        from wrcoffea.cli_utils import select_signal_points
+        with pytest.raises(ValueError, match="not in"):
+            select_signal_points(self.ERA, ["WR123_N45"])
+
+    def test_empty_selection_raises(self):
+        from wrcoffea.cli_utils import select_signal_points
+        with pytest.raises(ValueError, match="No signal points selected"):
+            select_signal_points(self.ERA, ["all"], [0, 1])
+
+    def test_keywords_cannot_be_mixed_with_points(self):
+        from wrcoffea.cli_utils import select_signal_points
+        with pytest.raises(ValueError, match="cannot be combined"):
+            select_signal_points(self.ERA, ["all", self._csv_points()[0]])

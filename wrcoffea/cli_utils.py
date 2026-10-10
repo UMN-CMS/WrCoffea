@@ -234,6 +234,47 @@ def select_default_signal_points(era: str) -> list[str]:
     return selected
 
 
+def select_signal_points(era: str, spec: list[str] | None = None,
+                         mwr_range: tuple[int, int] | list[int] | None = None) -> list[str]:
+    """Signal mass points of a composite run (``--signal-points`` / ``--mwr-range``).
+
+    *spec* is ``None`` or ``["default"]`` for the default grid
+    (:func:`select_default_signal_points`), ``["all"]`` for every point of the
+    era's mass-point CSV, or a list of ``WR<wr>_N<n>`` tags (legacy
+    ``MWR<wr>_MN<n>`` accepted) that must all be in the CSV.  *mwr_range*
+    ``(min, max)`` keeps the points with min <= M_WR <= max.  Without *spec*
+    and *mwr_range* this is exactly :func:`select_default_signal_points`;
+    with either, an empty selection or an unknown tag raises ``ValueError``.
+    """
+    if spec is None and mwr_range is None:
+        return select_default_signal_points(era)
+    csv_path = Path(f"data/signal_points/{era}_mass_points.csv")
+    spec = list(spec or ["default"])
+    if spec == ["default"]:
+        points = select_default_signal_points(era)
+    elif spec == ["all"]:
+        points = load_masses_from_csv(csv_path)
+    else:
+        if "default" in spec or "all" in spec:
+            raise ValueError("--signal-points: 'default' and 'all' cannot be combined with mass points.")
+        valid = set(load_masses_from_csv(csv_path))
+        points = []
+        for tag in (normalize_mass_point(p) for p in spec):
+            if tag not in points:
+                points.append(tag)
+        unknown = [p for p in points if p not in valid]
+        if unknown:
+            raise ValueError(f"--signal-points: {unknown} not in {csv_path}.")
+    if mwr_range is not None:
+        lo, hi = (int(x) for x in mwr_range)
+        points = [p for p in points
+                  if (m := _MASS_RE_WR_N.match(p)) and lo <= int(m.group("wr")) <= hi]
+    if not points:
+        rng = f" --mwr-range {mwr_range[0]} {mwr_range[1]}" if mwr_range is not None else ""
+        raise ValueError(f"No signal points selected for {era} (--signal-points {' '.join(spec)}{rng}).")
+    return points
+
+
 def filter_by_process(fileset: Mapping, desired_process: str, *, mass: str | None = None) -> dict:
     if desired_process == "Signal":
         if mass is None:

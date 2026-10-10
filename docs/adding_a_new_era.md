@@ -203,9 +203,10 @@ WR,N
 ...
 ```
 
-`run_analysis.py` reads this file (via `select_default_signal_points()`)
-to choose which signal points to process in composite modes like `signal`
-or `all`.
+`run_analysis.py` reads this file to validate `--mass` and to choose the
+signal points of composite modes like `signal` or `all`. By default it picks
+the 9-point grid (`select_default_signal_points()`); `--signal-points all`
+and `--mwr-range` select from the whole list (`select_signal_points()`).
 
 ---
 

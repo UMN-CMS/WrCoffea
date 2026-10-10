@@ -52,7 +52,7 @@ Composite modes process multiple samples sequentially (locally) or in parallel (
 | `all` | EGamma, Muon, DYJets, tt_tW, Nonprompt, Other, Signal |
 | `data` | EGamma, Muon |
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
-| `signal` | Signal (default subset of mass points) |
+| `signal` | Signal: the 9-point default grid, or the points chosen with `--signal-points` / `--mwr-range` |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
 | Single sample | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal` (with `--mass`) |
 
@@ -134,6 +134,8 @@ See **[Skimming](docs/skimming.md)** for the selection, the branch policy, the o
 | `era` | `<era_name>` | **Required positional.** Campaign to analyze (e.g., RunIII2024Summer24) |
 | `sample` | `<sample_name>` | **Required positional.** Sample to analyze (e.g., DYJets, Signal, EGamma) |
 | `--mass` | `<mass_point>` | Signal mass point (e.g., WR4000_N2100). **Required for Signal sample** |
+| `--signal-points` | `default` \| `all` \| `<mass_point> ...` | Signal points of a composite mode with Signal (`signal`, `mc`, `all`): the 9-point default grid, every point of `data/signal_points/<era>_mass_points.csv`, or a list |
+| `--mwr-range` | `<min> <max>` | Keep only the signal points with min ≤ M_WR ≤ max (composite modes with Signal) |
 | `--region` | `resolved\|boosted\|both` | Analysis region to run (default: both) |
 | `--unblind` | | Fill the data signal regions and the full data cutflows (default: data is blinded; MC never is). Run 2 eras only; refused for Run 3 |
 | `--dy` | `VARIANT` | DY sample variant (only valid for DYJets). Variants are per-era; see `config.yaml` |
@@ -180,6 +182,7 @@ python3 bin/run_analysis.py RunIII2024Summer24 all --systs lumi pileup sf
 # Composite modes on Condor (parallel, must be inside Apptainer shell)
 python3 bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup sf
 python3 bin/run_analysis.py RunIII2024Summer24 bkg --condor
+python3 bin/run_analysis.py RunIISummer20UL18 signal --signal-points all --mwr-range 1000 6000 --condor   # every signal point, one cluster
 
 # Single sample
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets
@@ -230,7 +233,6 @@ studies/            # One-off studies (m(ll) cut optimization)
 **`bin/`** - Production Scripts
 - [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script (single samples and composite modes)
 - [`skim.py`](bin/skim.py) - Skim campaign driver (`plan`, `run`, `group`, `refresh-metadata`, `condor`, `ship`, `mirror`, `bad-files`, `status`, `validate`, `upload`, `split-scan`, `fileset`, `cuts`; see [docs/skimming.md](docs/skimming.md))
-- [`run_all_signals.py`](bin/run_all_signals.py) - A whole block of signal mass points in one Condor cluster (default UL18, M_WR 1-6 TeV)
 - [`lpc_condor.sh`](bin/lpc_condor.sh) - Host-side wrapper for `skim.py condor` at the LPC
 - [`benchmark_condor.sh`](bin/benchmark_condor.sh) - Sweep of Condor workers x chunk size
 

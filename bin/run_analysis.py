@@ -25,7 +25,7 @@ from wrcoffea.cli_utils import (
     load_composite_fileset,
     load_masses_from_csv,
     normalize_mass_point,
-    select_default_signal_points,
+    select_signal_points,
     split_sample_groups,
 )
 from wrcoffea.regions import STUDIES, check_unblind_allowed, resolve_studies
@@ -137,9 +137,13 @@ def validate_arguments(args, sig_points):
     if getattr(args, "unblind", False):
         check_unblind_allowed(args.era)
 
+    picks_points = getattr(args, "signal_points", None) or getattr(args, "mwr_range", None)
     if is_composite:
         if args.mass:
             raise ValueError("--mass is not valid for composite modes.")
+        if picks_points and "Signal" not in COMPOSITE_SAMPLES[args.sample]:
+            raise ValueError("--signal-points / --mwr-range need a composite mode that includes Signal "
+                             f"({', '.join(k for k, v in COMPOSITE_SAMPLES.items() if 'Signal' in v)}).")
         if args.dy is not None and "DYJets" not in COMPOSITE_SAMPLES[args.sample]:
             raise ValueError("--dy is only valid when DYJets is included in the composite mode.")
     else:
@@ -156,6 +160,9 @@ def validate_arguments(args, sig_points):
             raise ValueError(
                 f"Trying to specify a DY sample for a non-DY background"
             )
+        if picks_points:
+            raise ValueError("--signal-points / --mwr-range select the points of a composite mode "
+                             "(signal, mc, all); use --mass for a single Signal point.")
 
     if args.dy is not None and args.dy not in DY_VARIANTS.get(args.era, []):
         raise ValueError(
@@ -535,7 +542,8 @@ def _run_local_composite(args, era, *, client, sample_to_group):
     composite_mode = args.sample
     samples = COMPOSITE_SAMPLES[composite_mode]
     has_signal = "Signal" in samples
-    sig_points = select_default_signal_points(era) if has_signal else []
+    sig_points = (select_signal_points(era, getattr(args, "signal_points", None),
+                                       getattr(args, "mwr_range", None)) if has_signal else [])
 
     for sample in samples:
         sample_runs = [(sample, None)]
@@ -590,6 +598,12 @@ if __name__ == "__main__":
     optional = parser.add_argument_group("Optional arguments")
     optional.add_argument("--dy", type=str, default=None, choices=DY_CHOICES, help="Specific DY sample to analyze (LO, NLO, etc)")
     optional.add_argument("--mass", type=str, default=None, help="Signal mass point to analyze.")
+    optional.add_argument("--signal-points", nargs="+", default=None, metavar="POINT",
+                          help="Signal points of a composite mode that includes Signal (signal, mc, all): "
+                               "'default' (the 9-point grid, the default), 'all' (every point of "
+                               "data/signal_points/<era>_mass_points.csv) or WR<wr>_N<n> tags.")
+    optional.add_argument("--mwr-range", nargs=2, type=int, default=None, metavar=("MIN", "MAX"),
+                          help="Keep only the signal points with MIN <= M_WR <= MAX (composite modes with Signal).")
     optional.add_argument("--fileset", type=Path, default=None, help="Override automatic fileset path with a custom fileset JSON.")
     optional.add_argument("--dir", type=str, default=None, help="Create a new output directory.")
     optional.add_argument("--name", type=str, default=None, help="Append the filenames of the output ROOT files.")
@@ -716,7 +730,8 @@ if __name__ == "__main__":
     # --- Load fileset ---
     if is_composite:
         has_signal = "Signal" in COMPOSITE_SAMPLES[args.sample]
-        sig_points = select_default_signal_points(era) if has_signal else None
+        sig_points = (select_signal_points(era, args.signal_points, args.mwr_range)
+                      if has_signal else None)
         if sig_points:
             logging.info("Signal points: %s", ", ".join(sig_points))
 

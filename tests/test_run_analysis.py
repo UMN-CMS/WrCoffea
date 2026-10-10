@@ -496,3 +496,20 @@ def test_local_composite_saves_through_group_map(monkeypatch):
     ]
     # The loop restores the composite mode after temporarily rebinding args.sample.
     assert args.sample == "bkg" and args.mass is None
+
+
+def test_validate_signal_points_only_for_composites_with_signal():
+    """--signal-points / --mwr-range pick the points of signal/mc/all; elsewhere they are refused."""
+    single = _dy_args("RunIII2024Summer24", None)
+    single.signal_points = ["all"]
+    with pytest.raises(ValueError, match="use --mass"):
+        run_analysis.validate_arguments(single, [])
+
+    bkg = _dy_args("RunIII2024Summer24", None)
+    bkg.sample, bkg.mwr_range = "bkg", [1000, 6000]
+    with pytest.raises(ValueError, match="includes Signal"):
+        run_analysis.validate_arguments(bkg, [])
+
+    sig = _dy_args("RunIII2024Summer24", None)
+    sig.sample, sig.signal_points, sig.mwr_range = "signal", ["all"], [1000, 6000]
+    run_analysis.validate_arguments(sig, [])
