@@ -5,12 +5,18 @@
 
 # Integrated luminosities (fb^-1)
 lumis:
-  # UL16APV/UL16/UL17 and 2025 values are the PdmV golden-JSON numbers (2025 preliminary,
-  # no normtag yet); the correction payloads for these eras are not in the repo yet.
+  # Every era: the luminosity of the data in its skims_v2 skims (brilcalc normtag_PHYSICS on the processed-lumi
+  # masks x golden JSON, mean of the electron and muon streams; decided 2026-10-10, "brilcalc for everything").
+  # UL16APV/UL16 (PdmV placeholders until their skims are validated) and 2025 (preliminary, no normtag yet) are the
+  # golden-JSON numbers; the correction payloads for UL16/UL16APV/UL17 are not in the repo yet.
   RunIISummer20UL16APV: 19.5
   RunIISummer20UL16: 16.8
-  RunIISummer20UL17: 41.48
-  RunIISummer20UL18: 59.83
+  # UL17: skims e 42.063 / mu 42.016 (golden JSON 42.068 with normtag_PHYSICS; PdmV quotes 41.48);
+  # ~/work/skims_v2/_lumi/RunIISummer20UL17_processed_lumi.json (2026-10-10).
+  RunIISummer20UL17: 42.04
+  # UL18: skims e 59.500 / mu 59.544 (golden JSON 59.561 with normtag_PHYSICS; 59.83 before 2026-10-10 was the
+  # published 2018 number); ~/work/skims_v2/_lumi/RunIISummer20UL18_processed_lumi.json (2026-10-09).
+  RunIISummer20UL18: 59.52
   # 2022: luminosity of the data in the skims_v2 skims (brilcalc normtag_PHYSICS on the processed-lumi masks x golden
   # JSON; one number per era = mean of the electron and muon streams): Run3Summer22 = 2022B + C + D, ee 8.082 / mumu
   # 8.076 (2022B = 0.097, covered by the V4 JEC residual since 2026-10-07; C+D alone 7.986 / 7.979; golden C+D 7.99);
