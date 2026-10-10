@@ -525,6 +525,11 @@ def _mock_jet_veto(events, ak4_id_mask, era):
     return np.ones(len(events), dtype=bool)
 
 
+def _mock_jet_veto_jets(events, ak4_id_mask, era):
+    # Run 2 (`jetveto_mode: jet`) per-jet keep mask: keep every jet.
+    return ak.ones_like(events.Jet.pt, dtype=bool)
+
+
 def _mock_pileup_weight(events, era):
     # (nom, up, down) per-event arrays.
     return _sf_ones(len(events))
@@ -592,6 +597,7 @@ def _mock_dy_reshape_weight(jet_pt, era, kind, *, is_dy):
 
 _SF_PATCHES = {
     "wrcoffea.analyzer.jet_veto_event_mask": _mock_jet_veto,
+    "wrcoffea.analyzer.jet_veto_jet_mask": _mock_jet_veto_jets,
     "wrcoffea.analyzer.dy_zpt_weight": _mock_dy_zpt_weight,
     "wrcoffea.analyzer.signal_kfactor_weight": _mock_signal_kfactor_weight,
     "wrcoffea.analyzer.dy_reshape_weight": _mock_dy_reshape_weight,
@@ -690,7 +696,8 @@ class TestProcessIntegration:
         events.genWeight = ak.Array([1.0, 2.0, 3.0])
         mask = np.asarray(keep_mask, dtype=bool)
 
-        with patch("wrcoffea.analyzer.jet_veto_event_mask", return_value=mask), \
+        with patch("wrcoffea.analyzer.jet_veto_mode", return_value="event"), \
+             patch("wrcoffea.analyzer.jet_veto_event_mask", return_value=mask), \
              patch("wrcoffea.analyzer.apply_electron_scale_smearing", return_value={}) as correction:
             output = proc.process(events)
 
@@ -701,6 +708,29 @@ class TestProcessIntegration:
         assert len(filtered.Jet) == len(filtered.Muon) == len(filtered.HLT.Mu50) == len(filtered)
         cum = output["DYJetsToLL_M-50"]["cutflow"]["mumu"]["cumulative_unweighted"]
         assert cum.values()[0] == np.count_nonzero(mask)
+
+    @_apply_sf_patches
+    def test_process_jet_mode_keeps_events_and_flags_jets(self):
+        """Run 2 rule (jetveto_mode "jet"): no event is dropped, the per-jet keep
+        flag rides on Jet, and select_jets treats flagged jets as out of acceptance."""
+        proc = WrAnalysis(mass_point=None, region="resolved")
+        events = _make_integration_events(n_events=3, n_muons=2, n_jets=2)
+        events.genWeight = ak.Array([1.0, 2.0, 3.0])
+        keep = ak.Array([[True, False], [True, True], [False, False]])
+
+        with patch("wrcoffea.analyzer.jet_veto_mode", return_value="jet"), \
+             patch("wrcoffea.analyzer.jet_veto_event_mask") as event_mask, \
+             patch("wrcoffea.analyzer.jet_veto_jet_mask", return_value=keep), \
+             patch("wrcoffea.analyzer.apply_electron_scale_smearing", return_value={}) as correction:
+            proc.process(events)
+
+        event_mask.assert_not_called()
+        passed = correction.call_args.args[0]
+        assert len(passed) == 3
+        assert ak.to_list(passed.Jet.passJetVeto) == ak.to_list(keep)
+        _, _, masks = proc.select_jets(passed, "RunIISummer20UL18")
+        _, _, masks_plain = proc.select_jets(events, "RunIISummer20UL18")
+        assert ak.to_list(masks["ak4_pteta"]) == ak.to_list(masks_plain["ak4_pteta"] & keep)
 
     # ------------------------------------------------------------------
     # Data (no genWeight)
@@ -833,6 +863,7 @@ class TestProcessIntegration:
         veto_mask = np.asarray(veto_keep, dtype=bool)
 
         with patch.object(proc, "apply_noise_filter", side_effect=lambda ev, era: ev[noise_mask]), \
+             patch("wrcoffea.analyzer.jet_veto_mode", return_value="event"), \
              patch("wrcoffea.analyzer.jet_veto_event_mask", return_value=veto_mask):
             output = proc.process(events)
 
@@ -862,6 +893,7 @@ class TestProcessIntegration:
 
         with patch("wrcoffea.analyzer.WrAnalysis.apply_noise_filter",
                    new=lambda self, ev, era: ev[ev.genWeight != -1.0]), \
+             patch("wrcoffea.analyzer.jet_veto_mode", return_value="event"), \
              patch("wrcoffea.analyzer.jet_veto_event_mask",
                    side_effect=lambda ev, mask, era: ak.to_numpy(ev.genWeight > 0)):
             # The middle chunk is fully rejected but still contributes -1 to sumw.

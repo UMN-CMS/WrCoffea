@@ -11,7 +11,7 @@ import numpy as np
 
 from wrcoffea.analysis_config import (
     CUTS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS, LSF_SF,
-    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, MUON_JSONS,
+    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, JETVETO_MODES, MUON_JSONS,
     PILEUP_CORRECTION_NAMES, PILEUP_JSONS, JERC_JSONS
 )
 import vector
@@ -94,24 +94,37 @@ def pileup_weight(events, era):
     return nom, up, down
 
 
-def jet_veto_event_mask(events, ak4_id_mask, era):
-    """Return a per-event boolean mask (True = pass) using JME jet veto maps.
+#: How the JME jet veto map is applied (JME "Jet Veto Map Recommendations").
+#: Run 3 ("event", the default): reject the event if any jet passing the minimal
+#: selection lies in a vetoed (eta, phi) cell.  Run 2 ("jet"): drop only the jets
+#: whose axis lies in a vetoed cell and keep the event.  The two runs differ on
+#: purpose; ``jetveto_mode`` in config.yaml selects the mode per era.
+JETVETO_MODE_CHOICES = ("event", "jet")
 
-    Evaluates the ``jetvetomap`` correction on all jets with pT > 15 GeV.
-    Events containing at least one jet in a vetoed (eta, phi) region are
-    flagged False.  Applies to both data and MC.  Always returns a NumPy
-    boolean array of shape ``(len(events),)``; the caller filters events.
+
+def jet_veto_mode(era):
+    """Return the jet veto application mode for *era*: ``"event"`` or ``"jet"``."""
+    mode = JETVETO_MODES.get(era, "event")
+    if mode not in JETVETO_MODE_CHOICES:
+        raise ValueError(
+            f"jetveto_mode for era '{era}' is {mode!r}; expected one of {JETVETO_MODE_CHOICES}"
+        )
+    return mode
+
+
+def _jet_veto_hits(events, ak4_id_mask, era):
+    """Per-jet boolean (aligned with ``events.Jet``): passes the minimal selection
+    and lies in a vetoed cell.  Returns None when no map is configured for *era*.
+
+    Minimal selection: pT > ``jet_veto_pt_min``, (chEmEF + neEmEF) <
+    ``jet_veto_em_neFrac`` and the AK4 ID in *ak4_id_mask* (TightLeptonVeto).
     """
-    n_events = len(events)
-    if n_events == 0:
-        return np.ones(0, dtype=bool)
-
     if era not in JETVETO_JSONS:
         key = f"jetveto_unconfigured::{era}"
         if key not in _WARN_ONCE:
             _WARN_ONCE.add(key)
             logger.info("No jet veto map configured for era '%s'; passing all events.", era)
-        return np.ones(n_events, dtype=bool)
+        return None
 
     import correctionlib
 
@@ -122,27 +135,64 @@ def jet_veto_event_mask(events, ak4_id_mask, era):
         _CORRECTIONSET_CACHE[json_path] = ceval
 
     corr = ceval[JETVETO_CORRECTION_NAMES[era]]
-    # Select all jets above the veto map pT threshold, EMfrac threshold and they should satisfy tight lepton veto ID.
     jets = events.Jet
     pt_mask = jets.pt > CUTS["jet_veto_pt_min"]
     jet_emf_mask = (jets.chEmEF + jets.neEmEF < CUTS["jet_veto_em_neFrac"])
     jet_mask = jet_emf_mask & pt_mask & ak4_id_mask
-    sel_jets = jets[jet_mask]
-    
-    counts = ak.num(sel_jets)
-    flat_eta = np.asarray(ak.flatten(sel_jets.eta), dtype=np.float64)
-    flat_phi = np.asarray(ak.flatten(sel_jets.phi), dtype=np.float64)
 
-    if len(flat_eta) == 0:
+    # Evaluate the map only on jets passing the minimal selection (non-zero →
+    # vetoed region) and scatter the result back onto all jets.
+    counts = ak.num(jets)
+    flat_sel = np.asarray(ak.flatten(jet_mask), dtype=bool)
+    flat_hits = np.zeros(len(flat_sel), dtype=bool)
+    if flat_sel.any():
+        flat_eta = np.asarray(ak.flatten(jets.eta), dtype=np.float64)[flat_sel]
+        flat_phi = np.asarray(ak.flatten(jets.phi), dtype=np.float64)[flat_sel]
+        flat_hits[flat_sel] = corr.evaluate("jetvetomap", flat_eta, flat_phi) > 0
+    return ak.unflatten(flat_hits, counts)
+
+
+def jet_veto_event_mask(events, ak4_id_mask, era):
+    """Return a per-event boolean mask (True = pass) using JME jet veto maps.
+
+    Run 3 rule: events containing at least one jet that passes the minimal
+    selection (see ``_jet_veto_hits``) in a vetoed (eta, phi) region are
+    flagged False.  Applies to both data and MC.  Always returns a NumPy
+    boolean array of shape ``(len(events),)``; the caller filters events.
+    """
+    n_events = len(events)
+    if n_events == 0:
+        return np.ones(0, dtype=bool)
+
+    hits = _jet_veto_hits(events, ak4_id_mask, era)
+    if hits is None:
         return np.ones(n_events, dtype=bool)
+    return ak.to_numpy(~ak.any(hits, axis=1))
 
-    # Evaluate: non-zero → vetoed region.
-    veto_vals = corr.evaluate("jetvetomap", flat_eta, flat_phi)
 
-    # Unflatten and check if any jet per event is vetoed.
-    vetoed_per_jet = ak.unflatten(veto_vals > 0, counts)
-    any_vetoed = ak.any(vetoed_per_jet, axis=1)
-    return ak.to_numpy(~any_vetoed)
+def jet_veto_jet_mask(events, ak4_id_mask, era):
+    """Return a per-jet boolean mask (True = keep), aligned with ``events.Jet``.
+
+    Run 2 rule: drop the jets that pass the minimal selection and lie in a
+    vetoed (eta, phi) region; the event itself is kept.  As in the JME Run 2
+    loose selection, jets with a PF muon within dR < 0.2 are not vetoed.  The
+    PU jet ID requirement for CHS jets below 50 GeV is not applied: it only
+    concerns jets below the 40 GeV AK4 threshold or at its edge.
+    """
+    hits = _jet_veto_hits(events, ak4_id_mask, era)
+    if hits is None:
+        return ak.ones_like(events.Jet.pt, dtype=bool)
+    if "Muon" in events.fields and len(events) > 0:
+        muons = events.Muon
+        if "isPFcand" in muons.fields:
+            muons = muons[muons.isPFcand]
+        pairs = ak.cartesian([events.Jet, muons], axis=1, nested=True)
+        jet_part, mu_part = ak.unzip(pairs)
+        deta = jet_part.eta - mu_part.eta
+        dphi = (jet_part.phi - mu_part.phi + np.pi) % (2 * np.pi) - np.pi
+        near_pf_muon = ak.fill_none(ak.any(np.hypot(deta, dphi) < 0.2, axis=2), False)
+        hits = hits & ~near_pf_muon
+    return ~hits
 
 
 def _get_muon_ceval(era,key):

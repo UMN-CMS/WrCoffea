@@ -779,6 +779,70 @@ class TestJetVetoMap:
         assert result.dtype == bool
         np.testing.assert_array_equal(result, np.ones(1, dtype=bool))
 
+    def test_jet_veto_jet_mask_drops_only_vetoed_jets(self):
+        """Run 2 rule: vetoed jets are dropped and every event is kept, while
+        the Run 3 rule on the same events rejects the event instead."""
+        events = _make_events_with_jets(
+            jet_pt=[[100.0], [200.0, 80.0], [150.0, 10.0]],
+            jet_eta=[[2.0], [1.0, 3.0], [1.0, 3.0]],
+            jet_phi=[[1.5], [0.5, -1.0], [0.5, -1.0]],
+        )
+        ak4_id_mask = _all_true_ak4_id_mask(events)
+
+        def evaluate_fn(*args):
+            eta = args[1]
+            result = np.zeros(len(eta), dtype=np.float64)
+            result[np.abs(eta) > 2.5] = 1.0
+            return result
+
+        ctx, _, _ = _patch_correctionlib(evaluate_fn)
+        with ctx:
+            keep = sf.jet_veto_jet_mask(events, ak4_id_mask, TEST_ERA)
+            event_mask = sf.jet_veto_event_mask(events, ak4_id_mask, TEST_ERA)
+
+        # The 10 GeV jet at eta 3 fails the minimal selection, so it is not vetoed.
+        assert ak.to_list(keep) == [[True], [True, False], [True, True]]
+        np.testing.assert_array_equal(event_mask, [True, False, True])
+
+    def test_jet_veto_jet_mask_spares_jets_near_pf_muons(self):
+        """A jet with a PF muon within dR < 0.2 is not vetoed; a non-PF muon does not count."""
+        events = _make_events_with_jets(
+            jet_pt=[[100.0, 90.0], [100.0]],
+            jet_eta=[[3.0, 3.2], [3.0]],
+            jet_phi=[[1.0, -1.0], [1.0]],
+        )
+        muons = ak.zip({
+            "eta": ak.Array([[3.05], [3.05]]),
+            "phi": ak.Array([[1.05], [1.05]]),
+            "isPFcand": ak.Array([[True], [False]]),
+        })
+        events = ak.with_field(events, muons, "Muon")
+        ak4_id_mask = _all_true_ak4_id_mask(events)
+
+        ctx, _, _ = _patch_correctionlib(_mock_correction_evaluate_factory(1.0))
+        with ctx:
+            keep = sf.jet_veto_jet_mask(events, ak4_id_mask, TEST_ERA)
+
+        assert ak.to_list(keep) == [[True, False], [False]]
+
+    def test_jet_veto_jet_mask_unconfigured_era_keeps_all_jets(self):
+        """Without a map every jet is kept, including in jet-less events."""
+        events = _make_events_with_jets(
+            jet_pt=[[100.0, 50.0], []],
+            jet_eta=[[3.0, 1.0], []],
+            jet_phi=[[1.0, 0.0], []],
+        )
+        keep = sf.jet_veto_jet_mask(events, _all_true_ak4_id_mask(events), "FakeEra9999")
+        assert ak.to_list(keep) == [[True, True], []]
+
+    def test_jet_veto_mode(self, monkeypatch):
+        """Unlisted eras use the Run 3 event rule; an unknown mode is an error."""
+        monkeypatch.setattr(sf, "JETVETO_MODES", {"RunIISummer20UL18": "jet", "BadEra": "jets"})
+        assert sf.jet_veto_mode("RunIISummer20UL18") == "jet"
+        assert sf.jet_veto_mode(TEST_ERA) == "event"
+        with pytest.raises(ValueError, match="jetveto_mode"):
+            sf.jet_veto_mode("BadEra")
+
 
 # ---------------------------------------------------------------------------
 # Tests: Edge cases

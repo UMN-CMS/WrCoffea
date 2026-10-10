@@ -71,7 +71,7 @@ from wrcoffea.systematics import (
     resolve_syst_observables,
 )
 from wrcoffea.histograms import all_histogram_names
-from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, electron_trigger_sf, lsf_sf, pileup_weight, jet_veto_event_mask, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
+from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, electron_trigger_sf, lsf_sf, pileup_weight, jet_veto_event_mask, jet_veto_jet_mask, jet_veto_mode, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
@@ -388,6 +388,9 @@ class WrAnalysis(processor.ProcessorABC):
         """
         # ---------- AK4 ----------
         ak4_pteta_mask = (events.Jet.pt > CUTS["ak4_pt_min"]) & (np.abs(events.Jet.eta) < CUTS["ak4_eta_max"])
+        if "passJetVeto" in events.Jet.fields:
+            # Run 2 jet veto (`jetveto_mode: jet`): a jet in a vetoed cell is out of acceptance.
+            ak4_pteta_mask = ak4_pteta_mask & events.Jet.passJetVeto
         if era in JME_JSONS:
             try:
                 ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, era, jetid_name="AK4PUPPI_TightLeptonVeto")
@@ -1735,8 +1738,21 @@ class WrAnalysis(processor.ProcessorABC):
                 ak4_id_mask = events.Jet.isTightLeptonVeto
             else:
                 ak4_id_mask = events.Jet.jetId >= 6
-        veto_mask = jet_veto_event_mask(events, ak4_id_mask, mc_campaign)
-        events = events[veto_mask]
+        # Jet veto maps (JME recommendation): Run 3 rejects the whole event, Run 2
+        # drops only the vetoed jets and keeps the event.  The two runs differ on
+        # purpose; `jetveto_mode` in config.yaml picks the rule per era.
+        if jet_veto_mode(mc_campaign) == "jet":
+            keep = jet_veto_jet_mask(events, ak4_id_mask, mc_campaign)
+            jets = ak.with_field(events.Jet, keep, "passJetVeto")
+            if isinstance(events, ak.Array):
+                events = ak.with_field(events, jets, "Jet")
+            else:
+                # Plain container of collections (test doubles): shallow copy.
+                events = copy.copy(events)
+                events.Jet = jets
+        else:
+            veto_mask = jet_veto_event_mask(events, ak4_id_mask, mc_campaign)
+            events = events[veto_mask]
 
         corrected_electrons = apply_electron_scale_smearing(events, mc_campaign, is_mc)
         #verify_scale_smearing(events.Electron, corrected_electrons, is_mc)

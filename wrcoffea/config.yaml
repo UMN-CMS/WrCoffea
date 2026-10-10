@@ -108,6 +108,15 @@ jetveto_correction_names:
   Run3Summer23BPix: Summer23BPixPrompt23_RunD_V1
   RunIII2024Summer24: Summer24Prompt24_RunBCDEFGHI_V1
 
+# How the jet veto map is applied (JME "Jet Veto Map Recommendations", screenshots in
+# docs/pog_recommendations/jme/jetvetomaps/).  Run 3, the default "event" for eras not listed:
+# reject the event if any jet with pT > 15, TightLeptonVeto and chEmEF + neEmEF < 0.9 lies in a
+# vetoed cell.  Run 2, "jet": drop only the jets in vetoed cells (jets with a PF muon within
+# dR < 0.2 are spared) and keep the event.  NOTE: UL18 therefore differs from Run 3 on purpose
+# (Billy, 2026-10-10).  The event rule had cost UL18 ~17-20 % of events against the Run 2 analysis.
+jetveto_mode:
+  RunIISummer20UL18: jet
+
 jerc_jsons:
   RunIISummer20UL18:
     JERC_AK4:
