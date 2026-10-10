@@ -7,6 +7,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.861715,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -19,6 +20,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 3.861715,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -31,6 +33,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -43,6 +46,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -55,6 +59,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -67,6 +72,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -79,6 +85,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR1000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -91,6 +98,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR1000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -103,6 +111,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR1000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.251625,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -115,6 +124,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR1000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.251625,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -127,6 +137,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.169119,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -139,6 +150,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.169119,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -151,6 +163,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -163,6 +176,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -175,6 +189,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -187,6 +202,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -199,6 +215,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -211,6 +228,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -223,6 +241,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -235,6 +254,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -247,6 +267,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -259,6 +280,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -271,6 +293,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -283,6 +306,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -295,6 +319,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -307,6 +332,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -319,6 +345,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -331,6 +358,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -343,6 +371,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0033712850000000003,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -355,6 +384,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.0033712850000000003,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -367,6 +397,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00218286,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -379,6 +410,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00218286,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -391,6 +423,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -403,6 +436,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -415,6 +449,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -427,6 +462,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -439,6 +475,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -451,6 +488,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -463,6 +501,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -475,6 +514,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -487,6 +527,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -499,6 +540,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -511,6 +553,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -523,6 +566,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -535,6 +579,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -547,6 +592,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -559,6 +605,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -571,6 +618,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -583,6 +631,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -595,6 +644,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -607,6 +657,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -619,6 +670,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -631,6 +683,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -643,6 +696,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -655,6 +709,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -667,6 +722,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -679,6 +735,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -691,6 +748,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -703,6 +761,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -715,6 +774,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -727,6 +787,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -739,6 +800,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -751,6 +813,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -763,6 +826,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -775,6 +839,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -787,6 +852,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -799,6 +865,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -811,6 +878,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -823,6 +891,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.03376e-05,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -835,6 +904,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.03376e-05,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -847,6 +917,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00017672049999999998,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -859,6 +930,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 0.00017672049999999998,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -871,6 +943,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -883,6 +956,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -895,6 +969,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -907,6 +982,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -919,6 +995,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -931,6 +1008,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -943,6 +1021,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -955,6 +1034,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -967,6 +1047,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -979,6 +1060,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -991,6 +1073,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1003,6 +1086,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1015,6 +1099,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1027,6 +1112,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1039,6 +1125,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1051,6 +1138,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1063,6 +1151,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1075,6 +1164,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1087,6 +1177,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1099,6 +1190,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1111,6 +1203,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1123,6 +1216,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1135,6 +1229,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1147,6 +1242,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1159,6 +1255,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1171,6 +1268,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1183,6 +1281,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1195,6 +1294,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1207,6 +1307,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1219,6 +1320,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1231,6 +1333,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1243,6 +1346,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1255,6 +1359,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1267,6 +1372,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1279,6 +1385,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1291,6 +1398,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1303,6 +1411,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1315,6 +1424,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1327,6 +1437,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1339,6 +1450,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1351,6 +1463,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1363,6 +1476,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1375,6 +1489,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1387,6 +1502,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1399,6 +1515,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1411,6 +1528,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1423,6 +1541,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1435,6 +1554,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1447,6 +1567,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1459,6 +1580,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1471,6 +1593,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1483,6 +1606,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1495,6 +1619,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1507,6 +1632,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1519,6 +1645,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1531,6 +1658,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1543,6 +1671,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.9663199999999998e-07,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1555,6 +1684,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": 1.9663199999999998e-07,
+    "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1567,6 +1697,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1579,6 +1710,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1591,6 +1723,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1603,6 +1736,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1615,6 +1749,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1627,6 +1762,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1639,6 +1775,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1651,6 +1788,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1663,6 +1801,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1675,6 +1814,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1687,6 +1827,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1699,6 +1840,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1711,6 +1853,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1723,6 +1866,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1735,6 +1879,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1747,6 +1892,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1759,6 +1905,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1771,6 +1918,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1783,6 +1931,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1795,6 +1944,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1807,6 +1957,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1819,6 +1970,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1831,6 +1983,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1843,6 +1996,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1855,6 +2009,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1867,6 +2022,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1879,6 +2035,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1891,6 +2048,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1903,6 +2061,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1915,6 +2074,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1927,6 +2087,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1939,6 +2100,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1951,6 +2113,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1963,6 +2126,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1975,6 +2139,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1987,6 +2152,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -1999,6 +2165,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2011,6 +2178,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2023,6 +2191,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2035,6 +2204,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2047,6 +2217,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2059,6 +2230,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2071,6 +2243,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2083,6 +2256,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2095,6 +2269,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2107,6 +2282,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2119,6 +2295,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2131,6 +2308,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2143,6 +2321,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2155,6 +2334,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2167,6 +2347,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2179,6 +2360,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2191,6 +2373,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2203,6 +2386,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2215,6 +2399,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2227,6 +2412,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2239,6 +2425,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2251,6 +2438,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2263,6 +2451,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2275,6 +2464,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2287,6 +2477,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2299,6 +2490,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2311,6 +2503,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2323,6 +2516,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2335,6 +2529,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2347,6 +2542,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2359,6 +2555,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2371,6 +2568,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2383,6 +2581,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2395,6 +2594,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2407,6 +2607,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2419,6 +2620,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2431,6 +2633,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2443,6 +2646,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2455,6 +2659,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2467,6 +2672,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2479,6 +2685,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2491,6 +2698,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2503,6 +2711,7 @@
     "dataset": "WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -2515,6 +2724,7 @@
     "dataset": "WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
     "xsec": null,
+    "order": "unknown",
     "total_uncertainty": 0.0,
     "genEventSumw": null,
     "datatype": "mc"

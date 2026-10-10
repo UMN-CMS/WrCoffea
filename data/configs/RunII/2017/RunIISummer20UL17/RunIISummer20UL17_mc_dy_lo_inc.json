@@ -7,6 +7,7 @@
     "dataset": "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 6077.22,
+    "order": "NNLO",
     "total_uncertainty": 14.78,
     "genEventSumw": null,
     "datatype": "mc"
@@ -19,6 +20,7 @@
     "dataset": "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "DYJets",
     "xsec": 6077.22,
+    "order": "NNLO",
     "total_uncertainty": 14.78,
     "genEventSumw": null,
     "datatype": "mc"
@@ -31,6 +33,7 @@
     "dataset": "DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "DYJets",
     "xsec": 18610.0,
+    "order": "NLO",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc",
@@ -44,6 +47,7 @@
     "dataset": "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "tt_tW",
     "xsec": 88.56,
+    "order": "NNLO+NNLL",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -56,6 +60,7 @@
     "dataset": "ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "tt_tW",
     "xsec": 19.2,
+    "order": "NLO+NNLL",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -68,6 +73,7 @@
     "dataset": "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "tt_tW",
     "xsec": 19.2,
+    "order": "NLO+NNLL",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -80,6 +86,7 @@
     "dataset": "WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 1637.1,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 11.53,
     "genEventSumw": null,
     "datatype": "mc"
@@ -92,6 +99,7 @@
     "dataset": "WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 1637.1,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 11.53,
     "genEventSumw": null,
     "datatype": "mc"
@@ -104,6 +112,7 @@
     "dataset": "WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 1627.45,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 11.66,
     "genEventSumw": null,
     "datatype": "mc"
@@ -116,6 +125,7 @@
     "dataset": "WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 1627.45,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 11.66,
     "genEventSumw": null,
     "datatype": "mc"
@@ -128,6 +138,7 @@
     "dataset": "WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 435.237,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 3.128,
     "genEventSumw": null,
     "datatype": "mc"
@@ -140,6 +151,7 @@
     "dataset": "WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 435.237,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 3.128,
     "genEventSumw": null,
     "datatype": "mc"
@@ -152,6 +164,7 @@
     "dataset": "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 59.1811,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.4146,
     "genEventSumw": null,
     "datatype": "mc"
@@ -164,6 +177,7 @@
     "dataset": "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 59.1811,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.4146,
     "genEventSumw": null,
     "datatype": "mc"
@@ -176,6 +190,7 @@
     "dataset": "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
     "xsec": 59.1811,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.4146,
     "genEventSumw": null,
     "datatype": "mc"
@@ -188,6 +203,7 @@
     "dataset": "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 14.5805,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.105,
     "genEventSumw": null,
     "datatype": "mc"
@@ -200,6 +216,7 @@
     "dataset": "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 14.5805,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.105,
     "genEventSumw": null,
     "datatype": "mc"
@@ -212,6 +229,7 @@
     "dataset": "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
     "xsec": 14.5805,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.105,
     "genEventSumw": null,
     "datatype": "mc"
@@ -224,6 +242,7 @@
     "dataset": "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 6.65621,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04705,
     "genEventSumw": null,
     "datatype": "mc"
@@ -236,6 +255,7 @@
     "dataset": "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 6.65621,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04705,
     "genEventSumw": null,
     "datatype": "mc"
@@ -248,6 +268,7 @@
     "dataset": "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
     "xsec": 6.65621,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04705,
     "genEventSumw": null,
     "datatype": "mc"
@@ -260,6 +281,7 @@
     "dataset": "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 1.60809,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.01076,
     "genEventSumw": null,
     "datatype": "mc"
@@ -272,6 +294,7 @@
     "dataset": "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 1.60809,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.01076,
     "genEventSumw": null,
     "datatype": "mc"
@@ -284,6 +307,7 @@
     "dataset": "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
     "xsec": 1.60809,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.01076,
     "genEventSumw": null,
     "datatype": "mc"
@@ -296,6 +320,7 @@
     "dataset": "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 0.0389136,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0002507,
     "genEventSumw": null,
     "datatype": "mc"
@@ -308,6 +333,7 @@
     "dataset": "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
     "xsec": 0.0389136,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0002507,
     "genEventSumw": null,
     "datatype": "mc"
@@ -320,6 +346,7 @@
     "dataset": "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
     "xsec": 0.0389136,
+    "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0002507,
     "genEventSumw": null,
     "datatype": "mc"
@@ -332,6 +359,7 @@
     "dataset": "ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 3.36,
+    "order": "NLO",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -344,6 +372,7 @@
     "dataset": "ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 80.95,
+    "order": "NLO",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -356,6 +385,7 @@
     "dataset": "ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 136.02,
+    "order": "NLO",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -368,6 +398,7 @@
     "dataset": "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "Nonprompt",
     "xsec": 365.34,
+    "order": "NNLO+NNLL",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -380,6 +411,7 @@
     "dataset": "ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8",
     "physics_group": "Other",
     "xsec": 0.5407,
+    "order": "LO",
     "total_uncertainty": 0.002541,
     "genEventSumw": null,
     "datatype": "mc"
@@ -392,6 +424,7 @@
     "dataset": "ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8",
     "physics_group": "Other",
     "xsec": 0.4611,
+    "order": "LO",
     "total_uncertainty": 0.001268,
     "genEventSumw": null,
     "datatype": "mc"
@@ -404,6 +437,7 @@
     "dataset": "WW_TuneCP5_13TeV-pythia8",
     "physics_group": "Other",
     "xsec": 118.7,
+    "order": "NNLO",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -416,6 +450,7 @@
     "dataset": "WZ_TuneCP5_13TeV-pythia8",
     "physics_group": "Other",
     "xsec": 47.13,
+    "order": "NLO",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -428,6 +463,7 @@
     "dataset": "ZZ_TuneCP5_13TeV-pythia8",
     "physics_group": "Other",
     "xsec": 16.523,
+    "order": "NLO",
     "total_uncertainty": 0,
     "genEventSumw": null,
     "datatype": "mc"
@@ -440,6 +476,7 @@
     "dataset": "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
     "xsec": 0.2086,
+    "order": "NLO",
     "total_uncertainty": 0.0002024,
     "genEventSumw": null,
     "datatype": "mc"
@@ -452,6 +489,7 @@
     "dataset": "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
     "xsec": 0.2086,
+    "order": "NLO",
     "total_uncertainty": 0.0002024,
     "genEventSumw": null,
     "datatype": "mc"
@@ -464,6 +502,7 @@
     "dataset": "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
     "xsec": 0.1651,
+    "order": "NLO",
     "total_uncertainty": 0.0001724,
     "genEventSumw": null,
     "datatype": "mc"
@@ -476,6 +515,7 @@
     "dataset": "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
     "xsec": 0.1651,
+    "order": "NLO",
     "total_uncertainty": 0.0001724,
     "genEventSumw": null,
     "datatype": "mc"
@@ -488,6 +528,7 @@
     "dataset": "WZZ_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
     "xsec": 0.05565,
+    "order": "NLO",
     "total_uncertainty": 5.5e-05,
     "genEventSumw": null,
     "datatype": "mc"
@@ -500,6 +541,7 @@
     "dataset": "WZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
     "xsec": 0.05565,
+    "order": "NLO",
     "total_uncertainty": 5.5e-05,
     "genEventSumw": null,
     "datatype": "mc"
@@ -512,6 +554,7 @@
     "dataset": "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
     "xsec": 0.01398,
+    "order": "NLO",
     "total_uncertainty": 1.496e-05,
     "genEventSumw": null,
     "datatype": "mc"
@@ -524,6 +567,7 @@
     "dataset": "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
     "xsec": 0.01398,
+    "order": "NLO",
     "total_uncertainty": 1.496e-05,
     "genEventSumw": null,
     "datatype": "mc"
