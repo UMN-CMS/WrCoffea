@@ -279,10 +279,10 @@ and normally need no change.
 
 ---
 
-## 8. Combine (for limit setting)
+## 8. Limits
 
-Update the era path in `combine_framework/datacards.py` if you want
-to produce datacards for the new era.
+Limit setting lives in `WR_Plotter/signal_fitting/`: its `README.md` maps the
+stages, their inputs and environments, and `LIMITS.md` the limit configurations.
 
 ---
 
@@ -302,5 +302,5 @@ to produce datacards for the new era.
 | Fileset JSONs | `data/configs/` + `data/filesets/` | Yes |
 | Signal mass CSV | `data/signal_points/<era>_mass_points.csv` | Yes (signal) |
 | WR_Plotter | `WR_Plotter/data/lumi.yaml` (+ `plot_settings/` only for era-specific ranges) | For plotting |
-| Combine | `combine_framework/datacards.py` | For limits |
+| Limits | `WR_Plotter/signal_fitting/` (`README.md`, `LIMITS.md`) | For limits |
 | Tests | `python -m pytest tests/ -v` | Recommended |

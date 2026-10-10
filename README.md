@@ -224,7 +224,6 @@ data/               # Dataset configs, filesets, correction payloads, golden JSO
 docs/               # Documentation (markdown guides)
 scripts/            # Helper scripts: filesets, cross sections, reweight derivations, payload conversion
 tests/              # Automated test suite (pytest)
-combine_framework/  # Template-based Combine datacards and limit plots (runcombine.sh)
 studies/            # One-off studies (m(ll) cut optimization)
 ```
 
@@ -276,7 +275,6 @@ studies/            # One-off studies (m(ll) cut optimization)
 - [`dataset_configs.md`](docs/dataset_configs.md) - Dataset config keys, how each cross section is built, its perturbative order
 - [`skimming.md`](docs/skimming.md) - Skim campaign: selection, branch policy, workflow, verification, output layout
 - [`condor.md`](docs/condor.md) - HTCondor setup, worker defaults, tmux, logs
-- [`run_combine.md`](docs/run_combine.md) - Limit-setting with Combine framework
 - [`adding_a_new_era.md`](docs/adding_a_new_era.md) - Checklist for adding an era
 - [`run2_hnwr_comparison.md`](docs/run2_hnwr_comparison.md) - Comparison with the Run 2 HNWRAnalyzer; DY corrections and closure
 - [`repo_review.md`](docs/repo_review.md) - Open review findings
@@ -322,7 +320,7 @@ pip install -e ".[test]"
 - **[Dataset Configs](docs/dataset_configs.md)** - Every config key, cross-section provenance and the `order` of each value
 - **[Skimming](docs/skimming.md)** - Skim campaign: selection, branch policy, workflow, verification
 - **[Running on Condor](docs/condor.md)** - HTCondor setup, worker defaults, tmux tips, log locations
-- **[Expected Limits](docs/run_combine.md)** - Limit-setting with Higgs Combine framework
+- **[Limits](WR_Plotter/signal_fitting/LIMITS.md)** - Signal and background models and the Combine limits (in WR_Plotter)
 - **[WR Plotter](WR_Plotter/README.md)** - Plotting ROOT histograms and making stackplots
 
 ---
