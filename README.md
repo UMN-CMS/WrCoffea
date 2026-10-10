@@ -234,7 +234,6 @@ studies/            # One-off studies (m(ll) cut optimization)
 - [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script (single samples and composite modes)
 - [`skim.py`](bin/skim.py) - Skim campaign driver (`plan`, `run`, `group`, `refresh-metadata`, `condor`, `ship`, `mirror`, `bad-files`, `status`, `validate`, `upload`, `split-scan`, `fileset`, `cuts`; see [docs/skimming.md](docs/skimming.md))
 - [`lpc_condor.sh`](bin/lpc_condor.sh) - Host-side wrapper for `skim.py condor` at the LPC
-- [`benchmark_condor.sh`](bin/benchmark_condor.sh) - Sweep of Condor workers x chunk size
 
 **`wrcoffea/`** - Installable Python Package
 - [`analyzer.py`](wrcoffea/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis (object selection, resolved/boosted regions, histogram filling, cutflows)

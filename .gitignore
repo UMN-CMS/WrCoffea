@@ -9,9 +9,6 @@ AN-19-083_temp.pdf
 data/xsec
 data/skims
 test/
-scripts/setup/skims/tmp/
-scripts/.check_era_state_*.json
-scripts/resubmit_failed_*.sh
 
 *~
 __pycache__
