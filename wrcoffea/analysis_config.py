@@ -82,6 +82,7 @@ JERC_JSONS = _cfg["jerc_jsons"]
 JETVETO_JSONS = _cfg["jetveto_jsons"]
 JETVETO_CORRECTION_NAMES = _cfg["jetveto_correction_names"]
 JETVETO_MODES = _cfg.get("jetveto_mode") or {}
+AK8_MSOFTDROP_MODES = _cfg.get("ak8_msoftdrop_mode") or {}
 
 MUON_JSONS = _cfg["muon_jsons"]
 

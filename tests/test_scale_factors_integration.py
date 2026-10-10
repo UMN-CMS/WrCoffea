@@ -1100,6 +1100,70 @@ class TestJetVariationGating:
 
 
 # ---------------------------------------------------------------------------
+# Tests: AK8 soft-drop mass from the uncorrected subjets (ak8_msoftdrop_mode)
+# ---------------------------------------------------------------------------
+
+def _make_subjet_events():
+    """One event with three AK8 jets: two subjets, one subjet, none."""
+    events = _make_jec_events(jet_counts=(3,))
+    fatjets = ak.with_field(events.FatJet, ak.Array([[0, 2, -1]]), "subJetIdx1")
+    fatjets = ak.with_field(fatjets, ak.Array([[1, -1, -1]]), "subJetIdx2")
+    fatjets = ak.with_field(fatjets, ak.Array([[55.0, 66.0, 77.0]]), "msoftdrop")
+    subjets = ak.zip({
+        "pt": ak.Array([[120.0, 80.0, 60.0]]),
+        "eta": ak.Array([[0.3, 0.6, -1.0]]),
+        "phi": ak.Array([[0.1, 0.5, 2.0]]),
+        "mass": ak.Array([[10.0, 8.0, 12.0]]),
+        "rawFactor": ak.Array([[0.1, 0.2, 0.25]]),
+    })
+    events = ak.with_field(events, fatjets, "FatJet")
+    return ak.with_field(events, subjets, "SubJet")
+
+
+class TestRawSoftdropMass:
+    """ak8_msoftdrop_mode "raw" cuts on the uncorrected-subjet mass, as the Run 2 analysis did."""
+
+    ERA = "RunIII2024Summer24"
+
+    @pytest.fixture(autouse=True)
+    def _real_correctionlib(self):
+        pytest.importorskip("correctionlib")
+
+    def test_mode_lookup(self, monkeypatch):
+        """Unlisted eras cut on the corrected mass; an unknown mode is an error."""
+        monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {"RunIISummer20UL18": "raw", "BadEra": "uncorrected"})
+        assert sf.ak8_msoftdrop_mode("RunIISummer20UL18") == "raw"
+        assert sf.ak8_msoftdrop_mode(TEST_ERA) == "corrected"
+        with pytest.raises(ValueError, match="ak8_msoftdrop_mode"):
+            sf.ak8_msoftdrop_mode("BadEra")
+
+    def test_raw_mass_sums_uncorrected_subjets(self):
+        vector = pytest.importorskip("vector")
+        events = _make_subjet_events()
+        two = (vector.obj(pt=108.0, eta=0.3, phi=0.1, mass=9.0)
+               + vector.obj(pt=64.0, eta=0.6, phi=0.5, mass=6.4)).mass
+        got = ak.to_list(sf._raw_softdrop_mass(events.FatJet, events.SubJet))
+        assert got[0] == pytest.approx([two, 9.0, 0.0], rel=1e-5)
+
+    def test_corrected_mode_keeps_nanoaod_msoftdrop(self, monkeypatch):
+        monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {})
+        out = sf.apply_jet_corrections(_make_subjet_events(), self.ERA, False)
+        assert ak.to_list(out.FatJet.msoftdrop) == [[55.0, 66.0, 77.0]]
+
+    def test_raw_mode_replaces_msoftdrop(self, monkeypatch):
+        monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {self.ERA: "raw"})
+        events = _make_subjet_events()
+        expected = ak.to_list(sf._raw_softdrop_mass(events.FatJet, events.SubJet))
+        out = sf.apply_jet_corrections(events, self.ERA, False)
+        assert ak.to_list(out.FatJet.msoftdrop)[0] == pytest.approx(expected[0])
+
+    def test_raw_mode_needs_subjets(self, monkeypatch):
+        monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {self.ERA: "raw"})
+        with pytest.raises(RuntimeError, match="rawFactor"):
+            sf.apply_jet_corrections(_make_jec_events(), self.ERA, False)
+
+
+# ---------------------------------------------------------------------------
 # Tests: JER scale-factor payload schemas
 # ---------------------------------------------------------------------------
 

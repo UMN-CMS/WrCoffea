@@ -10,7 +10,7 @@ import awkward as ak
 import numpy as np
 
 from wrcoffea.analysis_config import (
-    CUTS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS, LSF_SF,
+    AK8_MSOFTDROP_MODES, CUTS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS, LSF_SF,
     JETVETO_CORRECTION_NAMES, JETVETO_JSONS, JETVETO_MODES, MUON_JSONS,
     PILEUP_CORRECTION_NAMES, PILEUP_JSONS, JERC_JSONS
 )
@@ -1493,6 +1493,45 @@ def _recompute_softdrop(events):
     # Return the updated fatjets record
     return ak.with_field(fatjets, updated_msoftdrop, "msoftdrop")
 
+
+#: Which AK8 soft-drop mass the selection cuts on.  "corrected" (the default) is
+#: NanoAOD's ``FatJet_msoftdrop``, the mass of the JEC-corrected soft-drop
+#: subjets.  "raw" is the mass of the uncorrected subjets, the SDMass the Run 2
+#: analysis cut on (SKFlatMaker / HNWRAnalyzer).  ``ak8_msoftdrop_mode`` in
+#: config.yaml selects it per era.
+AK8_MSOFTDROP_MODE_CHOICES = ("corrected", "raw")
+
+
+def ak8_msoftdrop_mode(era):
+    """Return which AK8 soft-drop mass *era* cuts on: ``"corrected"`` or ``"raw"``."""
+    mode = AK8_MSOFTDROP_MODES.get(era, "corrected")
+    if mode not in AK8_MSOFTDROP_MODE_CHOICES:
+        raise ValueError(
+            f"ak8_msoftdrop_mode for era '{era}' is {mode!r}; expected one of {AK8_MSOFTDROP_MODE_CHOICES}"
+        )
+    return mode
+
+
+def _raw_softdrop_mass(fatjets, subjets):
+    """Soft-drop mass of each AK8 jet from its uncorrected subjets.
+
+    Sums the p4 of the subjets at ``subJetIdx1`` / ``subJetIdx2`` with the JEC
+    undone (pt and mass x (1 - rawFactor)), as SKFlatMaker summed
+    ``subjets("SoftDropPuppi")`` with ``correctedP4("Uncorrected")``.  A jet
+    with one subjet gets that subjet's mass, a jet with none gets 0.
+    """
+    px = py = pz = e = 0.0
+    for idx_name in ("subJetIdx1", "subJetIdx2"):
+        idx = fatjets[idx_name]
+        sj = subjets[ak.mask(idx, idx >= 0)]
+        raw = 1.0 - sj.rawFactor
+        pt, mass = sj.pt * raw, sj.mass * raw
+        sx, sy, sz = pt * np.cos(sj.phi), pt * np.sin(sj.phi), pt * np.sinh(sj.eta)
+        se = np.sqrt(sx ** 2 + sy ** 2 + sz ** 2 + mass ** 2)
+        px, py, pz, e = (tot + ak.fill_none(c, 0.0) for tot, c in zip((px, py, pz, e), (sx, sy, sz, se)))
+    return ak.values_astype(np.sqrt(np.maximum(e ** 2 - px ** 2 - py ** 2 - pz ** 2, 0.0)), "float32")
+
+
 def apply_jet_corrections(events, era, isMC, variations=()):
     """Apply JEC (data and MC) and nominal JER smearing (MC) to Jet and FatJet.
 
@@ -1502,7 +1541,17 @@ def apply_jet_corrections(events, era, isMC, variations=()):
       - ``"jes"``: each source in the era's ``jes_unc_mapping``
         (``pt_CMS_scale_j_Total_up`` ...)
     Nothing is computed for variations that are not requested.
+
+    For an era whose ``ak8_msoftdrop_mode`` is ``"raw"``, ``FatJet.msoftdrop``
+    is replaced by the soft-drop mass of the uncorrected input subjets.
     """
+    msd_mode = ak8_msoftdrop_mode(era)
+    input_subjets = events.SubJet if "SubJet" in events.fields else None
+    if msd_mode == "raw" and (input_subjets is None or "rawFactor" not in input_subjets.fields):
+        raise RuntimeError(
+            f"ak8_msoftdrop_mode for era '{era}' is 'raw', but the input has no SubJet collection with "
+            "rawFactor, so the uncorrected soft-drop mass cannot be built."
+        )
     cfgAK4 = JERC_JSONS[era]["JERC_AK4"]
     cfgAK8 = JERC_JSONS[era]["JERC_AK8"]
 
@@ -1636,7 +1685,11 @@ def apply_jet_corrections(events, era, isMC, variations=()):
         events = ak.with_field(events, subjets, "SubJet")
         fatjets = _recompute_softdrop(events)
         events = ak.with_field(events, fatjets, "FatJet")
-        
+
+    if msd_mode == "raw":
+        fatjets = ak.with_field(events.FatJet, _raw_softdrop_mass(events.FatJet, input_subjets), "msoftdrop")
+        events = ak.with_field(events, fatjets, "FatJet")
+
     return events
 
 
