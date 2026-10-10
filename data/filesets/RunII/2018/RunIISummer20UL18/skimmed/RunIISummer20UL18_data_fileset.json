@@ -1,173 +1,204 @@
 {
-  "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+  "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part5.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part6.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part7.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part8.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_part9.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0004p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0005p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0006p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0007p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0008p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0009p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0010p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018A/EGamma_Run2018A_g0011p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "das_name": "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 7226625,
       "physics_group": "EGamma",
       "run": "RunII",
       "sample": "EGamma_Run2018A",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   },
-  "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+  "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_part5.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_part6.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_part7.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_g0004p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018B/EGamma_Run2018B_g0005p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "das_name": "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 4013558,
       "physics_group": "EGamma",
       "run": "RunII",
       "sample": "EGamma_Run2018B",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   },
-  "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+  "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_part5.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_g0004p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018C/EGamma_Run2018C_g0005p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "das_name": "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 3922119,
       "physics_group": "EGamma",
       "run": "RunII",
       "sample": "EGamma_Run2018C",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   },
-  "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD": {
+  "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part10.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part11.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part12.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part13.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part14.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part15.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part16.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part17.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part18.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part19.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part20.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part5.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part6.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part7.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part8.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_part9.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0004p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0005p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0006p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0007p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0008p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0009p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0010p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0011p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0012p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0013p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0014p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0015p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0016p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0017p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0018p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0019p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0020p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0021p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0022p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0023p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0024p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0025p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/EGamma_Run2018D/EGamma_Run2018D_g0026p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD",
+      "das_name": "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 17830130,
       "physics_group": "EGamma",
       "run": "RunII",
       "sample": "EGamma_Run2018D",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   },
-  "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
+  "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_part5.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_part6.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0004p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0005p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0006p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018A/SingleMuon_Run2018A_g0007p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+      "das_name": "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 4683606,
       "physics_group": "Muon",
       "run": "RunII",
       "sample": "SingleMuon_Run2018A",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   },
-  "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
+  "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_part5.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018B/SingleMuon_Run2018B_g0003p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+      "das_name": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 2260040,
       "physics_group": "Muon",
       "run": "RunII",
       "sample": "SingleMuon_Run2018B",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   },
-  "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD": {
+  "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018C/SingleMuon_Run2018C_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018C/SingleMuon_Run2018C_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018C/SingleMuon_Run2018C_part3.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018C/SingleMuon_Run2018C_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018C/SingleMuon_Run2018C_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018C/SingleMuon_Run2018C_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018C/SingleMuon_Run2018C_g0003p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+      "das_name": "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 2102924,
       "physics_group": "Muon",
       "run": "RunII",
       "sample": "SingleMuon_Run2018C",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   },
-  "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+  "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD": {
     "files": {
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part1.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part10.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part11.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part12.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part13.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part2.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part3.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part4.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part5.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part6.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part7.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part8.root": "Events",
-      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_part9.root": "Events"
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0004p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0005p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0006p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0007p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0008p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0009p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0010p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0011p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0012p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0013p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0014p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2018/RunIISummer20UL18/data/SingleMuon_Run2018D/SingleMuon_Run2018D_g0015p01.root": "Events"
     },
     "metadata": {
-      "das_name": "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "das_name": "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD",
       "datatype": "data",
       "era": "RunIISummer20UL18",
+      "nevts": 9486098,
       "physics_group": "Muon",
       "run": "RunII",
       "sample": "SingleMuon_Run2018D",
+      "skim_campaign": "v2",
       "year": "2018"
     }
   }
