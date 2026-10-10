@@ -9,7 +9,6 @@
     "xsec": 0.21732,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0005951,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1675,
@@ -37,7 +36,6 @@
     "xsec": 0.20405,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0006646,
-    "genEventSumw": 67300.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1568,
@@ -65,7 +63,6 @@
     "xsec": 0.19184,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0008212,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1472,
@@ -93,7 +90,6 @@
     "xsec": 0.17309,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0003849,
-    "genEventSumw": 67966.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1329,
@@ -121,7 +117,6 @@
     "xsec": 0.14743,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0003068,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1134,
@@ -149,7 +144,6 @@
     "xsec": 0.12087,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0003968,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.09248,
@@ -177,7 +171,6 @@
     "xsec": 0.085402,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0002045,
-    "genEventSumw": 68646.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.06564,
@@ -206,7 +199,6 @@
     "xsec": 0.05268,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0001158,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.04044,
@@ -235,7 +227,6 @@
     "xsec": 0.022995,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.374e-05,
-    "genEventSumw": 66595.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.01768,
@@ -263,7 +254,6 @@
     "xsec": 0.0039618,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.36e-06,
-    "genEventSumw": 69315.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.003024,
@@ -292,7 +282,6 @@
     "xsec": 0.0032597,
     "order": "LO x k(NLO)",
     "total_uncertainty": 6.17e-06,
-    "genEventSumw": 69342.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.002376,
@@ -320,7 +309,6 @@
     "xsec": 0.0030337,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.518e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.002193,
@@ -348,7 +336,6 @@
     "xsec": 0.002877,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.624e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.002057,
@@ -377,7 +364,6 @@
     "xsec": 0.0026018,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.213e-06,
-    "genEventSumw": 68728.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001852,
@@ -406,7 +392,6 @@
     "xsec": 0.0025073,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.788e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001781,
@@ -435,7 +420,6 @@
     "xsec": 0.0023367,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.82e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001657,
@@ -464,7 +448,6 @@
     "xsec": 0.0021777,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.661e-06,
-    "genEventSumw": 68720.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001543,
@@ -493,7 +476,6 @@
     "xsec": 0.0019836,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.773e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001403,
@@ -521,7 +503,6 @@
     "xsec": 0.0018401,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.144e-06,
-    "genEventSumw": 68716.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001302,
@@ -549,7 +530,6 @@
     "xsec": 0.001664,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.412e-06,
-    "genEventSumw": 68728.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.00118,
@@ -577,7 +557,6 @@
     "xsec": 0.001495,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.888e-06,
-    "genEventSumw": 69373.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.00106,
@@ -605,7 +584,6 @@
     "xsec": 0.00129,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.685e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0009137,
@@ -633,7 +611,6 @@
     "xsec": 0.001079,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.464e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0007645,
@@ -661,7 +638,6 @@
     "xsec": 0.00088475,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.088e-06,
-    "genEventSumw": 69370.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0006282,
@@ -690,7 +666,6 @@
     "xsec": 0.00069103,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.725e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0004912,
@@ -718,7 +693,6 @@
     "xsec": 0.00050795,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.299e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0003603,
@@ -747,7 +721,6 @@
     "xsec": 0.00033502,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.052e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0002375,
@@ -775,7 +748,6 @@
     "xsec": 0.00018296,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.736e-07,
-    "genEventSumw": 69361.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001302,
@@ -803,7 +775,6 @@
     "xsec": 7.6939e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.701e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.464e-05,
@@ -831,7 +802,6 @@
     "xsec": 1.6986e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.894e-08,
-    "genEventSumw": 67428.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.206e-05,
@@ -859,7 +829,6 @@
     "xsec": 0.00025511,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.297e-07,
-    "genEventSumw": 69333.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.000194,
@@ -887,7 +856,6 @@
     "xsec": 0.00021226,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.836e-07,
-    "genEventSumw": 68026.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001574,
@@ -915,7 +883,6 @@
     "xsec": 0.00017923,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.058e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001307,
@@ -943,7 +910,6 @@
     "xsec": 0.00015665,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.893e-07,
-    "genEventSumw": 69368.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.000113,
@@ -971,7 +937,6 @@
     "xsec": 0.0001422,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.388e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001013,
@@ -999,7 +964,6 @@
     "xsec": 0.00012757,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.313e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 9.039e-05,
@@ -1027,7 +991,6 @@
     "xsec": 0.00011883,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.835e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 8.375e-05,
@@ -1055,7 +1018,6 @@
     "xsec": 0.00010906,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.801e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.656e-05,
@@ -1083,7 +1045,6 @@
     "xsec": 0.00010239,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.258e-07,
-    "genEventSumw": 68804.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.154e-05,
@@ -1111,7 +1072,6 @@
     "xsec": 9.5445e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.445e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.668e-05,
@@ -1139,7 +1099,6 @@
     "xsec": 9.1075e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.107e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.345e-05,
@@ -1167,7 +1126,6 @@
     "xsec": 8.4003e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.197e-07,
-    "genEventSumw": 69397.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.88e-05,
@@ -1195,7 +1153,6 @@
     "xsec": 7.919e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.165e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.52e-05,
@@ -1223,7 +1180,6 @@
     "xsec": 7.3823e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.623e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.157e-05,
@@ -1251,7 +1207,6 @@
     "xsec": 6.763e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.136e-07,
-    "genEventSumw": 68774.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.724e-05,
@@ -1280,7 +1235,6 @@
     "xsec": 6.2302e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.949e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.348e-05,
@@ -1308,7 +1262,6 @@
     "xsec": 5.7389e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.35e-07,
-    "genEventSumw": 68774.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.013e-05,
@@ -1336,7 +1289,6 @@
     "xsec": 5.143e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.351e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.607e-05,
@@ -1364,7 +1316,6 @@
     "xsec": 4.5651e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.129e-08,
-    "genEventSumw": 69399.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.194e-05,
@@ -1392,7 +1343,6 @@
     "xsec": 4.0737e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.246e-07,
-    "genEventSumw": 68774.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.851e-05,
@@ -1420,7 +1370,6 @@
     "xsec": 3.5181e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.239e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.468e-05,
@@ -1448,7 +1397,6 @@
     "xsec": 2.9334e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.492e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.059e-05,
@@ -1476,7 +1424,6 @@
     "xsec": 2.4356e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.524e-08,
-    "genEventSumw": 69400.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.705e-05,
@@ -1505,7 +1452,6 @@
     "xsec": 1.9301e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 6.018e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.354e-05,
@@ -1533,7 +1479,6 @@
     "xsec": 1.4632e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.143e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.029e-05,
@@ -1561,7 +1506,6 @@
     "xsec": 1.0332e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.106e-08,
-    "genEventSumw": 69391.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.259e-06,
@@ -1589,7 +1533,6 @@
     "xsec": 6.7666e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.703e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.741e-06,
@@ -1617,7 +1560,6 @@
     "xsec": 3.7238e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.774e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.609e-06,
@@ -1645,7 +1587,6 @@
     "xsec": 1.6297e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.191e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.138e-06,
@@ -1673,7 +1614,6 @@
     "xsec": 4.7187e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.193e-09,
-    "genEventSumw": 68702.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.254e-07,
@@ -1701,7 +1641,6 @@
     "xsec": 5.4642e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.712e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.274e-05,
@@ -1729,7 +1668,6 @@
     "xsec": 4.0061e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.054e-08,
-    "genEventSumw": 69333.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.042e-05,
@@ -1757,7 +1695,6 @@
     "xsec": 3.0683e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.413e-08,
-    "genEventSumw": 69339.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.276e-05,
@@ -1785,7 +1722,6 @@
     "xsec": 2.4465e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.214e-07,
-    "genEventSumw": 68692.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.775e-05,
@@ -1813,7 +1749,6 @@
     "xsec": 1.9857e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 6.207e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.408e-05,
@@ -1841,7 +1776,6 @@
     "xsec": 1.6402e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.996e-08,
-    "genEventSumw": 69377.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.143e-05,
@@ -1869,7 +1803,6 @@
     "xsec": 1.4134e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.787e-08,
-    "genEventSumw": 68768.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 9.673e-06,
@@ -1897,7 +1830,6 @@
     "xsec": 1.2321e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.922e-08,
-    "genEventSumw": 68134.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 8.327e-06,
@@ -1925,7 +1857,6 @@
     "xsec": 1.106e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.485e-08,
-    "genEventSumw": 69394.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.37e-06,
@@ -1954,7 +1885,6 @@
     "xsec": 9.9284e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.634e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.562e-06,
@@ -1982,7 +1912,6 @@
     "xsec": 9.1177e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.35e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.971e-06,
@@ -2010,7 +1939,6 @@
     "xsec": 8.3069e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.429e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.396e-06,
@@ -2038,7 +1966,6 @@
     "xsec": 7.8374e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.224e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.057e-06,
@@ -2066,7 +1993,6 @@
     "xsec": 7.2922e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.805e-08,
-    "genEventSumw": 69428.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.703e-06,
@@ -2094,7 +2020,6 @@
     "xsec": 6.8993e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.877e-08,
-    "genEventSumw": 69424.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.437e-06,
@@ -2122,7 +2047,6 @@
     "xsec": 6.4198e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.797e-08,
-    "genEventSumw": 69422.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.12e-06,
@@ -2150,7 +2074,6 @@
     "xsec": 6.1136e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.285e-08,
-    "genEventSumw": 69412.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.912e-06,
@@ -2179,7 +2102,6 @@
     "xsec": 5.6285e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.728e-08,
-    "genEventSumw": 69428.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.61e-06,
@@ -2207,7 +2129,6 @@
     "xsec": 5.3764e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.127e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.438e-06,
@@ -2236,7 +2157,6 @@
     "xsec": 5.0294e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.033e-08,
-    "genEventSumw": 67640.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.212e-06,
@@ -2264,7 +2184,6 @@
     "xsec": 4.7358e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.366e-08,
-    "genEventSumw": 42304.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.022e-06,
@@ -2293,7 +2212,6 @@
     "xsec": 4.3911e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.051e-09,
-    "genEventSumw": 69425.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.806e-06,
@@ -2322,7 +2240,6 @@
     "xsec": 4.0951e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.064e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.609e-06,
@@ -2351,7 +2268,6 @@
     "xsec": 3.8195e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.41e-09,
-    "genEventSumw": 66532.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.435e-06,
@@ -2379,7 +2295,6 @@
     "xsec": 3.456e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.82e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.203e-06,
@@ -2408,7 +2323,6 @@
     "xsec": 3.1349e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.699e-09,
-    "genEventSumw": 69389.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.998e-06,
@@ -2436,7 +2350,6 @@
     "xsec": 2.8145e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.81e-09,
-    "genEventSumw": 69418.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.791e-06,
@@ -2464,7 +2377,6 @@
     "xsec": 2.507e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.131e-09,
-    "genEventSumw": 69418.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.598e-06,
@@ -2492,7 +2404,6 @@
     "xsec": 2.1887e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.982e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.394e-06,
@@ -2520,7 +2431,6 @@
     "xsec": 1.9021e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.837e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.213e-06,
@@ -2549,7 +2459,6 @@
     "xsec": 1.6081e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.315e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.023e-06,
@@ -2577,7 +2486,6 @@
     "xsec": 1.3108e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.501e-09,
-    "genEventSumw": 69417.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 8.354e-07,
@@ -2605,7 +2513,6 @@
     "xsec": 1.0785e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.866e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.866e-07,
@@ -2634,7 +2541,6 @@
     "xsec": 8.3882e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.827e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.34e-07,
@@ -2662,7 +2568,6 @@
     "xsec": 6.2344e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.352e-10,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.954e-07,
@@ -2691,7 +2596,6 @@
     "xsec": 4.2918e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.335e-10,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.729e-07,
@@ -2719,7 +2623,6 @@
     "xsec": 2.6823e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.664e-10,
-    "genEventSumw": 68818.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.702e-07,
@@ -2747,7 +2650,6 @@
     "xsec": 1.5213e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.15e-10,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 9.629e-08,
@@ -2775,7 +2677,6 @@
     "xsec": 6.6818e-08,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.718e-10,
-    "genEventSumw": 67648.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.204e-08,
@@ -2803,7 +2704,6 @@
     "xsec": 2.0016e-08,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.693e-11,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.24e-08,
@@ -2831,7 +2731,6 @@
     "xsec": 0.21745,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0005886,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1676,
@@ -2859,7 +2758,6 @@
     "xsec": 0.2047,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0006637,
-    "genEventSumw": 69278.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1573,
@@ -2887,7 +2785,6 @@
     "xsec": 0.19327,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0006889,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1483,
@@ -2916,7 +2813,6 @@
     "xsec": 0.17126,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.000469,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1315,
@@ -2944,7 +2840,6 @@
     "xsec": 0.1486,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0004306,
-    "genEventSumw": 69289.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1143,
@@ -2972,7 +2867,6 @@
     "xsec": 0.11983,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0002959,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.09169,
@@ -3000,7 +2894,6 @@
     "xsec": 0.083802,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0002553,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.06441,
@@ -3028,7 +2921,6 @@
     "xsec": 0.05238,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.436e-05,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.04021,
@@ -3056,7 +2948,6 @@
     "xsec": 0.022683,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.414e-05,
-    "genEventSumw": 66465.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.01744,
@@ -3085,7 +2976,6 @@
     "xsec": 0.0039631,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.161e-05,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.003025,
@@ -3113,7 +3003,6 @@
     "xsec": 0.0033063,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.494e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.00241,
@@ -3141,7 +3030,6 @@
     "xsec": 0.0030254,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.004e-05,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.002187,
@@ -3169,7 +3057,6 @@
     "xsec": 0.0028631,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.482e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.002047,
@@ -3197,7 +3084,6 @@
     "xsec": 0.002696,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.038e-05,
-    "genEventSumw": 43397.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001919,
@@ -3225,7 +3111,6 @@
     "xsec": 0.0024707,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.134e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001755,
@@ -3254,7 +3139,6 @@
     "xsec": 0.0022986,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.88e-06,
-    "genEventSumw": 69280.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.00163,
@@ -3282,7 +3166,6 @@
     "xsec": 0.002158,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.856e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001529,
@@ -3310,7 +3193,6 @@
     "xsec": 0.002019,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.094e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001428,
@@ -3339,7 +3221,6 @@
     "xsec": 0.0018288,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.964e-06,
-    "genEventSumw": 69297.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001294,
@@ -3367,7 +3248,6 @@
     "xsec": 0.0016696,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.642e-06,
-    "genEventSumw": 69300.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001184,
@@ -3395,7 +3275,6 @@
     "xsec": 0.0014936,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.513e-06,
-    "genEventSumw": 69292.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.001059,
@@ -3424,7 +3303,6 @@
     "xsec": 0.0012616,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.619e-06,
-    "genEventSumw": 69597.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0008936,
@@ -3452,7 +3330,6 @@
     "xsec": 0.0010839,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.197e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.000768,
@@ -3480,7 +3357,6 @@
     "xsec": 0.00088165,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.476e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.000626,
@@ -3509,7 +3385,6 @@
     "xsec": 0.00068765,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.816e-06,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0004888,
@@ -3537,7 +3412,6 @@
     "xsec": 0.00050612,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.751e-07,
-    "genEventSumw": 69301.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.000359,
@@ -3565,7 +3439,6 @@
     "xsec": 0.00033671,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.218e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0002387,
@@ -3593,7 +3466,6 @@
     "xsec": 0.00018549,
     "order": "LO x k(NLO)",
     "total_uncertainty": 6.51e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.000132,
@@ -3621,7 +3493,6 @@
     "xsec": 7.6376e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.807e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.424e-05,
@@ -3649,7 +3520,6 @@
     "xsec": 1.6972e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.679e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.205e-05,
@@ -3678,7 +3548,6 @@
     "xsec": 0.00025603,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.252e-07,
-    "genEventSumw": 69285.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001947,
@@ -3706,7 +3575,6 @@
     "xsec": 0.00020943,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.804e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001553,
@@ -3734,7 +3602,6 @@
     "xsec": 0.00017978,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.645e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001311,
@@ -3762,7 +3629,6 @@
     "xsec": 0.00015582,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.408e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001124,
@@ -3790,7 +3656,6 @@
     "xsec": 0.00014094,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.249e-07,
-    "genEventSumw": 69292.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.0001004,
@@ -3818,7 +3683,6 @@
     "xsec": 0.00012788,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.221e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 9.061e-05,
@@ -3846,7 +3710,6 @@
     "xsec": 0.00011768,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.046e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 8.294e-05,
@@ -3874,7 +3737,6 @@
     "xsec": 0.00011211,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.967e-07,
-    "genEventSumw": 67876.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.87e-05,
@@ -3902,7 +3764,6 @@
     "xsec": 0.00010281,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.284e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.183e-05,
@@ -3931,7 +3792,6 @@
     "xsec": 9.6132e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.392e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.716e-05,
@@ -3959,7 +3819,6 @@
     "xsec": 8.9166e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.994e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.212e-05,
@@ -3988,7 +3847,6 @@
     "xsec": 8.3646e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.764e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.855e-05,
@@ -4017,7 +3875,6 @@
     "xsec": 7.7927e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.475e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.432e-05,
@@ -4045,7 +3902,6 @@
     "xsec": 7.3351e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.402e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.124e-05,
@@ -4074,7 +3930,6 @@
     "xsec": 6.753e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.698e-07,
-    "genEventSumw": 68610.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.717e-05,
@@ -4102,7 +3957,6 @@
     "xsec": 6.2517e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.625e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.363e-05,
@@ -4131,7 +3985,6 @@
     "xsec": 5.6946e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.997e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.982e-05,
@@ -4160,7 +4013,6 @@
     "xsec": 5.1401e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.07e-07,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.605e-05,
@@ -4189,7 +4041,6 @@
     "xsec": 4.5822e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.229e-07,
-    "genEventSumw": 67942.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.206e-05,
@@ -4217,7 +4068,6 @@
     "xsec": 4.0236e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.583e-08,
-    "genEventSumw": 66585.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.816e-05,
@@ -4246,7 +4096,6 @@
     "xsec": 3.5166e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.539e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.467e-05,
@@ -4275,7 +4124,6 @@
     "xsec": 2.9406e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.904e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.064e-05,
@@ -4303,7 +4151,6 @@
     "xsec": 2.4242e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.3e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.697e-05,
@@ -4331,7 +4178,6 @@
     "xsec": 1.9286e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.783e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.353e-05,
@@ -4359,7 +4205,6 @@
     "xsec": 1.459e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.763e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.026e-05,
@@ -4388,7 +4233,6 @@
     "xsec": 1.0466e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.611e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.353e-06,
@@ -4416,7 +4260,6 @@
     "xsec": 6.6795e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.601e-08,
-    "genEventSumw": 66660.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.68e-06,
@@ -4444,7 +4287,6 @@
     "xsec": 3.7552e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.02e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.631e-06,
@@ -4472,7 +4314,6 @@
     "xsec": 1.6411e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.756e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.146e-06,
@@ -4500,7 +4341,6 @@
     "xsec": 4.7506e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.185e-09,
-    "genEventSumw": 69344.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.276e-07,
@@ -4528,7 +4368,6 @@
     "xsec": 5.3632e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.518e-07,
-    "genEventSumw": 69274.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.195e-05,
@@ -4556,7 +4395,6 @@
     "xsec": 3.9758e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.312e-08,
-    "genEventSumw": 69278.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.019e-05,
@@ -4584,7 +4422,6 @@
     "xsec": 3.1277e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.551e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.32e-05,
@@ -4612,7 +4449,6 @@
     "xsec": 2.4382e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.254e-08,
-    "genEventSumw": 52912.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.769e-05,
@@ -4641,7 +4477,6 @@
     "xsec": 1.9674e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.204e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.395e-05,
@@ -4669,7 +4504,6 @@
     "xsec": 1.7134e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.066e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.194e-05,
@@ -4697,7 +4531,6 @@
     "xsec": 1.4233e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.332e-08,
-    "genEventSumw": 69298.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 9.741e-06,
@@ -4725,7 +4558,6 @@
     "xsec": 1.2419e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.631e-08,
-    "genEventSumw": 66505.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 8.393e-06,
@@ -4754,7 +4586,6 @@
     "xsec": 1.104e-05,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.427e-08,
-    "genEventSumw": 69297.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 7.357e-06,
@@ -4782,7 +4613,6 @@
     "xsec": 9.7801e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.855e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.464e-06,
@@ -4810,7 +4640,6 @@
     "xsec": 9.0642e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 6.703e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.936e-06,
@@ -4838,7 +4667,6 @@
     "xsec": 8.2591e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.066e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.365e-06,
@@ -4867,7 +4695,6 @@
     "xsec": 7.7987e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.775e-08,
-    "genEventSumw": 67248.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.032e-06,
@@ -4896,7 +4723,6 @@
     "xsec": 7.3124e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.086e-08,
-    "genEventSumw": 69309.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.716e-06,
@@ -4924,7 +4750,6 @@
     "xsec": 6.8635e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.404e-09,
-    "genEventSumw": 67268.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.414e-06,
@@ -4953,7 +4778,6 @@
     "xsec": 6.4899e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.94e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.165e-06,
@@ -4981,7 +4805,6 @@
     "xsec": 6.073e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.266e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.886e-06,
@@ -5010,7 +4833,6 @@
     "xsec": 5.6488e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.24e-08,
-    "genEventSumw": 66570.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.623e-06,
@@ -5038,7 +4860,6 @@
     "xsec": 5.3827e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 9.88e-09,
-    "genEventSumw": 69312.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.442e-06,
@@ -5067,7 +4888,6 @@
     "xsec": 5.031e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.624e-08,
-    "genEventSumw": 68626.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.213e-06,
@@ -5095,7 +4915,6 @@
     "xsec": 4.7342e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.381e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.021e-06,
@@ -5123,7 +4942,6 @@
     "xsec": 4.4005e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.332e-08,
-    "genEventSumw": 66595.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.812e-06,
@@ -5151,7 +4969,6 @@
     "xsec": 4.0135e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.148e-08,
-    "genEventSumw": 69326.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.557e-06,
@@ -5179,7 +4996,6 @@
     "xsec": 3.7552e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.225e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.394e-06,
@@ -5208,7 +5024,6 @@
     "xsec": 3.478e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.315e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.217e-06,
@@ -5236,7 +5051,6 @@
     "xsec": 3.1898e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.541e-08,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.033e-06,
@@ -5264,7 +5078,6 @@
     "xsec": 2.8098e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.214e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.788e-06,
@@ -5293,7 +5106,6 @@
     "xsec": 2.4772e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 7.439e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.579e-06,
@@ -5321,7 +5133,6 @@
     "xsec": 2.1919e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.122e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.396e-06,
@@ -5350,7 +5161,6 @@
     "xsec": 1.8943e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.315e-09,
-    "genEventSumw": 68662.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.208e-06,
@@ -5379,7 +5189,6 @@
     "xsec": 1.6112e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.4e-09,
-    "genEventSumw": 68038.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.025e-06,
@@ -5407,7 +5216,6 @@
     "xsec": 1.3172e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 4.258e-09,
-    "genEventSumw": 69341.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 8.395e-07,
@@ -5435,7 +5243,6 @@
     "xsec": 1.0719e-06,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.93e-09,
-    "genEventSumw": 69339.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6.824e-07,
@@ -5463,7 +5270,6 @@
     "xsec": 8.4384e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.971e-09,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 5.372e-07,
@@ -5491,7 +5297,6 @@
     "xsec": 6.1856e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 2.121e-09,
-    "genEventSumw": 68734.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.923e-07,
@@ -5519,7 +5324,6 @@
     "xsec": 4.3296e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 8.066e-10,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.753e-07,
@@ -5548,7 +5352,6 @@
     "xsec": 2.7454e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 5.464e-10,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.742e-07,
@@ -5577,7 +5380,6 @@
     "xsec": 1.4997e-07,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.379e-10,
-    "genEventSumw": 68047.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 9.492e-08,
@@ -5605,7 +5407,6 @@
     "xsec": 6.6151e-08,
     "order": "LO x k(NLO)",
     "total_uncertainty": 1.387e-10,
-    "genEventSumw": 69552.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.162e-08,
@@ -5634,7 +5435,6 @@
     "xsec": 2.0194e-08,
     "order": "LO x k(NLO)",
     "total_uncertainty": 3.855e-11,
-    "genEventSumw": 70000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.251e-08,

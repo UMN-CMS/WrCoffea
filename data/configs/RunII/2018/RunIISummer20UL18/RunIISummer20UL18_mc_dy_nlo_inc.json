@@ -9,7 +9,6 @@
     "xsec": 6077.2,
     "order": "NLO x k(NNLO)",
     "total_uncertainty": 21.33,
-    "genEventSumw": 3323477295419.996,
     "datatype": "mc",
     "xsec_source": {
       "generator": 6415.0,
@@ -37,7 +36,6 @@
     "xsec": 19345.0,
     "order": "NLO x k(NNLO)",
     "total_uncertainty": 51.24,
-    "genEventSumw": null,
     "datatype": "mc",
     "optional": true,
     "xsec_source": {
@@ -66,7 +64,6 @@
     "xsec": 88.515,
     "order": "NNLO+NNLL",
     "total_uncertainty": 0.06665,
-    "genEventSumw": 10457566706.558403,
     "datatype": "mc",
     "xsec_source": {
       "generator": 687.1,
@@ -94,7 +91,6 @@
     "xsec": 19.555,
     "order": "NLO+NNLL",
     "total_uncertainty": 0.01411,
-    "genEventSumw": 355945896.5544001,
     "datatype": "mc",
     "xsec_source": {
       "generator": 32.51,
@@ -122,7 +118,6 @@
     "xsec": 19.555,
     "order": "NLO+NNLL",
     "total_uncertainty": 0.01409,
-    "genEventSumw": 365675749.6428,
     "datatype": "mc",
     "xsec_source": {
       "generator": 32.45,
@@ -150,7 +145,6 @@
     "xsec": 1463.5,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 6.223,
-    "genEventSumw": 66220256.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1274.0,
@@ -178,7 +172,6 @@
     "xsec": 1463.5,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 6.223,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1274.0,
@@ -206,7 +199,6 @@
     "xsec": 1445.1,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 6.245,
-    "genEventSumw": 51408967.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1258.0,
@@ -234,7 +226,6 @@
     "xsec": 1445.1,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 6.245,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1258.0,
@@ -262,7 +253,6 @@
     "xsec": 385.06,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 1.677,
-    "genEventSumw": 58225632.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 335.2,
@@ -290,7 +280,6 @@
     "xsec": 385.06,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 1.677,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 335.2,
@@ -318,7 +307,6 @@
     "xsec": 52.176,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.2289,
-    "genEventSumw": 7444030.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 45.42,
@@ -346,7 +334,6 @@
     "xsec": 52.176,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.2289,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 45.42,
@@ -374,7 +361,6 @@
     "xsec": 52.176,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.2289,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 45.42,
@@ -402,7 +388,6 @@
     "xsec": 12.705,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.05574,
-    "genEventSumw": 7718765.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 11.06,
@@ -430,7 +415,6 @@
     "xsec": 12.705,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.05574,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 11.06,
@@ -458,7 +442,6 @@
     "xsec": 12.705,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.05574,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 11.06,
@@ -486,7 +469,6 @@
     "xsec": 5.6943,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.02499,
-    "genEventSumw": 7306187.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.957,
@@ -514,7 +496,6 @@
     "xsec": 5.6943,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.02499,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.957,
@@ -542,7 +523,6 @@
     "xsec": 5.6943,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.02499,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 4.957,
@@ -570,7 +550,6 @@
     "xsec": 1.3325,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.005931,
-    "genEventSumw": 6481518.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.16,
@@ -598,7 +577,6 @@
     "xsec": 1.3325,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.005931,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.16,
@@ -626,7 +604,6 @@
     "xsec": 1.3325,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.005931,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.16,
@@ -654,7 +631,6 @@
     "xsec": 0.030109,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0001737,
-    "genEventSumw": 2097648.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.02621,
@@ -682,7 +658,6 @@
     "xsec": 0.030109,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0001737,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.02621,
@@ -710,7 +685,6 @@
     "xsec": 0.030109,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0001737,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.02621,
@@ -738,7 +712,6 @@
     "xsec": 3.3623,
     "order": "NLO",
     "total_uncertainty": 0.002854,
-    "genEventSumw": 68767082.31869163,
     "datatype": "mc",
     "xsec_source": {
       "generator": 3.549,
@@ -766,7 +739,6 @@
     "xsec": 80.0,
     "order": "NNLO",
     "total_uncertainty": 0.133,
-    "genEventSumw": 7098544539.945001,
     "datatype": "mc",
     "xsec_source": {
       "generator": 71.75,
@@ -794,7 +766,6 @@
     "xsec": 134.2,
     "order": "NNLO",
     "total_uncertainty": 0.2428,
-    "genEventSumw": 23318589905.311977,
     "datatype": "mc",
     "xsec_source": {
       "generator": 119.7,
@@ -822,7 +793,6 @@
     "xsec": 366.34,
     "order": "NNLO+NNLL",
     "total_uncertainty": 0.2759,
-    "genEventSumw": 143354137521.5401,
     "datatype": "mc",
     "xsec_source": {
       "generator": 687.1,
@@ -850,7 +820,6 @@
     "xsec": 0.5904,
     "order": "LO",
     "total_uncertainty": 0.002077,
-    "genEventSumw": 32793815.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.5904,
@@ -878,7 +847,6 @@
     "xsec": 0.4385,
     "order": "LO",
     "total_uncertainty": 0.001601,
-    "genEventSumw": 27686862.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.4385,
@@ -906,7 +874,6 @@
     "xsec": 118.8,
     "order": "NNLO",
     "total_uncertainty": 0.1796,
-    "genEventSumw": 15679122.7146132,
     "datatype": "mc",
     "xsec_source": {
       "generator": 76.07,
@@ -934,7 +901,6 @@
     "xsec": 50.7,
     "order": "NNLO",
     "total_uncertainty": 0.07498,
-    "genEventSumw": 7940000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 27.54,
@@ -962,7 +928,6 @@
     "xsec": 16.5,
     "order": "NNLO",
     "total_uncertainty": 0.02726,
-    "genEventSumw": 3526000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 12.15,
@@ -990,7 +955,6 @@
     "xsec": 0.2158,
     "order": "NLO",
     "total_uncertainty": 0.0002479,
-    "genEventSumw": 51638.257653960005,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.2158,
@@ -1018,7 +982,6 @@
     "xsec": 0.2158,
     "order": "NLO",
     "total_uncertainty": 0.0002479,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.2158,
@@ -1046,7 +1009,6 @@
     "xsec": 0.1707,
     "order": "NLO",
     "total_uncertainty": 0.0001757,
-    "genEventSumw": 42310.517360879996,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1707,
@@ -1074,7 +1036,6 @@
     "xsec": 0.1707,
     "order": "NLO",
     "total_uncertainty": 0.0001757,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1707,
@@ -1102,7 +1063,6 @@
     "xsec": 0.05709,
     "order": "NLO",
     "total_uncertainty": 6.213e-05,
-    "genEventSumw": 17121.264030234,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.05709,
@@ -1130,7 +1090,6 @@
     "xsec": 0.05709,
     "order": "NLO",
     "total_uncertainty": 6.213e-05,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.05709,
@@ -1158,7 +1117,6 @@
     "xsec": 0.01476,
     "order": "NLO",
     "total_uncertainty": 8.78e-06,
-    "genEventSumw": 3690.7843549760014,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.01476,
@@ -1186,7 +1144,6 @@
     "xsec": 0.01476,
     "order": "NLO",
     "total_uncertainty": 8.78e-06,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.01476,

@@ -7,7 +7,6 @@ Given a JSON like:
     "<DAS_DATASET>": {
       "das_name": "<DAS_DATASET>",
       ...
-      "genEventSumw": <number>,
       ...
     },
     ...
@@ -18,8 +17,8 @@ This script:
   - queries DAS for the dataset's files
   - opens files via redirector fallback (FNAL -> CERN global -> INFN by default)
   - computes sum(Runs.genEventSumw) across all files
-  - compares with the JSON value (tolerance-based)
-  - updates payload["genEventSumw"] if different (or missing)
+  - reports it (the configs carry no genEventSumw: the skimmed filesets take
+    it from the skims' Runs trees, and unskimmed runs sum genWeight themselves)
   - also collapses the ratio-valued theory-weight sums (LHEScaleSumw,
     LHEPdfSumw, PSSumw) as genEventSumw-weighted means over all files and
     writes them to the payload (disable with --no-lhe-sums).  Skims made
@@ -321,22 +320,10 @@ def nearly_equal(a: float, b: float, rel_tol: float, abs_tol: float) -> bool:
     return math.isclose(a, b, rel_tol=rel_tol, abs_tol=abs_tol)
 
 
-def parse_float(x: Any) -> Optional[float]:
-    if x is None:
-        return None
-    if isinstance(x, (int, float)):
-        return float(x)
-    if isinstance(x, str):
-        try:
-            return float(x)
-        except ValueError:
-            return None
-    return None
-
-
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="Validate/update genEventSumw in config JSONs by summing from DAS files."
+        description="Sum genEventSumw over a config's DAS files (reported only) and write the "
+                    "theory-weight sums into the config."
     )
     ap.add_argument("--config", required=True, help="Config JSON to read/update in place")
     ap.add_argument("--physics-group", default=None,
@@ -409,7 +396,7 @@ def main() -> None:
 
     # IMPORTANT: we preserve insertion order by:
     #  - not using sort_keys
-    #  - updating payload dicts in place (only overwriting genEventSumw value)
+    #  - updating payload dicts in place (only the theory-weight sums)
     for top_key, payload in data.items():
         if not isinstance(payload, dict):
             skipped += 1
@@ -507,21 +494,8 @@ def main() -> None:
                     payload[bname] = ratios
                 updated += 1
 
-        current = parse_float(payload.get("genEventSumw", None))
-        if current is None:
-            logger.warning("Missing/non-numeric genEventSumw in JSON for %s -> setting to computed=%.6g", ds, computed)
-            if not args.dry_run:
-                payload["genEventSumw"] = computed
-            updated += 1
-            continue
-
-        if nearly_equal(current, computed, rel_tol=args.rel_tol, abs_tol=args.abs_tol):
-            logger.info("  OK: JSON=%.6g  DAS=%.6g  (nfiles=%d)", current, computed, nfiles)
-        else:
-            logger.warning("  MISMATCH: JSON=%.6g  DAS=%.6g  (nfiles=%d) -> updating", current, computed, nfiles)
-            if not args.dry_run:
-                payload["genEventSumw"] = computed
-            updated += 1
+        logger.info("  DAS genEventSumw = %.6g (nfiles=%d); reported only, the configs do not carry it",
+                    computed, nfiles)
 
     logger.info("Done. checked=%d, updated=%d, skipped=%d", checked, updated, skipped)
 

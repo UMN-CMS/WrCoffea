@@ -9,7 +9,6 @@
     "xsec": null,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
-    "genEventSumw": null,
     "datatype": "mc",
     "scan": true,
     "note": "pre-legacy (102X) multi-model WR scan, NanoAODv7; skimmed whole and split per GenModel_* flag with skim.py split-scan; per-model xsec from the archived private UL18 config (AN LO x k)"
@@ -24,7 +23,6 @@
     "xsec": null,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
-    "genEventSumw": null,
     "datatype": "mc",
     "scan": true,
     "note": "pre-legacy (102X) multi-model WR scan, NanoAODv7; skimmed whole and split per GenModel_* flag with skim.py split-scan; per-model xsec from the archived private UL18 config (AN LO x k)"
@@ -39,7 +37,6 @@
     "xsec": null,
     "order": "LO x k(NLO)",
     "total_uncertainty": 0.0,
-    "genEventSumw": null,
     "datatype": "mc",
     "scan": true,
     "note": "pre-legacy (102X) multi-model WR scan, NanoAODv7; skimmed whole and split per GenModel_* flag with skim.py split-scan; per-model xsec from the archived private UL18 config (AN LO x k)"

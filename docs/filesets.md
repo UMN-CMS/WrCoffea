@@ -36,7 +36,7 @@ python3 bin/skim.py fileset --plan-dir plans/v2 --out ~/work/skims_v2 --era RunI
 ```
 
 - **Files:** the entries point at the skims_v2 parts at Wisconsin (`--local` points at the local parts instead).
-- **Normalisation:** `genEventSumw`, `genEventCount` and the theory-weight sums (`LHEScaleSumw`, `LHEPdfSumw`, `PSSumw`) are taken from the skims' own Runs trees, so no DAS pass is needed. Nominal and extension datasets of one sample are normalised together.
+- **Normalisation:** `genEventSumw`, `genEventCount` and the theory-weight sums (`LHEScaleSumw`, `LHEPdfSumw`, `PSSumw`) are taken from the skims' own Runs trees, so no DAS pass is needed. Nominal and extension datasets of one sample are normalised together. The configs carry no `genEventSumw`, and an MC dataset whose skims carry none stops the step with an error.
 - **Metadata:** cross sections, `order` and `xsec_source` come from the configs through the plan; after a config change, run `bin/skim.py refresh-metadata --plan-dir ...` first.
 - **Output:** one file per config family, written into `data/filesets/` (`--fileset-dir` overrides), e.g.
 

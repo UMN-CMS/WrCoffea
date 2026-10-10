@@ -9,7 +9,6 @@
     "xsec": 472.36,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 2.39,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "new family (LO pT(ll)-binned, exclusive bins)",
     "xsec_source": {
@@ -38,7 +37,6 @@
     "xsec": 68.456,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.3914,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "new family (LO pT(ll)-binned, exclusive bins)",
     "xsec_source": {
@@ -67,7 +65,6 @@
     "xsec": 7.8354,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04861,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "new family (LO pT(ll)-binned, exclusive bins)",
     "xsec_source": {
@@ -96,7 +93,6 @@
     "xsec": 0.45322,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.003841,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "new family (LO pT(ll)-binned, exclusive bins)",
     "xsec_source": {
@@ -125,7 +121,6 @@
     "xsec": 0.080221,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0005768,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "new family (LO pT(ll)-binned, exclusive bins)",
     "xsec_source": {
@@ -154,7 +149,6 @@
     "xsec": 98.036,
     "order": "NNLO+NNLL",
     "total_uncertainty": 0.0173,
-    "genEventSumw": 1982966510.4533992,
     "datatype": "mc",
     "xsec_source": {
       "generator": 762.1,
@@ -182,7 +176,6 @@
     "xsec": 4.6651,
     "order": "NLO+NNLL",
     "total_uncertainty": 0.001675,
-    "genEventSumw": 9417003.26126,
     "datatype": "mc",
     "xsec_source": {
       "generator": 35.99,
@@ -210,7 +203,6 @@
     "xsec": 4.6651,
     "order": "NLO+NNLL",
     "total_uncertainty": 0.001186,
-    "genEventSumw": 9468815.393100008,
     "datatype": "mc",
     "xsec_source": {
       "generator": 36.05,
@@ -238,7 +230,6 @@
     "xsec": 47.241,
     "order": "NNLO",
     "total_uncertainty": 0.2652,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 38.6,
@@ -266,7 +257,6 @@
     "xsec": 28.41,
     "order": "NNLO",
     "total_uncertainty": 0.143,
-    "genEventSumw": null,
     "datatype": "mc",
     "xsec_source": {
       "generator": 23.34,
@@ -294,7 +284,6 @@
     "xsec": 2.278,
     "order": "NLO",
     "total_uncertainty": 0.0004011,
-    "genEventSumw": 2909752.324942201,
     "datatype": "mc",
     "xsec_source": {
       "generator": 2.278,
@@ -322,7 +311,6 @@
     "xsec": 1.43,
     "order": "NLO",
     "total_uncertainty": 0.0003091,
-    "genEventSumw": 1128138.6572842,
     "datatype": "mc",
     "xsec_source": {
       "generator": 1.43,
@@ -350,7 +338,6 @@
     "xsec": 405.75,
     "order": "NNLO+NNLL",
     "total_uncertainty": 0.07161,
-    "genEventSumw": 27433736988.612026,
     "datatype": "mc",
     "xsec_source": {
       "generator": 762.1,
@@ -378,7 +365,6 @@
     "xsec": 0.08646,
     "order": "NLO",
     "total_uncertainty": 3.903e-05,
-    "genEventSumw": 34466.46154514001,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.08646,
@@ -406,7 +392,6 @@
     "xsec": 0.08646,
     "order": "NLO",
     "total_uncertainty": 3.903e-05,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "extension (ext1) of the nominal sample: same xsec, combine genEventSumw with the nominal entry",
     "xsec_source": {
@@ -435,7 +420,6 @@
     "xsec": 0.2475,
     "order": "NLO",
     "total_uncertainty": 0.001139,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "QCD ttW (ttW+0/1j FxFx). mg35x re-generation chosen (the old-MG v5-v1/v6-v4/v15-v2/v6-v2 samples used by the current 2022/2023 configs have ~20x fewer events). New in 2024 (current 2024 config only has TTLNu-EWK).",
     "xsec_source": {
@@ -464,7 +448,6 @@
     "xsec": 0.01769,
     "order": "NLO",
     "total_uncertainty": 5.69e-06,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "EW (O(alpha^3)) ttW contribution; complements TTLNu-1Jets. New in 2022/2023 configs.",
     "xsec_source": {
@@ -493,7 +476,6 @@
     "xsec": 125.8,
     "order": "NNLO",
     "total_uncertainty": 0.2337,
-    "genEventSumw": 16734142.51472283,
     "datatype": "mc",
     "xsec_source": {
       "generator": 80.49,
@@ -521,7 +503,6 @@
     "xsec": 54.7,
     "order": "NNLO",
     "total_uncertainty": 0.1146,
-    "genEventSumw": 8379000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 29.22,
@@ -549,7 +530,6 @@
     "xsec": 16.7,
     "order": "NNLO",
     "total_uncertainty": 0.0369,
-    "genEventSumw": 1254000.0,
     "datatype": "mc",
     "xsec_source": {
       "generator": 12.88,
@@ -577,7 +557,6 @@
     "xsec": 0.2328,
     "order": "NLO",
     "total_uncertainty": 0.0001247,
-    "genEventSumw": 108441.08068518,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.2328,
@@ -605,7 +584,6 @@
     "xsec": 0.1851,
     "order": "NLO",
     "total_uncertainty": 9.482e-05,
-    "genEventSumw": 323351.00703678,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.1851,
@@ -633,7 +611,6 @@
     "xsec": 0.06206,
     "order": "NLO",
     "total_uncertainty": 3.689e-05,
-    "genEventSumw": 110958.12963803203,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.06206,
@@ -661,7 +638,6 @@
     "xsec": 0.01591,
     "order": "NLO",
     "total_uncertainty": 7.828e-06,
-    "genEventSumw": 28486.119539436007,
     "datatype": "mc",
     "xsec_source": {
       "generator": 0.01591,
@@ -689,7 +665,6 @@
     "xsec": 19.308,
     "order": "NLO+NNLL",
     "total_uncertainty": 0.006931,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "semileptonic tW, added 2026-10-04 to match the Run 2 NoFullyHadronicDecays tW; xsec = 43.95 x 2 x 0.324 x 0.676",
     "xsec_source": {
@@ -718,7 +693,6 @@
     "xsec": 19.308,
     "order": "NLO+NNLL",
     "total_uncertainty": 0.004908,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "semileptonic tW, added 2026-10-04 to match the Run 2 NoFullyHadronicDecays tW; xsec = 43.95 x 2 x 0.324 x 0.676",
     "xsec_source": {
@@ -747,7 +721,6 @@
     "xsec": 1897.8,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 9.045,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 100to400, MLNu 0to120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -776,7 +749,6 @@
     "xsec": 0.52739,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.005249,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 1500to2500, MLNu 0to120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -805,7 +777,6 @@
     "xsec": 0.03636,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0002695,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 2500, MLNu 0to120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -834,7 +805,6 @@
     "xsec": 70.785,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.452,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 400to800, MLNu 0to120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -863,7 +833,6 @@
     "xsec": 4905.5,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 17.7,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 40to100, MLNu 0to120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -892,7 +861,6 @@
     "xsec": 7.265,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04989,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 800to1500, MLNu 0to120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -921,7 +889,6 @@
     "xsec": 12.042,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.06778,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 100to400, MLNu 120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -950,7 +917,6 @@
     "xsec": 0.0059185,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 4.288e-05,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 1500to2500, MLNu 120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -979,7 +945,6 @@
     "xsec": 0.00044847,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 4.426e-06,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 2500, MLNu 120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -1008,7 +973,6 @@
     "xsec": 0.62263,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.003945,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 400to800, MLNu 120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -1037,7 +1001,6 @@
     "xsec": 23.863,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.1149,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 40to100, MLNu 120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {
@@ -1066,7 +1029,6 @@
     "xsec": 0.073477,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0007871,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "HT x M(lnu)-binned W+jets (HT 800to1500, MLNu 120); scheme chosen 2026-10-04 to match Run 2; xsec from the previous 2022-2023 configs",
     "xsec_source": {

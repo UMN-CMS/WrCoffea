@@ -1,7 +1,8 @@
-"""Tests for the fileset writer's normalisation of samples split over several datasets."""
+"""Tests for the fileset writer's normalisation: sums from the skims, samples split over several datasets."""
 import pytest
 
-from wrcoffea.skim.upload import combine_extension_sumw
+from wrcoffea.skim.plan import DatasetPlan
+from wrcoffea.skim.upload import combine_extension_sumw, dataset_metadata_from_parts
 
 
 def _entry(sample, sumw, xsec=19.308, count=10, datatype="mc"):
@@ -47,3 +48,37 @@ def test_data_entries_are_left_alone():
     b = "/Muon/Run2022C-22Sep2023-v2/NANOAOD"
     fs = {a: _entry("Muon_Run2022C", None, xsec=None, datatype="data"), b: _entry("Muon_Run2022C_v2", None, xsec=None, datatype="data")}
     assert combine_extension_sumw(fs) == []
+
+
+def _plan(datatype="mc", metadata=None):
+    return DatasetPlan(key="TTto2L2Nu", era="RunIII2024Summer24", run="Run3", year="2024", datatype=datatype,
+                       physics_group="tt_tW" if datatype == "mc" else "Muon", category="backgrounds",
+                       das_paths=["/TTto2L2Nu/RunIII2024Summer24/NANOAODSIM"], metadata=dict(metadata or {}),
+                       files=[], groups=[], schema_id="s")
+
+
+def _sidecar(n_events, runs=None):
+    part = {"path": "part.root", "n_events": n_events}
+    if runs is not None:
+        part["runs"] = runs
+    return {"campaign": {"campaign": "v2"}, "part": part}
+
+
+def test_mc_sum_comes_from_the_skims_never_from_the_plan():
+    """A genEventSumw left in the plan metadata (old configs carried one) is ignored."""
+    ds = _plan(metadata={"xsec": 98.0, "genEventSumw": 1.0})
+    meta = dataset_metadata_from_parts(ds, [_sidecar(10, {"genEventSumw": 300.0, "genEventCount": 30}),
+                                            _sidecar(5, {"genEventSumw": 200.0, "genEventCount": 20})])
+    assert meta["genEventSumw"] == 500.0 and meta["genEventCount"] == 50 and meta["nevts"] == 15
+
+
+def test_mc_without_skim_sums_is_an_error():
+    """No fallback: a dataset whose parts carry no Runs sums stops the fileset step."""
+    ds = _plan(metadata={"xsec": 98.0, "genEventSumw": 1.0})
+    with pytest.raises(ValueError, match="no genEventSumw"):
+        dataset_metadata_from_parts(ds, [_sidecar(10), _sidecar(5, {"genEventCount": 5})])
+
+
+def test_data_needs_no_sum():
+    meta = dataset_metadata_from_parts(_plan("data"), [_sidecar(10)])
+    assert "genEventSumw" not in meta and meta["nevts"] == 10

@@ -252,8 +252,8 @@ On the test signal sample all 72 physics histograms agreed to 1e-15.
 
 `validate` repeats the per-part re-read for the whole campaign and adds the
 dataset-level checks: every planned file in exactly one part, entries read
-equal to the DBS event count of the dataset, summed `genEventSumw` consistent
-with the config, and for data a lumisection audit: the merged
+equal to the DBS event count of the dataset, the summed `genEventSumw` and
+`genEventCount` (reported), and for data a lumisection audit: the merged
 `LuminosityBlocks` trees must contain exactly the lumisections DBS lists for
 the dataset's files (anything lost or extra is a problem), and the certified
 lumisections of the dataset's runs that exist in no file at all are reported

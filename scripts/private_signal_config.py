@@ -246,7 +246,7 @@ def main() -> int:
             source["compared_to"] = {"generator": ref[key], "config": Path(args.reference).name}
         entry = {"das_name": name, "run": args.run, "year": args.year, "era": args.era, "dataset": name,
                  "physics_group": "Signal", "xsec": _sig(rec["xsec"]), "order": "LO",
-                 "total_uncertainty": _sig(rec["xsec_unc"], 4), "genEventSumw": rec["genEventSumw"],
+                 "total_uncertainty": _sig(rec["xsec_unc"], 4),
                  "datatype": "mc", "xsec_source": source, "files": [url], "file_sizes": {url: f["size"]},
                  "file_events": {url: rec["events"]}}
         if ck:

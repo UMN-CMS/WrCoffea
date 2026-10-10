@@ -252,11 +252,6 @@ def validate_dataset(plan: Plan, key: str, out_root: Path, *, reread: bool = Tru
     if have_sumw:
         rep["gen_sumw"] = gen_sumw
         rep["gen_count"] = gen_count
-        cfg_sumw = ds.metadata.get("genEventSumw")
-        if cfg_sumw and not rep["bad_files"] and rep["groups_done"] == len(ds.groups):
-            if not np.isclose(gen_sumw, float(cfg_sumw), rtol=1e-6):
-                rep["warnings"].append(f"genEventSumw from skims {gen_sumw:.6g} != config {float(cfg_sumw):.6g} "
-                                       "(config may be stale; fileset step writes the skim value)")
     # Golden-JSON lumi coverage for data.
     if ds.is_data and (reread or remote_lumis) and rep["groups_done"] == len(ds.groups):
         rep["lumis_processed"] = len(lumis)

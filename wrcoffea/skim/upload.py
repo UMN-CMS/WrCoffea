@@ -6,7 +6,9 @@ sidecar JSON is uploaded next to each part so the provenance travels with the
 data.  Filesets are written in the layout the analyzer reads
 (``data/filesets/<run>/<year>/<era>/skimmed/<era>_<family>_fileset.json``),
 one per config JSON, with ``genEventSumw`` and the theory-weight sums taken
-from the skims' own Runs trees rather than from a separate DAS pass.
+from the skims' own Runs trees rather than from a separate DAS pass.  The
+configs carry no ``genEventSumw``: an MC dataset whose skims have none is an
+error.
 """
 
 from __future__ import annotations
@@ -180,8 +182,13 @@ def _weighted_ratio_mean(parts: list[dict], name: str) -> list[float] | None:
 
 
 def dataset_metadata_from_parts(ds: DatasetPlan, parts: list[dict]) -> dict:
-    """Analyzer metadata for one dataset, with sums taken from the skims."""
-    meta = {k: v for k, v in ds.metadata.items() if k not in (*FILE_LIST_KEYS, "note")}
+    """Analyzer metadata for one dataset, with sums taken from the skims.
+
+    For MC the normalisation is the parts' own summed ``genEventSumw``; a dataset whose
+    parts carry none raises ``ValueError``.  A ``genEventSumw`` in the plan metadata
+    (copied from configs that used to carry one) is never used.
+    """
+    meta = {k: v for k, v in ds.metadata.items() if k not in (*FILE_LIST_KEYS, "note", "genEventSumw")}
     meta.setdefault("das_name", ds.das_paths[0] if ds.das_paths else ds.key)
     meta["sample"] = ds.key
     meta.pop("dataset", None)
@@ -190,8 +197,10 @@ def dataset_metadata_from_parts(ds: DatasetPlan, parts: list[dict]) -> dict:
     if not ds.is_data:
         sumw = sum(float(sc["part"].get("runs", {}).get("genEventSumw", 0.0)) for sc in parts)
         count = sum(int(sc["part"].get("runs", {}).get("genEventCount", 0)) for sc in parts)
-        if sumw:
-            meta["genEventSumw"] = sumw
+        if not sumw:
+            raise ValueError(f"{ds.key}: its skimmed parts carry no genEventSumw (no Runs sums in their "
+                             "sidecars), so it cannot be normalised. Stopping: re-skim it or fix its sidecars.")
+        meta["genEventSumw"] = sumw
         if count:
             meta["genEventCount"] = count
         for name in ("LHEScaleSumw", "LHEPdfSumw", "PSSumw"):

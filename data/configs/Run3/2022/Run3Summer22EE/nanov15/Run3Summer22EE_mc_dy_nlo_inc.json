@@ -8,7 +8,6 @@
     "physics_group": "DYJets",
     "xsec": 6340.2,
     "total_uncertainty": 63.4,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -20,7 +19,6 @@
     "physics_group": "DYJets",
     "xsec": 20950.0,
     "total_uncertainty": 183.5,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "low-mass companion (10<mll<50), new; optional for mll>50 selections",
     "optional": true
@@ -34,7 +32,6 @@
     "physics_group": "tt_tW",
     "xsec": 96.978,
     "total_uncertainty": 0.1345,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -46,7 +43,6 @@
     "physics_group": "tt_tW",
     "xsec": 4.61475,
     "total_uncertainty": 0.16275,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -58,7 +54,6 @@
     "physics_group": "tt_tW",
     "xsec": 4.61475,
     "total_uncertainty": 0.16275,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -70,7 +65,6 @@
     "physics_group": "Nonprompt",
     "xsec": 145.0,
     "total_uncertainty": 2.8,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "inclusive-W-decay 4FS sample (no LNu-filtered sample in NanoAODv15); xsec = NNLO 145.0 pb inclusive"
   },
@@ -83,7 +77,6 @@
     "physics_group": "Nonprompt",
     "xsec": 87.2,
     "total_uncertainty": 1.8,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "inclusive-W-decay 4FS sample (no LNu-filtered sample in NanoAODv15); xsec = NNLO 87.2 pb inclusive"
   },
@@ -96,7 +89,6 @@
     "physics_group": "Nonprompt",
     "xsec": 2.278,
     "total_uncertainty": 0.0003008,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -108,7 +100,6 @@
     "physics_group": "Nonprompt",
     "xsec": 1.43,
     "total_uncertainty": 0.0001633,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v2/NANOAODSIM": {
@@ -120,7 +111,6 @@
     "physics_group": "Nonprompt",
     "xsec": 404.537,
     "total_uncertainty": 0.1345,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WtoLNu-4Jets_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -132,7 +122,6 @@
     "physics_group": "Nonprompt",
     "xsec": 9141,
     "total_uncertainty": 24.37,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WtoLNu-4Jets_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -144,7 +133,6 @@
     "physics_group": "Nonprompt",
     "xsec": 2931,
     "total_uncertainty": 8.539,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WtoLNu-4Jets_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -156,7 +144,6 @@
     "physics_group": "Nonprompt",
     "xsec": 864.6,
     "total_uncertainty": 2.634,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WtoLNu-4Jets_4J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -168,7 +155,6 @@
     "physics_group": "Nonprompt",
     "xsec": 417.8,
     "total_uncertainty": 1.283,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -180,7 +166,6 @@
     "physics_group": "Other",
     "xsec": 0.08646,
     "total_uncertainty": 3.903e-05,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv15-mg35x_150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -192,7 +177,6 @@
     "physics_group": "Other",
     "xsec": 0.2502,
     "total_uncertainty": 0.001043,
-    "genEventSumw": null,
     "datatype": "mc",
     "note": "QCD ttW (ttW+0/1j FxFx). mg35x re-generation chosen (the old-MG v5-v1/v6-v4/v15-v2/v6-v2 samples used by the current 2022/2023 configs have ~20x fewer events). New in 2024 (current 2024 config only has TTLNu-EWK)."
   },
@@ -205,7 +189,6 @@
     "physics_group": "Other",
     "xsec": 80.23,
     "total_uncertainty": 0.3733,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WZ_TuneCP5_13p6TeV_pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -217,7 +200,6 @@
     "physics_group": "Other",
     "xsec": 29.1,
     "total_uncertainty": 0.1318,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ZZ_TuneCP5_13p6TeV_pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM": {
@@ -229,7 +211,6 @@
     "physics_group": "Other",
     "xsec": 12.75,
     "total_uncertainty": 0.0649,
-    "genEventSumw": null,
     "datatype": "mc"
   }
 }

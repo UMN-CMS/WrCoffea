@@ -9,7 +9,6 @@
     "xsec": 6077.22,
     "order": "NNLO",
     "total_uncertainty": 14.78,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v1/NANOAODSIM": {
@@ -22,7 +21,6 @@
     "xsec": 6077.22,
     "order": "NNLO",
     "total_uncertainty": 14.78,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -35,7 +33,6 @@
     "xsec": 18610.0,
     "order": "NLO",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc",
     "optional": true
   },
@@ -49,7 +46,6 @@
     "xsec": 88.56,
     "order": "NNLO+NNLL",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -62,7 +58,6 @@
     "xsec": 19.2,
     "order": "NLO+NNLL",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -75,7 +70,6 @@
     "xsec": 19.2,
     "order": "NLO+NNLL",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -88,7 +82,6 @@
     "xsec": 1637.1,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 11.53,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM": {
@@ -101,7 +94,6 @@
     "xsec": 1637.1,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 11.53,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -114,7 +106,6 @@
     "xsec": 1627.45,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 11.66,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM": {
@@ -127,7 +118,6 @@
     "xsec": 1627.45,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 11.66,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -140,7 +130,6 @@
     "xsec": 435.237,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 3.128,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM": {
@@ -153,7 +142,6 @@
     "xsec": 435.237,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 3.128,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -166,7 +154,6 @@
     "xsec": 59.1811,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.4146,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -179,7 +166,6 @@
     "xsec": 59.1811,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.4146,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM": {
@@ -192,7 +178,6 @@
     "xsec": 59.1811,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.4146,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -205,7 +190,6 @@
     "xsec": 14.5805,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.105,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -218,7 +202,6 @@
     "xsec": 14.5805,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.105,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM": {
@@ -231,7 +214,6 @@
     "xsec": 14.5805,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.105,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v3/NANOAODSIM": {
@@ -244,7 +226,6 @@
     "xsec": 6.65621,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04705,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -257,7 +238,6 @@
     "xsec": 6.65621,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04705,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM": {
@@ -270,7 +250,6 @@
     "xsec": 6.65621,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.04705,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -283,7 +262,6 @@
     "xsec": 1.60809,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.01076,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -296,7 +274,6 @@
     "xsec": 1.60809,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.01076,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM": {
@@ -309,7 +286,6 @@
     "xsec": 1.60809,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.01076,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM": {
@@ -322,7 +298,6 @@
     "xsec": 0.0389136,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0002507,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM": {
@@ -335,7 +310,6 @@
     "xsec": 0.0389136,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0002507,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM": {
@@ -348,7 +322,6 @@
     "xsec": 0.0389136,
     "order": "LO x k(NNLO)",
     "total_uncertainty": 0.0002507,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -361,7 +334,6 @@
     "xsec": 3.36,
     "order": "NLO",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM": {
@@ -374,7 +346,6 @@
     "xsec": 80.95,
     "order": "NLO",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -387,7 +358,6 @@
     "xsec": 136.02,
     "order": "NLO",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -400,7 +370,6 @@
     "xsec": 365.34,
     "order": "NNLO+NNLL",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM": {
@@ -413,7 +382,6 @@
     "xsec": 0.5407,
     "order": "LO",
     "total_uncertainty": 0.002541,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM": {
@@ -426,7 +394,6 @@
     "xsec": 0.4611,
     "order": "LO",
     "total_uncertainty": 0.001268,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -439,7 +406,6 @@
     "xsec": 118.7,
     "order": "NNLO",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -452,7 +418,6 @@
     "xsec": 47.13,
     "order": "NLO",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -465,7 +430,6 @@
     "xsec": 16.523,
     "order": "NLO",
     "total_uncertainty": 0,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -478,7 +442,6 @@
     "xsec": 0.2086,
     "order": "NLO",
     "total_uncertainty": 0.0002024,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -491,7 +454,6 @@
     "xsec": 0.2086,
     "order": "NLO",
     "total_uncertainty": 0.0002024,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -504,7 +466,6 @@
     "xsec": 0.1651,
     "order": "NLO",
     "total_uncertainty": 0.0001724,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -517,7 +478,6 @@
     "xsec": 0.1651,
     "order": "NLO",
     "total_uncertainty": 0.0001724,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -530,7 +490,6 @@
     "xsec": 0.05565,
     "order": "NLO",
     "total_uncertainty": 5.5e-05,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -543,7 +502,6 @@
     "xsec": 0.05565,
     "order": "NLO",
     "total_uncertainty": 5.5e-05,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM": {
@@ -556,7 +514,6 @@
     "xsec": 0.01398,
     "order": "NLO",
     "total_uncertainty": 1.496e-05,
-    "genEventSumw": null,
     "datatype": "mc"
   },
   "/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM": {
@@ -569,7 +526,6 @@
     "xsec": 0.01398,
     "order": "NLO",
     "total_uncertainty": 1.496e-05,
-    "genEventSumw": null,
     "datatype": "mc"
   }
 }

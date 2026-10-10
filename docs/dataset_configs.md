@@ -38,7 +38,6 @@ complete MC entry (2024 dileptonic ttbar):
   "xsec": 98.036,
   "order": "NNLO+NNLL",
   "total_uncertainty": 0.01223,
-  "genEventSumw": 37820112169.87066,
   "datatype": "mc",
   "xsec_source": {
     "generator": 762.1,
@@ -86,7 +85,6 @@ A data entry has only the naming keys:
 | `xsec` | MC | The cross section in pb that normalises the sample (see "How `xsec` is built"). This is the only cross-section field the analysis uses. `null` where no value is known yet. |
 | `order` | MC | The perturbative order of `xsec` as it is used (see "The `order` key"). Always directly after `xsec`. |
 | `total_uncertainty` | MC | For values from the GenXSecAnalyzer campaign: the statistical uncertainty of the generator number (`generator_unc`) scaled by `factor` and `kfactor`, in pb. It is **not** the theory uncertainty of the value (for example ±5 % for NNLO+NNLL ttbar). For older Run 2 values: whatever the source quoted, e.g. the PDF uncertainty 14.78 pb of the DY 6077.22 pb. Not used by the analyzer. |
-| `genEventSumw` | MC | Sum of generator weights of the dataset as recorded in the config. The analyzer normalises with the value in the **fileset** metadata, which `skim.py fileset` sums from the Runs trees of the skimmed parts (exactly the files that were processed; nominal and `ext` datasets of one sample merged). The config value can be `0`, `null`, or cover only the nominal dataset. |
 | `xsec_source` | MC (Run 3) | Provenance of `xsec` from the GenXSecAnalyzer campaign (next section). Run 2 entries do not have it yet; their provenance is in `docs/configs/run2_ul_dataset_report.md`. |
 | `note` | some | Free text, e.g. low-mass companions, edge-era history, scan samples. |
 | `optional` | some | `true` for samples the default selection does not need (the DY `MLL-10to50` companions). Not skimmed in skims_v2. |
@@ -213,7 +211,11 @@ For MC the event weight is
 weight = genWeight × xsec × lumi[fb⁻¹] × 1000 / genEventSumw
 ```
 
-with `xsec` and `genEventSumw` taken from the fileset metadata. Nothing in
+with `xsec` and `genEventSumw` taken from the fileset metadata. `genEventSumw` is
+not a config key: `skim.py fileset` sums it from the Runs trees of the skimmed
+parts (exactly the files that were processed) and stops with an error for an MC
+dataset whose parts carry none. The configs' old copies, often `0`, `null` or
+only the nominal dataset, were dropped on 2026-10-10. Nothing in
 `xsec_source`, `order` or `total_uncertainty` enters the analysis.
 
 ## The `order` key
@@ -339,7 +341,6 @@ and `xsec` keeps the earlier configuration value (also MG5 LO, so `order` is
   "xsec": 435.237,
   "order": "LO x k(NNLO)",
   "total_uncertainty": 3.128,
-  "genEventSumw": 58225632.0,
   "datatype": "mc"
 }
 ```
