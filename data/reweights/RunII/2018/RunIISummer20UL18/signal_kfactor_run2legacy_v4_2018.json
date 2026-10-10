@@ -11,7 +11,8 @@
   "year": 2018,
   "converted_on": "2026-09-07",
   "analyzer_reference": "HNWRAnalyzer::GetHNWRKFactor, weight = k(m_lN)/avg (AN-19-083 App. A)",
-  "note": "NLO/LO k-factor of WR production vs the generator-level m(lN); the per-mass-point average divides out because the signal cross sections used for normalization are already LO x <k>.  'source' says which Run 2 sample set the average was computed on."
+  "note": "NLO/LO k-factor of WR production vs the generator-level m(lN); the per-mass-point average divides out because the signal cross sections used for normalization are already LO x <k>.  'source' says which Run 2 sample set the average was computed on.",
+  "ul18_official_averages": "2026-10-09: <k> of the official RunIISummer20UL18 WRtoN{El,Mu} samples whose points the Run 2 tables lack (source 'ul18_official'): genWeight-weighted mean of this payload's k(m_lN) over every generated event of the unskimmed NanoAODv9, gen matching = wrcoffea.signal_kfactor.find_gen_ln. On the 8 points both have, it reproduces the Run 2 values within 0.07 % (WR4000_N100 +0.8 %, WR6000_N100 +1.5 %); those keep the Run 2 value."
  },
  "variable": "gen_mln",
  "kfactor": {
@@ -3524,6 +3525,491 @@
    "ee": 1.20605049886,
    "mm": 1.20616817537,
    "source": "official"
+  },
+  "WR1000_N300": {
+   "ee": 1.21318979,
+   "mm": 1.21312856,
+   "source": "ul18_official"
+  },
+  "WR1000_N500": {
+   "ee": 1.21364652,
+   "mm": 1.21359985,
+   "source": "ul18_official"
+  },
+  "WR1000_N700": {
+   "ee": 1.21421353,
+   "mm": 1.21418947,
+   "source": "ul18_official"
+  },
+  "WR2000_N300": {
+   "ee": 1.29454074,
+   "mm": 1.29455374,
+   "source": "ul18_official"
+  },
+  "WR2000_N500": {
+   "ee": 1.29605182,
+   "mm": 1.29609851,
+   "source": "ul18_official"
+  },
+  "WR2000_N700": {
+   "ee": 1.29713006,
+   "mm": 1.29720038,
+   "source": "ul18_official"
+  },
+  "WR2000_N900": {
+   "ee": 1.29819755,
+   "mm": 1.29823444,
+   "source": "ul18_official"
+  },
+  "WR2000_N1100": {
+   "ee": 1.29906195,
+   "mm": 1.29902023,
+   "source": "ul18_official"
+  },
+  "WR2000_N1300": {
+   "ee": 1.29998412,
+   "mm": 1.30000333,
+   "source": "ul18_official"
+  },
+  "WR2000_N1500": {
+   "ee": 1.30109039,
+   "mm": 1.30112432,
+   "source": "ul18_official"
+  },
+  "WR2000_N1700": {
+   "ee": 1.30360841,
+   "mm": 1.30363791,
+   "source": "ul18_official"
+  },
+  "WR4000_N300": {
+   "ee": 1.37007237,
+   "mm": 1.37043158,
+   "source": "ul18_official"
+  },
+  "WR4000_N500": {
+   "ee": 1.38217588,
+   "mm": 1.38206144,
+   "source": "ul18_official"
+  },
+  "WR4000_N700": {
+   "ee": 1.3902434,
+   "mm": 1.39063793,
+   "source": "ul18_official"
+  },
+  "WR4000_N900": {
+   "ee": 1.39635583,
+   "mm": 1.39615754,
+   "source": "ul18_official"
+  },
+  "WR4000_N1100": {
+   "ee": 1.40046567,
+   "mm": 1.40042548,
+   "source": "ul18_official"
+  },
+  "WR4000_N1300": {
+   "ee": 1.40320752,
+   "mm": 1.40318932,
+   "source": "ul18_official"
+  },
+  "WR4000_N1500": {
+   "ee": 1.40532875,
+   "mm": 1.40538152,
+   "source": "ul18_official"
+  },
+  "WR4000_N1700": {
+   "ee": 1.40669271,
+   "mm": 1.40672165,
+   "source": "ul18_official"
+  },
+  "WR4000_N1900": {
+   "ee": 1.40771249,
+   "mm": 1.4077639,
+   "source": "ul18_official"
+  },
+  "WR4000_N2100": {
+   "ee": 1.40852544,
+   "mm": 1.40842942,
+   "source": "ul18_official"
+  },
+  "WR4000_N2300": {
+   "ee": 1.4089497,
+   "mm": 1.4089082,
+   "source": "ul18_official"
+  },
+  "WR4000_N2500": {
+   "ee": 1.40919367,
+   "mm": 1.40924452,
+   "source": "ul18_official"
+  },
+  "WR4000_N2700": {
+   "ee": 1.40950221,
+   "mm": 1.40942641,
+   "source": "ul18_official"
+  },
+  "WR4000_N2900": {
+   "ee": 1.40960646,
+   "mm": 1.40956791,
+   "source": "ul18_official"
+  },
+  "WR4000_N3100": {
+   "ee": 1.40974185,
+   "mm": 1.40971543,
+   "source": "ul18_official"
+  },
+  "WR4000_N3300": {
+   "ee": 1.40992399,
+   "mm": 1.40992605,
+   "source": "ul18_official"
+  },
+  "WR4000_N3500": {
+   "ee": 1.41041685,
+   "mm": 1.41042758,
+   "source": "ul18_official"
+  },
+  "WR4000_N3700": {
+   "ee": 1.41196154,
+   "mm": 1.41203897,
+   "source": "ul18_official"
+  },
+  "WR6000_N300": {
+   "ee": 1.31818318,
+   "mm": 1.31817486,
+   "source": "ul18_official"
+  },
+  "WR6000_N500": {
+   "ee": 1.34086399,
+   "mm": 1.34055347,
+   "source": "ul18_official"
+  },
+  "WR6000_N700": {
+   "ee": 1.3598605,
+   "mm": 1.35972113,
+   "source": "ul18_official"
+  },
+  "WR6000_N900": {
+   "ee": 1.37413396,
+   "mm": 1.37364972,
+   "source": "ul18_official"
+  },
+  "WR6000_N1100": {
+   "ee": 1.38428285,
+   "mm": 1.38449436,
+   "source": "ul18_official"
+  },
+  "WR6000_N1300": {
+   "ee": 1.39175776,
+   "mm": 1.39187159,
+   "source": "ul18_official"
+  },
+  "WR6000_N1500": {
+   "ee": 1.39682476,
+   "mm": 1.3968703,
+   "source": "ul18_official"
+  },
+  "WR6000_N1700": {
+   "ee": 1.40036353,
+   "mm": 1.40021419,
+   "source": "ul18_official"
+  },
+  "WR6000_N1900": {
+   "ee": 1.40244204,
+   "mm": 1.40236591,
+   "source": "ul18_official"
+  },
+  "WR6000_N2100": {
+   "ee": 1.40377699,
+   "mm": 1.40389508,
+   "source": "ul18_official"
+  },
+  "WR6000_N2300": {
+   "ee": 1.40447024,
+   "mm": 1.40440892,
+   "source": "ul18_official"
+  },
+  "WR6000_N2500": {
+   "ee": 1.40474198,
+   "mm": 1.40476104,
+   "source": "ul18_official"
+  },
+  "WR6000_N2700": {
+   "ee": 1.40483313,
+   "mm": 1.40482456,
+   "source": "ul18_official"
+  },
+  "WR6000_N2900": {
+   "ee": 1.40473927,
+   "mm": 1.40486287,
+   "source": "ul18_official"
+  },
+  "WR6000_N3100": {
+   "ee": 1.40467502,
+   "mm": 1.40456807,
+   "source": "ul18_official"
+  },
+  "WR6000_N3300": {
+   "ee": 1.40449388,
+   "mm": 1.4045286,
+   "source": "ul18_official"
+  },
+  "WR6000_N3500": {
+   "ee": 1.404493,
+   "mm": 1.40447038,
+   "source": "ul18_official"
+  },
+  "WR6000_N3700": {
+   "ee": 1.40435103,
+   "mm": 1.40440265,
+   "source": "ul18_official"
+  },
+  "WR6000_N3900": {
+   "ee": 1.40419701,
+   "mm": 1.40429312,
+   "source": "ul18_official"
+  },
+  "WR6000_N4100": {
+   "ee": 1.40416164,
+   "mm": 1.40422515,
+   "source": "ul18_official"
+  },
+  "WR6000_N4300": {
+   "ee": 1.4044264,
+   "mm": 1.40433004,
+   "source": "ul18_official"
+  },
+  "WR6000_N4500": {
+   "ee": 1.4043232,
+   "mm": 1.40434829,
+   "source": "ul18_official"
+  },
+  "WR6000_N4700": {
+   "ee": 1.40474269,
+   "mm": 1.40486165,
+   "source": "ul18_official"
+  },
+  "WR6000_N4900": {
+   "ee": 1.40499798,
+   "mm": 1.4048429,
+   "source": "ul18_official"
+  },
+  "WR6000_N5100": {
+   "ee": 1.40574658,
+   "mm": 1.40587434,
+   "source": "ul18_official"
+  },
+  "WR6000_N5300": {
+   "ee": 1.40678987,
+   "mm": 1.40681806,
+   "source": "ul18_official"
+  },
+  "WR6000_N5500": {
+   "ee": 1.40934935,
+   "mm": 1.40941217,
+   "source": "ul18_official"
+  },
+  "WR6000_N5700": {
+   "ee": 1.41561062,
+   "mm": 1.41554828,
+   "source": "ul18_official"
+  },
+  "WR8000_N100": {
+   "ee": 1.25802354,
+   "mm": 1.25665338,
+   "source": "ul18_official"
+  },
+  "WR8000_N300": {
+   "ee": 1.28765266,
+   "mm": 1.28822361,
+   "source": "ul18_official"
+  },
+  "WR8000_N500": {
+   "ee": 1.31851576,
+   "mm": 1.31802403,
+   "source": "ul18_official"
+  },
+  "WR8000_N700": {
+   "ee": 1.34830581,
+   "mm": 1.34743696,
+   "source": "ul18_official"
+  },
+  "WR8000_N900": {
+   "ee": 1.37667539,
+   "mm": 1.37601145,
+   "source": "ul18_official"
+  },
+  "WR8000_N1100": {
+   "ee": 1.40327492,
+   "mm": 1.40305808,
+   "source": "ul18_official"
+  },
+  "WR8000_N1300": {
+   "ee": 1.42690423,
+   "mm": 1.42648138,
+   "source": "ul18_official"
+  },
+  "WR8000_N1500": {
+   "ee": 1.44840897,
+   "mm": 1.44867413,
+   "source": "ul18_official"
+  },
+  "WR8000_N1700": {
+   "ee": 1.46693284,
+   "mm": 1.46662253,
+   "source": "ul18_official"
+  },
+  "WR8000_N1900": {
+   "ee": 1.48128137,
+   "mm": 1.48183593,
+   "source": "ul18_official"
+  },
+  "WR8000_N2100": {
+   "ee": 1.49369449,
+   "mm": 1.49363567,
+   "source": "ul18_official"
+  },
+  "WR8000_N2300": {
+   "ee": 1.5031894,
+   "mm": 1.50326935,
+   "source": "ul18_official"
+  },
+  "WR8000_N2500": {
+   "ee": 1.51099928,
+   "mm": 1.51077486,
+   "source": "ul18_official"
+  },
+  "WR8000_N2700": {
+   "ee": 1.51677464,
+   "mm": 1.51698561,
+   "source": "ul18_official"
+  },
+  "WR8000_N2900": {
+   "ee": 1.52165889,
+   "mm": 1.5215671,
+   "source": "ul18_official"
+  },
+  "WR8000_N3100": {
+   "ee": 1.52576796,
+   "mm": 1.52598917,
+   "source": "ul18_official"
+  },
+  "WR8000_N3300": {
+   "ee": 1.52867873,
+   "mm": 1.5284187,
+   "source": "ul18_official"
+  },
+  "WR8000_N3500": {
+   "ee": 1.53172124,
+   "mm": 1.53157788,
+   "source": "ul18_official"
+  },
+  "WR8000_N3700": {
+   "ee": 1.53385805,
+   "mm": 1.53380013,
+   "source": "ul18_official"
+  },
+  "WR8000_N3900": {
+   "ee": 1.53604795,
+   "mm": 1.53572618,
+   "source": "ul18_official"
+  },
+  "WR8000_N4100": {
+   "ee": 1.53788417,
+   "mm": 1.53772378,
+   "source": "ul18_official"
+  },
+  "WR8000_N4300": {
+   "ee": 1.54022885,
+   "mm": 1.5404498,
+   "source": "ul18_official"
+  },
+  "WR8000_N4500": {
+   "ee": 1.54158946,
+   "mm": 1.54156057,
+   "source": "ul18_official"
+  },
+  "WR8000_N4700": {
+   "ee": 1.54353234,
+   "mm": 1.54372246,
+   "source": "ul18_official"
+  },
+  "WR8000_N4900": {
+   "ee": 1.54479289,
+   "mm": 1.54475684,
+   "source": "ul18_official"
+  },
+  "WR8000_N5100": {
+   "ee": 1.54666505,
+   "mm": 1.54665005,
+   "source": "ul18_official"
+  },
+  "WR8000_N5300": {
+   "ee": 1.54779283,
+   "mm": 1.54750921,
+   "source": "ul18_official"
+  },
+  "WR8000_N5500": {
+   "ee": 1.54937289,
+   "mm": 1.54944682,
+   "source": "ul18_official"
+  },
+  "WR8000_N5700": {
+   "ee": 1.55033959,
+   "mm": 1.55024436,
+   "source": "ul18_official"
+  },
+  "WR8000_N5900": {
+   "ee": 1.55156223,
+   "mm": 1.55188866,
+   "source": "ul18_official"
+  },
+  "WR8000_N6100": {
+   "ee": 1.55263092,
+   "mm": 1.55256404,
+   "source": "ul18_official"
+  },
+  "WR8000_N6300": {
+   "ee": 1.55399142,
+   "mm": 1.55395688,
+   "source": "ul18_official"
+  },
+  "WR8000_N6500": {
+   "ee": 1.55468094,
+   "mm": 1.55467755,
+   "source": "ul18_official"
+  },
+  "WR8000_N6700": {
+   "ee": 1.55648972,
+   "mm": 1.55642036,
+   "source": "ul18_official"
+  },
+  "WR8000_N6900": {
+   "ee": 1.55748261,
+   "mm": 1.55752288,
+   "source": "ul18_official"
+  },
+  "WR8000_N7100": {
+   "ee": 1.5601851,
+   "mm": 1.5601986,
+   "source": "ul18_official"
+  },
+  "WR8000_N7300": {
+   "ee": 1.56299834,
+   "mm": 1.5629211,
+   "source": "ul18_official"
+  },
+  "WR8000_N7500": {
+   "ee": 1.56894083,
+   "mm": 1.56902183,
+   "source": "ul18_official"
+  },
+  "WR8000_N7700": {
+   "ee": 1.58084162,
+   "mm": 1.58132752,
+   "source": "ul18_official"
+  },
+  "WR8000_N7900": {
+   "ee": 1.62069618,
+   "mm": 1.62078142,
+   "source": "ul18_official"
   }
  }
 }

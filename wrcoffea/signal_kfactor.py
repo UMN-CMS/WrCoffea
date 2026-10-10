@@ -66,9 +66,18 @@ def load_payload(path: str) -> dict:
         "values": np.asarray(kf["values"], dtype=np.float64),
         "mln_min": float(kf["mln_min"]),
         "averages": raw["averages"],
+        # k(m_lN) of each mass point from its own NLO/LO ratio (docs/signal_kfactor.md); a point without one uses
+        # the shared curve above
+        "point_curves": {},
     }
     if len(payload["values"]) != len(payload["edges"]) - 1:
         raise ValueError(f"Signal k-factor payload '{path}': bin count mismatch")
+    for name, c in (raw.get("point_curves") or {}).items():
+        curve = {"edges": np.asarray(c["edges"], dtype=np.float64), "values": np.asarray(c["values"], dtype=np.float64),
+                 "mln_min": float(c["mln_min"])}
+        if len(curve["values"]) != len(curve["edges"]) - 1:
+            raise ValueError(f"Signal k-factor payload '{path}': bin count mismatch in the curve of {name}")
+        payload["point_curves"][name] = curve
     _PAYLOAD_CACHE[path] = payload
     return payload
 
@@ -112,16 +121,22 @@ def find_gen_ln(events):
 
 
 def evaluate(m_ln: np.ndarray, channel: np.ndarray, found: np.ndarray, payload: dict, mass_point: str) -> np.ndarray:
-    """``k(m_ln) / <k>`` per event; 1 where the gen objects were not found."""
+    """``k(m_ln) / <k>`` per event; 1 where the gen objects were not found.  ``k`` comes from the mass point's own
+    curve when the payload has one (``point_curves``), else from the shared curve."""
     try:
         avg = payload["averages"][mass_point]
     except KeyError as e:
         raise KeyError(
             f"Signal k-factor payload has no average for mass point '{mass_point}'"
         ) from e
-    m = np.where(m_ln < 200.0, payload["mln_min"], m_ln)
-    k = payload["values"][_bin_index(m, payload["edges"])]
-    avg_per_event = np.where(channel == 9900014, avg["mm"], avg["ee"])
+    curve = payload.get("point_curves", {}).get(mass_point, payload)     # the point's own curve or the shared one
+    m = np.where(m_ln < 200.0, curve["mln_min"], m_ln)
+    k = curve["values"][_bin_index(m, curve["edges"])]
+    # a point produced in one lepton channel only (e.g. the 2024 electron-only WR3200 points) has one average
+    k_ee, k_mm = avg.get("ee", avg.get("mm")), avg.get("mm", avg.get("ee"))
+    if k_ee is None:
+        raise KeyError(f"Signal k-factor payload has no average value for mass point '{mass_point}'")
+    avg_per_event = np.where(channel == 9900014, k_mm, k_ee)
     return np.where(found, k / avg_per_event, 1.0)
 
 

@@ -434,7 +434,20 @@ dy_reweight_datasets:
 # AN-19-083 Appendix A).  Disable with --no-signal-kfactor.  Eras absent here
 # apply no k-factor reweighting.
 signal_kfactor:
-  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_run2legacy_v4_2018.json
+  # 2026-10-10: our own derivation (docs/signal_kfactor.md): per-point curves and direct NLO/LO from MG5_aMC fixed-order
+  # runs at 13 TeV; the Run 2 payload signal_kfactor_run2legacy_v4_2018.json stays for reference.
+  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json
+  # The other UL eras share the 13 TeV gridpacks, so the same per-point curves and generator-level averages apply.
+  RunIISummer20UL17: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json
+  RunIISummer20UL16: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json
+  RunIISummer20UL16APV: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json
+  # 13.6 TeV: the same derivation on the Run 3 gridpacks; one payload for the 2022/2023 official samples and the
+  # 2024 private production (averages per mass point and channel, the samples of a point are one gridpack).
+  Run3Summer22: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
+  Run3Summer22EE: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
+  Run3Summer23: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
+  Run3Summer23BPix: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
+  RunIII2024Summer24: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
 
 # HEM 15/16 veto (2018 only).  Ported from the Run 2 HNWRAnalyzer
 # (``isHEMVetoEvent``): an event is dropped when one of the two leptons the

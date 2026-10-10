@@ -99,14 +99,39 @@ class TestGenFinder:
         assert found.tolist() == [False, False] and m.tolist() == [0.0, 0.0] and ch.tolist() == [0, 0]
 
 
+RUN2_PAYLOAD = "data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_run2legacy_v4_2018.json"
+
+
 @pytest.fixture(scope="module")
 def payload():
-    return load_payload(SIGNAL_KFACTOR_JSONS[UL18])
+    # the Run 2 payload (kept for reference); the configured UL18 payload is tested in TestConfiguredPayload
+    return load_payload(RUN2_PAYLOAD)
+
+
+class TestConfiguredPayload:
+    def test_per_point_curves_and_direct_k(self):
+        raw = json.load(open(SIGNAL_KFACTOR_JSONS[UL18], encoding="utf-8"))
+        pl = load_payload(SIGNAL_KFACTOR_JSONS[UL18])
+        assert raw["direct_k"]["WR2000_N100"]["source"] == "direct" and 1.2 < raw["direct_k"]["WR2000_N100"]["k"] < 1.4
+        assert "WR2000_N100" in pl["point_curves"] and "WR1000_N100" in pl["averages"]
+        # the 490 private points (interpolated) and the 210 official ones all have an average and a curve
+        for name in ("WR600_N100", "WR3400_N2600", "WR8000_N7900"):
+            assert name in pl["point_curves"] and name in raw["direct_k"]
+            assert pl["averages"][name].get("ee") or pl["averages"][name].get("mm")
+        # a point's own curve integrates to its direct k: the sample average is within 2 % of it
+        a = pl["averages"]["WR2000_N100"]
+        assert a["mm"] == pytest.approx(raw["direct_k"]["WR2000_N100"]["k"], rel=0.02)
+
+    def test_single_channel_average(self):
+        pl = {"edges": np.array([0.0, 1000.0, 2000.0]), "values": np.array([1.2, 1.4]), "mln_min": 0.0,
+              "averages": {"WR3200_N100": {"ee": 1.3}}, "point_curves": {}}
+        w = evaluate(np.array([500.0, 1500.0]), np.array([9900012, 9900012]), np.array([True, True]), pl, "WR3200_N100")
+        assert w.tolist() == pytest.approx([1.2 / 1.3, 1.4 / 1.3])
 
 
 class TestEvaluate:
     def test_payload(self, payload):
-        raw = json.load(open(SIGNAL_KFACTOR_JSONS[UL18], encoding="utf-8"))
+        raw = json.load(open(RUN2_PAYLOAD, encoding="utf-8"))
         assert raw["provenance"]["source_commit"] == "06f274c754cff941c5e406b8f8d50bfe650e20a0"
         assert payload["edges"][0] == 0.0 and payload["edges"][-1] == 12000.0 and payload["edges"][1] == 200.0
         assert payload["averages"]["WR1000_N100"]["ee"] == pytest.approx(1.21258986224)
@@ -132,6 +157,23 @@ class TestEvaluate:
         with pytest.raises(KeyError, match="WR123_N45"):
             evaluate(np.array([1000.0]), np.array([9900012]), np.array([True]), payload, "WR123_N45")
 
+    def test_point_curve_takes_precedence_over_the_shared_one(self, tmp_path):
+        # a payload with a per-point curve for WR2000_N100 only: that point uses it, WR1000_N100 the shared curve
+        raw = {"variable": "gen_mln",
+               "kfactor": {"edges": [0.0, 1000.0, 2000.0, 3000.0], "values": [1.1, 1.2, 1.3], "mln_min": 0.0},
+               "averages": {"WR1000_N100": {"ee": 1.2, "mm": 1.2}, "WR2000_N100": {"ee": 1.5, "mm": 1.5}},
+               "point_curves": {"WR2000_N100": {"edges": [0.0, 1000.0, 2000.0, 3000.0], "values": [1.4, 1.5, 1.6],
+                                                "mln_min": 1000.0}}}
+        f = tmp_path / "payload.json"
+        f.write_text(json.dumps(raw))
+        pl = load_payload(str(f))
+        assert set(pl["point_curves"]) == {"WR2000_N100"}
+        ch, ok = np.array([9900012, 9900012]), np.array([True, True])
+        w_shared = evaluate(np.array([1500.0, 50.0]), ch, ok, pl, "WR1000_N100")
+        assert w_shared.tolist() == pytest.approx([1.2 / 1.2, 1.1 / 1.2])          # bin 1; clamp to the shared mln_min
+        w_point = evaluate(np.array([1500.0, 50.0]), ch, ok, pl, "WR2000_N100")
+        assert w_point.tolist() == pytest.approx([1.5 / 1.5, 1.5 / 1.5])           # bin 1; clamp to the point's mln_min
+
 
 class TestMassPointKey:
     @pytest.mark.parametrize("name, key", [
@@ -150,7 +192,8 @@ class TestGating:
         return _Events(_genpart([_on_shell_event(1000.0, 100.0)] * 2))
 
     def test_identity_when_not_signal_or_unconfigured(self):
-        for era, is_sig in ((UL18, False), (RUN3, True)):
+        # every real era has a payload since 2026-10-10; an era absent from the map gets the identity
+        for era, is_sig in ((UL18, False), ("NoSuchEra", True)):
             out = signal_kfactor_weight(self._ev(), era, mass_point="WR1000_N100", is_signal=is_sig)
             assert not out["applied"] and np.all(out["nominal"] == 1.0)
 
