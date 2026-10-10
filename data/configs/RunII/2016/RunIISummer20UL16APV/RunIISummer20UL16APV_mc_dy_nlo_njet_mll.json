@@ -6,10 +6,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": 5134.0,
-    "order": "NLO",
-    "total_uncertainty": 5.365,
-    "datatype": "mc"
+    "xsec": 4858.4,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 6.862,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 5122.0,
+      "generator_unc": 7.234,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 196691,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -18,10 +33,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": 952.7,
-    "order": "NLO",
-    "total_uncertainty": 2.174,
-    "datatype": "mc"
+    "xsec": 902.62,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 4.256,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 951.6,
+      "generator_unc": 4.487,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 208093,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -30,10 +60,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": 359.1,
-    "order": "NLO",
-    "total_uncertainty": 1.533,
-    "datatype": "mc"
+    "xsec": 341.85,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 3.07,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 360.4,
+      "generator_unc": 3.237,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 139586,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -42,10 +87,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 5.437,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.01463,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 5.732,
+      "generator_unc": 0.01542,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 55917,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -54,10 +114,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.41327,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.006381,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.4357,
+      "generator_unc": 0.006727,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 2026,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -66,10 +141,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.024187,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.0001999,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.0255,
+      "generator_unc": 0.0002107,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 8351,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -78,10 +168,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.0017168,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 1.746e-05,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.00181,
+      "generator_unc": 1.841e-05,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 6086,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -90,10 +195,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 9.5137e-05,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 1.421e-06,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.0001003,
+      "generator_unc": 1.498e-06,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 2934,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -102,10 +222,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 3.7296e-06,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 4.398e-08,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 3.932e-06,
+      "generator_unc": 4.637e-08,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 4991,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -114,10 +249,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 3.8937e-07,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 7.118e-09,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 4.105e-07,
+      "generator_unc": 7.504e-09,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 2067,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_0J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_0J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -126,10 +276,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_0J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 2.7242e-08,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 4.948e-10,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 2.872e-08,
+      "generator_unc": 5.217e-10,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 2045,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -138,10 +303,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 2.0744,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.01964,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 2.187,
+      "generator_unc": 0.02071,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 46404,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -150,10 +330,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.22784,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.004376,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.2402,
+      "generator_unc": 0.004613,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 10018,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -162,10 +357,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.018013,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.0003216,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.01899,
+      "generator_unc": 0.000339,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 9239,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -174,10 +384,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.0014332,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 2.766e-05,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.001511,
+      "generator_unc": 2.916e-05,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 7160,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -186,10 +411,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 8.1839e-05,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 1.83e-06,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 8.628e-05,
+      "generator_unc": 1.929e-06,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 5093,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -198,10 +438,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 3.261e-06,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 7.657e-08,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 3.438e-06,
+      "generator_unc": 8.072e-08,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 4026,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -210,10 +465,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 3.4251e-07,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 6.223e-09,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 3.611e-07,
+      "generator_unc": 6.561e-09,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 6923,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_1J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_1J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -222,10 +492,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_1J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 2.3391e-08,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 5.529e-10,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 2.466e-08,
+      "generator_unc": 5.829e-10,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 4020,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -234,10 +519,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.89266,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.01681,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.9411,
+      "generator_unc": 0.01772,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 25453,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -246,10 +546,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.10083,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.003349,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.1063,
+      "generator_unc": 0.003531,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 7935,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -258,10 +573,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.0087397,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 0.0002663,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.009214,
+      "generator_unc": 0.0002808,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 7932,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -270,10 +600,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 0.00087075,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 2.372e-05,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.000918,
+      "generator_unc": 2.501e-05,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 8313,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -282,10 +627,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 5.2529e-05,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 1.868e-06,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 5.538e-05,
+      "generator_unc": 1.969e-06,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 5199,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -294,10 +654,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 2.359e-06,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 1.09e-07,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 2.487e-06,
+      "generator_unc": 1.149e-07,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 2985,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -306,10 +681,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 2.7033e-07,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 8.817e-09,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 2.85e-07,
+      "generator_unc": 9.295e-09,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 8080,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/DYJetsToLL_2J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/DYJetsToLL_2J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -318,10 +708,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "DYJetsToLL_2J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8",
     "physics_group": "DYJets",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 1.9644e-08,
+    "order": "NLO x k(NNLO)",
+    "total_uncertainty": 9.265e-10,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 2.071e-08,
+      "generator_unc": 9.768e-10,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 0.948528,
+      "reference": 6077.22,
+      "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 3993,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -330,10 +735,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "tt_tW",
-    "xsec": 88.56,
+    "xsec": 88.515,
     "order": "NNLO+NNLL",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "total_uncertainty": 0.06665,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 687.1,
+      "generator_unc": 0.5174,
+      "header": "inclusive",
+      "factor": 0.106146,
+      "factor_reason": "all events are 2L2Nu but the header is inclusive: header / reference = 0.824 while header / (reference x BR) = 7.763",
+      "kfactor": 1.21365,
+      "reference": 833.9,
+      "reference_source": "NNLO+NNLL, TOP twiki TtbarNNLO, mt = 172.5 GeV",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 70000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -342,10 +762,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "tt_tW",
-    "xsec": 19.2,
+    "xsec": 19.555,
     "order": "NLO+NNLL",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "total_uncertainty": 0.01411,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 32.51,
+      "generator_unc": 0.02346,
+      "header": "inclusive",
+      "factor": 0.545454,
+      "factor_reason": "all events are NoFullHad but the header is inclusive: header / reference = 0.907 while header / (reference x BR) = 1.663",
+      "kfactor": 1.10274,
+      "reference": 35.85,
+      "reference_source": "NLO+NNLL per charge (71.7 pb for both), TOP twiki SingleTopRefXsec",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 43572,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -354,10 +789,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "tt_tW",
-    "xsec": 19.2,
+    "xsec": 19.555,
     "order": "NLO+NNLL",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "total_uncertainty": 0.01409,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 32.45,
+      "generator_unc": 0.02338,
+      "header": "inclusive",
+      "factor": 0.545454,
+      "factor_reason": "all events are NoFullHad but the header is inclusive: header / reference = 0.905 while header / (reference x BR) = 1.659",
+      "kfactor": 1.10478,
+      "reference": 35.85,
+      "reference_source": "NLO+NNLL per charge (71.7 pb for both), TOP twiki SingleTopRefXsec",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 54665,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -366,10 +816,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 1637.1,
+    "xsec": 1459.3,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 11.53,
-    "datatype": "mc"
+    "total_uncertainty": 5.105,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 1268.0,
+      "generator_unc": 4.436,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 70155,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v3/NANOAODSIM",
@@ -378,10 +843,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 1637.1,
+    "xsec": 1459.3,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 11.53,
-    "datatype": "mc"
+    "total_uncertainty": 5.105,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 1268.0,
+      "generator_unc": 4.436,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 70155,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -390,10 +870,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 1627.45,
+    "xsec": 1442.1,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 11.66,
-    "datatype": "mc"
+    "total_uncertainty": 5.121,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 1253.0,
+      "generator_unc": 4.45,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 70099,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v3/NANOAODSIM",
@@ -402,10 +897,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 1627.45,
+    "xsec": 1442.1,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 11.66,
-    "datatype": "mc"
+    "total_uncertainty": 5.121,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 1253.0,
+      "generator_unc": 4.45,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 70099,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -414,10 +924,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 435.237,
+    "xsec": 386.01,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 3.128,
-    "datatype": "mc"
+    "total_uncertainty": 1.387,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 335.4,
+      "generator_unc": 1.205,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 69787,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v3/NANOAODSIM",
@@ -426,10 +951,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 435.237,
+    "xsec": 386.01,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 3.128,
-    "datatype": "mc"
+    "total_uncertainty": 1.387,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 335.4,
+      "generator_unc": 1.205,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 69787,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -438,10 +978,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 59.1811,
+    "xsec": 52.158,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.4146,
-    "datatype": "mc"
+    "total_uncertainty": 0.2446,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 45.32,
+      "generator_unc": 0.2125,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 41382,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM",
@@ -450,10 +1005,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 59.1811,
+    "xsec": 52.158,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.4146,
-    "datatype": "mc"
+    "total_uncertainty": 0.2446,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 45.32,
+      "generator_unc": 0.2125,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 41382,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM",
@@ -462,10 +1032,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
-    "xsec": 59.1811,
+    "xsec": 52.158,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.4146,
-    "datatype": "mc"
+    "total_uncertainty": 0.2446,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 45.32,
+      "generator_unc": 0.2125,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 41382,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -474,10 +1059,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 14.5805,
+    "xsec": 12.545,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.105,
-    "datatype": "mc"
+    "total_uncertainty": 0.05653,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 10.9,
+      "generator_unc": 0.04912,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 45045,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM",
@@ -486,10 +1086,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 14.5805,
+    "xsec": 12.545,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.105,
-    "datatype": "mc"
+    "total_uncertainty": 0.05653,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 10.9,
+      "generator_unc": 0.04912,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 45045,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM",
@@ -498,10 +1113,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
-    "xsec": 14.5805,
+    "xsec": 12.545,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.105,
-    "datatype": "mc"
+    "total_uncertainty": 0.05653,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 10.9,
+      "generator_unc": 0.04912,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 45045,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -510,10 +1140,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 6.65621,
+    "xsec": 5.6774,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.04705,
-    "datatype": "mc"
+    "total_uncertainty": 0.02912,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 4.933,
+      "generator_unc": 0.0253,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 34837,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM",
@@ -522,10 +1167,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 6.65621,
+    "xsec": 5.6774,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.04705,
-    "datatype": "mc"
+    "total_uncertainty": 0.02912,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 4.933,
+      "generator_unc": 0.0253,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 34837,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM",
@@ -534,10 +1194,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
-    "xsec": 6.65621,
+    "xsec": 5.6774,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.04705,
-    "datatype": "mc"
+    "total_uncertainty": 0.02912,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 4.933,
+      "generator_unc": 0.0253,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 34837,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -546,10 +1221,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 1.60809,
+    "xsec": 1.3258,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.01076,
-    "datatype": "mc"
+    "total_uncertainty": 0.00679,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 1.152,
+      "generator_unc": 0.0059,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 35009,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM",
@@ -558,10 +1248,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 1.60809,
+    "xsec": 1.3258,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.01076,
-    "datatype": "mc"
+    "total_uncertainty": 0.00679,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 1.152,
+      "generator_unc": 0.0059,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 35009,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM",
@@ -570,10 +1275,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
-    "xsec": 1.60809,
+    "xsec": 1.3258,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.01076,
-    "datatype": "mc"
+    "total_uncertainty": 0.00679,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 1.152,
+      "generator_unc": 0.0059,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 35009,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM",
@@ -582,10 +1302,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 0.0389136,
+    "xsec": 0.030188,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.0002507,
-    "datatype": "mc"
+    "total_uncertainty": 0.000169,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.02623,
+      "generator_unc": 0.0001468,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 29216,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v2/NANOAODSIM",
@@ -594,10 +1329,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8_ext1",
     "physics_group": "Nonprompt",
-    "xsec": 0.0389136,
+    "xsec": 0.030188,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.0002507,
-    "datatype": "mc"
+    "total_uncertainty": 0.000169,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.02623,
+      "generator_unc": 0.0001468,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 29216,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM": {
     "das_name": "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext2-v3/NANOAODSIM",
@@ -606,10 +1356,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8_ext2",
     "physics_group": "Nonprompt",
-    "xsec": 0.0389136,
+    "xsec": 0.030188,
     "order": "LO x k(NNLO)",
-    "total_uncertainty": 0.0002507,
-    "datatype": "mc"
+    "total_uncertainty": 0.000169,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.02623,
+      "generator_unc": 0.0001468,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates W -> l nu in the matrix element, so the header includes the branching fraction",
+      "kfactor": 1.15089,
+      "reference": 61526.7,
+      "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 29216,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -618,10 +1383,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 3.36,
+    "xsec": 3.3623,
     "order": "NLO",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "total_uncertainty": 0.002883,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 3.549,
+      "generator_unc": 0.003043,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "all events are LNu and the header already includes BR = 0.3258: header / (reference x BR) = 1.056 while header / reference = 0.344",
+      "kfactor": 0.947381,
+      "reference": 10.32,
+      "reference_source": "top + antitop: NLO, TOP twiki SingleTopRefXsec",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 110000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -630,10 +1410,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 80.95,
-    "order": "NLO",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 80.0,
+    "order": "NNLO",
+    "total_uncertainty": 0.133,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 71.74,
+      "generator_unc": 0.1193,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.11514,
+      "reference": 80.0,
+      "reference_source": "NNLO 5FS, TOP twiki SingleTopNNLORef (arXiv:2012.01574)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 70000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -642,10 +1437,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 136.02,
-    "order": "NLO",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 134.2,
+    "order": "NNLO",
+    "total_uncertainty": 0.2428,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 119.7,
+      "generator_unc": 0.2166,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.12114,
+      "reference": 134.2,
+      "reference_source": "NNLO 5FS, TOP twiki SingleTopNNLORef (arXiv:2012.01574)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 105000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -654,10 +1464,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",
     "physics_group": "Nonprompt",
-    "xsec": 365.34,
+    "xsec": 366.34,
     "order": "NNLO+NNLL",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "total_uncertainty": 0.2759,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 687.1,
+      "generator_unc": 0.5174,
+      "header": "inclusive",
+      "factor": 0.439309,
+      "factor_reason": "all events are LNu2Q but the header is inclusive: header / reference = 0.824 while header / (reference x BR) = 1.876",
+      "kfactor": 1.21365,
+      "reference": 833.9,
+      "reference_source": "NNLO+NNLL, TOP twiki TtbarNNLO, mt = 172.5 GeV",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 70000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM": {
     "das_name": "/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM",
@@ -666,10 +1491,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8",
     "physics_group": "Other",
-    "xsec": 0.5407,
+    "xsec": 0.5914,
     "order": "LO",
-    "total_uncertainty": 0.002541,
-    "datatype": "mc"
+    "total_uncertainty": 0.002287,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.5914,
+      "generator_unc": 0.002287,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 45674,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM": {
     "das_name": "/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM",
@@ -678,10 +1518,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8",
     "physics_group": "Other",
-    "xsec": 0.4611,
+    "xsec": 0.439,
     "order": "LO",
-    "total_uncertainty": 0.001268,
-    "datatype": "mc"
+    "total_uncertainty": 0.001442,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.439,
+      "generator_unc": 0.001442,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 67950,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -690,10 +1545,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WW_TuneCP5_13TeV-pythia8",
     "physics_group": "Other",
-    "xsec": 118.7,
+    "xsec": 118.8,
     "order": "NNLO",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "total_uncertainty": 0.1716,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 75.94,
+      "generator_unc": 0.1097,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.56439,
+      "reference": 118.8,
+      "reference_source": "NNLO QCD for qq (arXiv:1408.5243) incl. gg->WW x 1.4, NLO EW -1.2 % on qq (CMS, arXiv:2009.00119; measured 117.6 +- 6.8 pb)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 105000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -702,10 +1572,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WZ_TuneCP5_13TeV-pythia8",
     "physics_group": "Other",
-    "xsec": 47.13,
-    "order": "NLO",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 50.7,
+    "order": "NNLO",
+    "total_uncertainty": 0.08497,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 27.59,
+      "generator_unc": 0.04624,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.83762,
+      "reference": 50.7,
+      "reference_source": "NNLO QCD x NLO EW, MATRIX v2.0.0, W+Z + W-Z with 60 < m(Z) < 120 GeV, NNPDF3.1 luxqed (CMS, arXiv:2110.11231 Table 6; NNLO QCD 51.2; measured 50.6 +- 2.1 pb)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 75000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -714,10 +1599,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ZZ_TuneCP5_13TeV-pythia8",
     "physics_group": "Other",
-    "xsec": 16.523,
-    "order": "NLO",
-    "total_uncertainty": 0,
-    "datatype": "mc"
+    "xsec": 16.5,
+    "order": "NNLO",
+    "total_uncertainty": 0.03271,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 12.11,
+      "generator_unc": 0.02401,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.36251,
+      "reference": 16.5,
+      "reference_source": "NNLO QCD x NLO EW for qq, NLO QCD for gg->ZZ, MATRIX v2.0.0, 60 < m(Z) < 120 GeV, NNPDF3.1 luxqed (CMS, arXiv:2009.01186 Sec. 8; measured 17.4 +- 0.8 pb)",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 66000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -726,10 +1626,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
-    "xsec": 0.2086,
+    "xsec": 0.2158,
     "order": "NLO",
-    "total_uncertainty": 0.0002024,
-    "datatype": "mc"
+    "total_uncertainty": 0.0002479,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.2158,
+      "generator_unc": 0.0002479,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 4000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM": {
     "das_name": "/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM",
@@ -738,10 +1653,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
-    "xsec": 0.2086,
+    "xsec": 0.2158,
     "order": "NLO",
-    "total_uncertainty": 0.0002024,
-    "datatype": "mc"
+    "total_uncertainty": 0.0002479,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.2158,
+      "generator_unc": 0.0002479,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 4000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -750,10 +1680,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
-    "xsec": 0.1651,
+    "xsec": 0.1707,
     "order": "NLO",
-    "total_uncertainty": 0.0001724,
-    "datatype": "mc"
+    "total_uncertainty": 0.0001757,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.1707,
+      "generator_unc": 0.0001757,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 6000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM": {
     "das_name": "/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM",
@@ -762,10 +1707,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
-    "xsec": 0.1651,
+    "xsec": 0.1707,
     "order": "NLO",
-    "total_uncertainty": 0.0001724,
-    "datatype": "mc"
+    "total_uncertainty": 0.0001757,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.1707,
+      "generator_unc": 0.0001757,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 6000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -774,10 +1734,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WZZ_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
-    "xsec": 0.05565,
+    "xsec": 0.05709,
     "order": "NLO",
-    "total_uncertainty": 5.5e-05,
-    "datatype": "mc"
+    "total_uncertainty": 6.213e-05,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.05709,
+      "generator_unc": 6.213e-05,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 12000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM": {
     "das_name": "/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM",
@@ -786,10 +1761,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
-    "xsec": 0.05565,
+    "xsec": 0.05709,
     "order": "NLO",
-    "total_uncertainty": 5.5e-05,
-    "datatype": "mc"
+    "total_uncertainty": 6.213e-05,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.05709,
+      "generator_unc": 6.213e-05,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 12000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM": {
     "das_name": "/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM",
@@ -798,10 +1788,25 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8",
     "physics_group": "Other",
-    "xsec": 0.01398,
+    "xsec": 0.01476,
     "order": "NLO",
-    "total_uncertainty": 1.496e-05,
-    "datatype": "mc"
+    "total_uncertainty": 1.075e-05,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.01476,
+      "generator_unc": 1.075e-05,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 6000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   },
   "/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM": {
     "das_name": "/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11_ext1-v1/NANOAODSIM",
@@ -810,9 +1815,24 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1",
     "physics_group": "Other",
-    "xsec": 0.01398,
+    "xsec": 0.01476,
     "order": "NLO",
-    "total_uncertainty": 1.496e-05,
-    "datatype": "mc"
+    "total_uncertainty": 1.075e-05,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 0.01476,
+      "generator_unc": 1.075e-05,
+      "header": "inclusive",
+      "factor": 1.0,
+      "factor_reason": "generator value taken as is",
+      "kfactor": 1.0,
+      "reference": null,
+      "reference_source": "",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 6000,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-10"
+    }
   }
 }
