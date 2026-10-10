@@ -1,39 +1,35 @@
+# Vendored from the Muon POG MuonScaRe kit: https://gitlab.cern.ch/cms-muonPOG/muonscarekit
+# scripts/MuonScaRe.py at master 1c7426b5 (2026-06-22), unmodified below this header.
+# This version draws the smearing random number from the payload's "RandomSmearing"
+# correction (correctionlib hashprng), present in the 2026-06-18 2024 muon_scalesmearing.json.gz.
+
 import numpy as np
 import math
 from scipy.special import erfinv, erf
 from random import random
 import awkward as ak
 from typing import List
-#import ROOT
 
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-class SeedSequence:
-    def __init__(self, seeds: List[int]):
-        self.seeds = [s & 0xFFFFFFFF for s in seeds]
 
-    def generate(self, n: int) -> List[int]:
-        if n<=0:
-            return []
+# cache for lazily imported ROOT module
+_ROOT = None
 
-        mult = 0x9e3779b9
-        mix_const = 0x85ebca6b
 
-        buffer = [0x8b8b8b8b] * n
-        s = len(self.seeds)
+def import_ROOT():
+    global _ROOT
 
-        for i in range(min(n, s)):
-            buffer[i] ^= (self.seeds[i] + mult * i) & 0xFFFFFFFF
+    if _ROOT is None:
+        import ROOT
+        ROOT.gROOT.SetBatch(True)
+        ROOT.gErrorIgnoreLevel = ROOT.kError
+        ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
+        _ROOT = ROOT
+    
+    return _ROOT
 
-        for i in range(s, n):
-            buffer[i] ^= (mult * i) & 0xFFFFFFFF
-
-        for k in range(n):
-            z = (buffer[(k + n - 1) % n] ^ (buffer[k] >> 27)) & 0xFFFFFFFF
-            buffer[k] = ((z * mix_const) & 0xFFFFFFFF) ^ ((buffer[k] << 13) & 0xFFFFFFFF)
-
-        return [x & 0xFFFFFFFF for x in buffer]
 
 class CrystallBall:
 
@@ -151,16 +147,8 @@ def get_rndm(eta, phi, nL, evtNr, lumiNr, cset, nested=False):
     n_f = cset.get("cb_params").evaluate(abs(eta_f), nL_f, 2)
     alpha_f = cset.get("cb_params").evaluate(abs(eta_f), nL_f, 3)
 
-    phi_int_f = (((np.asarray(phi_f, dtype=np.float64) / math.pi) * (1 << 31 - 1) ).astype(np.int64) & 0xFFF).astype(np.uint32)
-
-    seeds = [
-        SeedSequence([np.uint32(ev), np.uint32(lumi), np.uint32(phi_int)]).generate(1)[0]
-        for ev, lumi, phi_int in zip(evtNr_f, lumiNr_f, phi_int_f)
-    ]
-
     # get random number following the CB
-    rndm_f = np.array([np.random.default_rng(int(seed)).random() for seed in seeds])
-    #rndm_f = [ROOT.TRandom3(int(seed)).Rndm() for seed in seeds]
+    rndm_f = cset.get("RandomSmearing").evaluate(evtNr_f, lumiNr_f, phi_f)
 
     cb_f = CrystallBall(mean_f, sigma_f, alpha_f, n_f)
 
@@ -211,7 +199,7 @@ def get_k(eta, var, cset, nested=False):
     # return 0 if smearing in MC already larger than in data
     k_f = np.zeros_like(k_data_f)
     condition = k_mc_f<k_data_f
-    k_f[condition] = (k_data_f[condition]**2 - k_mc_f[condition]**2)**.5
+    k_f = np.where(condition, (k_data_f**2 - k_mc_f**2)**.5, k_f)
 
     if nested:
         result = ak.unflatten(k_f, nmuons)
@@ -221,7 +209,7 @@ def get_k(eta, var, cset, nested=False):
     return result
 
 
-def filter_boundaries(pt_corr, pt, nested, low_pt_threshold = 26):
+def filter_boundaries(pt_corr, pt, nested, low_pt_threshold = 26, silent=False):
     if not nested:
         pt_corr = np.asarray(pt_corr)
         pt = np.asarray(pt)
@@ -235,10 +223,11 @@ def filter_boundaries(pt_corr, pt, nested, low_pt_threshold = 26):
         n_pt_outside = np.sum(outside_bounds)
 
     if n_pt_outside > 0:
-        print(
-            f"There are {n_pt_outside} events with muon pt outside of [" + str(low_pt_threshold) + ",200] GeV. "
-            "Setting those entries to their initial value."
-        )
+        if not silent:
+            print(
+                f"There are {n_pt_outside} events with muon pt outside of [" + str(low_pt_threshold) + ",200] GeV. "
+                "Setting those entries to their initial value."
+            )
         pt_corr = np.where(pt>200, pt, pt_corr)
         pt_corr = np.where(pt<low_pt_threshold, pt, pt_corr)
 
@@ -251,11 +240,12 @@ def filter_boundaries(pt_corr, pt, nested, low_pt_threshold = 26):
         n_nan = np.sum(nan_entries)
 
     if n_nan > 0:
-        print(
-            f"There are {n_nan} nan entries in the corrected pt. "
-            "This might be due to the number of tracker layers hitting boundaries. "
-            "Setting those entries to their initial value."
-        )
+        if not silent:
+            print(
+                f"There are {n_nan} nan entries in the corrected pt. "
+                "This might be due to the number of tracker layers hitting boundaries. "
+                "Setting those entries to their initial value."
+            )
         pt_corr = np.where(np.isnan(pt_corr), pt, pt_corr)
 
     return pt_corr

@@ -469,6 +469,14 @@ signal_kfactor:
 pdf_sets:
   RunIII2024Summer24: data/pdf_sets/Run3/2024/RunIII2024Summer24.json
 
+# High-pT muon momentum (wrcoffea/muon_momentum.py): eras listed get MuonScaRe below
+# 200 GeV and the generalized-endpoint data correction + MC smearing above; the
+# others keep the TuneP placeholder (flat 5 %/TeV scale, no smearing).  The payloads
+# hold CMS-internal numbers and live in the git-excluded data/internal/.  Not
+# switched on yet: study it with
+# WRCOFFEA_CONFIG_OVERLAY=data/internal/muon_highpt_overlay.yaml.
+muon_highpt: {}
+
 # HEM 15/16 veto (2018 only).  Ported from the Run 2 HNWRAnalyzer
 # (``isHEMVetoEvent``): an event is dropped when one of the two leptons the
 # region is built from is an electron with eta < eta_max and

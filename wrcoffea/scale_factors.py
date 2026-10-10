@@ -11,7 +11,7 @@ import numpy as np
 
 from wrcoffea.analysis_config import (
     AK8_MSOFTDROP_MODES, CUTS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS, LSF_SF,
-    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, JETVETO_MODES, MUON_JSONS,
+    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, JETVETO_MODES, MUON_HIGHPT, MUON_JSONS,
     PILEUP_CORRECTION_NAMES, PILEUP_JSONS, JERC_JSONS
 )
 import vector
@@ -435,6 +435,11 @@ def apply_muon_scale_smearing(events, era, is_mc):
         A dictionary containing the corrected awkward arrays for 'pt',
         and (if MC) systematic variations.
     """
+    if era in MUON_HIGHPT:
+        # Muon POG Run 3 recipe: MuonScaRe below 200 GeV, GE + MC smearing above.
+        from wrcoffea.muon_momentum import correct_muons
+        return correct_muons(events, era, is_mc)
+
     muons = events.Muon
     counts = ak.num(muons)
     

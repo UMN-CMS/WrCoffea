@@ -318,8 +318,11 @@ def _dyreshape_sources() -> list[Systematic]:
 
 
 _MUON_TUNEP_NOTE = (
-    "TuneP branch uses a flat 5%/TeV scale placeholder and smear == nominal; "
-    "replace with the Muon POG generalized-endpoint prescription before use in a fit."
+    "Eras in config.yaml muon_highpt (wrcoffea/muon_momentum.py): below 200 GeV the MuonScaRe "
+    "statistical scale / resolution variations, above 200 GeV the GE kappa uncertainty on q/pT "
+    "(scale) and the extra MC smearing +- the POG resolution systematic (resolution). Other eras: "
+    "TuneP placeholder, flat "
+    "5%/TeV scale and smear == nominal, not fit for use."
 )
 
 _THEORY_NOTE = (
