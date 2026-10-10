@@ -37,7 +37,7 @@ source .venv/bin/activate
 Run the analyzer by specifying an era and composite mode:
 
 ```bash
-python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything, LO inclusive DY
+python3 bin/run_analysis.py RunIII2024Summer24 all                             # everything, LO HT-binned DY
 python3 bin/run_analysis.py RunIII2024Summer24 all --dy nlo_inc                # everything, NLO inclusive DY
 python3 bin/run_analysis.py RunIII2024Summer24 mc                              # backgrounds + signal
 python3 bin/run_analysis.py RunIII2024Summer24 bkg                             # backgrounds only
@@ -56,7 +56,12 @@ Composite modes process multiple samples sequentially (locally) or in parallel (
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
 | Single sample | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal` (with `--mass`) |
 
-Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`.
+Output ROOT histograms are saved to `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`, each file with a JSON manifest `WRAnalyzer_<sample>_systematics.json` next to it.
+
+- **Data is blinded by default.** Data files have no signal-region folders (nor variants such as `_sr_nomass`), and their `ee`/`mumu` cutflows stop before the m(ll) > 200 GeV cut (`em` is complete). The manifest records this under its top-level `blinding` key. `--unblind` lifts the blinding for Run 2 eras only; Run 3 eras are refused. Run 2 workflows that need observed signal-region data must be rerun with `--unblind`.
+- **MC event weights.** MC files also carry `event_weights/<region>/positive` and `/negative` (event counts vs log10|w| of the region's nominal weight, split by sign) and `event_weights/<region>/components/<name>` (one distribution per weight factor: generator weight, normalization, pileup, lepton SFs, ...). Nominal only, and not with `--unskimmed`.
+
+See [Running the Analyzer](docs/run_analysis.md#output) for the full file layout and [Blinding](docs/run_analysis.md#blinding) for the details.
 
 > **Note:** Filesets for existing eras are already included in the repository. To create filesets for a new era, see [filesets.md](docs/filesets.md).
 
@@ -130,6 +135,7 @@ See **[Skimming](docs/skimming.md)** for the selection, the branch policy, the o
 | `sample` | `<sample_name>` | **Required positional.** Sample to analyze (e.g., DYJets, Signal, EGamma) |
 | `--mass` | `<mass_point>` | Signal mass point (e.g., WR4000_N2100). **Required for Signal sample** |
 | `--region` | `resolved\|boosted\|both` | Analysis region to run (default: both) |
+| `--unblind` | | Fill the data signal regions and the full data cutflows (default: data is blinded; MC never is). Run 2 eras only; refused for Run 3 |
 | `--dy` | `VARIANT` | DY sample variant (only valid for DYJets). Variants are per-era; see `config.yaml` |
 | `--dir` | `<directory>` | Create output subdirectory under rootfiles path |
 | `--name` | `<suffix>` | Append suffix to output ROOT filename |
@@ -143,10 +149,10 @@ See **[Skimming](docs/skimming.md)** for the selection, the branch policy, the o
 | `--maxchunks` | `<int>` | Max chunks per file (default: all). Use `1` for quick testing |
 | `--maxfiles` | `<int>` | Max files per dataset (default: all). Use `1` for quick testing |
 | `--threads-per-worker` | `<int>` | Threads per Dask worker for local runs |
-| `--systs` | `lumi` `pileup` `sf` `jer` `jes` `elescale` `elesmear` `muscale` `musmear` | Enable systematic variations (see [Systematics](#systematics)) |
+| `--systs` | `lumi` `pileup` `sf` `jer` `jes` `elescale` `elesmear` `muscale` `musmear` `dyzpt` `lsf` `dyreshape` `scale` `ps` `pdf` | Enable systematic variations (see [Systematics](#systematics) and [docs/run_analysis.md](docs/run_analysis.md)) |
 | `--syst-observables` | `all` `fit` or `<hist names>` | Histograms that receive the variations (default: all) |
 | `--omit-systs` | `<source names>` | Record a deliberate omission of named sources (needed when an era lacks the inputs for a source) |
-| `--study` | `transfer-factor` | Add a study's extra regions to the output. `transfer-factor` adds SR / flavor-CR copies without the m > 800 GeV cut (suffix `_nomass`) for the eμ transfer-factor closure |
+| `--study` | `transfer-factor`, `dy-cr-split` | Add a study's extra regions to the output. `transfer-factor` adds SR / flavor-CR copies without the m > 800 GeV cut (suffix `_nomass`) for the eμ transfer-factor closure; `dy-cr-split` adds the DY CRs split at m(ll) = 100 GeV (suffixes `_mll60to100`, `_mll100to150`) for the DY-reshape closure |
 | `--split-groups` | `tt_tW`, `Nonprompt`, `Other` | Composite runs: save these groups as one ROOT file per subgroup (`tt_tW` → `TTbar`/`tW`; `Nonprompt` → `WJets`/`TTSemiLep`/`SingleTop`; `Other` → `Diboson`/`Triboson`/`ttV`) |
 | `--xrd-fallback` | | Enable XRootD redirector fallback during unskimmed preprocess |
 | `--xrd-fallback-timeout` | `<int>` | Seconds per fallback probe (default: 10) |
@@ -192,6 +198,9 @@ python3 bin/run_analysis.py Run3Summer22EE DYJets --dir my_study --name test
 # Only process resolved region
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --region resolved
 
+# Unblinded data with the signal regions (Run 2 eras only)
+python3 bin/run_analysis.py RunIISummer20UL18 data --unblind
+
 # Validate fileset without processing
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --preflight-only
 ```
@@ -205,21 +214,25 @@ The repository follows a clean architecture separating executable scripts, core 
 ### Directory Overview
 
 ```
-WR_Plotter/  # Submodule for plotting ROOT histograms
-bin/         # User-facing CLI scripts (production workflows)
-wrcoffea/    # Installable Python package (analysis code, utilities, config)
-data/        # Configuration files (JSON, CSV) and metadata
-docs/        # Documentation (markdown guides)
-scripts/     # Helper scripts for setup and post-processing
-tests/       # Automated test suite (pytest)
-test/        # Development and validation scripts
+WR_Plotter/         # Submodule: plots, cutflows, transfer factors, signal fitting and limits
+bin/                # User-facing CLI scripts (production workflows)
+wrcoffea/           # Installable Python package (analysis code, utilities, config)
+data/               # Dataset configs, filesets, correction payloads, golden JSONs, signal mass points
+docs/               # Documentation (markdown guides)
+scripts/            # Helper scripts: filesets, cross sections, reweight derivations, payload conversion
+tests/              # Automated test suite (pytest)
+combine_framework/  # Template-based Combine datacards and limit plots (runcombine.sh)
+studies/            # One-off studies (m(ll) cut optimization)
 ```
 
 ### Key Directories
 
 **`bin/`** - Production Scripts
 - [`run_analysis.py`](bin/run_analysis.py) - Main analysis driver script (single samples and composite modes)
-- [`skim.py`](bin/skim.py) - Skim campaign driver (`plan`, `run`, `group`, `status`, `validate`, `upload`, `fileset`, `cuts`)
+- [`skim.py`](bin/skim.py) - Skim campaign driver (`plan`, `run`, `group`, `refresh-metadata`, `condor`, `ship`, `mirror`, `bad-files`, `status`, `validate`, `upload`, `split-scan`, `fileset`, `cuts`; see [docs/skimming.md](docs/skimming.md))
+- [`run_all_signals.py`](bin/run_all_signals.py) - A whole block of signal mass points in one Condor cluster (default UL18, M_WR 1-6 TeV)
+- [`lpc_condor.sh`](bin/lpc_condor.sh) - Host-side wrapper for `skim.py condor` at the LPC
+- [`benchmark_condor.sh`](bin/benchmark_condor.sh) - Sweep of Condor workers x chunk size
 
 **`wrcoffea/`** - Installable Python Package
 - [`analyzer.py`](wrcoffea/analyzer.py) - Main Coffea processor implementing WR→Nℓ→ℓℓjj analysis (object selection, resolved/boosted regions, histogram filling, cutflows)
@@ -230,7 +243,11 @@ test/        # Development and validation scripts
 - [`era_utils.py`](wrcoffea/era_utils.py) - Era/year/run mapping and JSON I/O
 - [`fileset_utils.py`](wrcoffea/fileset_utils.py) - Fileset path construction, config parsing, JSON writing
 - [`fileset_validation.py`](wrcoffea/fileset_validation.py) - Schema and selection validation for filesets
-- [`save_hists.py`](wrcoffea/save_hists.py) - ROOT histogram serialization
+- [`save_hists.py`](wrcoffea/save_hists.py) - Merges datasets, checks systematic coverage, writes the ROOT files and the `*_systematics.json` manifest
+- [`regions.py`](wrcoffea/regions.py) - Region registry, study variants (`--study`) and the data blinding policy
+- [`systematics.py`](wrcoffea/systematics.py) - Systematic registry (families, sources, coverage)
+- [`dy_reweight.py`](wrcoffea/dy_reweight.py), [`dy_reshape.py`](wrcoffea/dy_reshape.py), [`signal_kfactor.py`](wrcoffea/signal_kfactor.py) - DY Z-pT reweight, DY reshape vs jet pT, signal NLO k-factor
+- [`MuonScaRe.py`](wrcoffea/MuonScaRe.py) - Muon POG momentum scale and resolution corrections
 - [`skim/`](wrcoffea/skim/) - Skim campaign toolkit: `catalog` (DBS/Rucio), `plan`, `fetch`, `selection` + `recount`, `schema` + `branches.yaml`, `writer`, `worker`, `validate`, `upload`
 - [`das_utils.py`](wrcoffea/das_utils.py) - DAS dataset path validation, dasgoclient queries, XRootD URL construction
 - [`xrootd_fallback.py`](wrcoffea/xrootd_fallback.py) - XRootD redirector fallback for unskimmed file preprocessing
@@ -255,17 +272,18 @@ test/        # Development and validation scripts
 - [`getting_started.md`](docs/getting_started.md) - Installation, environment setup, grid proxy
 - [`run_analysis.md`](docs/run_analysis.md) - Detailed analysis options and workflows
 - [`filesets.md`](docs/filesets.md) - Fileset creation instructions
+- [`dataset_configs.md`](docs/dataset_configs.md) - Dataset config keys, how each cross section is built, its perturbative order
 - [`skimming.md`](docs/skimming.md) - Skim campaign: selection, branch policy, workflow, verification, output layout
 - [`condor.md`](docs/condor.md) - HTCondor setup, worker defaults, tmux, logs
 - [`run_combine.md`](docs/run_combine.md) - Limit-setting with Combine framework
+- [`adding_a_new_era.md`](docs/adding_a_new_era.md) - Checklist for adding an era
+- [`run2_hnwr_comparison.md`](docs/run2_hnwr_comparison.md) - Comparison with the Run 2 HNWRAnalyzer; DY corrections and closure
+- [`repo_review.md`](docs/repo_review.md) - Open review findings
+- `configs/`, `pog_recommendations/`, `pdmv/` - Config rebuild notes, POG and PdmV reference material
 
 **`tests/`** - Automated Test Suite
 - Unit tests for utilities, config consistency, and validation logic
 - Run with pytest (see [Testing](#testing))
-
-**`test/`** - Development Scripts
-- Analysis validation and optimization studies
-- Debugging and testing utilities
 
 ---
 
@@ -300,6 +318,7 @@ pip install -e ".[test]"
 - **[Getting Started](docs/getting_started.md)** - Installation, environment setup, and grid proxy
 - **[Running the Analyzer](docs/run_analysis.md)** - Detailed analysis options and workflows
 - **[Creating Filesets](docs/filesets.md)** - Instructions for generating NanoAOD file lists
+- **[Dataset Configs](docs/dataset_configs.md)** - Every config key, cross-section provenance and the `order` of each value
 - **[Skimming](docs/skimming.md)** - Skim campaign: selection, branch policy, workflow, verification
 - **[Running on Condor](docs/condor.md)** - HTCondor setup, worker defaults, tmux tips, log locations
 - **[Expected Limits](docs/run_combine.md)** - Limit-setting with Higgs Combine framework

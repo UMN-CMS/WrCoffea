@@ -21,7 +21,8 @@ This is the single source of truth for which eras exist.  The `run` key
 (`"RunII"` or `"Run3"`) controls trigger path selection in
 `build_trigger_masks()` and the `year` key is used for directory layout.
 
-**File:** `wrcoffea/das_utils.py` — `ERA_SUBDIRS`
+**Files:** `wrcoffea/das_utils.py` and `wrcoffea/skim/plan.py` — `ERA_SUBDIRS`
+(two copies of the same map; update both)
 
 ```python
 ERA_SUBDIRS = {
@@ -31,7 +32,10 @@ ERA_SUBDIRS = {
 ```
 
 Maps the era name to the subdirectory path used under `data/configs/`,
-`data/filesets/`, `data/skims/`, and `data/lumis/`.
+`data/filesets/`, `data/skims/`, and `data/lumis/`.  The skim campaign
+(`bin/skim.py`) reads the copy in `wrcoffea/skim/plan.py`; the fileset and DAS
+tools read the one in `wrcoffea/das_utils.py`.  An era missing from the skim
+copy silently falls back to `<run>/<year>/<era>`.
 
 ---
 
@@ -53,7 +57,7 @@ lumi_unc:
   Run3Summer23: 0.014         # fractional uncertainty
 
 default_mc_tag:
-  Run3Summer23: dy_lo_inc     # which DY fileset tag to use by default
+  Run3Summer23: dy_lo_ht      # which DY fileset tag to use by default
 ```
 
 ### Data quality
@@ -239,32 +243,30 @@ python -m pytest tests/ -v
 
 If you plan to make plots with the new era, update these files:
 
-**`WR_Plotter/data/lumi.json`** — add the era entry:
-
-```json
-"Run3Summer23": {
-  "run": "Run3",
-  "year": "2023",
-  "lumi": 17.794,
-  "com": 13.6
-}
-```
-
-**`WR_Plotter/data/plot_settings/Run3Summer23.yaml`** — create by
-copying an existing Run3 era file (e.g. `Run3Summer22.yaml`) and
-adjusting labels.
-
-**`WR_Plotter/data/sample_groups/Run3Summer23.yaml`** — create by
-copying an existing file and updating the sample-to-group mapping
-for the new era's datasets.
-
-**`WR_Plotter/data/kfactors.yaml`** — add a block:
+**`WR_Plotter/data/lumi.yaml`** — add the era entry (luminosity in fb⁻¹; the
+`*run3_signals` anchor supplies the default signal points):
 
 ```yaml
 Run3Summer23:
-  DYJets: 1.0
-  _default: 1.0
+  run: Run3
+  year: "2023"
+  lumi: 18.59
+  com: 13.6
+  plot_settings: run3_subera
+  <<: *run3_signals
 ```
+
+If the era belongs to a year or to `Run3`, add it to that combination's
+`sub_eras` list; the combination's luminosity is derived from its eras.
+
+**Plot settings** — `plot_settings:` above names an existing file in
+`WR_Plotter/data/plot_settings/` (without it the era uses `default.yaml`).
+Only if the era needs its own ranges, create
+`WR_Plotter/data/plot_settings/<era>.yaml` that starts with
+`inherit: default` and lists only the values that differ.
+
+Sample groups (`WR_Plotter/data/sample_groups.yaml`) are shared by all eras
+and normally need no change.
 
 ---
 
@@ -280,7 +282,7 @@ to produce datacards for the new era.
 | Step | File(s) | Required? |
 |------|---------|-----------|
 | ERA_MAPPING | `wrcoffea/era_utils.py` | Yes |
-| ERA_SUBDIRS | `wrcoffea/das_utils.py` | Yes |
+| ERA_SUBDIRS | `wrcoffea/das_utils.py` and `wrcoffea/skim/plan.py` | Yes |
 | Lumi + cuts | `wrcoffea/config.yaml` (lumis, lumi_unc, default_mc_tag) | Yes |
 | Golden JSON | `config.yaml` → lumi_jsons + file on disk | Yes (data) |
 | Muon SFs | `config.yaml` → muon_jsons + file on disk | When available |
@@ -290,6 +292,6 @@ to produce datacards for the new era.
 | JME JetID | `config.yaml` → jme_jsons + file | When available |
 | Fileset JSONs | `data/configs/` + `data/filesets/` | Yes |
 | Signal mass CSV | `data/signal_points/<era>_mass_points.csv` | Yes (signal) |
-| WR_Plotter | `WR_Plotter/data/` (lumi.json, plot_settings, sample_groups, kfactors) | For plotting |
+| WR_Plotter | `WR_Plotter/data/lumi.yaml` (+ `plot_settings/` only for era-specific ranges) | For plotting |
 | Combine | `combine_framework/datacards.py` | For limits |
 | Tests | `python -m pytest tests/ -v` | Recommended |

@@ -11,6 +11,22 @@ below must be resolved or explicitly justified for the affected channels and era
 before treating the yields and uncertainties as final. Priorities reflect
 potential impact; this review did not measure the size of each physics effect.
 
+## Status update — 2026-10-08
+
+The findings below are kept as written on 2026-09-07. Their status against the
+code on 2026-10-08:
+
+| Finding | Status |
+| --- | --- |
+| R1 muon momentum | **Open.** The TuneP branch of `apply_muon_scale_smearing` still uses the flat 5 %/TeV scale and nominal resolution. |
+| R2 LSF correction | **Partly closed.** UL18 applies the AN-19-083 Table 60 LSF SFs (`lsf_sf` in `config.yaml`, `--systs lsf`) in the boosted SR and flavour CRs. Run 3 has no LSF SF yet. |
+| R3 Run 3 HEEP SFs | **Open.** The 2022/2023 `electron.json.gz` payloads have no `HEEPID` working point, so those eras still take the flat UL2018 values. `electronID_highPt.json.gz` (EGM `electron_id_high_pt`, working point `Tight`) sits next to them in `data/jsonpog/EGM/Run3/<era>/` but is not configured; whether it is the HEEP ID still needs checking. |
+| R4 electron trigger | **Partly closed.** UL18 uses the Run 2 HEEP trigger-OR efficiencies (`electronHlt_WREGammaTrigger_run2legacy_v4.json.gz`, path `WREGammaTrigger`). Run 3 still uses `HLT_SF_Ele30_TightID` as a proxy for the OR. |
+| R5 plotter SF list | **Closed.** `WR_Plotter/data/systematics.yaml` lists `electronidsf`, `electrontrigsf` and `looseelectronrecosf`. |
+| R6 data-quality inputs | **Open.** An unreadable golden JSON and missing noise-filter branches still only warn. |
+| R7 theory and lumi | **Partly closed.** QCD-scale and parton-shower families exist (`--systs scale ps`). PDF and alpha_s variations exist since 2026-10-10 (`--systs pdf`, 2024 only until other eras get a `pdf_sets` table), and the 2023, 2024 and 2025 `lumi_unc` values are still marked as placeholders. The skimmer now lives in `wrcoffea/skim/`, not `wrcoffea/skimmer.py`. |
+| R8 UL18 variations | **Partly closed.** UL18 JES (`Total`) and JER are configured. UL18 electron scale and smearing are still unconfigured. |
+
 ## Open findings
 
 ### R1 — High: muon momentum treatment remains incomplete
@@ -176,11 +192,15 @@ template coverage does not validate the underlying calibration.
 
 ## Intentional limitation
 
-Run3Summer23BPix signal samples are being used as placeholders for 2024 because
-2024 signal samples are not yet available to the analysis. The analyzer remaps
-their jet ID while other corrections follow the configured 2024 era. Treat
+Run3Summer23BPix signal samples were used as placeholders for 2024 because
+2024 signal samples were not yet available to the analysis. The analyzer remapped
+their jet ID while other corrections followed the configured 2024 era. Treat
 results using these samples as provisional; the campaign mismatch remains
 relevant when interpreting efficiencies and systematic studies.
+
+Resolved 2026-10-08: the 2024 signal is now a private RunIII2024Summer24
+production (see `docs/dataset_configs.md`, "Private samples"); the jet-ID and
+pileup remaps are gone and 2024 signal uses the 2024 payloads throughout.
 
 ## Repository structure and maintenance
 

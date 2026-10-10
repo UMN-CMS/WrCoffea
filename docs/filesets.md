@@ -46,7 +46,7 @@ python3 scripts/skimmed_fileset.py --config data/configs/Run3/2022/Run3Summer22/
 
 Output path:
 ```
-data/filesets/Run3/2022/Run3Summer22/Run3Summer22_mc_dy_lo_inc_fileset.json
+data/filesets/Run3/2022/Run3Summer22/skimmed/Run3Summer22_mc_dy_lo_inc_fileset.json
 ```
 
 ## Config Files
@@ -58,7 +58,7 @@ data/configs/
   Run3/2024/RunIII2024Summer24/
     RunIII2024Summer24_data.json
     RunIII2024Summer24_signal.json
-    RunIII2024Summer24_mc_dy_lo_inc.json
+    RunIII2024Summer24_mc_dy_lo_ht.json      # default DY (one file per DY variant: lo_ht, lo_inc, nlo_inc, ...)
     RunIII2024Summer24_mc_dy_nlo_mll.json
   Run3/2022/Run3Summer22/
     ...
