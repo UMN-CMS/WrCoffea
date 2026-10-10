@@ -1,6 +1,6 @@
 # Config overlay for the AN-19-083 DY CR1 -> CR2 test (study dy-cr-split): the 2024 Z-pT weight plus the reshape
 # derived in DY CR1 only (60 < mll < 100).  Run DY with --study dy-cr-split and compare the _mll100to150 regions.
 dy_zpt_reweight:
-  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261010.json
 dy_reshape:
   RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_cr1_20261008.json

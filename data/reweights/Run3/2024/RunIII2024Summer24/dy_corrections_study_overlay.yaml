@@ -7,6 +7,6 @@
 # Valid only for the dy_lo_ht DY (the Z-pT payload is NLO/LO for the LO HT-binned samples).
 # See docs/run2_hnwr_comparison.md, "Run 3 DY corrections (2024)".
 dy_zpt_reweight:
-  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261010.json
 dy_reshape:
-  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261008.json
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261010.json
