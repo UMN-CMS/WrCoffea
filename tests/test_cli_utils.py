@@ -284,14 +284,18 @@ class TestSelectSignalPoints:
             select_signal_points(self.ERA, ["all", self._csv_points()[0]])
 
 
-def test_ul18_signal_points_select_the_official_samples():
-    """UL18 runs the official UL samples: every point of the CSV selects its e and mu sample from the
-    default fileset, and no pre-legacy scan model is in it (RunIISummer20UL18_signal_scan_fileset.json)."""
+@pytest.mark.parametrize("era", ["RunIISummer20UL18", "RunIISummer20UL17", "RunIISummer20UL16", "RunIISummer20UL16APV"])
+def test_ul_signal_points_select_the_official_samples(era):
+    """The UL eras run the official UL samples: every point of the era's CSV selects its e and mu sample from the
+    default fileset, and no pre-legacy scan model is in it (those live in <era>_signal_scan_fileset.json).
+    Eras whose skims_v2 signal fileset is not installed yet are skipped."""
     import json
     from pathlib import Path
     from wrcoffea.cli_utils import build_fileset_path, filter_by_process, load_masses_from_csv
-    era = "RunIISummer20UL18"
-    fileset = json.loads(build_fileset_path(era=era, sample="Signal", unskimmed=False, dy=None).read_text())
+    path = build_fileset_path(era=era, sample="Signal", unskimmed=False, dy=None)
+    if not path.exists() or not Path(f"data/signal_points/{era}_mass_points.csv").exists():
+        pytest.skip(f"{era}: signal fileset or mass-point CSV not installed yet")
+    fileset = json.loads(path.read_text())
     points = load_masses_from_csv(Path(f"data/signal_points/{era}_mass_points.csv"))
     assert 2 * len(points) == len(fileset)
     for mass in points:
