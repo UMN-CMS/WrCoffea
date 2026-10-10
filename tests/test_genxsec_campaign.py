@@ -46,6 +46,86 @@ def test_tw_without_sibling_uses_reference():
     assert d["kfactor"] == pytest.approx(43.95 / 35.99)
 
 
+def test_ul_tw_without_fully_hadronic_decays():
+    # UL ST_tW_*_NoFullyHadronicDecays: 80 % one leptonic W, 20 % two, none fully hadronic; POWHEG header inclusive
+    wf = {"0_leptonic_W": 0.0, "1_leptonic_W": 0.80325, "2_leptonic_W": 0.1962}
+    e = _entry("ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8", 32.45, energy="13TeV", wmean=2.0, wfrac=wf)
+    d = gx.classify(e, {"x": e})
+    assert d["header"] == "inclusive"
+    assert d["factor"] == pytest.approx(1 - (1 - 0.3258) ** 2)
+    assert d["kfactor"] == pytest.approx(35.85 / 32.45)
+    assert gx.proposed_xsec(e, d, "reference") == pytest.approx(35.85 * (1 - (1 - 0.3258) ** 2))
+
+
+@pytest.mark.parametrize("primary,energy", [
+    ("WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8", "13TeV"),
+    ("WtoLNu-4Jets_Bin-HT-100to400-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8", "13p6TeV"),
+])
+def test_lo_wjets_is_scaled_to_the_inclusive_nnlo_w(primary, energy):
+    incl_name = ("WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" if energy == "13TeV"
+                 else "WtoLNu-4Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8")
+    e = _entry(primary, 1258.0, energy=energy, wmean=1.0, wfrac=ONE_LEP)
+    incl = _entry(incl_name, 55000.0, energy=energy, wmean=1.0, wfrac=ONE_LEP)
+    nlo = _entry("WtoLNu-2Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 64000.0, energy=energy, wmean=1.0, wfrac=ONE_LEP)
+    ref = gx.W_REFERENCES[energy][0]
+    assert ref == pytest.approx(63650.1 if energy == "13p6TeV" else 61526.7)
+    d = gx.classify(e, {"x": e, "i": incl, "n": nlo})
+    assert d["factor"] == 1.0 and d["header"] == "includes decay"
+    assert d["kfactor"] == pytest.approx(ref / 55000.0) and d["reference"] == ref     # NLO sample ignored
+    assert "MATRIXCrossSectionsat13p6TeV" in d["reference_source"] or "StandardModelCrossSectionsat13TeV" in d["reference_source"]
+    assert gx.proposed_xsec(e, d, "reference") == pytest.approx(1258.0 * ref / 55000.0)
+    src = {"normalize": "reference", "reference": d["reference"], "kfactor": d["kfactor"],
+           "reference_source": d["reference_source"]}
+    assert gx.order_from_source(primary, src) == "LO x k(NNLO)"
+    assert gx.classify(incl, {"i": incl})["kfactor"] == pytest.approx(ref / 55000.0)   # the inclusive sample itself
+    alone = gx.classify(e, {"x": e})
+    assert alone.get("undecided_k") and alone["kfactor"] == 1.0                      # no inclusive header: CHECK
+
+
+def test_official_ul18_signal_is_lo_times_the_payload_average_k(monkeypatch):
+    # the Run 2 convention (LO x <k> of the shared curve), selected with --signal-norm average
+    monkeypatch.setattr(gx, "SIGNAL_NORM", "average")
+    monkeypatch.setattr(gx, "SIGNAL_PAYLOAD", str(REPO / "data/reweights/RunII/2018/RunIISummer20UL18/"
+                                                      "signal_kfactor_run2legacy_v4_2018.json"))
+    payload = json.loads((REPO / "data/reweights/RunII/2018/RunIISummer20UL18/"
+                                  "signal_kfactor_run2legacy_v4_2018.json").read_text())
+    k_mm = payload["averages"]["WR2000_N100"]["mm"]
+    e = _entry("WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8", 0.1445, energy="13TeV")
+    e["era"] = "RunIISummer20UL18"
+    d = gx.classify(e, {"x": e})
+    assert d["factor"] == 1.0 and d["kfactor"] == pytest.approx(k_mm)
+    assert gx.proposed_xsec(e, d, "reference") == pytest.approx(0.1445 * k_mm)
+    src = {"normalize": "reference", "reference": d["reference"], "kfactor": d["kfactor"],
+           "reference_source": d["reference_source"]}
+    assert gx.order_from_source(e["primary"], src) == "LO x k(NLO)"
+
+
+def test_official_signal_direct_k_from_the_payload(tmp_path):
+    # the default (option 2): the point's direct sigma_NLO / sigma_LO from the payload's direct_k table
+    payload = {"kfactor": {"edges": [0.0, 1000.0], "values": [1.0], "mln_min": 0.0}, "averages": {},
+               "direct_k": {"WR2000_N100": {"k": 1.3008, "source": "direct"},
+                            "WR2200_N300": {"k": 1.31, "source": "interpolated (linear ...)"}}}
+    f = tmp_path / "payload.json"
+    f.write_text(json.dumps(payload))
+    k, desc = gx.signal_average_k("RunIISummer20UL18", "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8", str(f))
+    assert k == pytest.approx(1.3008) and "direct_k" in desc
+    with pytest.raises(KeyError, match="WR2000_N900"):
+        gx.signal_average_k("RunIISummer20UL18", "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13TeV_madgraph-pythia8", str(f))
+
+
+def test_signal_without_kfactor_payload_stays_lo():
+    # an era without a signal_kfactor payload in config.yaml keeps the generator LO value (every real era has one
+    # since 2026-10-10, so the era here is synthetic)
+    e = _entry("WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8", 0.17, energy="13TeV")
+    e["era"] = "NoSuchEra"
+    assert gx.classify(e, {"x": e})["kfactor"] == 1.0
+
+
+def test_nlo_wjets_is_not_scaled():
+    e = _entry("WtoLNu-2Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 64000.0, wmean=1.0, wfrac=ONE_LEP)
+    assert gx.classify(e, {"x": e})["kfactor"] == 1.0
+
+
 def test_tchannel_header_already_includes_decay():
     e = _entry("TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8", 38.6, wmean=1.0, wfrac=ONE_LEP)
     d = gx.classify(e, {"x": e})
@@ -58,7 +138,9 @@ def test_tchannel_header_already_includes_decay():
 def test_inclusive_decays_keep_header():
     e = _entry("WW_TuneCP5_13p6TeV_pythia8", 80.18, wmean=2.0, wfrac=NATURAL)
     d = gx.classify(e, {"x": e})
-    assert d["factor"] == 1.0 and d["kfactor"] == 1.0 and d["reference"] is None
+    # inclusive decays: factor 1; WW is scaled to its NNLO reference (125.8 pb at 13.6 TeV)
+    assert d["factor"] == 1.0 and d["reference"] == 125.8
+    assert d["kfactor"] == pytest.approx(125.8 / 80.18)
     tt = _entry("TT_TuneCP5_13TeV-powheg-pythia8", 700.0, energy="13TeV", wmean=2.0, wfrac=NATURAL)
     d = gx.classify(tt, {"x": tt})
     assert d["factor"] == 1.0 and d["kfactor"] == pytest.approx(833.9 / 700.0)
@@ -119,27 +201,61 @@ def test_refresh_metadata_updates_only_config_fields(tmp_path):
     assert Plan.load(tmp_path / "plan").datasets["X"].metadata["xsec_source"] == {"generator": 1.9}
 
 
-def test_lo_dy_kfactor_from_measured_headers():
+def test_every_dy_sample_is_scaled_to_the_nnlo_reference():
     e_nlo = _entry("DYto2E-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 6685.0, flavours={"e": 1, "mu": 0, "tau": 0})
     mu_nlo = _entry("DYto2Mu-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 6658.0, flavours={"e": 0, "mu": 1, "tau": 0})
     e_lo = _entry("DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8", 5469.0, flavours={"e": 1, "mu": 0, "tau": 0})
     mu_lo = _entry("DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8", 5442.0, flavours={"e": 0, "mu": 1, "tau": 0})
     ht = _entry("DYto2L-4Jets_Bin-HT-400to800-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8", 0.1733, flavours={"e": 1, "mu": 1, "tau": 1})
     low = _entry("DYto2E-4Jets_Bin-MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8", 17190.0, flavours={"e": 1, "mu": 0, "tau": 0})
-    r = {"a": e_nlo, "b": mu_nlo, "c": e_lo, "d": mu_lo, "e": ht, "f": low}
-    k = (6685.0 + 6658.0) / (5469.0 + 5442.0)
-    assert gx.dy_lo_kfactor(r, "13p6TeV") is not None and gx.dy_lo_kfactor(r, "13p6TeV")[0] == pytest.approx(k)
-    assert gx.dy_lo_kfactor(r, "13TeV") is None
+    jets = _entry("DYto2E-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 1000.0, flavours={"e": 1, "mu": 0, "tau": 0})
+    pw50 = _entry("DYto2E_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8", 2219.0, flavours={"e": 1, "mu": 0, "tau": 0})
+    pw120 = _entry("DYto2E_Bin-MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8", 21.65, flavours={"e": 1, "mu": 0, "tau": 0})
+    pwlow = _entry("DYto2E_Bin-MLL-10to50_TuneCP5_13p6TeV_powheg-pythia8", 6000.0, flavours={"e": 1, "mu": 0, "tau": 0})
+    r = {"a": e_nlo, "b": mu_nlo, "c": e_lo, "d": mu_lo, "e": ht, "f": low, "g": jets, "h": pw50, "i": pw120, "j": pwlow}
+    ref = gx.DY_REFERENCES["13p6TeV"][0]
+    assert ref == pytest.approx(3 * 2113.4)                                  # MATRIX NNLO QCD, per flavour x 3
+    k_lo = ref / ((5469.0 + 5442.0) / 2)
+    k_nlo = ref / ((6685.0 + 6658.0) / 2)
+    k_pw = ref / 3 / (2219.0 + 21.65)
+    assert gx.dy_kfactor(r, "13p6TeV", None, "madgraphmlm")[0] == pytest.approx(k_lo)
+    assert gx.dy_kfactor(r, "13TeV", None, "madgraphmlm") is None            # no 13 TeV headers here
     d = gx.classify(e_lo, r)
-    assert d["factor"] == pytest.approx(1 / 3) and d["kfactor"] == pytest.approx(k)
-    assert gx.proposed_xsec(e_lo, d, "reference") == pytest.approx(5469.0 / 3 * k)
+    assert d["factor"] == pytest.approx(1 / 3) and d["kfactor"] == pytest.approx(k_lo) and d["reference"] == ref
+    assert d["reference_source"].startswith("LO x k(NNLO): NNLO QCD, MATRIX v2.1.0")
+    assert "MATRIXCrossSectionsat13p6TeV" in d["reference_source"]        # the source is cited in the config
+    assert gx.proposed_xsec(e_lo, d, "reference") == pytest.approx(5469.0 / 3 * k_lo)
     assert gx.proposed_xsec(e_lo, d, "generator") == pytest.approx(5469.0 / 3)
-    d = gx.classify(ht, r)
-    assert d["factor"] == 1.0 and d["kfactor"] == pytest.approx(k)     # three-flavour LO: k only
-    assert gx.classify(low, r)["kfactor"] == pytest.approx(k)          # low-mass companion: same flat k
-    assert gx.classify(e_nlo, r)["kfactor"] == 1.0                      # NLO samples keep the generator value
-    alone = gx.classify(e_lo, {"c": e_lo})
-    assert alone.get("undecided_k") and alone["kfactor"] == 1.0
+    assert gx.classify(ht, r)["kfactor"] == pytest.approx(k_lo)             # three-flavour LO bin: same flat k
+    assert gx.classify(low, r)["kfactor"] == pytest.approx(k_lo)            # low-mass companion: same flat k
+    d = gx.classify(e_nlo, r)
+    assert d["kfactor"] == pytest.approx(k_nlo) and d["reference_source"].startswith("NLO x k(NNLO): NNLO QCD, MATRIX")
+    assert gx.proposed_xsec(e_nlo, d, "reference") == pytest.approx(6685.0 / 3 * k_nlo)
+    assert gx.classify(jets, r)["kfactor"] == pytest.approx(k_nlo)          # FxFX jet bin: the FxFX k
+    d = gx.classify(pw50, r)
+    assert d["factor"] == 1.0 and d["kfactor"] == pytest.approx(k_pw) and d["reference"] == pytest.approx(2113.4)
+    assert "POWHEG DYto2E mass bins" in d["reference_source"]
+    assert gx.classify(pwlow, r)["kfactor"] == pytest.approx(k_pw)          # low-mass POWHEG: same flat k
+    assert gx.classify(e_lo, {"c": e_lo})["kfactor"] == pytest.approx(ref / 5469.0)   # its own header is the LO inclusive one
+    alone = gx.classify(ht, {"e": ht})
+    assert alone.get("undecided_k") and alone["kfactor"] == 1.0            # no inclusive LO header in its era
+
+
+def test_ul18_dy_uses_the_13tev_nnlo_reference():
+    three = {"e": 1, "mu": 1, "tau": 1}
+
+    def e(prim, gen):
+        x = _entry(prim, gen, energy="13TeV", flavours=three); x["era"] = "RunIISummer20UL18"; return x
+    lo = e("DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8", 5350.0)
+    nlo = e("DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8", 6415.0)
+    ht = e("DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8", 5.174)
+    mll = e("DYJetsToLL_M-100to200_TuneCP5_13TeV-amcatnloFXFX-pythia8", 247.8)
+    r = {"l": lo, "n": nlo, "h": ht, "m": mll}
+    assert gx.DY_REFERENCES["13TeV"][0] == 6077.22                           # FEWZ NNLO, the Run 2 number
+    assert gx.classify(ht, r)["kfactor"] == pytest.approx(6077.22 / 5350.0)
+    assert gx.proposed_xsec(lo, gx.classify(lo, r), "reference") == pytest.approx(6077.22)
+    assert gx.classify(mll, r)["kfactor"] == pytest.approx(6077.22 / 6415.0)
+    assert "StandardModelCrossSectionsat13TeV" in gx.classify(ht, r)["reference_source"]
 
 
 def test_unique_samples_skips_scan_and_data(tmp_path):
@@ -188,9 +304,13 @@ def test_siblings_and_lo_kfactor_stay_within_an_era():
     r = {"a": a24, "b": b23}
     assert gx.sibling_headers(a24, r) == []           # a 2023 sibling does not vouch for a 2024 header
     nlo = e("DYto2E-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 6685.0, "RunIII2024Summer24", flavours={"e": 1, "mu": 0, "tau": 0})
-    lo = e("DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8", 5469.0, "Run3Summer23", flavours={"e": 1, "mu": 0, "tau": 0})
-    assert gx.dy_lo_kfactor({"n": nlo, "l": lo}, "13p6TeV", "Run3Summer23") is None
-    assert gx.classify(lo, {"n": nlo, "l": lo}).get("undecided_k")
+    lo = e("DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8", 5469.0, "RunIII2024Summer24", flavours={"e": 1, "mu": 0, "tau": 0})
+    ht23 = e("DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8", 316.0, "Run3Summer23", flavours={"e": 1, "mu": 1, "tau": 1})
+    pt23 = e("DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 100.0, "Run3Summer23", flavours={"e": 1, "mu": 1, "tau": 1})
+    r = {"n": nlo, "l": lo, "h": ht23, "p": pt23}
+    assert gx.dy_kfactor(r, "13p6TeV", "Run3Summer23", "madgraphmlm") is None   # a 2024 header does not vouch for 2023
+    assert gx.classify(ht23, r).get("undecided_k") and gx.classify(pt23, r).get("undecided_k")
+    assert not gx.classify(lo, r).get("undecided_k") and not gx.classify(nlo, r).get("undecided_k")
 
 
 def test_parse_genxsec_output():
@@ -262,7 +382,108 @@ def test_lo_kfactor_with_2023_style_names():
     jet1 = e("DYto2L-4Jets_MLL-50_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8", 900.0, three)        # not inclusive
     pt = e("DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", 100.0, three)    # not inclusive
     r = {"n": nlo, "l": lo, "h": ht, "j": jet1, "p": pt}
-    k = gx.dy_lo_kfactor(r, "13p6TeV", "Run3Summer23")
-    assert k is not None and k[0] == pytest.approx(6736.0 / 5435.0)
+    ref = gx.DY_REFERENCES["13p6TeV"][0]
+    k = gx.dy_kfactor(r, "13p6TeV", "Run3Summer23", "madgraphmlm")
+    assert k is not None and k[0] == pytest.approx(ref / 5435.0)
     d = gx.classify(ht, r)
-    assert d["factor"] == 1.0 and d["kfactor"] == pytest.approx(6736.0 / 5435.0) and not d.get("undecided_k")
+    assert d["factor"] == 1.0 and d["kfactor"] == pytest.approx(ref / 5435.0) and not d.get("undecided_k")
+    assert gx.classify(jet1, r)["kfactor"] == pytest.approx(ref / 5435.0)      # LO jet bin: the LO k
+    assert gx.classify(pt, r)["kfactor"] == pytest.approx(ref / 6736.0)        # FxFX pT bin: the FxFX k
+    assert gx.classify(nlo, r)["kfactor"] == pytest.approx(ref / 6736.0)
+
+
+# ---------------------------------------------------------------------------
+# "order" key: perturbative order of the cross section a config entry uses
+# ---------------------------------------------------------------------------
+
+def _src(**kw):
+    base = {"generator": 1.0, "factor": 1.0, "kfactor": 1.0, "reference": None, "reference_source": "",
+            "normalize": "reference", "tool": "GenXSecAnalyzer"}
+    base.update(kw)
+    return base
+
+
+@pytest.mark.parametrize("primary, src, expected", [
+    ("TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
+     _src(generator=762.1, factor=0.106146, kfactor=1.21191, reference=923.6,
+          reference_source="NNLO+NNLL, TOP twiki TtbarNNLO, mt = 172.5 GeV"), "NNLO+NNLL"),
+    ("TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8",
+     _src(kfactor=1.22, reference=43.95, reference_source="approx. NNLO per charge (87.9 pb for both), TOP twiki"), "NLO+NNLL"),
+    ("TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8",
+     _src(kfactor=1.224, reference=145.0, reference_source="NNLO 5FS, TOP twiki SingleTopNNLORef"), "NNLO"),
+    ("ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8",      # the order named later in the text
+     _src(kfactor=0.947381, reference=10.32, reference_source="top + antitop: NLO, TOP twiki SingleTopRefXsec"), "NLO"),
+    ("DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+     _src(kfactor=1.24, reference=6769.0, reference_source="NLO FxFX inclusive three-flavour header / LO MLM inclusive header"),
+     "LO x k(NLO)"),
+    ("DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+     _src(kfactor=1.1666, reference=6340.2, reference_source="LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- ... / LO MLM inclusive header"),
+     "LO x k(NNLO)"),
+    ("DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8",
+     _src(kfactor=0.9412, reference=6340.2, reference_source="NLO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- ... / NLO FxFX inclusive header"),
+     "NLO x k(NNLO)"),
+    ("DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8",
+     _src(kfactor=0.9418, reference=2113.4, reference_source="NLO x k(NNLO): NNLO QCD, MATRIX v2.1.0 ... / sum of the POWHEG DYto2E mass bins"),
+     "NLO x k(NNLO)"),
+    ("DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8", _src(), "NLO"),
+    ("DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8", _src(), "NLO"),
+    ("WW_TuneCP5_13p6TeV_pythia8", _src(), "LO"),
+    ("WtoLNu-4Jets_MLNu-0to120_HT-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8", _src(), "LO"),
+    ("WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8", {"status": "not measured"}, "LO"),
+])
+def test_order_from_the_xsec_source_record(primary, src, expected):
+    das = f"/{primary}/Era-v1/NANOAODSIM"
+    assert gx.xsec_order(das, {"xsec": 1.0, "xsec_source": src, "datatype": "mc"}) == expected
+
+
+@pytest.mark.parametrize("primary, expected", [
+    ("DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8", "NNLO"),
+    ("DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8", "LO"),
+    ("WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8", "LO x k(NNLO)"),
+    ("TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8", "NNLO+NNLL"),
+    ("ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8", "NLO+NNLL"),
+    ("WW_TuneCP5_13TeV-pythia8", "NNLO"),
+    ("WZ_TuneCP5_13TeV-pythia8", "NLO"),
+    ("WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8", "LO x k(NLO)"),
+])
+def test_order_of_run2_ul_values_without_a_source_record(primary, expected):
+    assert gx.xsec_order(f"/{primary}/UL-v1/NANOAODSIM", {"xsec": 1.0, "datatype": "mc"}) == expected
+
+
+def test_entries_without_a_value_are_unknown():
+    assert gx.xsec_order("/DYJetsToLL_M-100to200_TuneCP5_13TeV-amcatnloFXFX-pythia8/UL-v1/NANOAODSIM",
+                         {"xsec": None, "datatype": "mc"}) == "unknown"
+
+
+def test_order_is_placed_right_after_xsec_and_replaced_in_place():
+    meta = {"dataset": "X", "xsec": 2.0, "total_uncertainty": 0.1, "order": "LO", "genEventSumw": 5.0}
+    out = gx.with_order(meta, "NLO")
+    assert list(out) == ["dataset", "xsec", "order", "total_uncertainty", "genEventSumw"]
+    assert out["order"] == "NLO" and meta["order"] == "LO"
+
+
+def test_every_order_label_is_in_the_vocabulary():
+    labels = {o for _, o in gx.UL_ORDER_RULES} | {"unknown"}
+    assert labels <= set(gx.ORDERS)
+
+
+@pytest.mark.parametrize("primary, gen, ref", [
+    ("WW_TuneCP5_13p6TeV_pythia8", 80.18, 125.8),
+    ("WZ_TuneCP5_13p6TeV_pythia8", 29.18, 54.7),
+    ("ZZ_TuneCP5_13p6TeV_pythia8", 12.78, 16.7),
+])
+def test_inclusive_dibosons_are_scaled_to_the_nnlo_reference(primary, gen, ref):
+    entry = {"primary": primary, "energy": "13p6TeV", "xsec_gen": gen, "content": {"has_lhe": False}}
+    d = gx.classify(entry, {})
+    assert d["factor"] == 1.0 and d["reference"] == ref
+    assert gx.proposed_xsec(entry, d, "reference") == pytest.approx(ref)
+    src = {"generator": gen, "factor": 1.0, "kfactor": d["kfactor"], "reference": ref,
+           "reference_source": d["reference_source"], "normalize": "reference"}
+    assert gx.xsec_order(f"/{primary}/X/NANOAODSIM", {"xsec": ref, "xsec_source": src}) == "NNLO"
+
+
+@pytest.mark.parametrize("primary", ["WWW_4F_TuneCP5_13p6TeV_amcatnlo-pythia8", "WZZ_TuneCP5_13p6TeV_amcatnlo-pythia8",
+                                     "ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8", "WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8"])
+def test_tribosons_get_no_diboson_reference(primary):
+    assert gx.process_of(primary) == (None, "")
+    assert gx.reference_for(primary, "13p6TeV") is None

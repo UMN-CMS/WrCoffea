@@ -48,6 +48,7 @@ from wrcoffea.skim.plan import load_config_entries, ERA_SUBDIRS
 # Release and container image per MiniAOD campaign prefix.
 RELEASES = [
     ("RunIII2024Summer24MiniAODv6", "CMSSW_15_0_21", "el9"),
+    ("Run3Winter24MiniAOD", "CMSSW_14_0_9", "el8"),        # 133X; only used for the inclusive LO W+jets reference sample
     ("Run3Summer22MiniAODv4", "CMSSW_13_0_13", "el8"),
     ("Run3Summer22EEMiniAODv4", "CMSSW_13_0_13", "el8"),
     ("Run3Summer23MiniAODv4", "CMSSW_13_0_13", "el8"),
@@ -60,7 +61,8 @@ IMAGES = {"el9": "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el9:x86_
 
 # PDG branching fractions used for the proposed factors (W -> l nu with l = e, mu, tau).
 BR_W_LNU = 0.3258   # PDG 2024 lepton-universality fit (3 x 0.1086); the sum of the three measured values is 0.3272
-BR = {"2L2Nu": BR_W_LNU ** 2, "LNu2Q": 2 * BR_W_LNU * (1 - BR_W_LNU), "4Q": (1 - BR_W_LNU) ** 2, "LNu": BR_W_LNU, "2Q": 1 - BR_W_LNU}
+BR = {"2L2Nu": BR_W_LNU ** 2, "LNu2Q": 2 * BR_W_LNU * (1 - BR_W_LNU), "4Q": (1 - BR_W_LNU) ** 2, "LNu": BR_W_LNU, "2Q": 1 - BR_W_LNU,
+      "NoFullHad": 1 - (1 - BR_W_LNU) ** 2}   # 2L2Nu + LNu2Q, e.g. UL ST_tW_*_NoFullyHadronicDecays
 
 # Inclusive reference cross sections [pb] per centre-of-mass energy.  Two uses:
 # (1) evidence for whether a generator header is inclusive (POWHEG hvq / ST_wtch print the undecayed
@@ -70,15 +72,114 @@ BR = {"2L2Nu": BR_W_LNU ** 2, "LNu2Q": 2 * BR_W_LNU * (1 - BR_W_LNU), "4Q": (1 -
 REFERENCES = {
     "ttbar": {"13p6TeV": (923.6, "NNLO+NNLL, TOP twiki TtbarNNLO, mt = 172.5 GeV"),
               "13TeV": (833.9, "NNLO+NNLL, TOP twiki TtbarNNLO, mt = 172.5 GeV")},
-    "tW": {"13p6TeV": (43.95, "approx. NNLO per charge (87.9 pb for both), TOP twiki SingleTopNNLORef"),
+    "tW": {"13p6TeV": (43.95, "approx. NNLO = NLO+NNLL soft-gluon resummation, per charge (87.9 pb for both), TOP twiki SingleTopNNLORef"),
            "13TeV": (35.85, "NLO+NNLL per charge (71.7 pb for both), TOP twiki SingleTopRefXsec")},
+    # t-channel NNLO: MCFM, 5FS, PDF4LHC21, mt = 172.5 GeV (Campbell, Neumann, Sullivan, JHEP 02 (2021) 040,
+    # arXiv:2012.01574), as tabulated on the TOP twiki SingleTopNNLORef.
     "t-channel_top": {"13p6TeV": (145.0, "NNLO 5FS, TOP twiki SingleTopNNLORef"),
-                      "13TeV": (136.02, "NLO 5FS, TOP twiki SingleTopRefXsec")},
+                      "13TeV": (134.2, "NNLO 5FS, TOP twiki SingleTopNNLORef (arXiv:2012.01574)")},
     "t-channel_antitop": {"13p6TeV": (87.2, "NNLO 5FS, TOP twiki SingleTopNNLORef"),
-                          "13TeV": (80.95, "NLO 5FS, TOP twiki SingleTopRefXsec")},
+                          "13TeV": (80.0, "NNLO 5FS, TOP twiki SingleTopNNLORef (arXiv:2012.01574)")},
+    # Inclusive diboson production (all decays, as in the pure-Pythia samples), from the NNLO predictions
+    # quoted by the first 13.6 TeV measurements and by the CMS 13 TeV ones (each agrees with its measurement).
+    "WW": {"13p6TeV": (125.8, "NNLO QCD x NLO EW, MATRIX v2.1.0, incl. gg->WW x 1.4, NNPDF3.0 "
+                               "(CMS, arXiv:2406.05101; measured 125.7 +- 5.6 pb)"),
+           "13TeV": (118.8, "NNLO QCD for qq (arXiv:1408.5243) incl. gg->WW x 1.4, NLO EW -1.2 % on qq "
+                             "(CMS, arXiv:2009.00119; measured 117.6 +- 6.8 pb)")},
+    "WZ": {"13p6TeV": (54.7, "NNLO QCD x NLO EW, MATRIX, W+Z + W-Z with 60 < m(Z) < 120 GeV "
+                              "(CMS, arXiv:2412.02477; NLO QCD 50.4, NNLO QCD 55.0; measured 55.2 +- 1.9 pb)"),
+           "13TeV": (50.7, "NNLO QCD x NLO EW, MATRIX v2.0.0, W+Z + W-Z with 60 < m(Z) < 120 GeV, NNPDF3.1 luxqed "
+                            "(CMS, arXiv:2110.11231 Table 6; NNLO QCD 51.2; measured 50.6 +- 2.1 pb)")},
+    "ZZ": {"13p6TeV": (16.7, "NNLO QCD + NLO EW for qq, NLO QCD for gg->ZZ, MATRIX, 66 < m(Z) < 116 GeV, NNPDF3.0 "
+                              "(ATLAS, arXiv:2311.09715; measured 16.8 +- 1.1 pb)"),
+           "13TeV": (16.5, "NNLO QCD x NLO EW for qq, NLO QCD for gg->ZZ, MATRIX v2.0.0, 60 < m(Z) < 120 GeV, "
+                            "NNPDF3.1 luxqed (CMS, arXiv:2009.01186 Sec. 8; measured 17.4 +- 0.8 pb)")},
     "s-channel_top": {"13TeV": (6.35, "NLO, TOP twiki SingleTopRefXsec")},
     "s-channel_antitop": {"13TeV": (3.97, "NLO, TOP twiki SingleTopRefXsec")},
 }
+# Inclusive Drell-Yan (Z/gamma* -> ll, m(ll) > 50 GeV, three flavours) at NNLO [pb]: the normalisation of EVERY DY
+# sample, LO and NLO (decided 2026-10-10).  A sample is scaled by k = reference / inclusive header of its own generator
+# class in its own era (LO MLM, NLO FxFX, or the sum of the POWHEG per-flavour mass bins), so all DY variants share
+# one total and k stays flat; the Z-pT reweight and the jet-pT reshape correct the shapes.  The 13.6 TeV value is the
+# MATRIX NNLO QCD row (not the NNLO QCD x NLO EW one, 2091.7 pb); the 13 TeV value is the FEWZ NNLO number every CMS
+# Run 2 analysis used.
+DY_REFERENCES = {
+    "13p6TeV": (6340.2, "NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour "
+                        "(+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV "
+                        "r12 (2023-10-25, L. Markovic, R. Covarelli), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf"),
+    "13TeV": (6077.22, "NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for "
+                       "three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as "
+                       "docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf"),
+}
+
+# LO madgraphMLM W+jets: a flat k = 1.21 (inclusive NNLO / LO), the Run 2 HNWR convention for the HT-binned samples
+# (AN-19-083 Tables 6-8; SKFlat CommonSampleInfo: 2016 LO x 1.21), applied in every era (decided 2026-10-08).
+# Source: the k-factor column of the SummaryTable1G25ns twiki (docs/xsec/CMS_SummaryTable1G25ns.pdf): 1.21 on every
+# HT-binned W+jets row, 1.23 on the HT-binned DY rows.
+WJETS_LO_KFACTOR = (1.21, "LO x k(NNLO) = 1.21, Run 2 convention for LO MLM W+jets (inclusive NNLO / LO; "
+                          "AN-19-083 Tables 6-8)")      # superseded 2026-10-10 by W_REFERENCES (kept for the record)
+
+# Inclusive W -> l nu at NNLO, three flavours [pb]: the normalisation of the LO MLM W+jets samples (decided 2026-10-10,
+# replacing the flat Run 2 factor 1.21): k = reference / inclusive LO MLM W+jets header of the same era (the
+# `WtoLNu-4Jets` / `WJetsToLNu` inclusive sample, kept in the configs as an optional, unskimmed reference entry), the
+# same construction as for DY.  The 1.21 was this ratio with the 2015 LO header (61526.7 / 50690).
+W_REFERENCES = {
+    "13p6TeV": (63650.1, "NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour "
+                         "21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki "
+                         "MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf"),
+    "13TeV": (61526.7, "NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki "
+                       "StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf"),
+}
+
+# Official WR signal in an era with a signal k-factor payload (config.yaml ``signal_kfactor``): LO x <k>, the Run 2
+# convention (AN-19-083 Table 23).  <k> is the payload's per-point, per-channel average of k(m_lN), the same number
+# the analyzer divides by in its k(m_lN) / <k> shape weight, so the normalisation is exactly LO x <k>.
+OFFICIAL_SIGNAL_RE = re.compile(r"^WRtoN(El|Mu)to(?:El|Mu){2}JJ_MWR(\d+)_N(\d+)_")
+REPO = Path(__file__).resolve().parent.parent
+# UL campaigns share the 13 TeV signal gridpacks: a point unmeasured in one of them (MiniAOD on tape) takes the
+# value measured on the same primary dataset in another.
+UL_ERAS = ("RunIISummer20UL16APV", "RunIISummer20UL16", "RunIISummer20UL17", "RunIISummer20UL18")
+RUN3_ERAS = ("Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix")
+CAMPAIGN_FAMILIES = (UL_ERAS, RUN3_ERAS)      # eras that share one set of signal gridpacks: donors for unmeasured points
+
+
+def campaign_family(era: str | None) -> tuple[str, ...] | None:
+    return next((f for f in CAMPAIGN_FAMILIES if era in f), None)
+
+
+SIGNAL_NORM = "direct"      # "direct": sigma_NLO / sigma_LO(sample) of the point (payload direct_k, docs/signal_kfactor.md
+                            # option 2, decided 2026-10-10); "average": LO x <k> of the shared curve (Run 2)
+SIGNAL_PAYLOAD = None       # --signal-payload: a payload used for every era instead of config.yaml's (dry runs before the
+                            # config change)
+
+
+def signal_average_k(era: str | None, primary: str, payload_path: str | None = None) -> tuple[float, str] | None:
+    """(k, description) for an official WR signal sample in *era*, or None (no payload / not official signal):
+    the payload's <k> of the point and channel (SIGNAL_NORM "average", the Run 2 LO x <k> convention) or its
+    direct per-point sigma_NLO / sigma_LO ("direct"; docs/signal_kfactor.md)."""
+    m = OFFICIAL_SIGNAL_RE.match(primary)
+    if not m or not era:
+        return None
+    if payload_path is None and SIGNAL_PAYLOAD:
+        payload_path = SIGNAL_PAYLOAD
+    if payload_path is None:
+        import yaml
+        paths = (yaml.safe_load((REPO / "wrcoffea" / "config.yaml").read_text()).get("signal_kfactor") or {})
+        payload_path = paths.get(era)
+        if not payload_path:
+            return None
+    path = payload_path
+    payload = json.loads((REPO / path).read_text() if not Path(path).is_absolute() else Path(path).read_text())
+    name = f"WR{m.group(2)}_N{m.group(3)}"
+    if SIGNAL_NORM == "direct":
+        point = (payload.get("direct_k") or {}).get(name)
+        if point is None or "k" not in point:
+            raise KeyError(f"{primary}: no direct k for {name} in {path}")
+        return float(point["k"]), f"{path} direct_k ({point.get('source', 'direct')})"
+    point = payload["averages"].get(name)
+    if point is None:
+        raise KeyError(f"{primary}: no <k> for {name} in {path}")
+    return float(point["ee" if m.group(1) == "El" else "mm"]), path
 # Decay-channel tokens that distinguish sibling samples of one process (same header if it is inclusive).
 CHANNEL_TOKENS = {"2L2Nu": "2L2Nu", "LNu2Q": "LNu2Q", "4Q": "4Q"}
 
@@ -363,6 +464,10 @@ def process_of(prim: str) -> tuple[str | None, str]:
         if "_antitop_" in p or p.startswith("tbarbq"):
             return "t-channel", "antitop"
         return "t-channel", "both"
+    import re
+    m = re.match(r"(ww|wz|zz)_tune", p)          # inclusive dibosons only, not WWW/WWZ/WZZ/ZZZ
+    if m:
+        return m.group(1).upper(), "both"
     if "s-channel" in p:
         if p.startswith("tbbarto"):
             return "s-channel", "top"
@@ -376,7 +481,7 @@ def reference_for(prim: str, energy: str) -> tuple[float, str] | None:
     proc, charge = process_of(prim)
     if proc is None:
         return None
-    if proc in ("ttbar", "tW"):
+    if proc in ("ttbar", "tW", "WW", "WZ", "ZZ"):
         return REFERENCES[proc].get(energy)
     if charge == "both":
         top = REFERENCES.get(f"{proc}_top", {}).get(energy)
@@ -388,13 +493,18 @@ def reference_for(prim: str, energy: str) -> tuple[float, str] | None:
 
 
 def restricted_channel(content: dict) -> tuple[str | None, float]:
-    """The decay channel every event falls into (> 97 %), as a BR key, else None."""
+    """The decay channel every event falls into (> 97 %), as a BR key, else None.
+
+    Two-W samples whose fully hadronic decays were removed (> 97 % of the events have at least one
+    leptonic W, both other channels populated) return "NoFullHad"."""
     wf = content.get("w_decay_fractions") or {}
     mean = content.get("w_decays_mean", 0.0) or 0.0
     if wf and mean >= 1.5:
         for ch, key in (("2L2Nu", "2_leptonic_W"), ("LNu2Q", "1_leptonic_W"), ("4Q", "0_leptonic_W")):
             if wf.get(key, 0) > 0.97:
                 return ch, mean
+        if wf.get("1_leptonic_W", 0) + wf.get("2_leptonic_W", 0) > 0.97:
+            return "NoFullHad", mean
     elif wf and 0.5 <= mean < 1.5:
         if wf.get("1_leptonic_W", 0) > 0.97:
             return "LNu", mean
@@ -454,20 +564,44 @@ def classify(entry: dict, results: dict | None = None) -> dict:
                            factor_reason="MG5_aMC header is the three-flavour cross section although the events "
                                          "hold one flavour (DYto2E-2Jets_MLL-50 header 6685 pb = three-flavour "
                                          "NLO 6688 pb; powheg per-flavour bins sum to 2244 pb)")
-        if "madgraphmlm" in low:
-            # LO sample: scale to the NLO inclusive value measured at the same energy (explicit, flat k-factor,
-            # the Run 2 convention of LO x k), so every DY variant carries the same normalisation.
-            k = dy_lo_kfactor(results, energy, entry.get("era"))
-            if k is None:
-                out.update(factor_reason=out["factor_reason"] + "; LO sample but no NLO and LO inclusive headers "
-                                                                 "measured at this energy: k-factor left at 1 (CHECK)",
-                           header=out["header"] + " (LO, k undecided)")
-                out["undecided_k"] = True
-            else:
-                nlo = _dy_inclusive_headers(results, energy, "amcatnlo", entry.get("era"))
-                out.update(kfactor=k[0], reference=sum(x for _, x in nlo) / len(nlo),
-                           reference_source="NLO FxFX inclusive three-flavour header at this energy (GenXSec)",
-                           evidence=f"LO -> NLO k-factor {k[0]:.4f} = {k[1]}")
+        # Every DY sample, LO and NLO, is scaled to the inclusive NNLO reference of its energy (DY_REFERENCES) by
+        # k = reference / inclusive header of its own generator class in its own era (flat k, decided 2026-10-10).
+        gen_class = ("madgraphmlm" if "madgraphmlm" in low else "powheg" if "powheg" in low
+                     else "amcatnlo" if "amcatnlo" in low else None)
+        k = dy_kfactor(results, energy, entry.get("era"), gen_class, present[0] if len(present) == 1 else None)
+        if k is None:
+            out.update(factor_reason=out["factor_reason"] + "; no NNLO DY reference at this energy or no inclusive "
+                                                             "header of this generator class measured in this era: "
+                                                             "k-factor left at 1 (CHECK)")
+            out["undecided_k"] = True
+        else:
+            out.update(kfactor=k[0], reference=k[1], reference_source=k[2], evidence=k[3])
+        return out
+    # --- official WR signal: LO header x <k> where the era has a signal k-factor payload
+    avg_k = signal_average_k(entry.get("era"), prim)
+    if avg_k is not None:
+        out.update(header="includes decay",
+                   factor_reason="MG5_aMC generates the full WR -> l N -> l l q q chain; the header is the "
+                                 "cross section of the sample",
+                   kfactor=avg_k[0], reference=gen * avg_k[0],
+                   reference_source=(f"LO x k(NLO): {'direct per-point sigma_NLO / sigma_LO' if SIGNAL_NORM == 'direct' else 'averaged signal k-factor <k>'}"
+                                     f" = {avg_k[0]:.5f} (AN-19-083 App. A method; {avg_k[1]})"),
+                   evidence=f"<k> {avg_k[0]:.5f}")
+        return out
+    # --- LO MLM W+jets: the header includes W -> l nu; scaled to the inclusive NNLO W cross section of the energy by
+    #     k = reference / inclusive LO MLM header of the era (W_REFERENCES), like DY
+    if re.match(r"(wjetstolnu|wtolnu-\djets)", low) and "madgraphmlm" in low:
+        out.update(header="includes decay",
+                   factor_reason="MG5_aMC generates W -> l nu in the matrix element, so the header includes the "
+                                 "branching fraction")
+        k = w_kfactor(results, energy, entry.get("era"))
+        if k is None:
+            out.update(factor_reason=out["factor_reason"] + "; no NNLO W reference at this energy or no inclusive LO "
+                                                             "MLM W+jets header measured in this era: k-factor left at 1 "
+                                                             "(CHECK)")
+            out["undecided_k"] = True
+        else:
+            out.update(kfactor=k[0], reference=k[1], reference_source=k[2], evidence=k[3])
         return out
     # --- restricted W decays: is the header inclusive or does it already include the branching fraction?
     channel, _ = restricted_channel(c)
@@ -536,18 +670,77 @@ def _dy_inclusive_headers(results: dict, energy: str, generator: str, era: str |
     return out
 
 
-def dy_lo_kfactor(results: dict | None, energy: str, era: str | None = None) -> tuple[float, str] | None:
-    """NLO / LO inclusive DY header ratio at *energy* in *era* (both MG5, both three-flavour headers), with its evidence."""
-    if not results:
+def _dy_powheg_mass_bins(results: dict, energy: str, era: str | None, flavour: str) -> list[tuple[str, float]]:
+    """POWHEG DYto2<flavour> mass bins with m(ll) > 50 GeV at *energy* in *era* ("E"/"Mu"); their sum is the
+    per-flavour inclusive cross section of that generator (the low-mass 10to50 bin is left out)."""
+    return sorted((e["primary"], e["xsec_gen"]) for e in results.values()
+                  if e.get("energy") == energy and e.get("era") == era and e.get("xsec_gen") is not None
+                  and "powheg" in e["primary"].lower()
+                  and re.match(rf"dyto2{flavour.lower()}_(bin-)?mll-", e["primary"].lower())
+                  and "10to50" not in e["primary"])
+
+
+def _w_inclusive_headers(results: dict, energy: str, era: str | None) -> list[tuple[str, float]]:
+    """Inclusive LO MLM W+jets headers (``WtoLNu-4Jets_Tune...`` / ``WJetsToLNu_Tune...``, not HT-, jet- or
+    m(l nu)-binned) at *energy* in *era*."""
+    out = []
+    for e in results.values():
+        if e.get("energy") != energy or e.get("xsec_gen") is None or e.get("era") != era:
+            continue
+        low = e["primary"].lower()
+        if "madgraphmlm" in low and re.match(r"(wtolnu-\djets|wjetstolnu)_tune", low):
+            out.append((e["primary"], e["xsec_gen"]))
+    return out
+
+
+def w_kfactor(results: dict | None, energy: str, era: str | None) -> tuple[float, float, str, str] | None:
+    """(k, reference, reference_source, evidence) scaling a LO MLM W+jets sample to the inclusive NNLO W cross
+    section of *energy*: k = reference / inclusive LO MLM header of *era*.  None when either is missing."""
+    ref = W_REFERENCES.get(energy)
+    if not results or ref is None:
         return None
-    nlo = _dy_inclusive_headers(results, energy, "amcatnlo", era)
-    lo = _dy_inclusive_headers(results, energy, "madgraphmlm", era)
-    if not nlo or not lo:
+    heads = _w_inclusive_headers(results, energy, era)
+    if not heads:
         return None
-    k = (sum(x for _, x in nlo) / len(nlo)) / (sum(x for _, x in lo) / len(lo))
-    ev = (f"NLO FxFX inclusive header {', '.join(f'{n.split(chr(95))[0]} {x:.5g}' for n, x in nlo)} / "
-          f"LO MLM inclusive header {', '.join(f'{n.split(chr(95))[0]} {x:.5g}' for n, x in lo)}")
-    return k, ev
+    incl = sum(x for _, x in heads) / len(heads)
+    k = ref[0] / incl
+    src = f"LO x k(NNLO): {ref[1]}; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)"
+    ev = (f"NNLO / LO MLM k-factor {k:.4f} = {ref[0]} / {incl:.1f} (LO MLM inclusive header "
+          + ", ".join(f"{n.split(chr(95))[0]} {x:.5g}" for n, x in heads) + ")")
+    return k, ref[0], src, ev
+
+
+def dy_kfactor(results: dict | None, energy: str, era: str | None, generator: str | None,
+               flavour: str | None = None) -> tuple[float, float, str, str] | None:
+    """(k, reference, reference_source, evidence) scaling a DY sample of *generator* class ("madgraphmlm",
+    "amcatnlo" or "powheg"; *flavour* "e"/"mu" for POWHEG) to the inclusive NNLO reference of *energy*:
+    k = reference / inclusive header of the same generator class in *era*.  None when either is missing."""
+    ref = DY_REFERENCES.get(energy)
+    if not results or ref is None or generator is None:
+        return None
+    if generator == "powheg":
+        fl = {"e": "E", "mu": "Mu"}.get(flavour or "")
+        bins = _dy_powheg_mass_bins(results, energy, era, fl) if fl else []
+        if not bins:
+            return None
+        tot = sum(x for _, x in bins)
+        per_flavour = round(ref[0] / 3, 4)
+        k = per_flavour / tot
+        src = (f"NLO x k(NNLO): {ref[1]}; k = per-flavour reference {per_flavour} pb / sum of the POWHEG DYto2{fl} "
+               f"mass bins with m(ll) > 50 GeV of this era (GenXSec)")
+        ev = (f"NNLO / POWHEG k-factor {k:.4f} = {per_flavour} / {tot:.1f} (sum of {len(bins)} bins: "
+              + ", ".join(f"{n.split('_Tune')[0].split('_')[-1]} {x:.5g}" for n, x in bins) + ")")
+        return k, per_flavour, src, ev
+    heads = _dy_inclusive_headers(results, energy, generator, era)
+    if not heads:
+        return None
+    incl = sum(x for _, x in heads) / len(heads)
+    k = ref[0] / incl
+    label, cls = ("LO x k(NNLO)", "LO MLM") if generator == "madgraphmlm" else ("NLO x k(NNLO)", "NLO FxFX")
+    src = f"{label}: {ref[1]}; k = reference / {cls} inclusive three-flavour header of this era (GenXSec)"
+    ev = (f"NNLO / {cls} k-factor {k:.4f} = {ref[0]} / {incl:.1f} ({cls} inclusive header "
+          + ", ".join(f"{n.split(chr(95))[0]} {x:.5g}" for n, x in heads) + ")")
+    return k, ref[0], src, ev
 
 
 def proposed_xsec(entry: dict, d: dict, normalize: str) -> float | None:
@@ -562,15 +755,14 @@ def dy_crosscheck(results: dict) -> list[str]:
     lines = []
     for energy, era in sorted({(e.get("energy"), e.get("era") or "") for e in results.values()}):
         for fl in ("E", "Mu"):
-            same = [e for e in results.values() if e.get("energy") == energy and (e.get("era") or "") == era
-                    and e.get("xsec_gen") is not None]
-            bins = [e for e in same if e["primary"].startswith(f"DYto2{fl}_Bin-MLL-") and "powheg" in e["primary"]
-                    and "10to50" not in e["primary"]]
-            fx = [e for e in same if e["primary"].startswith(f"DYto2{fl}-2Jets_Bin-MLL-50_")]
+            bins = _dy_powheg_mass_bins(results, energy, era or None, fl)
+            fx = [x for n, x in _dy_inclusive_headers(results, energy, "amcatnlo", era or None)
+                  if n.startswith(f"DYto2{fl}-") or n.startswith("DYto2L-")]
             if bins and fx:
-                tot = sum(e["xsec_gen"] for e in bins)
+                tot = sum(x for _, x in bins)
+                incl = sum(fx) / len(fx)
                 lines.append(f"- {era or energy} DYto2{fl}: sum of {len(bins)} POWHEG mass bins (M > 50 GeV) = {tot:.1f} pb; "
-                             f"FxFX MLL-50 header / 3 = {fx[0]['xsec_gen'] / 3:.1f} pb (ratio {tot / (fx[0]['xsec_gen'] / 3):.3f})")
+                             f"FxFX MLL-50 header / 3 = {incl / 3:.1f} pb (ratio {tot / (incl / 3):.3f})")
     return lines
 
 
@@ -639,19 +831,175 @@ def _sig(v: float, n: int = 5) -> float:
     return float(f"{v:.{n}g}")
 
 
+# ----------------------------------------------------------------------------
+# Perturbative order of the cross section a config entry actually uses ("order" key, right after "xsec")
+# ----------------------------------------------------------------------------
+
+# Vocabulary (documented in docs/dataset_configs.md):
+#   LO, NLO, NNLO                 the value is a generator or reference cross section at that order
+#   NLO+NNLL, NNLO+NNLL           fixed order plus resummation (tW "approximate NNLO"; ttbar)
+#   LO x k(NLO), LO x k(NNLO)     a LO generator value scaled by an inclusive NLO/LO or NNLO/LO k-factor
+#   NLO x k(NNLO)                 an NLO generator value scaled by an inclusive NNLO/NLO k-factor (DY)
+#   unknown                       no value, or a value whose provenance is not established
+ORDERS = ("LO", "NLO", "NNLO", "NLO+NNLL", "NNLO+NNLL", "LO x k(NLO)", "LO x k(NNLO)", "NLO x k(NNLO)", "unknown")
+
+# Run 2 UL entries whose committed values predate the GenXSecAnalyzer campaign (no xsec_source): the order of
+# each value as documented in docs/configs/run2_ul_dataset_report.md (source column) and AN-19-083 Tables 6-8.
+# First match wins; patterns are on the primary dataset name.
+UL_ORDER_RULES = [
+    (r"^DYJetsToLL_M-50_TuneCP5_13TeV-(madgraphMLM|amcatnloFXFX)", "NNLO"),   # 6077.22 pb, FEWZ NNLO
+    (r"^DYJetsToLL_M-10to50_TuneCP5_13TeV-(madgraphMLM|amcatnloFXFX)", "NLO"),  # 18610 / 20490 pb
+    (r"^DYJetsToLL_M-50_HT-", "LO"),                                          # XSDB bare LO
+    (r"^DY\dJetsToLL_", "LO"),                                                # cmsdb GenXSecAnalyzer, madgraphMLM
+    (r"^DYJetsToLL_(LHEFilterPtZ|[012]J)", "NLO"),                            # cmsdb GenXSecAnalyzer, amcatnloFXFX
+    (r"^WJetsToLNu_HT-", "LO x k(NNLO)"),                                     # 2016 LO x 1.21 (AN-19-083)
+    (r"^TTTo(2L2Nu|SemiLeptonic)_", "NNLO+NNLL"),                             # NNLO+NNLL x BR
+    (r"^ST_tW_", "NLO+NNLL"),                                                 # approx. NNLO x BR (AN: 19.20, NNLO)
+    (r"^ST_t-channel_", "NLO"),                                               # 136.02 / 80.95, 5FS NLO (Hathor)
+    (r"^ST_s-channel_", "NLO"),                                               # 3.36, NLO
+    (r"^WW_TuneCP5_13TeV-pythia8", "NNLO"),                                   # 118.7 pb, NNLO
+    (r"^(WZ|ZZ)_TuneCP5_13TeV-pythia8", "NLO"),                               # 47.13 / 16.523 pb, MCFM NLO
+    (r"^(WWW|WWZ|WZZ|ZZZ)_", "NLO"),                                          # amcatnlo XSDB values
+    (r"^tt[ZW]Jets_", "LO"),                                                  # XSDB LO, madgraphMLM
+    (r"^WRtoN", "LO x k(NLO)"),                                               # Run 2 AN signal: LO x <k>
+]
+
+
+def generator_order(primary: str) -> str:
+    """Order of a generator cross section, from the generator named in the dataset."""
+    p = primary.lower()
+    if "amcatnlo" in p or "fxfx" in p or "powheg" in p:
+        return "NLO"
+    if "madgraph" in p or "pythia" in p:
+        return "LO"
+    return "unknown"
+
+
+def order_from_source(primary: str, src: dict) -> str:
+    """Order of the value written by `apply`, from its xsec_source record."""
+    if src.get("status") == "not measured":
+        return generator_order(primary)      # the kept earlier value is the generator value
+    ref, k = src.get("reference"), src.get("kfactor") or 1.0
+    if src.get("normalize") == "reference" and ref and abs(k - 1.0) > 1e-9:
+        rs = (src.get("reference_source") or "").lower()
+        if rs.startswith("lo x k(nnlo)"):     # LO MLM W+jets x 1.21; LO MLM DY x NNLO / LO inclusive
+            return "LO x k(NNLO)"
+        if rs.startswith("nlo x k(nnlo)"):    # NLO DY (FxFX, POWHEG) x NNLO / NLO inclusive
+            return "NLO x k(NNLO)"
+        if rs.startswith("lo x k(nlo)"):      # official WR signal x the Run 2 averaged k-factor
+            return "LO x k(NLO)"
+        if rs.startswith("nnlo+nnll"):
+            return "NNLO+NNLL"
+        if "approx. nnlo" in rs or rs.startswith("nlo+nnll"):
+            return "NLO+NNLL"
+        if rs.startswith("nnlo"):
+            return "NNLO"
+        if "nlo fxfx inclusive" in rs:      # LO MLM DY scaled by the NLO FxFX / LO MLM inclusive ratio
+            return "LO x k(NLO)"
+        if rs.startswith("nlo"):
+            return "NLO"
+        named = re.search(r"\b(nnlo\+nnll|nlo\+nnll|nnlo|nlo)\b", rs)   # e.g. "top + antitop: NLO, TOP twiki ..."
+        if named:
+            return named.group(1).upper()
+        return "unknown"
+    return generator_order(primary)
+
+
+def xsec_order(das: str, meta: dict) -> str:
+    """The "order" key of an MC config entry."""
+    if meta.get("xsec") is None and not meta.get("scan"):
+        return "unknown"
+    primary = das.split("/")[1] if is_das_path(das) else das      # private samples are keyed by name
+    src = meta.get("xsec_source")
+    if isinstance(src, dict):
+        return order_from_source(primary, src)
+    import re
+    for pattern, order in UL_ORDER_RULES:
+        if re.search(pattern, primary):
+            return order
+    return "unknown"
+
+
+def with_order(meta: dict, order: str) -> dict:
+    """Copy of a config entry with "order" placed right after "xsec"."""
+    out = {}
+    for key, value in meta.items():
+        if key == "order":
+            continue
+        out[key] = value
+        if key == "xsec":
+            out["order"] = order
+    if "order" not in out:
+        out["order"] = order
+    return out
+
+
+def cmd_annotate_order(args) -> int:
+    """Write the "order" key of every MC entry of the active configs (dry run unless --write)."""
+    import collections
+    summary = collections.defaultdict(collections.Counter)
+    unknown = collections.Counter()
+    changed_files = 0
+    for cp in _config_files(args.era):
+        text = cp.read_text()
+        cfg = json.loads(text)
+        changed = False
+        for das, meta in list(cfg.items()):
+            if not isinstance(meta, dict) or meta.get("datatype") != "mc":
+                continue
+            order = xsec_order(das, meta)
+            summary[meta.get("era")][order] += 1
+            if order == "unknown":
+                why = "no xsec" if meta.get("xsec") is None else "provenance not established"
+                unknown[(meta.get("era"), why, das.split("/")[1].split("_Tune")[0][:40])] += 1
+            if meta.get("order") != order or list(meta).index("order") != list(meta).index("xsec") + 1:
+                cfg[das] = with_order(meta, order)
+                changed = True
+        if changed and args.write:
+            indent = len(text.splitlines()[1]) - len(text.splitlines()[1].lstrip()) if len(text.splitlines()) > 1 else 1
+            cp.write_text(json.dumps(cfg, indent=indent or 1) + "\n")
+            changed_files += 1
+    for era in sorted(summary):
+        print(f"{era:22s} " + ", ".join(f"{o}: {n}" for o, n in sorted(summary[era].items())))
+    if unknown:
+        print("unknown:")
+        for (era, why, name), n in sorted(unknown.items()):
+            print(f"  {era:22s} {why:28s} {name} ({n})")
+    print(f"{changed_files} config file(s) written" if args.write else "dry run: rerun with --write to modify the configs")
+    return 0
+
+
 def cmd_apply(args) -> int:
     """Write the decided cross sections into the config JSONs (dry run unless --write)."""
+    global SIGNAL_NORM, SIGNAL_PAYLOAD
+    SIGNAL_NORM = getattr(args, "signal_norm", "direct")
+    SIGNAL_PAYLOAD = getattr(args, "signal_payload", None)
     work = Path(args.work).expanduser()
     _, results = load_results(work)
     today = time.strftime("%Y-%m-%d")
     rows = []
     changes: dict[Path, dict] = {}
     skipped = []
+    # Official WR signal measured in an era of a campaign family, by primary dataset: donors for the points
+    # unmeasured in a sibling era (same gridpacks).
+    donors: dict[str, list[dict]] = {}
+    for x in results.values():
+        if x.get("xsec_gen") is not None and campaign_family(x.get("era")) and OFFICIAL_SIGNAL_RE.match(x.get("primary", "")):
+            donors.setdefault(x["primary"], []).append(x)
     for key, e in sorted(results.items()):
         if args.dataset and not any(s in key for s in args.dataset):
             continue
         if args.era and not args.any_era and not set(e.get("eras") or []) & set(args.era):
             continue          # measured for another campaign
+        copied_from = None
+        fam = campaign_family(e.get("era"))
+        if e.get("xsec_gen") is None and fam:
+            # nearest sibling era first (UL18 takes UL17, then UL16, then UL16APV)
+            cands = sorted((x for x in donors.get(e["primary"], []) if x["era"] != e["era"] and x["era"] in fam),
+                           key=lambda x: abs(fam.index(x["era"]) - fam.index(e["era"])))
+            if cands:
+                copied_from = cands[0]["era"]
+                e = {**cands[0], "era": e["era"], "eras": e.get("eras"), "das": e.get("das"), "miniaod": e.get("miniaod")}
         d = classify(e, results)
         new = proposed_xsec(e, d, args.normalize)
         if new is None:
@@ -664,6 +1012,10 @@ def cmd_apply(args) -> int:
                   "kfactor": _sig(k, 6), "reference": d.get("reference"), "reference_source": d.get("reference_source", ""),
                   "normalize": args.normalize, "release": e.get("release"), "events_run": e.get("events_run"),
                   "tool": "GenXSecAnalyzer", "date": today}
+        if copied_from:
+            source["copied_from"] = (f"{copied_from}: the generator value was measured on the {copied_from} MiniAOD of the "
+                                     f"same primary dataset (the {e['era']} MiniAOD could not be read; the UL campaigns "
+                                     "share the 13 TeV gridpack)")
         hits = 0
         for cp in _config_files(args.era):
             cfg = json.loads(cp.read_text())
@@ -682,6 +1034,49 @@ def cmd_apply(args) -> int:
                 rows.append((e["primary"], meta.get("era"), old, _sig(new), d["factor"], k, cp.name))
         if hits == 0:
             skipped.append((e["primary"], "no config entry found for this primary dataset and energy"))
+    # Official WR signal entries that no measurement reaches (private productions whose LO comes from the LHE
+    # headers, points unmeasurable in every sibling era): the config's own LO value times the point's k.
+    for cp in _config_files(args.era):
+        cfg = json.loads(cp.read_text())
+        upd = changes.setdefault(cp, {})
+        for das, meta in cfg.items():
+            if not isinstance(meta, dict) or das in upd or meta.get("datatype") != "mc":
+                continue
+            primary = das.split("/")[1] if is_das_path(das) else das
+            if not OFFICIAL_SIGNAL_RE.match(primary) or (args.dataset and not any(x in primary for x in args.dataset)):
+                continue
+            if args.era and meta.get("era") not in args.era:
+                continue
+            src = meta.get("xsec_source") if isinstance(meta.get("xsec_source"), dict) else {}
+            if src.get("tool") == "GenXSecAnalyzer" and src.get("status") != "not measured" and src.get("generator"):
+                continue        # measured: handled above (or filtered out on purpose)
+            base = how = None
+            if src.get("header") == "LHE" and src.get("generator"):
+                base, how = float(src["generator"]), "LHE header of the private production (LO)"
+            elif src.get("status") == "not measured" and src.get("kept_value"):
+                base, how = float(src["kept_value"]), "LO value kept when the MiniAOD could not be read in any era"
+            elif meta.get("order") == "LO" and meta.get("xsec"):
+                base, how = float(meta["xsec"]), "config LO value"
+            if base is None:
+                skipped.append((primary, "official signal without a LO value to scale"))
+                continue
+            try:
+                kk = signal_average_k(meta.get("era"), primary)
+            except KeyError as err:
+                skipped.append((primary, str(err)))
+                continue
+            if kk is None:
+                continue        # no payload for this era: the entry stays as it is
+            new = base * kk[0]
+            unc = src.get("generator_unc")
+            upd[das] = {"xsec": _sig(new), "total_uncertainty": _sig(float(unc) * kk[0], 4) if unc else meta.get("total_uncertainty"),
+                        "xsec_source": {"generator": base, "generator_unc": unc, "header": src.get("header", "LO"), "factor": 1.0,
+                                        "factor_reason": how, "kfactor": _sig(kk[0], 6), "reference": _sig(new),
+                                        "reference_source": f"LO x k(NLO): direct per-point sigma_NLO / sigma_LO = {kk[0]:.5f} "
+                                                            f"(AN-19-083 App. A method; {kk[1]})",
+                                        "normalize": args.normalize, "tool": src.get("tool", "config"), "date": today,
+                                        "base_source": how}}
+            rows.append((primary, meta.get("era"), meta.get("xsec"), _sig(new), 1.0, kk[0], cp.name))
     lines = ["| sample | era | config xsec | new xsec | change | factor | k-factor | file |", "|---|---|---|---|---|---|---|---|"]
     for prim, era, old, new, f, k, fn in rows:
         ch = "" if not old else f"{(new / old - 1) * 100:+.1f} %"
@@ -701,6 +1096,7 @@ def cmd_apply(args) -> int:
         cfg = json.loads(text)
         for das, fields in upd.items():
             cfg[das].update(fields)
+            cfg[das] = with_order(cfg[das], xsec_order(das, cfg[das]))
         indent = len(text.splitlines()[1]) - len(text.splitlines()[1].lstrip()) if len(text.splitlines()) > 1 else 1
         cp.write_text(json.dumps(cfg, indent=indent or 1) + "\n")
         print(f"updated {cp.relative_to(REPO)}: {len(upd)} entries")
@@ -712,7 +1108,7 @@ def cmd_apply(args) -> int:
 # Condor mode: cmsRun streams the MiniAOD files at the LPC instead of downloading them here
 # ----------------------------------------------------------------------------
 
-SCRAM_ARCH = {"CMSSW_13_0_13": "el8_amd64_gcc11", "CMSSW_15_0_21": "el9_amd64_gcc12", "CMSSW_10_6_30": "slc7_amd64_gcc700"}
+SCRAM_ARCH = {"CMSSW_13_0_13": "el8_amd64_gcc11", "CMSSW_14_0_9": "el8_amd64_gcc12", "CMSSW_15_0_21": "el9_amd64_gcc12", "CMSSW_10_6_30": "slc7_amd64_gcc700"}
 GENXSEC_CFG_URL = ("https://raw.githubusercontent.com/cms-sw/genproductions/master/Utilities/"
                    "calculateXSectionAndFilterEfficiency/genXsec_cfg.py")
 
@@ -923,12 +1319,20 @@ def main(argv=None) -> int:
     p = sub.add_parser("review")
     p.add_argument("--work", default="~/work/skims_v2/_genxsec")
     p.set_defaults(func=cmd_review)
+    p = sub.add_parser("annotate-order", help='write the "order" key (LO, NLO, ...) of every MC config entry (dry run unless --write)')
+    p.add_argument("--era", nargs="+", default=None, help="only configs of these eras (default: all)")
+    p.add_argument("--write", action="store_true", help="modify the config JSONs (default: dry run)")
+    p.set_defaults(func=cmd_annotate_order)
     p = sub.add_parser("apply", help="write the decided cross sections into the configs (dry run unless --write)")
     p.add_argument("--work", default="~/work/skims_v2/_genxsec")
     p.add_argument("--era", nargs="+", help="only configs of these eras (default: all)")
     p.add_argument("--any-era", action="store_true",
                    help="apply a result to every era with the same primary dataset and energy, not only the eras it was run for")
     p.add_argument("--dataset", nargs="+", help="substring filter on the sample key")
+    p.add_argument("--signal-payload", default=None,
+                   help="signal k-factor payload JSON to use for every era instead of config.yaml's (dry runs before the config change)")
+    p.add_argument("--signal-norm", choices=("direct", "average"), default="direct",
+                   help="official WR signal: the point's direct NLO/LO (payload direct_k, default) or LO x <k> of the shared curve (Run 2)")
     p.add_argument("--normalize", choices=("reference", "generator"), default="reference",
                    help="scale to the inclusive reference where one exists (config convention for ttbar/tW) or keep the generator value")
     p.add_argument("--write", action="store_true", help="modify the config JSONs (default: dry run)")
