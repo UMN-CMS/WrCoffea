@@ -127,6 +127,9 @@ def check_dy_reweight_datasets(zpt_jsons, reshape_jsons, datasets):
 check_dy_reweight_datasets(DY_ZPT_REWEIGHT_JSONS, DY_RESHAPE_JSONS, DY_REWEIGHT_DATASETS)
 # era -> JSON payload for the signal k(m_lN)/<k> reweighting.
 SIGNAL_KFACTOR_JSONS = _cfg.get("signal_kfactor") or {}
+# era -> JSON table {sample: LHA ID of its LHEPdfWeight} (scripts/pdf_sets.py);
+# gates the ``pdf`` systematic family.
+PDF_SETS = _cfg.get("pdf_sets") or {}
 # era -> {eta_max, phi_min, phi_max}: HEM 15/16 electron veto window; eras
 # absent here apply no veto.
 HEM_VETO = _cfg.get("hem_veto") or {}

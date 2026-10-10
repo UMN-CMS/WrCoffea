@@ -1,0 +1,1899 @@
+{
+ "era": "RunIII2024Summer24",
+ "written": "2026-10-10",
+ "command": ".venv/bin/python scripts/pdf_sets.py --era RunIII2024Summer24 --workers 8",
+ "note": "First LHA ID of each sample's LHEPdfWeight (read from an original NanoAOD file's branch description); null = no PDF weights. Written by scripts/pdf_sets.py.",
+ "sets": {
+  "325300": "NNPDF31_nnlo_as_0118_mc_hessian_pdfas",
+  "325500": "NNPDF31_nnlo_as_0118_nf_4_mc_hessian"
+ },
+ "samples": {
+  "DYto2E-2Jets_Bin-0J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E-2Jets_Bin-0J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/03a25c8b-47dd-44ff-88e1-5fafe4e3998d.root"
+  },
+  "DYto2E-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/110000/00a685d4-10d9-44cf-9d8f-2050e9915854.root"
+  },
+  "DYto2E-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/00ea5e85-ad24-4dd7-8268-3b26385e86f1.root"
+  },
+  "DYto2E-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/110000/00f17e00-9809-4e66-9136-6a8025d00600.root"
+  },
+  "DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/110000/0022201b-32d6-48e8-8dba-1644b64aed9e.root"
+  },
+  "DYto2E_Bin-MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/12268c04-9045-41b7-9906-ccf0222051a1.root"
+  },
+  "DYto2E_Bin-MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/2380602c-29d8-41f3-b5a9-e03a50cc3bb7.root"
+  },
+  "DYto2E_Bin-MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/def0e9db-af9d-4bd6-89b7-9b5ef4b521a4.root"
+  },
+  "DYto2E_Bin-MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/45da4942-fa6d-4a7d-afb8-cb68a105b2f5.root"
+  },
+  "DYto2E_Bin-MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/2e5a609c-f9f0-47ec-8160-0caba5a4268a.root"
+  },
+  "DYto2E_Bin-MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/5d3d3e97-809f-497a-8ce5-9a08909eba02.root"
+  },
+  "DYto2E_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/00c7e1c2-7df4-45c7-918c-a72908ef6f7a.root"
+  },
+  "DYto2E_Bin-MLL-6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/041eedec-c699-48d2-8a8e-1691fd211506.root"
+  },
+  "DYto2E_Bin-MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2E_Bin-MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/55ba0cd3-dab9-45a9-aed1-21cf62bdc072.root"
+  },
+  "DYto2L-2Jets_Bin-MLL-50-PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-2Jets_Bin-MLL-50-PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/120000/015116c0-f5e8-44e0-ab47-c2bb0939e129.root"
+  },
+  "DYto2L-2Jets_Bin-MLL-50-PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-2Jets_Bin-MLL-50-PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/90000/00229564-449a-4699-b16b-16f52e17a9b9.root"
+  },
+  "DYto2L-2Jets_Bin-MLL-50-PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-2Jets_Bin-MLL-50-PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2820000/00bad556-c9e6-4423-a617-4528de141c54.root"
+  },
+  "DYto2L-2Jets_Bin-MLL-50-PTLL-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-2Jets_Bin-MLL-50-PTLL-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/120000/00d2822e-2815-47e8-8ca7-0c4c14d96ea3.root"
+  },
+  "DYto2L-4Jets_Bin-HT-100to400-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-100to400-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/027c73b5-ff14-4a1b-9f64-a55cb2795389.root"
+  },
+  "DYto2L-4Jets_Bin-HT-100to400-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-100to400-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2550000/003dd302-54ff-43de-9fd5-c5698f21c86c.root"
+  },
+  "DYto2L-4Jets_Bin-HT-1500to2500-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-1500to2500-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/2550000/02020425-dd47-42dc-8d15-695f99176e70.root"
+  },
+  "DYto2L-4Jets_Bin-HT-1500to2500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-1500to2500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/120000/0567328a-76d5-4460-9274-549f89acd889.root"
+  },
+  "DYto2L-4Jets_Bin-HT-2500-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-2500-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/120000/c59e70d3-e267-4125-96e1-c3383b8d8e85.root"
+  },
+  "DYto2L-4Jets_Bin-HT-2500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-2500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/120000/016392b4-1592-4175-bc70-b60e536cbdc4.root"
+  },
+  "DYto2L-4Jets_Bin-HT-400to800-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-400to800-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/120000/086bb482-7376-45b4-856f-b20df3f21f58.root"
+  },
+  "DYto2L-4Jets_Bin-HT-400to800-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-400to800-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/0cd07713-9ac5-4794-a2eb-7091b3f7adcb.root"
+  },
+  "DYto2L-4Jets_Bin-HT-40to70-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-40to70-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/12393096-8bcc-46b4-bee2-b43e18d7c504.root"
+  },
+  "DYto2L-4Jets_Bin-HT-40to70-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-40to70-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2550000/00c6a77a-5355-497e-b14f-b92aaf2b0176.root"
+  },
+  "DYto2L-4Jets_Bin-HT-70to100-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-70to100-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/0eed81dd-9c22-42d3-9a14-86c192bbafe3.root"
+  },
+  "DYto2L-4Jets_Bin-HT-70to100-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-70to100-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2550000/03138602-08ae-43d2-8c36-f082f92652e5.root"
+  },
+  "DYto2L-4Jets_Bin-HT-800to1500-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-800to1500-MLL-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/2550000/13456206-972f-448d-ada9-eb3da068de26.root"
+  },
+  "DYto2L-4Jets_Bin-HT-800to1500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2L-4Jets_Bin-HT-800to1500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v5/120000/062b4d21-959c-4c5f-8391-ab38537d1c1c.root"
+  },
+  "DYto2Mu-2Jets_Bin-0J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-0J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/100000/00036549-ee34-4802-8a01-1614a0795dc3.root"
+  },
+  "DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/90000/01771b60-782b-4934-9423-5718b08c6672.root"
+  },
+  "DYto2Mu-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/110000/0171d0c9-5d43-414c-855c-da7142b740bc.root"
+  },
+  "DYto2Mu-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v6/100000/005c5bf4-d3d3-4fc1-9df3-99c83183c5f5.root"
+  },
+  "DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/110000/01e7af71-8db6-4af9-a793-d1ccb7b3a34b.root"
+  },
+  "DYto2Mu_Bin-MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/051c1f43-8b2b-40b9-a2ec-c2a8ae31d45f.root"
+  },
+  "DYto2Mu_Bin-MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/30b92906-60ad-4fc7-9338-219d18f340da.root"
+  },
+  "DYto2Mu_Bin-MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/360cb04d-f09c-40fb-8edc-c6be671806c8.root"
+  },
+  "DYto2Mu_Bin-MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/0705e791-bcb6-4cb4-8979-b50344557151.root"
+  },
+  "DYto2Mu_Bin-MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/61644250-bd8a-4cb9-bcb8-41fd556c3fa1.root"
+  },
+  "DYto2Mu_Bin-MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/0dda3f5c-c4fb-45cc-a787-b9018fbd3fcd.root"
+  },
+  "DYto2Mu_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0095e3df-b499-484c-9e55-a6a8b9791440.root"
+  },
+  "DYto2Mu_Bin-MLL-6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/31835e35-d408-44b7-bada-cde8f6ccc520.root"
+  },
+  "DYto2Mu_Bin-MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu_Bin-MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/1f6c997a-de72-437d-9e56-8a28ec0c01f5.root"
+  },
+  "TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/003fb301-ba80-483f-b627-56513d560d55.root"
+  },
+  "TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/008ef839-d91e-464c-bb5c-d80fd6c0d09a.root"
+  },
+  "TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2810000/00989456-9f9d-499c-b9cd-bcdc8e0f7e9a.root"
+  },
+  "TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/mg35x_150X_mcRun3_2024_realistic_v2-v2/2810000/0262b09f-8304-429f-ab70-5bb06465cfe2.root"
+  },
+  "TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2560000/03270857-eb7b-4909-841a-d2c711122275.root"
+  },
+  "TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/100000/016a8301-8bde-443d-a9f2-9dd5837b3f6d.root"
+  },
+  "TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/004eb958-f042-48a7-b7a3-2f1cd5185215.root"
+  },
+  "TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/3828bfc6-ca78-477c-b2b4-184426b8055f.root"
+  },
+  "TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/007eb1e3-ef74-4f47-944c-6abb27b241c7.root"
+  },
+  "TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/0246d424-9633-47de-b653-3478451609dc.root"
+  },
+  "TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/006d5fc1-3881-4278-a1ca-966e187b0337.root"
+  },
+  "TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/052be350-8ca2-4ccf-bde7-c15adcd5a82a.root"
+  },
+  "TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/041cc19e-1073-4443-8715-72cf8f8838be.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_2000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N1000_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_1000_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N1200_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_1200_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N1400_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_1400_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N1600_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_1600_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N1800_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_1800_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2000_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2000_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N200_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_200_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2200_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2200_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2400_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2400_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2450_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2450_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2550_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2550_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2600_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2600_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2650_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2650_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2750_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2750_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2770_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2770_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2790_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2790_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2810_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2810_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2830_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2830_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2850_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2850_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2890_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2890_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N2990_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_2990_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N3010_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_3010_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N3050_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_3050_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N3130_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_3130_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N3150_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_3150_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N3170_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_3170_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N350_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_350_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N400_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_400_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N450_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_450_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N600_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_600_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N650_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_650_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N800_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_800_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR3200_N850_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_3200_MN_850_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_2100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_2300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_2500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_2700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_2900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_3100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_3300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_3500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_3700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_3900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_4000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_2100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_2300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_2500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_2700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_2900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_3100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_3300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_3500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_3700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_3900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_4100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_4300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_4500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_4700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_4900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_5100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_5300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_5500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_5700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_5900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_6000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_2100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_2300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_2500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_2700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_2900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_3100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_3300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_3500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_3700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_3900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_4100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_4300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_4500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_4700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_4900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_5100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_5300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_5500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_5700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_5900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_6100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_6300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_6500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_6700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_6900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_7100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_7300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_7500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_7700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_7900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNEltoElElJJ_MWR_8000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_2000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_2100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_2300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_2500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_2700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_2900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_3100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_3300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_3500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_3700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_3900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_4000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_2100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_2300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_2500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_2700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_2900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_3100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_3300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_3500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_3700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_3900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_4100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_4300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_4500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_4700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_4900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_5100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_5300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_5500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_5700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_5900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_6000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_1100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_1300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_1500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_1700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_1900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_2100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_2300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_2500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_2700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_2900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_3100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_3300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_3500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_3700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_3900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_4100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_4300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_4500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_4700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_4900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_5100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_5300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_5500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_5700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_5900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_6100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_6300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_6500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_6700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_6900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_7100_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_7300_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_7500_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_7700_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_7900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24/WRtoNMutoMuMuJJ_MWR_8000_MN_900_TuneCP5_13p6TeV_cff_merged.root"
+  },
+  "WWW-4F_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WWW-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/0226a9d4-95a3-4609-97be-18e12f95200a.root"
+  },
+  "WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/00beca73-b096-4476-8b41-90df98cf70d6.root"
+  },
+  "WW_TuneCP5_13p6TeV_pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0c6efc19-5e11-4b21-bd8b-d8d11373f1ea.root"
+  },
+  "WZ_TuneCP5_13p6TeV_pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WtoLNu-4Jets_Bin-HT-100to400-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-100to400-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/000949ed-903f-4ca9-bd05-5936f9ff27e5.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-100to400-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-100to400-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0c5a906e-e67a-45e6-9207-5c96a6b57b53.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-1500to2500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-1500to2500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0afba0c3-0626-4f2d-afd2-4dbaeea8600e.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-1500to2500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-1500to2500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/031c2029-7407-40e1-9620-fc0a88cb8933.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-2500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-2500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/027a96d3-62e3-4265-b28e-d7210b124b6b.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-2500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-2500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0280bcb3-9f9d-4824-a8d5-37a55543e905.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-400to800-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-400to800-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/008e3a5d-64f6-4013-b0a4-17d9225e1a5f.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-400to800-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-400to800-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/05f771cf-8273-44c7-9258-aa95e9290833.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-40to100-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-40to100-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0366b9f5-05a2-4ca8-902b-2b65178a57ea.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-40to100-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-40to100-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/00c42591-3a82-4164-b596-f67187da36a9.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-800to1500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-800to1500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0184cf35-0b9a-45e3-9118-91547e223418.root"
+  },
+  "WtoLNu-4Jets_Bin-HT-800to1500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-4Jets_Bin-HT-800to1500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/049d89d8-1bce-481e-9069-0fd848bd9a03.root"
+  },
+  "ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/02ddba39-5e17-4c50-9e9b-005286194aee.root"
+  },
+  "ZZ_TuneCP5_13p6TeV_pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  }
+ }
+}

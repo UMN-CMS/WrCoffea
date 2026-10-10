@@ -61,12 +61,15 @@ from wrcoffea.analysis_config import (
 from wrcoffea.dy_reshape import dy_reshape_weight
 from wrcoffea.dy_reweight import DY_PROCESS_GROUP, dy_zpt_weight
 from wrcoffea.signal_kfactor import SIGNAL_PROCESS_GROUP, mass_point_key, signal_kfactor_weight
+from wrcoffea.pdf_weights import (
+    ALPHAS_SOURCE, CHUNKS_KEY, MEMBERS_KEY, NO_PDF, PDF_SOURCE, PdfMembers, pdf_set, sample_lhaid,
+)
 from wrcoffea.era_utils import ERA_MAPPING
 from wrcoffea.regions import (
     RESOLVED_REGIONS, BOOSTED_REGIONS, added_selections, build_regions, check_unblind_allowed, validate_variants,
 )
 from wrcoffea.systematics import (
-    DIRECTIONS, NOMINAL, SHAPE, WEIGHT,
+    DIRECTIONS, MEMBERS, NOMINAL, SHAPE, WEIGHT,
     normalize_families, normalize_omitted, producible, production_config,
     resolve_syst_observables,
 )
@@ -1206,6 +1209,54 @@ class WrAnalysis(processor.ProcessorABC):
                 out[name] = (up, down)
         return out
 
+    def _pdf_members(self, events, metadata, era, is_mc):
+        """``(lhaid, PdfMembers)`` of this chunk for the ``pdf`` family.
+
+        ``(None, None)`` when the family is off or for data; ``(NO_PDF, None)``
+        for a sample generated without LHEPdfWeight (pure Pythia 8 WW/WZ/ZZ),
+        which then contributes no members (with a warning).  The sample's set
+        comes from the era's pdf_sets table.
+        """
+        names = [n for n in (PDF_SOURCE, ALPHAS_SOURCE) if n in self._producible_names(era, MEMBERS)]
+        if not is_mc or not names:
+            return None, None
+        sample = metadata.get("sample") or metadata.get("dataset")
+        lhaid = sample_lhaid(era, sample)
+        has_branch = "LHEPdfWeight" in events.fields
+        if lhaid is None:
+            if has_branch and len(events) and ak.any(ak.num(events.LHEPdfWeight) > 0):
+                raise ValueError(f"--systs pdf: '{sample}' has LHEPdfWeight but the {era} pdf_sets "
+                                 "table lists no PDF set for it; rerun scripts/pdf_sets.py")
+            key = f"pdf_none::{sample}"
+            if key not in _WARN_ONCE_ANALYZER:
+                _WARN_ONCE_ANALYZER.add(key)
+                logger.warning("--systs pdf: dataset '%s' has no LHEPdfWeight; it contributes no PDF "
+                               "members (no PDF uncertainty defined for this sample).", sample)
+            return NO_PDF, None
+        if not has_branch:
+            raise ValueError(f"--systs pdf: '{sample}' (LHA {lhaid}) has no LHEPdfWeight branch")
+        ratios = metadata.get("LHEPdfSumw")
+        if not ratios:
+            raise ValueError(
+                f"--systs pdf: metadata of '{sample}' has no LHEPdfSumw. Regenerate the fileset from "
+                "skims that carry the per-dataset weighted means, or run scripts/gen_event_sumw.py.")
+        pdfset = pdf_set(lhaid)
+        members = PdfMembers(events.LHEPdfWeight, ratios, pdfset)
+        if members.n_missing:
+            key = f"pdf_partial::{sample}"
+            if key not in _WARN_ONCE_ANALYZER:
+                _WARN_ONCE_ANALYZER.add(key)
+                logger.warning("--systs pdf: %d of %d events of '%s' in this chunk have no LHEPdfWeight; "
+                               "they enter every member with the nominal weight.",
+                               members.n_missing, len(events), sample)
+        if ALPHAS_SOURCE in names and not pdfset.alphas_members:
+            key = f"pdf_no_alphas::{sample}"
+            if key not in _WARN_ONCE_ANALYZER:
+                _WARN_ONCE_ANALYZER.add(key)
+                logger.warning("--systs pdf: set %s of '%s' has no alpha_s members; no alpha_s "
+                               "shift for this sample.", pdfset.name, sample)
+        return str(lhaid), members
+
     def _dy_reshape_for_region(self, syst_weights, kind, jet_pt, era, is_dy, is_mc,
                                *, factors=None):
         """Multiply the DY reshape ratio (and its variations) into region weights.
@@ -1561,7 +1612,7 @@ class WrAnalysis(processor.ProcessorABC):
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
                        *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
-                       weight_factors=None, dy_target=False):
+                       weight_factors=None, dy_target=False, pdf=None):
         """Build resolved region masks and fill histograms + cutflows.
 
         Regions (and any enabled variants) come from ``wrcoffea.regions``;
@@ -1590,7 +1641,7 @@ class WrAnalysis(processor.ProcessorABC):
             )
             coverage[region] = fill_resolved_histograms(
                 output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst,
-                syst_observables=self._syst_observables, event_lists=event_lists,
+                syst_observables=self._syst_observables, event_lists=event_lists, pdf=pdf,
             )
             if event_weights is not None:
                 fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
@@ -1614,7 +1665,7 @@ class WrAnalysis(processor.ProcessorABC):
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
                       era, *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
-                      weight_factors=None, dy_target=False):
+                      weight_factors=None, dy_target=False, pdf=None):
         """Unpack boosted payload, build region masks, and fill histograms.
 
         Returns ``{region: set(labels filled)}``.  As in ``_fill_resolved``,
@@ -1667,7 +1718,7 @@ class WrAnalysis(processor.ProcessorABC):
             )
             coverage[region] = fill_boosted_histograms(
                 output, region, cuts, process_name, tight_lep, ak8, sublead, weights, region_syst,
-                syst_observables=self._syst_observables, event_lists=event_lists,
+                syst_observables=self._syst_observables, event_lists=event_lists, pdf=pdf,
             )
             if event_weights is not None:
                 fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
@@ -1828,20 +1879,27 @@ class WrAnalysis(processor.ProcessorABC):
         weight_factors = (self._event_weight_factors(events, metadata, weights)
                           if event_weights is not None else None)
         dy_target = self._dy_reweight_target(metadata)
+        # PDF members (nominal pass only): per-dataset member histograms of the
+        # fit masses, combined into PDF/AlphaS at save time.
+        pdf_lhaid, pdf_members = self._pdf_members(events, metadata, era, is_mc)
+        pdf = None
+        if pdf_members is not None:
+            pdf = (output.setdefault(MEMBERS_KEY, {}), pdf_members)
+            output[CHUNKS_KEY] = 1          # accumulates; save_hists requires == n_chunks
         coverage = {}
         if resolved_selections is not None:
             coverage.update(self._fill_resolved(
                 output, resolved_selections, process_name, ak4_jets, tight_leptons,
                 weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
                 event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
-                dy_target=dy_target,
+                dy_target=dy_target, pdf=pdf,
             ))
 
         if boosted_payload is not None:
             coverage.update(self._fill_boosted(
                 output, boosted_payload, process_name, weights, syst_weights, era, is_mc=is_mc,
                 event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
-                dy_target=dy_target,
+                dy_target=dy_target, pdf=pdf,
             ))
 
         # Shape systematics: re-run selections with shifted kinematics.
@@ -1888,6 +1946,10 @@ class WrAnalysis(processor.ProcessorABC):
             # different settings must never be merged.
             "syst_config": {self._syst_config},
         }
+        if pdf_lhaid is not None:
+            # The PDF set whose members were filled (or "none"); save_hists
+            # sums the members per set.
+            output["dataset_meta"]["pdf_lhaid"] = {pdf_lhaid}
 
         nested_output = {dataset: {**output}}
 

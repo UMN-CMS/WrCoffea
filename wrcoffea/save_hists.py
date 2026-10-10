@@ -62,6 +62,7 @@ from hist import Hist
 
 from wrcoffea.era_utils import get_era_details
 from wrcoffea.histograms import all_histogram_names
+from wrcoffea.pdf_weights import collect_members, write_members
 from wrcoffea.regions import BLINDED_CUTFLOW_STEPS, blinded_region_names, is_signal_region, region_names
 from wrcoffea.systematics import (
     NOMINAL,
@@ -487,6 +488,10 @@ class MergeReport:
     omitted: Dict[str, Dict[str, list[str]]] = field(default_factory=dict)
     # region -> labels materialised from nominal at export
     normalization: Dict[str, list[str]] = field(default_factory=dict)
+    # dataset -> LHA ID of its PDF set ("none": no LHEPdfWeight), and the
+    # members summed per set ({lhaid: {observable: Hist}}), written as TH2s
+    pdf_sets: Dict[str, str] = field(default_factory=dict)
+    pdf_members: Dict[str, dict] = field(default_factory=dict)
 
     def pairs(self) -> set[tuple[str, str]]:
         """(region, label) pairs that carry real content and should be written."""
@@ -509,6 +514,9 @@ def sum_hists_with_coverage(my_hists, era: str, families: Iterable[str]):
     """
     if not my_hists:
         raise ValueError("No histogram data provided.")
+    # PDF members (``--systs pdf``): taken out of the payloads and summed per
+    # PDF set; combined downstream at the final binning (wrcoffea.pdf_weights).
+    pdf_members, pdf_sets = collect_members(my_hists)
     fams = normalize_families(families) if families is not None else None
     covs = {name: dataset_coverage(name, payload) for name, payload in my_hists.items()}
     for cov in covs.values():
@@ -517,7 +525,8 @@ def sum_hists_with_coverage(my_hists, era: str, families: Iterable[str]):
     if not any(cov.has_info for cov in covs.values()):
         logger.warning("No systematic coverage records found; summing histograms blindly.")
         summed = sum_hists(my_hists)
-        report = MergeReport(coverage_known=False, datasets=covs)
+        report = MergeReport(coverage_known=False, datasets=covs, pdf_sets=pdf_sets,
+                             pdf_members=pdf_members)
         for h in summed.values():
             for region in h.axes["region"]:
                 labels = [s for s in h.axes["syst"] if s != NOMINAL]
@@ -548,7 +557,8 @@ def sum_hists_with_coverage(my_hists, era: str, families: Iterable[str]):
             )
 
     report = MergeReport(coverage_known=True, datasets=covs, config=shared_config,
-                         produced={r: sorted(v) for r, v in produced.items()})
+                         produced={r: sorted(v) for r, v in produced.items()},
+                         pdf_sets=pdf_sets, pdf_members=pdf_members)
 
     # Decide substitutions before touching any histogram.
     substitutions: Dict[str, list[tuple[str, str]]] = {name: [] for name in covs}
@@ -722,6 +732,7 @@ def build_manifest(report: MergeReport, *, era: str, sample, families, syst_obse
                 "datatype": None if cov.is_mc is None else ("mc" if cov.is_mc else "data"),
                 "physics_group": cov.physics_group,
                 "regions": cov.regions(),
+                **({"pdf_lhaid": report.pdf_sets[name]} if name in report.pdf_sets else {}),
             }
             for name, cov in report.datasets.items()
         },
@@ -816,12 +827,15 @@ def save_histograms(histograms, args):
         _save_cutflows(root_file, cutflow_boosted_summed, f"/{CUTFLOW_DIRS['boosted']}")
         _save_cutflows(root_file, event_weights_summed, f"/{EVENT_WEIGHTS_DIR}")
         _save_event_lists(root_file, histograms)
+        pdf_layouts = write_members(root_file, report.pdf_members)
 
     manifest = build_manifest(
         report, era=era, sample=(f"signal_{hnwr_mass}" if sample == "Signal" else sample),
         families=families, syst_observables=syst_observables, output_file=output_file,
         omitted=omitted,
     )
+    if pdf_layouts:
+        manifest["pdf_sets"] = pdf_layouts
     manifest_file = output_file.with_name(output_file.stem + "_systematics.json")
     manifest_file.write_text(json.dumps(manifest, indent=2, sort_keys=True))
 

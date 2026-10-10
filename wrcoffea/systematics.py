@@ -20,6 +20,10 @@ kind
     ``shape``          - kinematics are shifted and the selection re-run.
     ``normalization``  - flat scaling; never filled at event level, the
                          export scales the nominal histogram instead.
+    ``members``        - generator weight sets combined downstream (PDF
+                         eigenvectors): no Up/Down labels; the analyzer fills
+                         per-member histograms and the writer stores them
+                         (``wrcoffea.pdf_weights``).
 
 Applicability versus availability
 ----------------------------------
@@ -60,13 +64,15 @@ from wrcoffea.analysis_config import (
     LSF_SF,
     LUMI_UNC,
     MUON_JSONS,
+    PDF_SETS,
     PILEUP_JSONS,
 )
 
 WEIGHT = "weight"
 SHAPE = "shape"
 NORMALIZATION = "normalization"
-KINDS = (WEIGHT, SHAPE, NORMALIZATION)
+MEMBERS = "members"
+KINDS = (WEIGHT, SHAPE, NORMALIZATION, MEMBERS)
 
 NOMINAL = "Nominal"
 DIRECTIONS = ("Up", "Down")
@@ -81,7 +87,7 @@ FIT_KEYWORD = "fit"
 # Public CLI families, in the order they are documented.
 FAMILIES: tuple[str, ...] = (
     "lumi", "pileup", "sf", "jer", "jes", "elescale", "elesmear", "muscale", "musmear",
-    "dyzpt", "lsf", "dyreshape", "scale", "ps",
+    "dyzpt", "lsf", "dyreshape", "scale", "ps", "pdf",
 )
 
 # The JES source that keeps the historical bare "JES" label.
@@ -185,7 +191,9 @@ class Systematic:
         if self.kind == SHAPE and (not self.objects or not self.field_source):
             raise ValueError(f"Shape systematic {self.name} needs objects and field_source")
 
-    def labels(self) -> tuple[str, str]:
+    def labels(self) -> tuple[str, ...]:
+        if self.kind == MEMBERS:
+            return ()                     # stored as members, combined downstream
         return tuple(f"{self.name}{d}" for d in DIRECTIONS)
 
     def label(self, direction: str) -> str:
@@ -322,6 +330,13 @@ _THEORY_NOTE = (
     "the weights (one file each in 2022 ZZZ and WR MWR6000_N1500 22EE, see docs/skimming.md)."
 )
 
+_PDF_NOTE = (
+    "LHEPdfWeight members of mass_fourobject / mass_twoobject, divided by the dataset mean (only "
+    "acceptance and shape move), summed per PDF set and written as pdfmembers_<region>/<var>_lha<id> "
+    "(TH2: variable x member); WR_Plotter and the datacards form the Hessian quadrature (and the "
+    "alpha_s shift, scaled to 0.0015) at their own binning (wrcoffea/pdf_weights.py)."
+)
+
 _STATIC_SOURCES: dict[str, list[Systematic]] = {
     "lumi": [Systematic("Lumi", "lumi", NORMALIZATION, available_in=lambda e: e in LUMI_UNC)],
     # QCD renormalization / factorization scales (LHEScaleWeight, 9-weight NanoAOD order)
@@ -331,6 +346,9 @@ _STATIC_SOURCES: dict[str, list[Systematic]] = {
     # parton-shower ISR / FSR (PSWeight: [ISR x2, FSR x2, ISR x0.5, FSR x0.5])
     "ps": [Systematic("PSISR", "ps", WEIGHT, note=_THEORY_NOTE),
            Systematic("PSFSR", "ps", WEIGHT, note=_THEORY_NOTE)],
+    # PDF eigenvectors and alpha_s (LHEPdfWeight; per-sample set from config.yaml pdf_sets)
+    "pdf": [Systematic("PDF", "pdf", MEMBERS, available_in=lambda e: e in PDF_SETS, note=_PDF_NOTE),
+            Systematic("AlphaS", "pdf", MEMBERS, available_in=lambda e: e in PDF_SETS, note=_PDF_NOTE)],
     "pileup": [Systematic("Pileup", "pileup", WEIGHT, available_in=lambda e: e in PILEUP_JSONS)],
     "sf": _sf_sources(),
     "jer": [Systematic("JER", "jer", SHAPE, available_in=_has_jer_variations,

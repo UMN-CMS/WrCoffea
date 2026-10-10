@@ -462,6 +462,13 @@ signal_kfactor:
   Run3Summer23BPix: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
   RunIII2024Summer24: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
 
+# PDF set of each MC sample's LHEPdfWeight (first LHA ID, read from an original
+# NanoAOD file by scripts/pdf_sets.py; the skims drop the branch description).
+# Gates the ``pdf`` systematic family (wrcoffea/pdf_weights.py); eras absent
+# here cannot produce it.
+pdf_sets:
+  RunIII2024Summer24: data/pdf_sets/Run3/2024/RunIII2024Summer24.json
+
 # HEM 15/16 veto (2018 only).  Ported from the Run 2 HNWRAnalyzer
 # (``isHEMVetoEvent``): an event is dropped when one of the two leptons the
 # region is built from is an electron with eta < eta_max and

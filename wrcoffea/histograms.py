@@ -28,6 +28,7 @@ import numpy as np
 from coffea.processor import column_accumulator
 
 from wrcoffea.regions import blind_cutflow_steps
+from wrcoffea.pdf_weights import PDF_OBSERVABLES, fill_members
 from wrcoffea.analysis_config import (
     CUTS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
@@ -57,6 +58,18 @@ def _labels_for(hist_name, syst_weights, syst_observables):
     if syst_observables is None or hist_name in syst_observables:
         return list(syst_weights)
     return [k for k in syst_weights if k == NOMINAL]
+
+
+def _fill_pdf_members(output, pdf, hist_name, region, cut, vals, syst_weights_cut, syst_observables):
+    """Fill the PDF members of *hist_name* (a fit mass) when this pass carries them."""
+    if pdf is None or hist_name not in PDF_OBSERVABLES or NOMINAL not in syst_weights_cut:
+        return
+    if syst_observables is not None and hist_name not in syst_observables:
+        return
+    store, members = pdf
+    axis = output[hist_name].axes[hist_name]
+    bins = (axis.size, axis.edges[0], axis.edges[-1])
+    fill_members(store, hist_name, bins, region, vals, syst_weights_cut[NOMINAL], members.weights(cut))
 
 
 def all_histogram_names():
@@ -280,9 +293,11 @@ def record_events(event_lists, region, values, weights):
 
 
 def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, weights, syst_weights,
-                             syst_observables=None, event_lists=None):
+                             syst_observables=None, event_lists=None, pdf=None):
     """Fill all resolved-region histograms for a given region selection mask.
 
+    *pdf*, when given, is ``(store, PdfMembers)``: the PDF members of the fit
+    mass are filled into ``store`` (nominal pass only).
     Returns the set of syst labels completed for *region*.
     """
     leptons_cut = leptons[cut]
@@ -301,6 +316,7 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
         if (event_lists is not None and hist_name == "mass_fourobject"
                 and region.endswith("_sr") and NOMINAL in syst_weights_cut):
             record_events(event_lists, region, vals, syst_weights_cut[NOMINAL])
+        _fill_pdf_members(output, pdf, hist_name, region, cut, vals, syst_weights_cut, syst_observables)
         for syst_label in labels:
             sw = syst_weights_cut[syst_label]
             output[hist_name].fill(
@@ -337,9 +353,10 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
 
 
 def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets, looseleptons, weights, syst_weights,
-                            syst_observables=None, event_lists=None):
+                            syst_observables=None, event_lists=None, pdf=None):
     """Fill all boosted-region histograms for a given region selection mask.
 
+    *pdf* as in :func:`fill_resolved_histograms`.
     Returns the set of syst labels completed for *region*.
     """
     syst_weights_cut = {k: v[cut] for k, v in syst_weights.items()}
@@ -373,6 +390,7 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
         if (event_lists is not None and hist_name == "mass_twoobject"
                 and region.endswith("_sr") and NOMINAL in syst_weights_cut):
             record_events(event_lists, region, vals, syst_weights_cut[NOMINAL])
+        _fill_pdf_members(output, pdf, hist_name, region, cut, vals, syst_weights_cut, syst_observables)
         for syst_label in labels:
             sw = syst_weights_cut[syst_label]
             output[hist_name].fill(
