@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Print a high-pT muon payload (``config.yaml`` ``muon_highpt``) laid out like its sources.
 
-The payloads hold CMS-internal numbers and are not in git (``data/internal/``).
+The payloads (``data/muon_highpt/``) hold numbers from CMS-internal documents.
 This prints them in the orientation of the source figures so that anyone with
 access to the documents can check every number by eye:
 
@@ -13,7 +13,7 @@ access to the documents can check every number by eye:
 
 Where each number comes from is listed in docs/muon_momentum.md.
 
-    .venv/bin/python scripts/show_muon_highpt.py data/internal/muon_highpt_RunIII2024Summer24.json
+    .venv/bin/python scripts/show_muon_highpt.py data/muon_highpt/Run3/2024/RunIII2024Summer24.json
 """
 from __future__ import annotations
 

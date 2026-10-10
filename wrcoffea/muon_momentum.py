@@ -17,8 +17,9 @@ transverse momentum (``Muon_pt * Muon_tunepRelPt``) before any correction:
     (the uncertainty of the data correction, carried by MC).
 
 The numbers (kappa map, sigma(p) coefficients, x) come from CMS-internal
-documents and live in a git-excluded JSON (``data/internal/``); this module
-holds only the formulas.  Eras not listed keep the old TuneP placeholder in
+documents and live in the era's JSON payload (``data/muon_highpt/``, sources
+in docs/muon_momentum.md); this module holds only the formulas.  Eras not
+listed keep the old TuneP placeholder in
 ``scale_factors.apply_muon_scale_smearing``.
 
 The random numbers are deterministic: correctionlib's counter-based hashprng of
@@ -60,8 +61,7 @@ def highpt_config(era: str) -> dict:
     p = _resolve(path)
     if not p.exists():
         raise FileNotFoundError(
-            f"muon_highpt payload {p} is missing. It holds CMS-internal numbers and is not in git; "
-            "see wrcoffea/muon_momentum.py.")
+            f"muon_highpt payload {p} is missing (config.yaml muon_highpt, docs/muon_momentum.md).")
     with open(p) as f:
         cfg = json.load(f)
     ge = cfg["ge_kappa"]

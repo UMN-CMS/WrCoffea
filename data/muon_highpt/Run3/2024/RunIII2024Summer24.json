@@ -1,0 +1,59 @@
+{
+ "era": "RunIII2024Summer24",
+ "written": "2026-10-10",
+ "threshold_gev": 200.0,
+ "ge_kappa": {
+  "description": "Generalized-endpoint step-1 additive q/pT bias in DATA relative to MC (q/pT_meas = q/pT_true + kappa), TuneP pT; corrected on data above the threshold as q/pT -> q/pT - kappa. Step 2 not applied (as EXO-25-021).",
+  "source": "[talk] slide 11, '1. Single muon (phi modulation): results', panel 2024; identical to [AN] Fig. 24 (PDF p. 38, printed p. 36). MUO approval: [AN] l. 592-594, [talk] slide 17.",
+  "units": "1/TeV",
+  "eta_edges": [-2.4, -2.1, -1.6, -1.2, -0.8, 0.0, 0.8, 1.2, 1.6, 2.1, 2.4],
+  "phi_edges": [-3.14159265359, -2.094395102393, -1.047197551197, 0.0, 1.047197551197, 2.094395102393, 3.14159265359],
+  "kappa": [
+   [-0.016, -0.047, 0.039, -0.033, 0.133, 0.153],
+   [-0.0, 0.007, 0.071, 0.016, 0.051, 0.109],
+   [0.016, 0.03, 0.009, 0.006, 0.019, 0.045],
+   [0.021, 0.002, 0.009, -0.024, 0.026, 0.018],
+   [-0.016, -0.008, 0.007, 0.015, 0.009, -0.015],
+   [-0.018, -0.01, -0.003, 0.009, -0.004, -0.022],
+   [-0.023, -0.006, -0.04, -0.034, -0.009, 0.002],
+   [-0.02, -0.019, -0.038, -0.094, -0.023, 0.017],
+   [-0.016, -0.043, -0.097, -0.125, -0.065, 0.035],
+   [0.042, -0.023, -0.173, -0.127, -0.061, 0.065]
+  ],
+  "kappa_unc": [
+   [0.016, 0.015, 0.016, 0.015, 0.016, 0.016],
+   [0.011, 0.011, 0.011, 0.011, 0.011, 0.01],
+   [0.011, 0.011, 0.01, 0.011, 0.01, 0.01],
+   [0.011, 0.01, 0.01, 0.01, 0.01, 0.01],
+   [0.007, 0.007, 0.007, 0.007, 0.007, 0.007],
+   [0.007, 0.007, 0.007, 0.007, 0.007, 0.007],
+   [0.01, 0.01, 0.01, 0.01, 0.01, 0.01],
+   [0.01, 0.011, 0.011, 0.01, 0.01, 0.01],
+   [0.011, 0.01, 0.01, 0.011, 0.011, 0.01],
+   [0.016, 0.015, 0.016, 0.015, 0.015, 0.016]
+  ],
+  "layout": "kappa[i][j]: i = eta bin (ascending, signed eta), j = phi bin (ascending from -pi). On [talk] slide 11 eta runs along x and phi along y (+pi at the top)."
+ },
+ "mc_smearing": {
+  "description": "MC p -> p * (1 + N(0, sigma(p, |eta|) * f)), f = sqrt((1 + x)^2 - 1), above the threshold. Nominal x = extra_smear; MuSmear up/down use x = extra_smear +- syst (POG: 10 %).",
+  "sigma_source": "[AN] Fig. 18 (PDF p. 33) and l. 553: the EXO-25-021 derivation for 2024. The [POG] page has no 2024 high-pT parametrisation yet (listed as work in progress).",
+  "extra_smear_source": "[AN] l. 565-567: 15 % extra smearing for 2024, from the 2024 data/MC Z-peak widths; [talk] slide 7: the 2024 strategy approved by the Muon POG.",
+  "syst_source": "[POG] High pT: Momentum Resolution: a 10 % shift for barrel and endcap muons.",
+  "p_units": "GeV",
+  "eta_split": 1.2,
+  "sigma_barrel": [0.0103982, 6.65258e-05, -3.6351e-08, 7.14995e-12],
+  "sigma_endcap": [0.00688956, 0.000101219, -5.36132e-08, 1.26838e-11],
+  "extra_smear": 0.15,
+  "syst": 0.1,
+  "sigma_note": "Coefficients from the fit boxes of [AN] Fig. 18 (PDF p. 33). The [AN] formula at l. 553 prints the endcap constant as 0.000689, a factor 10 below its fit box (p0 = 0.00688956); the fit box is used.",
+  "sigma_p_max_gev": 2500.0,
+  "sigma_p_max_note": "[AN] Fig. 18 fits p_gen up to 2.5 TeV; above that sigma is held at its 2.5 TeV value (our choice, no cubic extrapolation)."
+ },
+ "documents": {
+  "talk": "L. Thomas for EXO-25-021, 'High pT muons', Muon POG meeting, 2026-03-22: indico event 1665380, contribution 7001589, highptmuons.pdf (24 slides). Linked from the [POG] page, High pT: Momentum Scale.",
+  "AN": "AN-2025/107 v11 (2026-09-03), the EXO-25-021 analysis note. PDF page = printed page + 2.",
+  "twiki": "TWiki EXO25021, as of 2026-10-09.",
+  "POG": "Muon POG 'Muon correction recommendations' (muon-wiki.docs.cern.ch).",
+  "how_to_check": "scripts/show_muon_highpt.py prints this file in the slide orientation; docs/muon_momentum.md maps each entry to its page, figure or line."
+ }
+}

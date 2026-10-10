@@ -1,7 +1,7 @@
 """Tests for wrcoffea.muon_momentum (MuonScaRe below 200 GeV, GE + MC smearing above).
 
-The real 2024 payload is CMS-internal and not in git, so these tests write a
-synthetic one with the same layout.
+These tests write a synthetic payload with made-up numbers and the real
+layout; test_configured_payload_loads checks the payloads config.yaml names.
 """
 
 import json
@@ -36,6 +36,19 @@ def payload(tmp_path, monkeypatch):
     mm.highpt_config.cache_clear()
     yield cfg
     mm.highpt_config.cache_clear()
+
+
+@pytest.mark.parametrize("era", sorted(mm.MUON_HIGHPT))
+def test_configured_payload_loads(era):
+    """Each payload config.yaml names is in the repository and passes the loader's checks."""
+    mm.highpt_config.cache_clear()
+    try:
+        cfg = mm.highpt_config(era)
+    finally:
+        mm.highpt_config.cache_clear()
+    assert cfg["era"] == era
+    assert cfg["threshold_gev"] > 0
+    assert len(cfg["mc_smearing"]["sigma_barrel"]) == len(cfg["mc_smearing"]["sigma_endcap"])
 
 
 def test_smear_factor_is_sqrt_of_one_plus_x_squared_minus_one():

@@ -132,7 +132,8 @@ SIGNAL_KFACTOR_JSONS = _cfg.get("signal_kfactor") or {}
 PDF_SETS = _cfg.get("pdf_sets") or {}
 # era -> JSON payload of the high-pT muon momentum corrections (GE kappa map,
 # MC smearing); eras listed get wrcoffea.muon_momentum, the others the TuneP
-# placeholder.  The payloads hold CMS-internal numbers and are not in git.
+# placeholder.  The payloads (data/muon_highpt/) hold numbers from CMS-internal
+# documents; docs/muon_momentum.md lists their sources.
 MUON_HIGHPT = _cfg.get("muon_highpt") or {}
 # era -> {eta_max, phi_min, phi_max}: HEM 15/16 electron veto window; eras
 # absent here apply no veto.

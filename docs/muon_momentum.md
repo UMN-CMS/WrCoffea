@@ -30,19 +30,19 @@ charge where NanoAOD has it. The regime is chosen on that pT before any correcti
     coherent with the nominal.
   - Draws are deterministic: correctionlib hashprng of (event, luminosityBlock, phi).
 
-## The payload is CMS-internal
+## The payload
 
-The kappa map, the resolution parametrisation and the smearing fractions come from CMS-internal documents. They are
-therefore **neither in git nor in this file** (this repository is public):
+The kappa map, the resolution parametrisation and the smearing fractions are numbers from CMS-internal documents,
+cited below by name and revision. The documents themselves are not in this repository.
 
-- path: `data/internal/muon_highpt_<era>.json`, listed in `.git/info/exclude`;
-- study overlay: `data/internal/muon_highpt_overlay.yaml`.
+- path: `data/muon_highpt/<run>/<year>/<era>.json`, named per era by `config.yaml` `muon_highpt`;
+- `tests/test_muon_momentum.py` loads every configured payload through the analyzer's checks.
 
 Anyone with CMS access can rebuild or check it from the sources below. Every number in the payload carries a `source`
 or `note` field. To print it laid out like the source figures:
 
 ```bash
-.venv/bin/python scripts/show_muon_highpt.py data/internal/muon_highpt_RunIII2024Summer24.json
+.venv/bin/python scripts/show_muon_highpt.py data/muon_highpt/Run3/2024/RunIII2024Summer24.json
 ```
 
 The kappa map is printed as on the slides: eta along x, phi along y with +pi at the top, value +- uncertainty in each
@@ -58,7 +58,7 @@ Documents:
     file the GE maps are on slide 11; slide 12 compares with the medium-pT biases.
 - **[AN]** AN-2025/107 v11 (2026-09-03), the EXO-25-021 analysis note. Page numbers below are PDF pages; the printed
   page is 2 lower.
-- **[twiki]** TWiki EXO25021.
+- **[twiki]** TWiki EXO25021, as of 2026-10-09; page numbers refer to a print of that date.
 - **[POG]** Muon POG "Muon correction recommendations" (muon-wiki.docs.cern.ch, CERN login).
 
 | Payload entry | Taken from | How to check |
