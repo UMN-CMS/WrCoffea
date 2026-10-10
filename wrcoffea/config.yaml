@@ -427,7 +427,9 @@ dy_zpt_reweight:
 # falling to ~0.85) absorbs the NNLO/LO normalization that Run 2 carried in
 # its DY cross sections (~1.35x ours); the product is what matters.
 dy_reshape:
-  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_reshape_run2jetpt_20260907.json
+  # 2026-10-10: re-derived on the skims_v2 production (DY LO x k(NNLO) 1.136, W+jets x 1.149, jet-veto jets dropped);
+  # the 2026-09-07 payload (bare-LO DY, old skims, event veto) is kept for reference.
+  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_reshape_run2jetpt_20261010.json
 
 # The DY datasets the era's Z-pT reweight and reshape were derived for: a regular
 # expression searched in the dataset name (fileset metadata "sample").  Other DY
