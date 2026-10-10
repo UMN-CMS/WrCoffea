@@ -90,7 +90,7 @@ A data entry has only the naming keys:
 | `xsec_source` | MC (Run 3) | Provenance of `xsec` from the GenXSecAnalyzer campaign (next section). Run 2 entries do not have it yet; their provenance is in `docs/configs/run2_ul_dataset_report.md`. |
 | `note` | some | Free text, e.g. low-mass companions, edge-era history, scan samples. |
 | `optional` | some | `true` for samples the default selection does not need (the DY `MLL-10to50` companions). Not skimmed in skims_v2. |
-| `scan` | some (UL) | `true` for the pre-legacy multi-model WR scan samples: skimmed whole and split per `GenModel_*` flag with `skim.py split-scan`; the per-model cross sections (LO × ⟨k⟩) are in `archived/RunIISummer20UL18_signal_private.json`. |
+| `scan` | some (UL) | `true` for the pre-legacy multi-model WR scan samples: skimmed whole and split per `GenModel_*` flag with `skim.py split-scan`; the per-model cross sections (LO × ⟨k⟩) are in `archived/RunIISummer20UL18_signal_private.json`. UL18 keeps them in `RunIISummer20UL18_signal_scan.json`, apart from the official signal config, so they get their own fileset. |
 | `LHEScaleSumw`, `LHEPdfSumw`, `PSSumw` | some | Dataset-level weighted means of the theory weights (`scripts/gen_event_sumw.py`), the denominators of the scale/PDF/parton-shower variations. For skims_v2 the fileset metadata takes them from the skims instead. |
 | `files` | private | Explicit `root://` URLs of a private sample (not in DBS); the skim planner takes these instead of a DBS file list. |
 | `file_sizes`, `file_events`, `file_adler32` | private | Per-URL size in bytes, event count and site adler32, so the skim verifies transfers and event counts as it does for DBS files. Kept out of the plan and fileset metadata. |

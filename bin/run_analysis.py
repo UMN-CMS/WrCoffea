@@ -150,7 +150,9 @@ def validate_arguments(args, sig_points):
         if args.sample == "Signal" and not args.mass:
             logging.error("For 'Signal', you must provide a --mass argument (e.g. --mass WR2000_N1900).")
             raise ValueError("Missing mass argument for Signal sample.")
-        if args.sample == "Signal" and args.mass not in sig_points:
+        # With --fileset the fileset decides which points exist (e.g. the UL18
+        # pre-legacy scan, RunIISummer20UL18_signal_scan_fileset.json).
+        if args.sample == "Signal" and args.mass not in sig_points and not getattr(args, "fileset", None):
             logging.error(f"The provided signal point {args.mass} is not valid. Choose from {sig_points}.")
             raise ValueError("Invalid mass argument for Signal sample.")
         if args.sample != "Signal" and args.mass:

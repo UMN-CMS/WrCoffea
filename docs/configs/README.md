@@ -51,7 +51,10 @@ on MiniAOD files copied to the Mac first; about one minute per file.
 - Pre-legacy WR scan samples (`WRtoNLtoLLJJ_MWR500to3500`, `3500to5000`,
   `5000to6000`, rpscan, NanoAODv7 for Autumn18/Fall17/Summer16) carry one
   `GenModel_*` flag per mass point; they are the origin of the private UL18
-  490-point grid and are to be skimmed and split per model (`skim.py split-scan`).
+  490-point grid, skimmed and split per model (`skim.py split-scan`). The UL18
+  ones are in `RunIISummer20UL18_signal_scan.json`, apart from the official
+  signal config, so they get their own fileset and run only on request
+  (`docs/run_analysis.md`, UL18 signal samples).
 
 ## Open items
 

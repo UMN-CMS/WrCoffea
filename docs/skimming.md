@@ -279,6 +279,9 @@ metadata such as the cross section from `--model-config`. `skim.py fileset`
 then writes the scan's config entry as its model datasets (plan entries whose
 `metadata.scan_source` is the scan), keyed by the model name as the
 private-grid filesets always were, so the raw scan never reaches the analyzer.
+The UL18 scans have their own config, `RunIISummer20UL18_signal_scan.json`, so
+their models go to `RunIISummer20UL18_signal_scan_fileset.json` and never into
+the default signal fileset.
 
 ### Cross sections
 

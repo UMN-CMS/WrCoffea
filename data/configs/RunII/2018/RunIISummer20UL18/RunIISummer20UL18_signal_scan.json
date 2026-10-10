@@ -1,0 +1,47 @@
+{
+  "/WRtoNLtoLLJJ_MWR3500to5000_TuneCP5-madgraph-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_rpscan_102X_upgrade2018_realistic_v21-v1/NANOAODSIM": {
+    "das_name": "/WRtoNLtoLLJJ_MWR3500to5000_TuneCP5-madgraph-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_rpscan_102X_upgrade2018_realistic_v21-v1/NANOAODSIM",
+    "run": "RunII",
+    "year": "2018",
+    "era": "RunIISummer20UL18",
+    "dataset": "WRtoNLtoLLJJ_MWR3500to5000_scan",
+    "physics_group": "Signal",
+    "xsec": null,
+    "order": "LO x k(NLO)",
+    "total_uncertainty": 0.0,
+    "genEventSumw": null,
+    "datatype": "mc",
+    "scan": true,
+    "note": "pre-legacy (102X) multi-model WR scan, NanoAODv7; skimmed whole and split per GenModel_* flag with skim.py split-scan; per-model xsec from the archived private UL18 config (AN LO x k)"
+  },
+  "/WRtoNLtoLLJJ_MWR5000to6000_TuneCP5-madgraph-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_rpscan_102X_upgrade2018_realistic_v21-v1/NANOAODSIM": {
+    "das_name": "/WRtoNLtoLLJJ_MWR5000to6000_TuneCP5-madgraph-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_rpscan_102X_upgrade2018_realistic_v21-v1/NANOAODSIM",
+    "run": "RunII",
+    "year": "2018",
+    "era": "RunIISummer20UL18",
+    "dataset": "WRtoNLtoLLJJ_MWR5000to6000_scan",
+    "physics_group": "Signal",
+    "xsec": null,
+    "order": "LO x k(NLO)",
+    "total_uncertainty": 0.0,
+    "genEventSumw": null,
+    "datatype": "mc",
+    "scan": true,
+    "note": "pre-legacy (102X) multi-model WR scan, NanoAODv7; skimmed whole and split per GenModel_* flag with skim.py split-scan; per-model xsec from the archived private UL18 config (AN LO x k)"
+  },
+  "/WRtoNLtoLLJJ_MWR500to3500_TuneCP5-madgraph-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_rpscan_102X_upgrade2018_realistic_v21-v1/NANOAODSIM": {
+    "das_name": "/WRtoNLtoLLJJ_MWR500to3500_TuneCP5-madgraph-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_rpscan_102X_upgrade2018_realistic_v21-v1/NANOAODSIM",
+    "run": "RunII",
+    "year": "2018",
+    "era": "RunIISummer20UL18",
+    "dataset": "WRtoNLtoLLJJ_MWR500to3500_scan",
+    "physics_group": "Signal",
+    "xsec": null,
+    "order": "LO x k(NLO)",
+    "total_uncertainty": 0.0,
+    "genEventSumw": null,
+    "datatype": "mc",
+    "scan": true,
+    "note": "pre-legacy (102X) multi-model WR scan, NanoAODv7; skimmed whole and split per GenModel_* flag with skim.py split-scan; per-model xsec from the archived private UL18 config (AN LO x k)"
+  }
+}

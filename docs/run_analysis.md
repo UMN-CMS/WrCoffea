@@ -48,6 +48,20 @@ Each point is written to its own ROOT file, as for the default grid.
 
 When a sample fails during local composite processing, the error is logged and the next sample continues.
 
+### UL18 signal samples
+
+A UL18 mass point is the official UL pair, `WRtoNEltoElElJJ` and `WRtoNMutoMuMuJJ`, processed into one file (105 points,
+M_WR = 1, 2, 4, 6 and 8 TeV). The private pre-legacy scan (`WRtoNLtoLLJJ`, 490 points, 102X Autumn18 NanoAODv7) has its
+own fileset and runs only when that fileset is named, for checks:
+
+```bash
+python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3800_N1600 --dir my_scan_check \
+    --fileset data/filesets/RunII/2018/RunIISummer20UL18/skimmed/RunIISummer20UL18_signal_scan_fileset.json
+```
+
+With `--fileset`, `--mass` only has to be a point of that fileset. Give scan runs their own `--dir`: the file names do
+not say which sample a point came from.
+
 ### Output
 
 ROOT histograms are saved to:
@@ -182,7 +196,7 @@ Each variation is written under `syst_<name>_<region>/`. Variations that do not 
 | `--no-dy-reshape` | Do not apply the data-driven DY reshape vs jet pT for eras with a `dy_reshape` payload in `config.yaml`. Implied by `--no-dy-zpt-reweight` |
 | `--no-signal-kfactor` | Do not apply the signal NLO/LO k(m(lN))/⟨k⟩ shape reweighting for eras with a payload in `config.yaml` (currently UL18). Applied by default; see `docs/run2_hnwr_comparison.md` |
 | `--unskimmed` | Use unskimmed filesets instead of default skimmed files |
-| `--fileset PATH` | Override automatic fileset path with a custom fileset JSON |
+| `--fileset PATH` | Override automatic fileset path with a custom fileset JSON. With `Signal`, `--mass` then only has to be a point of that fileset (e.g. the [UL18 scan](#ul18-signal-samples)) |
 
 ### Output
 

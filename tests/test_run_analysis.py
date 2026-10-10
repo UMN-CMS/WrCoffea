@@ -498,6 +498,16 @@ def test_local_composite_saves_through_group_map(monkeypatch):
     assert args.sample == "bkg" and args.mass is None
 
 
+def test_validate_mass_outside_the_csv_needs_fileset():
+    """Signal --mass must be a point of the era's CSV, unless --fileset names the fileset that holds it."""
+    args = _dy_args("RunIISummer20UL18", None)
+    args.sample, args.mass = "Signal", "WR3800_N1600"
+    with pytest.raises(ValueError, match="Invalid mass"):
+        run_analysis.validate_arguments(args, ["WR4000_N2100"])
+    args.fileset = "data/filesets/RunII/2018/RunIISummer20UL18/skimmed/RunIISummer20UL18_signal_scan_fileset.json"
+    run_analysis.validate_arguments(args, ["WR4000_N2100"])
+
+
 def test_validate_signal_points_only_for_composites_with_signal():
     """--signal-points / --mwr-range pick the points of signal/mc/all; elsewhere they are refused."""
     single = _dy_args("RunIII2024Summer24", None)
