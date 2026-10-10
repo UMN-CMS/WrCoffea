@@ -1,0 +1,12 @@
+# Config overlay that turns on the first Run 3 DY corrections for RunIII2024Summer24
+# without changing wrcoffea/config.yaml (which every run, in every session, reads):
+#
+#   WRCOFFEA_CONFIG_OVERLAY=data/reweights/Run3/2024/RunIII2024Summer24/dy_corrections_study_overlay.yaml \
+#       python bin/run_analysis.py RunIII2024Summer24 DYJets --dir <tag> ...
+#
+# Valid only for the dy_lo_ht DY (the Z-pT payload is NLO/LO for the LO HT-binned samples).
+# See docs/run2_hnwr_comparison.md, "Run 3 DY corrections (2024)".
+dy_zpt_reweight:
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json
+dy_reshape:
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261008.json

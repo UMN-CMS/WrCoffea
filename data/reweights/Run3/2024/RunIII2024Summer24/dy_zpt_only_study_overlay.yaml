@@ -1,0 +1,5 @@
+# Config overlay with only the 2024 DY Z-pT reweight (no reshape): the DY input for deriving a
+# reshape, e.g. the AN-19-083 CR1 -> CR2 test (--study dy-cr-split).  Usage as in
+# dy_corrections_study_overlay.yaml.
+dy_zpt_reweight:
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json
