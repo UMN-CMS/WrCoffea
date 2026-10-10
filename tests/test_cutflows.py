@@ -1,7 +1,8 @@
 """Regression tests for selection yields, statistical errors, and ROOT consumers."""
 
 from pathlib import Path
-import runpy
+import json
+from types import SimpleNamespace
 
 import awkward as ak
 import hist
@@ -10,10 +11,20 @@ import pytest
 import uproot
 from coffea.analysis_tools import PackedSelection, Weights
 
-from tests.test_analyzer import _make_integration_events
+from tests.test_analyzer import _apply_sf_patches, _make_integration_events
 from wrcoffea.analyzer import WrAnalysis
-from wrcoffea.histograms import _cutflow_histograms
-from wrcoffea.save_hists import _save_cutflows
+from wrcoffea.histograms import _cutflow_histograms, fill_boosted_cutflows, fill_cutflows
+from wrcoffea.regions import is_signal_region
+from wrcoffea.save_hists import _save_cutflows, save_histograms
+
+# ROOT directory -> key of the analyzer payload holding that cutflow.
+_CUTFLOW_KEYS = {"cutflow_resolved": "cutflow", "cutflow_boosted": "cutflow_boosted"}
+_CUTFLOW_NAMES = ("cumulative", "onecut", "cumulative_unweighted", "onecut_unweighted")
+# Blinded data drops these steps and everything after them in ee and mumu
+# (the plotter contract); em, the flavor CR, is never blinded.
+_BLINDED_FROM = {"cutflow_resolved": "mll_gt200", "cutflow_boosted": "mll_gt200_boosted"}
+# The last step of each ee/mumu chain is the signal region.
+_SR_LAST_CUT = {"cutflow_resolved": "mll_gt400", "cutflow_boosted": "mlj_gt800_boosted"}
 
 
 def _set_leptons(events, collection, records):
@@ -30,7 +41,11 @@ def _set_leptons(events, collection, records):
     setattr(events, collection, leptons)
 
 
-def _resolved_output(flavor="mumu", case="baseline"):
+def _resolved_output(flavor="mumu", case="baseline", *, unblind=False):
+    """Fill the resolved regions and cutflows of one data event (era UL18).
+
+    Data is blinded unless *unblind*, which the fixture's Run 2 era allows.
+    """
     events = _make_integration_events(n_events=1, n_muons=3, n_electrons=3)
     lead, sublead = (300., 0., 0., True), (250., 0., np.pi, True)
     if case == "low_lead_pt":
@@ -56,7 +71,7 @@ def _resolved_output(flavor="mumu", case="baseline"):
                           "phi": [[np.pi / 2, -np.pi / 2]]}.items():
         events.Jet = ak.with_field(events.Jet, ak.Array(values), field)
 
-    proc = WrAnalysis(None, region="resolved")
+    proc = WrAnalysis(None, region="resolved", unblind=unblind)
     tight, _, lepton_masks = proc.select_leptons(events)
     jets, _, jet_masks = proc.select_jets(events, events.metadata["era"])
     selections = proc.resolved_selections(
@@ -77,7 +92,8 @@ def _resolved_output(flavor="mumu", case="baseline"):
 @pytest.mark.parametrize("case", ["baseline", "extra_loose", "extra_low_pt",
                                   "extra_outside_eta", "extra_tight", "low_lead_pt"])
 def test_resolved_cutflow_matches_selected_region(flavor, case):
-    output = _resolved_output(flavor, case)
+    # Unblinded, so the last ee/mumu rows can be compared with the SRs.
+    output = _resolved_output(flavor, case, unblind=True)
     expected = float(case not in ("extra_tight", "low_lead_pt"))
     regions = {"ee": "wr_ee_resolved_sr", "mumu": "wr_mumu_resolved_sr",
                "em": "wr_resolved_flavor_cr"}
@@ -92,6 +108,20 @@ def test_resolved_cutflow_matches_selected_region(flavor, case):
         assert observed == count
         for name in ("cumulative", "cumulative_unweighted"):
             assert output["cutflow"][channel][name].values()[-1] == count
+
+    # Blinded data (the default) fills no SR and keeps the leading cutflow rows.
+    blinded = _resolved_output(flavor, case)
+    assert set(blinded["mass_dilepton"].axes["region"]) == {
+        r for r in output["mass_dilepton"].axes["region"] if not is_signal_region(r)}
+    for channel in regions:
+        for name in _CUTFLOW_NAMES:
+            full = output["cutflow"][channel][name]
+            cut = blinded["cutflow"][channel][name]
+            labels = list(full.axes[0])
+            n = len(labels) if channel == "em" else labels.index(_BLINDED_FROM["cutflow_resolved"])
+            assert list(cut.axes[0]) == labels[:n]
+            np.testing.assert_array_equal(cut.values(), full.values()[:n])
+            np.testing.assert_array_equal(cut.variances(), full.variances()[:n])
 
 
 def test_mixed_flavor_event_is_retained_only_in_flavor_cr():
@@ -134,45 +164,154 @@ def test_empty_chunk_has_zero_counts_and_variances():
         np.testing.assert_array_equal(histogram.variances(), np.zeros(3))
 
 
-@pytest.fixture(params=["make_cutflow_tables.py", "make_signal_cutflows.py"])
-def table_reader(request, monkeypatch):
+class _PassAll:
+    """Selections stand-in that passes every cut (one event)."""
+
+    def all(self, *names):
+        return np.ones(1, dtype=bool)
+
+
+def _analyzer_cut_chains():
+    """The full cut chains the analyzer books, per ROOT directory and flavor."""
+    weights = Weights(1)
+    weights.add("base", np.ones(1))
+    output = {}
+    fill_cutflows(output, _PassAll(), weights)
+    fill_boosted_cutflows(output, _PassAll(), weights)
+    return {
+        directory: {flavor: list(hists["cumulative"].axes[0]) for flavor, hists in output[key].items()}
+        for directory, key in _CUTFLOW_KEYS.items()
+    }
+
+
+@_apply_sf_patches
+def _process_both_topologies(datatype, *, unblind=False):
+    """One analyzer chunk (era UL18) of mumu resolved-SR events, run with the
+    resolved and boosted regions so that both cutflows are booked."""
+    n = 3
+    metadata = None
+    if datatype == "data":
+        metadata = {"datatype": "data", "physics_group": "Observed", "sample": "Observed"}
+    events = _make_integration_events(n_events=n, n_muons=2, n_jets=2, n_fatjets=1,
+                                      metadata=metadata, include_genweight=datatype == "mc")
+    for collection, fields in (
+        ("Muon", {"pt": [[300., 250.]], "eta": [[0., 0.]], "phi": [[0., np.pi]]}),
+        ("Jet", {"pt": [[300., 300.]], "eta": [[0., 0.]], "phi": [[np.pi / 2, -np.pi / 2]]}),
+    ):
+        objects = getattr(events, collection)
+        for field, values in fields.items():
+            objects = ak.with_field(objects, ak.Array(values * n), field)
+        setattr(events, collection, objects)
+    return WrAnalysis(None, region="both", unblind=unblind).process(events)
+
+
+def test_analyzer_cut_chains_end_in_the_signal_regions():
+    for directory, chains in _analyzer_cut_chains().items():
+        assert set(chains) == {"ee", "mumu", "em"}
+        for flavor in ("ee", "mumu"):
+            assert chains[flavor][0] == "no_cuts"
+            assert chains[flavor][-1] == _SR_LAST_CUT[directory]
+            assert _BLINDED_FROM[directory] in chains[flavor]
+
+
+@pytest.mark.parametrize("datatype, unblind", [("mc", False), ("data", False), ("data", True)],
+                         ids=["mc", "data-blinded", "data-unblinded"])
+def test_analyzer_root_output_matches_cut_chains(datatype, unblind, tmp_path, monkeypatch):
+    """Written cutflows follow the analyzer's chains: complete for MC and
+    unblinded data; for blinded data (the default), ee/mumu stop before the
+    mll cut and em is complete."""
+    monkeypatch.chdir(tmp_path)
+    blinded = datatype == "data" and not unblind
+    chains = _analyzer_cut_chains()
+    hists = _process_both_topologies(datatype, unblind=unblind)
+    (payload,) = hists.values()
+    args = SimpleNamespace(era="RunIISummer20UL18", sample="DYJets" if datatype == "mc" else "Muon",
+                           mass=None, dir=None, name=None, systs=[], syst_observables=None,
+                           omit_systs=[])
+    path = save_histograms(hists, args)
+
+    with uproot.open(path) as root_file:
+        for directory, key in _CUTFLOW_KEYS.items():
+            assert set(root_file[directory].keys(recursive=False, cycle=False)) == {"ee", "mumu", "em"}
+            for flavor, labels in chains[directory].items():
+                if blinded and flavor != "em":
+                    labels = labels[:labels.index(_BLINDED_FROM[directory])]
+                for name in _CUTFLOW_NAMES:
+                    saved = root_file[f"{directory}/{flavor}/{name}"]
+                    assert list(saved.axis().labels()) == labels
+                    in_memory = payload[key][flavor][name]
+                    assert list(in_memory.axes[0]) == labels
+                    np.testing.assert_array_equal(saved.values(), in_memory.values())
+                    np.testing.assert_array_equal(saved.variances(), in_memory.variances())
+        folders = set(root_file.keys(recursive=False, cycle=False))
+
+    # Blinded data files carry no signal-region folders (nor variants of them).
+    signal_folders = {folder for folder in folders if is_signal_region(folder)}
+    if blinded:
+        assert not signal_folders
+    else:
+        assert "wr_mumu_resolved_sr" in signal_folders
+    manifest = json.loads(path.with_name(path.stem + "_systematics.json").read_text())
+    assert manifest["blinding"]["applied"] is blinded
+
+
+@pytest.fixture
+def plotter_cutflow(monkeypatch):
+    """The plotter's cutflow reader (WR_Plotter/wrplotter/cutflow.py), which
+    takes the cut sequence from the bin labels of the analyzer's ROOT output."""
     plotter = Path(__file__).resolve().parents[1] / "WR_Plotter"
-    script = plotter / "bin" / request.param
-    if not script.exists():
+    if not (plotter / "wrplotter" / "cutflow.py").exists():
         pytest.skip("WR_Plotter submodule is not checked out")
     monkeypatch.syspath_prepend(str(plotter))
-    return runpy.run_path(str(script))
+    from wrplotter import cutflow
+    from wrplotter.histogram_cache import clear_cache
+    yield cutflow
+    clear_cache()  # close the plotter's cached file handles
 
 
-def test_analyzer_root_output_matches_table_sequences(table_reader, tmp_path):
-    output = _resolved_output()
-    path = tmp_path / "cutflows.root"
-    with uproot.recreate(path) as root_file:
-        _save_cutflows(root_file, output["cutflow"], "cutflow_resolved")
-    for flavor, sequence in table_reader["_CUT_SEQUENCES"].items():
-        expected_keys = [key for key, _ in sequence]
-        for name in ("cumulative", "onecut", "cumulative_unweighted", "onecut_unweighted"):
-            histogram = output["cutflow"][flavor][name]
-            assert list(histogram.axes[0]) == expected_keys
-            # Both readers accept a fully qualified hist_type suffix.
-            actual = table_reader["_read_cutflow"](
-                path, flavor, hist_type=name, expected_keys=expected_keys,
-            )
-            np.testing.assert_array_equal(actual, histogram.values())
-            with uproot.open(path) as root_file:
-                saved = root_file[f"cutflow_resolved/{flavor}/{name}"]
-                np.testing.assert_array_equal(saved.variances(), histogram.variances())
-    if "_CUT_LABELS_GENERIC" in table_reader:
-        assert len(table_reader["_CUT_LABELS_GENERIC"][False]) == len(expected_keys)
+@pytest.mark.parametrize("datatype", ["mc", "data"], ids=["mc", "data-blinded"])
+def test_plotter_reads_back_the_analyzer_cut_chains(plotter_cutflow, datatype, tmp_path, monkeypatch):
+    """From a file written by save_histograms the plotter reads exactly the
+    analyzer's chains and contents: complete for MC; for blinded data, ee/mumu
+    stop before the mll cut and em is complete."""
+    monkeypatch.chdir(tmp_path)
+    chains = _analyzer_cut_chains()
+    hists = _process_both_topologies(datatype)
+    (payload,) = hists.values()
+    args = SimpleNamespace(era="RunIISummer20UL18", sample="DYJets" if datatype == "mc" else "Muon",
+                           mass=None, dir=None, name=None, systs=[], syst_observables=None,
+                           omit_systs=[])
+    path = save_histograms(hists, args)
+
+    for directory, key in _CUTFLOW_KEYS.items():
+        topology = directory.removeprefix("cutflow_")
+        for flavor, labels in chains[directory].items():
+            if datatype == "data" and flavor != "em":
+                labels = labels[:labels.index(_BLINDED_FROM[directory])]
+            for name in _CUTFLOW_NAMES:
+                kind = name.removesuffix("_unweighted")
+                cutflow = plotter_cutflow.read_cutflow(path, topology, flavor, kind,
+                                                       unweighted=name != kind)
+                assert cutflow.cuts == tuple(labels)
+                written = payload[key][flavor][name]
+                np.testing.assert_array_equal(cutflow.values, written.values())
+                np.testing.assert_array_equal(cutflow.variances, written.variances())
 
 
-def test_table_reader_rejects_different_sequence_with_same_bin_count(table_reader, tmp_path):
-    expected = [key for key, _ in table_reader["_CUT_SEQUENCES"]["mumu"]]
-    labels = expected.copy()
+def test_plotter_refuses_to_sum_sequences_that_only_share_a_bin_count(plotter_cutflow, tmp_path):
+    (payload,) = _process_both_topologies("mc").values()
+    analyzer_file = tmp_path / "analyzer.root"
+    with uproot.recreate(analyzer_file) as root_file:
+        _save_cutflows(root_file, payload["cutflow"], "cutflow_resolved")
+    labels = _analyzer_cut_chains()["cutflow_resolved"]["mumu"].copy()
     labels[-2], labels[-3] = labels[-3], labels[-2]
-    path = tmp_path / "old_sequence.root"
-    with uproot.recreate(path) as root_file:
+    other_file = tmp_path / "old_sequence.root"
+    with uproot.recreate(other_file) as root_file:
         root_file["cutflow_resolved/mumu/cumulative"] = hist.Hist(
             hist.axis.StrCategory(labels, name="cut"), storage=hist.storage.Weight(),
         )
-    assert table_reader["_read_cutflow"](path, "mumu", expected_keys=expected) is None
+    # The labels come from the file, not from an assumed sequence ...
+    assert plotter_cutflow.read_cutflow(other_file, "resolved", "mumu", "cumulative").cuts == tuple(labels)
+    # ... so summing it with the analyzer's (e.g. across eras) is refused, not misaligned.
+    with pytest.raises(ValueError, match="old_sequence.root"):
+        plotter_cutflow.read_files([analyzer_file, other_file], "resolved", "mumu", "cumulative")

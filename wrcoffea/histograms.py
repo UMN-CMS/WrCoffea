@@ -13,6 +13,10 @@ Systematic coverage:
   non-Nominal entries to those histograms (Nominal is always filled
   everywhere).  Both return the set of syst labels that were completed for
   the region so the analyzer can record chunk coverage.
+
+Event-weight distributions (``fill_event_weights``) and cutflows are plain
+nested dicts of Hists outside this booking: no process/region/syst axes and
+no systematic variations.
 """
 
 import logging
@@ -23,6 +27,7 @@ import hist
 import numpy as np
 from coffea.processor import column_accumulator
 
+from wrcoffea.regions import blind_cutflow_steps
 from wrcoffea.analysis_config import (
     CUTS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
@@ -163,6 +168,102 @@ def create_hist2D(name_x, bins_x, label_x,
         .Reg(*bins_y, name=name_y, label=label_y)
         .Weight()
     )
+
+EVENT_WEIGHT_AXIS = "log10_abs_weight"
+EVENT_WEIGHT_BINS = (200, -8, 2)
+
+# Weight components (event_weights/<region>/components/<name>).  The generator
+# weight and the xsec * lumi / sumw normalization span orders of magnitude and
+# use a log10 axis (the generator weight split by sign, like the total); every
+# other component is a multiplicative correction near 1 on a linear axis.
+# "corrections" is the product of the linear factors, so
+# total = genweight * normalization * corrections.
+WEIGHT_COMPONENT_LOG_BINS = (400, -12, 8)
+WEIGHT_FACTOR_AXIS = "factor"
+WEIGHT_FACTOR_BINS = (600, 0.0, 3.0)
+GENWEIGHT_COMPONENT = "genweight"
+NORMALIZATION_COMPONENT = "normalization"
+CORRECTIONS_COMPONENT = "corrections"
+
+
+def create_event_weight_hist(bins=EVENT_WEIGHT_BINS):
+    """Event count vs log10|w|, the axis of the per-region weight distributions."""
+    return hist.Hist(
+        hist.axis.Regular(*bins, name=EVENT_WEIGHT_AXIS, label=r"$\log_{10}|w|$"),
+        storage=hist.storage.Weight(),
+    )
+
+
+def create_weight_factor_hist():
+    """Event count vs the value of one multiplicative weight factor."""
+    return hist.Hist(
+        hist.axis.Regular(*WEIGHT_FACTOR_BINS, name=WEIGHT_FACTOR_AXIS, label="Weight factor"),
+        storage=hist.storage.Weight(),
+    )
+
+
+def fill_event_weights(event_weights, region, cut, weights, factors=None):
+    """Fill log10|w| of the events in *region*, split by the sign of w.
+
+    *weights* is the region's nominal per-event weight for the whole chunk
+    (``region_syst[NOMINAL]``: lepton SFs and DY reshape included), *cut* the
+    region mask.  Each entry counts one event (unit weight); events with
+    w == 0 are not filled, and values outside the axis land in the flow bins.
+    ``event_weights`` is the ``{region: {"positive": Hist, "negative": Hist}}``
+    accumulator dict; both histograms are booked even when the region is
+    empty in this chunk.
+
+    *factors*, when given, is ``{name: per-event array}`` of the factors whose
+    product is *weights*; each is filled under ``[region]["components"]``
+    (see the ``WEIGHT_COMPONENT_*`` constants for the axes).
+    """
+    mask = np.asarray(cut, dtype=bool)
+    w = np.asarray(weights, dtype=np.float64)[mask]
+    hists = event_weights.get(region)
+    if hists is None:
+        hists = event_weights[region] = {
+            "positive": create_event_weight_hist(),
+            "negative": create_event_weight_hist(),
+        }
+    _fill_signed_log(hists, "positive", "negative", w)
+    if factors is not None:
+        _fill_weight_components(hists.setdefault("components", {}), mask, factors)
+
+
+def _booked(hists, key, create):
+    """hists[key], booked with *create()* on first use."""
+    h = hists.get(key)
+    if h is None:
+        h = hists[key] = create()
+    return h
+
+
+def _fill_signed_log(hists, pos_key, neg_key, values, bins=EVENT_WEIGHT_BINS):
+    """Fill log10|v| into hists[pos_key] / hists[neg_key] by sign (v == 0 skipped)."""
+    for key, selected in ((pos_key, values[values > 0]), (neg_key, values[values < 0])):
+        _booked(hists, key, lambda: create_event_weight_hist(bins)).fill(
+            **{EVENT_WEIGHT_AXIS: np.log10(np.abs(selected))})
+
+
+def _fill_weight_components(hists, mask, factors):
+    """Fill one distribution per weight factor of the masked events, plus the
+    product of the linear factors (``corrections``)."""
+    corrections = None
+    for name, values in factors.items():
+        v = np.asarray(values, dtype=np.float64)[mask]
+        if name == GENWEIGHT_COMPONENT:
+            _fill_signed_log(hists, f"{name}_positive", f"{name}_negative", v,
+                             bins=WEIGHT_COMPONENT_LOG_BINS)
+        elif name == NORMALIZATION_COMPONENT:
+            _booked(hists, name, lambda: create_event_weight_hist(WEIGHT_COMPONENT_LOG_BINS)).fill(
+                **{EVENT_WEIGHT_AXIS: np.log10(v[v > 0])})
+        else:
+            _booked(hists, name, create_weight_factor_hist).fill(**{WEIGHT_FACTOR_AXIS: v})
+            corrections = v if corrections is None else corrections * v
+    if corrections is not None:
+        _booked(hists, CORRECTIONS_COMPONENT, create_weight_factor_hist).fill(
+            **{WEIGHT_FACTOR_AXIS: corrections})
+
 
 def record_events(event_lists, region, values, weights):
     """Append the per-event (mass, nominal weight) of one region to the
@@ -352,7 +453,7 @@ def _cutflow_histograms(selections, weights, steps):
     return bucket
 
 
-def fill_cutflows(output, selections, weights):
+def fill_cutflows(output, selections, weights, *, blind=False):
     """Build cumulative cutflows for ee, mumu, and em channels.
 
     Order: jets (pT/eta, then ID), leptons (pT/eta, then ID, then exactly two
@@ -365,6 +466,9 @@ def fill_cutflows(output, selections, weights):
 
     ``no_cuts`` starts after upstream event filters (and any input skim).
     Weighted bins use base event weights, before per-region lepton SFs.
+
+    With *blind* (data of a blinded run) the ee and mumu chains stop before
+    the mll cut (``wrcoffea.regions.BLINDED_CUTFLOW_STEPS``); em is complete.
 
     Output layout (keys under ``output["cutflow"]``):
         - per-flavor: ``ee``, ``mumu``, ``em``
@@ -425,18 +529,21 @@ def fill_cutflows(output, selections, weights):
 
     # --- Per-flavor: multi-bin onecut / cumulative histograms
     for flavor, steps in chains.items():
+        if blind:
+            steps = blind_cutflow_steps("resolved", flavor, steps)
         output["cutflow"].setdefault(flavor, {}).update(
             _cutflow_histograms(selections, weights, steps)
         )
 
 
-def fill_boosted_cutflows(output, selections, weights):
+def fill_boosted_cutflows(output, selections, weights, *, blind=False):
     """Build cumulative cutflows for boosted ee, mumu, and em channels.
 
     Similar to fill_cutflows but for boosted topology. Shows progression
     through boosted-specific selections (SR progression for ee/mumu,
     flavor CR for em). As in the resolved cutflow, ``no_cuts`` follows
     upstream filters and the weighted bins exclude per-region lepton SFs.
+    With *blind* the ee and mumu chains stop before the boosted mll cut.
 
     Output layout (keys under ``output["cutflow_boosted"]``):
         - per-flavor: ``ee``, ``mumu``, ``em``
@@ -492,6 +599,8 @@ def fill_boosted_cutflows(output, selections, weights):
 
     # Generate cutflow histograms per flavor
     for flavor, steps in chains.items():
+        if blind:
+            steps = blind_cutflow_steps("boosted", flavor, steps)
         output["cutflow_boosted"].setdefault(flavor, {}).update(
             _cutflow_histograms(selections, weights, steps)
         )

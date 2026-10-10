@@ -520,14 +520,17 @@ def normalization_factor(src: Systematic, era: str) -> float:
 
 def production_config(families: Iterable[str] | None, omitted: Iterable[str] | None,
                       syst_observables: frozenset[str] | None, *, region: str = "both",
-                      variants: Iterable[str] = ()) -> str:
+                      variants: Iterable[str] = (), blind: bool = False) -> str:
     """Canonical string describing what a processing run was asked to produce.
 
     Stored in every chunk's payload so that chunks and datasets produced with
     different settings are never merged, and so the writer can demand every
-    region and variation the run was configured for.
+    region and variation the run was configured for.  *blind* is run-level
+    (one run may process data and MC): it says that data withheld its signal
+    regions (``wrcoffea.regions``); MC ignores it.
     """
     return json.dumps({
+        "blind": bool(blind),
         "families": sorted(normalize_families(families)),
         "omitted": sorted(normalize_omitted(omitted)),
         "observables": describe_syst_observables(syst_observables),
@@ -539,6 +542,8 @@ def production_config(families: Iterable[str] | None, omitted: Iterable[str] | N
 def parse_production_config(text: str) -> dict:
     cfg = json.loads(text)
     return {
+        # Payloads written before blinding existed were never blinded.
+        "blind": bool(cfg.get("blind", False)),
         "families": frozenset(cfg.get("families", ())),
         "omitted": frozenset(cfg.get("omitted", ())),
         "observables": (None if cfg.get("observables") == ALL_OBSERVABLES

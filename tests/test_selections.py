@@ -779,3 +779,34 @@ class TestEdgeCases:
 
         with pytest.raises(ValueError, match="lepton_masks and jet_masks"):
             analyzer.resolved_selections(tight_leptons, ak4_jets)
+
+
+class TestDyCrSplitSelections:
+    """The CR1 / CR2 m(ll) selections exist only for the dy-cr-split study and split 60-150 at 100 GeV."""
+
+    def _resolved(self, proc, target_pt):
+        n = len(target_pt)
+        tight = _make_leptons([[float(p), float(p)] for p in target_pt], [[0.0, 0.0]] * n,
+                              [[0.0, 3.14159]] * n, [[0.0, 0.0]] * n, [[1, -1]] * n,
+                              [["electron", "electron"]] * n)
+        jets = _make_jets([[200.0, 150.0]] * n, [[2.0, -2.0]] * n, [[1.5, -1.5]] * n, [[10.0, 10.0]] * n)
+        lep_masks, jet_masks = _ee_masks(n_events=n)
+        return tight, proc.resolved_selections(tight, jets, lepton_masks=lep_masks, jet_masks=jet_masks,
+                                               triggers=_default_triggers(n))
+
+    def test_absent_without_the_study(self, analyzer):
+        _, sel = self._resolved(analyzer, [45, 60])
+        assert "mll_60_100" not in sel.names and "mll_100_150" not in sel.names
+
+    def test_partition_of_the_dy_window(self):
+        from wrcoffea.regions import resolve_studies
+        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both",
+                          region_variants=resolve_studies(["dy-cr-split"]))
+        tight, sel = self._resolved(proc, [25, 35, 45, 49.9, 50.1, 60, 74, 80])
+        lp = ak.pad_none(tight, 2)
+        mll = ak.to_numpy((lp[:, 0] + lp[:, 1]).mass)
+        cr1, cr2, dy = (ak.to_numpy(sel.all(n)) for n in ("mll_60_100", "mll_100_150", "60_mll_150"))
+        np.testing.assert_array_equal(cr1, (mll > 60) & (mll < 100))
+        np.testing.assert_array_equal(cr2, (mll >= 100) & (mll < 150))
+        np.testing.assert_array_equal(cr1 | cr2, dy)
+        assert not np.any(cr1 & cr2)

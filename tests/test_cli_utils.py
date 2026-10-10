@@ -150,7 +150,7 @@ class TestListHelpers:
 class TestBuildFilesetPath:
     def test_mc_path(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=False, dy=None)
-        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_ht_fileset.json"
         assert "Run3/2024/RunIII2024Summer24" in str(path)
         assert "skimmed" in path.parts
 
@@ -172,7 +172,7 @@ class TestBuildFilesetPath:
 
     def test_unskimmed_mc_path(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="DYJets", unskimmed=True, dy=None)
-        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_ht_fileset.json"
         assert "unskimmed" in path.parts
 
     def test_unskimmed_data_path(self):
@@ -197,15 +197,15 @@ class TestBuildFilesetPath:
 
     def test_non_dy_mc_uses_era_default(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="tt_tW", unskimmed=False, dy=None)
-        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_ht_fileset.json"
 
     def test_TTbar_subgroup_uses_parent_fileset(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="TTbar", unskimmed=False, dy=None)
-        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_ht_fileset.json"
 
     def test_tW_subgroup_uses_parent_fileset(self):
         path = build_fileset_path(era="RunIII2024Summer24", sample="tW", unskimmed=False, dy=None)
-        assert path.name == "RunIII2024Summer24_mc_dy_lo_inc_fileset.json"
+        assert path.name == "RunIII2024Summer24_mc_dy_lo_ht_fileset.json"
 
     def test_ul18_default_mc_tag(self):
         path = build_fileset_path(era="RunIISummer20UL18", sample="DYJets", unskimmed=False, dy=None)

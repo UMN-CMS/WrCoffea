@@ -106,3 +106,142 @@ def test_mass_exactly_800_lands_in_high_slice_of_mass_histogram():
         vals = h[{"process": "p", "region": "r_nomass", "syst": "Nominal"}].values()
         assert vals[:i800].sum() == 0.0
         assert vals[i800:].sum() == 1.0
+
+
+# ---------------------------------------------------------------------------
+# Blinding
+# ---------------------------------------------------------------------------
+
+SIGNAL_REGIONS = {"wr_ee_resolved_sr", "wr_mumu_resolved_sr", "wr_ee_boosted_sr", "wr_mumu_boosted_sr"}
+
+
+def test_is_signal_region_covers_srs_and_their_variants_only():
+    assert R.SIGNAL_REGIONS == SIGNAL_REGIONS
+    for region in SIGNAL_REGIONS:
+        assert R.is_signal_region(region)
+        assert R.is_signal_region(region + "_nomass")
+    for region in ("wr_ee_resolved_dy_cr", "wr_mumu_boosted_dy_cr", "wr_resolved_flavor_cr",
+                   "wr_resolved_flavor_cr_nomass", "wr_emu_boosted_flavor_cr",
+                   "wr_mue_boosted_flavor_cr_nomass", "wr_ee_resolved_sr_unknown", "wr_ee_resolved"):
+        assert not R.is_signal_region(region), region
+
+
+@pytest.mark.parametrize("mode", R.REGION_MODES)
+@pytest.mark.parametrize("variants", [(), ("nomass",)])
+def test_region_names_blind_drops_only_signal_regions(mode, variants):
+    full = R.region_names(mode, variants)
+    blind = R.region_names(mode, variants, blind=True)
+    assert blind == [name for name in full if not R.is_signal_region(name)]
+    assert R.blinded_region_names(mode, variants) == [name for name in full if R.is_signal_region(name)]
+    assert sorted(blind + R.blinded_region_names(mode, variants)) == sorted(full)
+    if variants:
+        # Variants of the flavor CRs stay; variants of the SRs go.
+        flavor_cr_variants = [name for name in full if name.endswith("_flavor_cr_nomass")]
+        assert flavor_cr_variants and set(flavor_cr_variants) <= set(blind)
+        assert not any(name.endswith("_sr_nomass") for name in blind)
+
+
+@pytest.mark.parametrize("nominal", [R.RESOLVED_REGIONS, R.BOOSTED_REGIONS])
+def test_build_regions_blind_skips_signal_regions(nominal):
+    sel = _selection_with(_all_names(nominal))
+    full = R.build_regions(nominal, sel, {"nomass"})
+    blind = R.build_regions(nominal, sel, {"nomass"}, blind=True)
+    assert list(blind) == [name for name in full if not R.is_signal_region(name)]
+    assert any(R.is_signal_region(name) for name in full)
+    for name, mask in blind.items():
+        np.testing.assert_array_equal(mask, full[name])
+    # The writer's expectation mirrors what the analyzer builds.
+    mode = "resolved" if nominal is R.RESOLVED_REGIONS else "boosted"
+    assert list(blind) == R.region_names(mode, {"nomass"}, blind=True)
+
+
+def test_blinded_cutflow_steps_are_the_mll_cuts():
+    assert R.BLINDED_CUTFLOW_STEPS == {
+        "resolved": {"ee": "mll_gt200", "mumu": "mll_gt200"},
+        "boosted": {"ee": "mll_gt200_boosted", "mumu": "mll_gt200_boosted"},
+    }
+
+
+@pytest.mark.parametrize("kind, steps, kept", [
+    ("resolved", ["dr_all_pairs_gt0p4", "mlljj_gt800", "mll_gt200", "mll_gt400"],
+     ["dr_all_pairs_gt0p4", "mlljj_gt800"]),
+    ("boosted", ["no_of_lepton_in_ak8", "mll_gt200_boosted", "mlj_gt800_boosted"],
+     ["no_of_lepton_in_ak8"]),
+])
+def test_blind_cutflow_steps_truncates_ee_mumu_before_the_stop_step(kind, steps, kept):
+    for flavor in ("ee", "mumu"):
+        assert R.blind_cutflow_steps(kind, flavor, steps) == kept
+    # em is the flavor CR and is never blinded.
+    assert R.blind_cutflow_steps(kind, "em", steps) == steps
+    # The input sequence is not modified and may be any iterable.
+    assert R.blind_cutflow_steps(kind, "ee", tuple(steps)) == kept
+
+
+@pytest.mark.parametrize("kind, flavor", [("resolved", "ee"), ("resolved", "mumu"),
+                                          ("boosted", "ee"), ("boosted", "mumu")])
+def test_blind_cutflow_steps_without_stop_step_raises(kind, flavor):
+    with pytest.raises(ValueError, match="has no step"):
+        R.blind_cutflow_steps(kind, flavor, ["no_cuts", "mlljj_gt800", "mll_gt400"])
+
+
+@pytest.mark.parametrize("era", ["RunIISummer20UL16APV", "RunIISummer20UL16", "RunIISummer20UL17",
+                                 "RunIISummer20UL18"])
+def test_unblind_allowed_for_run2(era):
+    R.check_unblind_allowed(era)
+
+
+@pytest.mark.parametrize("era", ["Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix",
+                                 "RunIII2024Summer24", "RunIII2025Summer25"])
+def test_unblind_refused_for_run3(era):
+    with pytest.raises(ValueError, match=f"--unblind is not allowed for {era} \\(Run3\\)"):
+        R.check_unblind_allowed(era)
+
+
+def test_unblind_refused_for_unknown_era():
+    with pytest.raises(ValueError, match="Unsupported era"):
+        R.check_unblind_allowed("Run4Summer30")
+
+
+# ---------------------------------------------------------------------------
+# DY CR m(ll) split (study dy-cr-split, AN-19-083 DY CR1 -> CR2 test)
+# ---------------------------------------------------------------------------
+
+def test_dy_cr_split_study_targets_the_four_dy_crs():
+    variants = R.resolve_studies(["dy-cr-split"])
+    assert variants == frozenset({"dycr_mll60to100", "dycr_mll100to150"})
+    assert R.added_selections(variants) == frozenset({R.SEL_MLL_60_100, R.SEL_MLL_100_150})
+    assert R.added_selections(R.resolve_studies(["transfer-factor"])) == frozenset()
+    names = R.region_names("both", variants)
+    for cr in ("wr_ee_resolved_dy_cr", "wr_mumu_resolved_dy_cr", "wr_ee_boosted_dy_cr", "wr_mumu_boosted_dy_cr"):
+        assert cr + "_mll60to100" in names and cr + "_mll100to150" in names
+        assert not R.is_signal_region(cr + "_mll60to100")
+    # blinded data still builds the split control regions
+    assert set(R.region_names("both", variants, blind=True)) >= {n for n in names if "_mll" in n}
+
+
+@pytest.mark.parametrize("nominal", [R.RESOLVED_REGIONS, R.BOOSTED_REGIONS])
+def test_dy_cr_split_halves_partition_the_dy_cr(nominal):
+    """Event 0 is in CR1, event 1 in CR2: each half keeps the nominal cuts and adds its own."""
+    names = _all_names(nominal)
+    sel = PackedSelection()
+    for name in names:
+        sel.add(name, np.array([True, True]))
+    sel.add(R.SEL_MLL_60_100, np.array([True, False]))
+    sel.add(R.SEL_MLL_100_150, np.array([False, True]))
+    masks = R.build_regions(nominal, sel, R.resolve_studies(["dy-cr-split"]))
+    for cr in (r for r in nominal if "dy_cr" in r):
+        assert masks[cr].tolist() == [True, True]
+        assert masks[cr + "_mll60to100"].tolist() == [True, False]
+        assert masks[cr + "_mll100to150"].tolist() == [False, True]
+
+
+def test_add_only_variant_must_add_something_new(monkeypatch):
+    empty = R.RegionVariant(suffix="_e", drop=frozenset(), regions=("wr_ee_resolved_dy_cr",))
+    monkeypatch.setitem(R.REGION_VARIANTS, "empty", empty)
+    with pytest.raises(ValueError, match="neither drops nor adds"):
+        R.validate_variants({"empty"})
+    again = R.RegionVariant(suffix="_a", drop=frozenset(), add=(R.SEL_60_MLL_150,),
+                            regions=("wr_ee_resolved_dy_cr",))
+    monkeypatch.setitem(R.REGION_VARIANTS, "again", again)
+    with pytest.raises(ValueError, match="already has"):
+        R.validate_variants({"again"})

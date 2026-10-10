@@ -256,8 +256,12 @@ class TestAnalyzerWiring:
         ev.genWeight = ak.Array(np.ones(self.N))
         return ev
 
-    def _meta(self, group):
-        return {"era": UL18, "xsec": 10.0, "genEventSumw": 100.0, "sample": "s", "physics_group": group}
+    # A dataset of the sample the UL18 payload was derived for (dy_reweight_datasets).
+    LO_HT = "DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8"
+    NLO = "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8"
+
+    def _meta(self, group, sample=LO_HT):
+        return {"era": UL18, "xsec": 10.0, "genEventSumw": 100.0, "sample": sample, "physics_group": group}
 
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_dy_nominal_includes_reweight_and_variations(self, mock_pu):
@@ -297,3 +301,69 @@ class TestAnalyzerWiring:
         _, syst_on = on.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
         assert set(syst_on) == {NOMINAL}
         assert not np.allclose(syst_on[NOMINAL], syst_off[NOMINAL])
+
+
+
+class TestDySampleGuard:
+    """The DY Z-pT reweight and reshape reach only the DY sample they were derived for."""
+
+    LO_HT = TestAnalyzerWiring.LO_HT
+    NLO = TestAnalyzerWiring.NLO
+
+    @pytest.fixture(autouse=True)
+    def _fresh_warnings(self):
+        from wrcoffea import analyzer
+        stale = {k for k in analyzer._WARN_ONCE_ANALYZER if k.startswith("dy_reweight_not_for_sample")}
+        analyzer._WARN_ONCE_ANALYZER.difference_update(stale)
+        yield
+
+    @pytest.mark.parametrize("group, sample, era, expected", [
+        (DY_PROCESS_GROUP, LO_HT, UL18, True),
+        (DY_PROCESS_GROUP, NLO, UL18, False),
+        (DY_PROCESS_GROUP, "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8", UL18, False),  # LO inclusive
+        ("tt_tW", LO_HT, UL18, False),
+        (DY_PROCESS_GROUP, "DYto2L-4Jets_Bin-HT-100to400-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8",
+         "RunIII2024Summer24", True),
+        (DY_PROCESS_GROUP, "DYto2E-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8",
+         "RunIII2024Summer24", False),
+        (DY_PROCESS_GROUP, LO_HT, "EraWithoutPattern", False),
+    ])
+    def test_target(self, group, sample, era, expected):
+        meta = {"era": era, "physics_group": group, "sample": sample}
+        assert WrAnalysis._dy_reweight_target(meta) is expected
+
+    @patch("wrcoffea.analyzer.pileup_weight")
+    def test_nlo_dy_keeps_its_weight(self, mock_pu, caplog):
+        wiring = TestAnalyzerWiring()
+        ones = np.ones(wiring.N)
+        mock_pu.return_value = (ones, ones, ones)
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved")
+        with caplog.at_level("WARNING"):
+            _, syst = proc.build_event_weights(wiring._events(), wiring._meta(DY_PROCESS_GROUP, self.NLO),
+                                               is_mc=True)
+        np.testing.assert_allclose(syst[NOMINAL], 10.0 * 59.83 * 1000.0 / 100.0)
+        for name in SOURCE_NAMES:
+            np.testing.assert_array_equal(syst[f"{name}Up"], syst[NOMINAL])
+        assert "not the sample" in caplog.text
+
+    @pytest.mark.parametrize("sample, status", [(LO_HT, "applied"), (NLO, "not_for_sample")])
+    def test_status_recorded(self, sample, status):
+        from tests.test_analyzer import _SF_PATCHES, _make_integration_events
+        from contextlib import ExitStack
+        events = _make_integration_events(n_events=3, metadata={"sample": sample})
+        proc = WrAnalysis(mass_point=None, region="resolved")
+        with ExitStack() as stack:
+            for target, replacement in _SF_PATCHES.items():
+                stack.enter_context(patch(target, new=replacement))
+            output = proc.process(events)[sample]
+        assert output["dataset_meta"]["dy_zpt_reweight"] == {status}
+
+    def test_payload_requires_dataset_pattern(self):
+        from wrcoffea.analysis_config import check_dy_reweight_datasets
+        with pytest.raises(ValueError, match="EraX"):
+            check_dy_reweight_datasets({"EraX": "zpt.json"}, {}, {})
+        with pytest.raises(ValueError, match="EraY"):
+            check_dy_reweight_datasets({}, {"EraY": "reshape.json"}, {"EraX": "^DY"})
+        with pytest.raises(ValueError, match="dy_reweight_datasets"):
+            check_dy_reweight_datasets({"EraX": "zpt.json"}, {}, {"EraX": "(unclosed"})
+        check_dy_reweight_datasets({"EraX": "zpt.json"}, {}, {"EraX": "^DY", "EraZ": "^DY"})

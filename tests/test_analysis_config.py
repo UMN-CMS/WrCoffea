@@ -56,3 +56,32 @@ class TestConfigConsistency:
         assert CUTS["mll_dy_low"] < CUTS["mll_dy_high"]
         assert CUTS["mll_dy_high"] < CUTS["mll_sr_min"]
         assert CUTS["mll_sr_min"] < CUTS["mll_sr_high_min"]
+
+
+# ---------------------------------------------------------------------------
+# Config overlay (WRCOFFEA_CONFIG_OVERLAY)
+# ---------------------------------------------------------------------------
+
+def test_merge_overlay_updates_mappings_and_replaces_scalars():
+    from wrcoffea.analysis_config import _merge_overlay
+    cfg = {"dy_zpt_reweight": {"A": "a"}, "cuts": {"x": 1, "y": 2}, "flag": 1}
+    out = _merge_overlay(cfg, {"dy_zpt_reweight": {"B": "b"}, "cuts": {"y": 3}, "flag": 2})
+    assert out == {"dy_zpt_reweight": {"A": "a", "B": "b"}, "cuts": {"x": 1, "y": 3}, "flag": 2}
+    assert cfg["dy_zpt_reweight"] == {"A": "a"}          # input untouched
+
+
+def test_overlay_env_reaches_module_constants(tmp_path):
+    import json
+    import os
+    import subprocess
+    import sys
+    overlay = tmp_path / "overlay.yaml"
+    overlay.write_text("dy_zpt_reweight:\n  RunIII2024Summer24: data/reweights/x.json\n")
+    code = ("import json, wrcoffea.analysis_config as a; "
+            "print(json.dumps({'zpt': a.DY_ZPT_REWEIGHT_JSONS, 'overlay': a.CONFIG_OVERLAY}))")
+    env = {**os.environ, "WRCOFFEA_CONFIG_OVERLAY": str(overlay)}
+    out = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, check=True)
+    got = json.loads(out.stdout.strip().splitlines()[-1])
+    assert got["overlay"] == str(overlay)
+    assert got["zpt"]["RunIII2024Summer24"].endswith("/data/reweights/x.json")   # resolved like config.yaml
+    assert "RunIISummer20UL18" in got["zpt"]                                     # base entries kept

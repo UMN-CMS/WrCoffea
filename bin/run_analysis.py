@@ -28,7 +28,7 @@ from wrcoffea.cli_utils import (
     select_default_signal_points,
     split_sample_groups,
 )
-from wrcoffea.regions import STUDIES, resolve_studies
+from wrcoffea.regions import STUDIES, check_unblind_allowed, resolve_studies
 from wrcoffea.systematics import FAMILIES, FIT_OBSERVABLES, validate_requested, resolve_syst_observables, normalize_omitted
 from wrcoffea.xrootd_fallback import (
     DEFAULT_RETRIES_PER_REDIRECTOR,
@@ -133,6 +133,10 @@ def validate_arguments(args, sig_points):
     """Check CLI argument combinations are valid before running."""
     is_composite = args.sample in COMPOSITE_SAMPLES
 
+    # Data signal regions are blind unless --unblind, which only Run 2 allows.
+    if getattr(args, "unblind", False):
+        check_unblind_allowed(args.era)
+
     if is_composite:
         if args.mass:
             raise ValueError("--mass is not valid for composite modes.")
@@ -198,7 +202,10 @@ def normalize_by_sumw(hists_dict):
 
     Recursively normalizes nested structures (e.g., cutflow histograms),
     but skips unweighted cutflow histograms (keys containing "unweighted")
-    which hold raw event counts and must not be rescaled.
+    which hold raw event counts and must not be rescaled.  The MC
+    event-weight distributions (``event_weights``) are never produced in
+    this mode and are refused if present: they count events vs log10|w|,
+    and weights lacking 1/sumw would put them at the wrong axis values.
     """
     import hist as hist_mod
 
@@ -211,6 +218,17 @@ def normalize_by_sumw(hists_dict):
         def _normalize_recursive(obj, key=""):
             """Recursively normalize Hist objects in nested dicts."""
             if "unweighted" in key:
+                return
+            if key == "event_weights":
+                raise RuntimeError(
+                    f"Dataset '{dataset}' carries event-weight distributions in compute_sumw "
+                    "(--unskimmed) mode; their log10|w| axis lacks the 1/sumw factor and cannot "
+                    "be normalized by rescaling. The analyzer must not book them in this mode."
+                )
+            if key == "weight" and hasattr(obj, "value") and not isinstance(obj, hist_mod.Hist):
+                # --save-events per-event weight column (event_lists/<region>/weight);
+                # the event masses alongside it are left untouched.
+                obj.value[...] /= sumw
                 return
             if isinstance(obj, hist_mod.Hist):
                 view = obj.view(flow=True)
@@ -471,6 +489,7 @@ def _process_fileset(args, fileset, *, client, condor=False):
         dy_zpt_reweight=not getattr(args, "no_dy_zpt_reweight", False),
         signal_kfactor=not getattr(args, "no_signal_kfactor", False),
         dy_reshape=not getattr(args, "no_dy_reshape", False),
+        unblind=bool(getattr(args, "unblind", False)),
     )
     run = Runner(
         executor=DaskExecutor(client=client, compression=None, retries=10, treereduction=10),
@@ -597,6 +616,10 @@ if __name__ == "__main__":
                                "filled everywhere). Default: all. Use 'fit' to restrict them to "
                                f"{' '.join(FIT_OBSERVABLES)} (saves memory), or list histogram names.")
     optional.add_argument("--region", type=str, default="both", choices=["resolved", "boosted", "both"], help="Analysis region to run: resolved, boosted, or both (default: both).")
+    optional.add_argument("--unblind", action="store_true",
+                          help="Fill the data signal regions (and their variants) and the full data cutflows. "
+                               "Run 2 eras only. Default: data is blinded (no signal-region histograms or "
+                               "events, ee/mumu cutflows stop before the mll cut); MC is never blinded.")
     optional.add_argument("--no-dy-zpt-reweight", action="store_true",
                           help="Do not apply the DY Z-pT (QCD x EW) reweighting to DYJets for eras with a payload "
                                "in config.yaml (dy_zpt_reweight). Incompatible with --systs dyzpt.")
@@ -683,6 +706,8 @@ if __name__ == "__main__":
 
     logging.info(f"Analyzing {args.era} - {args.sample} events")
     validate_arguments(args, MASS_CHOICES)
+    if args.unblind:
+        logging.warning("--unblind: data signal regions and full data cutflows will be filled.")
     run, year, era = get_era_details(args.era)
 
     is_composite = args.sample in COMPOSITE_SAMPLES

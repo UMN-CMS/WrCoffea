@@ -37,6 +37,14 @@ Normalization sources (``lumi``) are materialised here by scaling the nominal.
 A JSON manifest next to each ROOT file records what was requested, produced,
 unaffected, and omitted per region.
 
+Blinding is part of the production configuration: data of a blinded run must
+not have filled any signal region (``wrcoffea.regions``), and the manifest's
+``blinding`` entry says what a data file withholds.
+
+Cutflows and the MC event-weight distributions are plain nested Hists,
+summed over the datasets of a file and written next to the histograms
+(``cutflow_resolved/``, ``cutflow_boosted/``, ``event_weights/``).
+
 Legacy payloads without coverage records are summed and written as-is.
 """
 
@@ -54,7 +62,7 @@ from hist import Hist
 
 from wrcoffea.era_utils import get_era_details
 from wrcoffea.histograms import all_histogram_names
-from wrcoffea.regions import region_names
+from wrcoffea.regions import BLINDED_CUTFLOW_STEPS, blinded_region_names, is_signal_region, region_names
 from wrcoffea.systematics import (
     NOMINAL,
     NORMALIZATION,
@@ -79,6 +87,11 @@ STATUS_UNAFFECTED = "unaffected"
 STATUS_OMITTED = "omitted"
 STATUS_UNAVAILABLE = "unavailable"
 STATUS_ABSENT = "absent"   # the dataset never filled this region at all
+
+# ROOT directory of each cutflow kind (wrcoffea.regions.BLINDED_CUTFLOW_STEPS keys).
+CUTFLOW_DIRS = {"resolved": "cutflow_resolved", "boosted": "cutflow_boosted"}
+# ROOT directory of the MC event-weight distributions (<dir>/<region>/positive|negative).
+EVENT_WEIGHTS_DIR = "event_weights"
 
 
 class SystematicCoverageError(RuntimeError):
@@ -108,7 +121,7 @@ def _folder_and_hist_names(region: str, syst: str, hist_stem: str):
 
 
 # ---------------------------------------------------------------------------
-# Cutflows (unchanged)
+# Cutflows and event-weight distributions (nested Hist dicts)
 # ---------------------------------------------------------------------------
 
 def _sum_cutflow_hists(my_hists, cutflow_keys=("cutflow", "__cutflow__")):
@@ -121,6 +134,9 @@ def _sum_cutflow_hists(my_hists, cutflow_keys=("cutflow", "__cutflow__")):
         "mumu": {...},
         "em":   {...},
       }
+
+    Any nested Hist dict works the same way, e.g. the MC event-weight
+    distributions ``event_weights = {region: {"positive": Hist, "negative": Hist}}``.
 
     Args:
         my_hists: Nested dataset histogram payload map.
@@ -164,7 +180,8 @@ def _sum_cutflow_hists(my_hists, cutflow_keys=("cutflow", "__cutflow__")):
 
 def _save_cutflows(root_file, cutflow_summed: Dict[str, dict], prefix: str):
     """
-    Recursively write all cutflow histograms while avoiding duplicate writes.
+    Recursively write all cutflow histograms (or any nested Hist dict, such as
+    the event-weight distributions) as ``<prefix>/<key>/.../<name>``, avoiding duplicate writes.
     If a given path is encountered twice, the second write is skipped to prevent ROOT ;2 cycles.
     """
     seen = set()
@@ -245,9 +262,19 @@ class DatasetCoverage:
     def syst_observables(self):
         return self.config.get("observables")
 
+    @property
+    def blinded(self) -> bool:
+        """True for data of a blinded run: it withholds every signal region."""
+        return bool(self.config.get("blind", False)) and self.is_mc is False
+
     def expected_regions(self) -> list[str]:
-        """Regions the recorded configuration requires this dataset to have filled."""
-        return region_names(self.config.get("region", "both"), self.config.get("variants", ()))
+        """Regions the recorded configuration requires this dataset to have filled.
+
+        Data of a blinded run must not have filled the signal regions; MC
+        always requires every region.
+        """
+        return region_names(self.config.get("region", "both"), self.config.get("variants", ()),
+                            blind=self.blinded)
 
     def expected(self, region: str) -> list[str]:
         """Labels the registry requires this dataset to have produced in *region*.
@@ -317,6 +344,11 @@ def check_dataset_coverage(cov: DatasetCoverage, families: Iterable[str] | None 
             f"never filled {missing_regions}."
         )
     extra_regions = sorted(set(cov.counts) - set(required_regions))
+    if cov.blinded and any(is_signal_region(r) for r in extra_regions):
+        raise SystematicCoverageError(
+            f"Dataset '{cov.name}' is data of a blinded run but filled signal regions "
+            f"{[r for r in extra_regions if is_signal_region(r)]}."
+        )
     if extra_regions:
         raise SystematicCoverageError(
             f"Dataset '{cov.name}' filled regions {extra_regions} that its configuration "
@@ -617,6 +649,29 @@ def split_hists_with_syst(summed_hists, *, sum_over_process=True, pairs=None):
 # Manifest
 # ---------------------------------------------------------------------------
 
+def blinding_record(report: MergeReport) -> dict:
+    """The manifest's ``blinding`` entry: what this file's data withholds.
+
+    ``applied`` is true only when every dataset of the file is data and the
+    recorded run configuration was blinded; MC files, unblinded data, and
+    legacy payloads without coverage records report ``applied: false``.
+    """
+    covs = list(report.datasets.values())
+    is_data = bool(covs) and all(cov.has_info and cov.is_mc is False for cov in covs)
+    if not (report.coverage_known and is_data and report.config.get("blind", False)):
+        return {"applied": False, "signal_regions": [], "cutflow_truncated_before": {}}
+    mode = report.config.get("region", "both")
+    return {
+        "applied": True,
+        "signal_regions": sorted(blinded_region_names(mode, report.config.get("variants", ()))),
+        # Only the cutflow kinds this run produced (all of them for --region both).
+        "cutflow_truncated_before": {
+            CUTFLOW_DIRS[kind]: dict(stops)
+            for kind, stops in BLINDED_CUTFLOW_STEPS.items() if mode in (kind, "both")
+        },
+    }
+
+
 def build_manifest(report: MergeReport, *, era: str, sample, families, syst_observables,
                    output_file: Path, omitted=()) -> dict:
     fams = sorted(normalize_families(families))
@@ -660,6 +715,7 @@ def build_manifest(report: MergeReport, *, era: str, sample, families, syst_obse
         ],
         "syst_observables": describe_syst_observables(syst_observables),
         "coverage_known": report.coverage_known,
+        "blinding": blinding_record(report),
         "datasets": {
             name: {
                 "n_chunks": cov.n_chunks,
@@ -744,6 +800,9 @@ def save_histograms(histograms, args):
         histograms,
         cutflow_keys=("cutflow_boosted", "__cutflow_boosted__"),
     )
+    # MC only (data payloads carry none): event counts vs log10|w| per region,
+    # outside the systematics bookkeeping.
+    event_weights_summed = _sum_cutflow_hists(histograms, cutflow_keys=("event_weights",))
 
     with uproot.recreate(output_file) as root_file:
         for (region, syst, hist_name), hist_obj in split_histograms_dict.items():
@@ -753,8 +812,9 @@ def save_histograms(histograms, args):
             folder, hname = _folder_and_hist_names(region, syst, var_stem)
             root_file[f"/{folder}/{hname}"] = hist_obj
 
-        _save_cutflows(root_file, cutflow_resolved_summed, "/cutflow_resolved")
-        _save_cutflows(root_file, cutflow_boosted_summed, "/cutflow_boosted")
+        _save_cutflows(root_file, cutflow_resolved_summed, f"/{CUTFLOW_DIRS['resolved']}")
+        _save_cutflows(root_file, cutflow_boosted_summed, f"/{CUTFLOW_DIRS['boosted']}")
+        _save_cutflows(root_file, event_weights_summed, f"/{EVENT_WEIGHTS_DIR}")
         _save_event_lists(root_file, histograms)
 
     manifest = build_manifest(

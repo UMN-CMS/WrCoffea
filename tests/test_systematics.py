@@ -14,6 +14,7 @@ Acceptance checks agreed for the bookkeeping contract:
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -27,12 +28,14 @@ from tests.test_analyzer import _apply_sf_patches, _make_integration_events
 from wrcoffea.analysis_config import ELECTRON_JSONS, LUMI_UNC
 from wrcoffea.analyzer import WrAnalysis
 from wrcoffea.histograms import all_histogram_names, create_hist
-from wrcoffea.regions import BOOSTED_REGIONS, RESOLVED_REGIONS, region_names
+from wrcoffea.regions import BOOSTED_REGIONS, RESOLVED_REGIONS, is_signal_region, region_names
 from wrcoffea.save_hists import (
     STATUS_EVALUATED,
     STATUS_UNAFFECTED,
     STATUS_UNAVAILABLE,
     SystematicCoverageError,
+    blinding_record,
+    build_manifest,
     check_dataset_coverage,
     coverage_status,
     dataset_coverage,
@@ -48,6 +51,7 @@ from wrcoffea.systematics import (
     SHAPE,
     WEIGHT,
     expected_labels,
+    parse_production_config,
     production_config,
     required_labels,
     resolve_syst_observables,
@@ -196,15 +200,17 @@ def _hist(name="mass_dilepton"):
 
 
 def _payload(h, coverage, *, n_chunks=1, era=RUN3, datatype="mc", group="DYJets", name="mass_dilepton",
-             families=("jes",), omitted=(), observables=None, region="resolved", variants=()):
+             families=("jes",), omitted=(), observables=None, region="resolved", variants=(),
+             blind=False):
     """Synthetic dataset payload.
 
     Regions the configuration requires but *coverage* does not mention are
-    filled in as Nominal-complete so the tests can focus on one region.
+    filled in as Nominal-complete so the tests can focus on one region.  With
+    *blind* (a blinded run), data leaves out the signal regions.
     """
     is_mc = datatype == "mc"
     full = {}
-    for r in region_names(region, variants):
+    for r in region_names(region, variants, blind=blind and not is_mc):
         full[r] = {NOMINAL: n_chunks}
         full[r].update({l: n_chunks for l in required_labels(era, families, r, is_mc=is_mc, omitted=omitted)})
     for r, labels in coverage.items():
@@ -217,7 +223,7 @@ def _payload(h, coverage, *, n_chunks=1, era=RUN3, datatype="mc", group="DYJets"
         "dataset_meta": {
             "era": {era}, "datatype": {datatype}, "physics_group": {group},
             "syst_config": {production_config(families, omitted, observables,
-                                              region=region, variants=variants)},
+                                              region=region, variants=variants, blind=blind)},
         },
     }
 
@@ -433,6 +439,139 @@ class TestMergeRule:
 
 
 # ---------------------------------------------------------------------------
+# Blinding: production config, coverage, and the manifest record
+# ---------------------------------------------------------------------------
+
+def _data_payload(**kwargs):
+    kwargs = {"families": (), "region": "both", "variants": ("nomass",), **kwargs}
+    return _payload(_hist(), {}, datatype="data", group="Observed", **kwargs)
+
+
+class TestBlinding:
+    # The record the plotter reads from the manifest of a blinded data file.
+    BLINDED_RECORD = {
+        "applied": True,
+        "signal_regions": [
+            "wr_ee_boosted_sr", "wr_ee_boosted_sr_nomass",
+            "wr_ee_resolved_sr", "wr_ee_resolved_sr_nomass",
+            "wr_mumu_boosted_sr", "wr_mumu_boosted_sr_nomass",
+            "wr_mumu_resolved_sr", "wr_mumu_resolved_sr_nomass",
+        ],
+        "cutflow_truncated_before": {
+            "cutflow_resolved": {"ee": "mll_gt200", "mumu": "mll_gt200"},
+            "cutflow_boosted": {"ee": "mll_gt200_boosted", "mumu": "mll_gt200_boosted"},
+        },
+    }
+    NOT_APPLIED = {"applied": False, "signal_regions": [], "cutflow_truncated_before": {}}
+
+    @pytest.mark.parametrize("blind", [False, True])
+    def test_production_config_round_trip(self, blind):
+        text = production_config(["jes"], ["ElectronTrigSf"], frozenset({"mass_dilepton"}),
+                                 region="boosted", variants=("nomass",), blind=blind)
+        assert json.loads(text)["blind"] is blind
+        assert parse_production_config(text) == {
+            "blind": blind,
+            "families": frozenset({"jes"}),
+            "omitted": frozenset({"ElectronTrigSf"}),
+            "observables": frozenset({"mass_dilepton"}),
+            "region": "boosted",
+            "variants": frozenset({"nomass"}),
+        }
+
+    def test_production_config_defaults_to_unblinded(self):
+        assert parse_production_config(production_config([], [], None))["blind"] is False
+        # Different blinding never merges: the config strings differ.
+        assert production_config([], [], None, blind=True) != production_config([], [], None)
+
+    def test_legacy_config_without_blind_is_unblinded(self):
+        legacy = json.loads(production_config(["jes"], [], None, region="resolved"))
+        del legacy["blind"]
+        assert parse_production_config(json.dumps(legacy))["blind"] is False
+        payload = _data_payload(families=("jes",), region="resolved", variants=())
+        payload["dataset_meta"]["syst_config"] = {json.dumps(legacy, sort_keys=True)}
+        cov = dataset_coverage("Data", payload)
+        assert not cov.blinded
+        assert "wr_ee_resolved_sr" in cov.expected_regions()
+        check_dataset_coverage(cov, ["jes"])
+
+    def test_blinded_data_must_not_have_signal_regions(self):
+        cov = dataset_coverage("Data", _data_payload(blind=True))
+        assert cov.blinded
+        assert cov.expected_regions() == region_names("both", ("nomass",), blind=True)
+        assert set(cov.expected_regions()) == {
+            r for r in region_names("both", ("nomass",)) if not is_signal_region(r)}
+        assert set(cov.regions()) == set(cov.expected_regions())
+        check_dataset_coverage(cov, [])
+
+    @pytest.mark.parametrize("region", ["wr_mumu_resolved_sr", "wr_ee_boosted_sr_nomass"])
+    def test_blinded_data_that_filled_a_signal_region_fails(self, region):
+        payload = _data_payload(blind=True)
+        payload["syst_coverage"][region] = {NOMINAL: 1}
+        with pytest.raises(SystematicCoverageError,
+                           match=f"blinded run but filled signal regions \\['{region}'\\]"):
+            check_dataset_coverage(dataset_coverage("Data", payload), [])
+
+    def test_unblinded_data_needs_every_region(self):
+        payload = _data_payload()
+        cov = dataset_coverage("Data", payload)
+        assert not cov.blinded
+        assert cov.expected_regions() == region_names("both", ("nomass",))
+        check_dataset_coverage(cov, [])
+        del payload["syst_coverage"]["wr_ee_resolved_sr_nomass"]
+        with pytest.raises(SystematicCoverageError, match="never filled \\['wr_ee_resolved_sr_nomass'\\]"):
+            check_dataset_coverage(dataset_coverage("Data", payload), [])
+
+    def test_mc_of_a_blinded_run_needs_every_region(self):
+        payload = _payload(_hist(), {}, families=(), region="both", variants=("nomass",), blind=True)
+        cov = dataset_coverage("MC", payload)
+        assert cov.config["blind"] and not cov.blinded
+        assert cov.expected_regions() == region_names("both", ("nomass",))
+        check_dataset_coverage(cov, [])
+        del payload["syst_coverage"]["wr_mumu_resolved_sr"]
+        with pytest.raises(SystematicCoverageError, match="never filled \\['wr_mumu_resolved_sr'\\]"):
+            check_dataset_coverage(dataset_coverage("MC", payload), [])
+
+    def test_blinding_record_for_blinded_data(self):
+        _, report = sum_hists_with_coverage({"Data": _data_payload(blind=True)}, RUN3, [])
+        assert blinding_record(report) == self.BLINDED_RECORD
+        manifest = build_manifest(report, era=RUN3, sample="Muon", families=[], syst_observables=None,
+                                  output_file=Path("WRAnalyzer_Muon.root"))
+        assert manifest["blinding"] == self.BLINDED_RECORD
+
+    @pytest.mark.parametrize("region, kinds", [("resolved", ["cutflow_resolved"]),
+                                               ("boosted", ["cutflow_boosted"])])
+    def test_blinding_record_follows_region_mode(self, region, kinds):
+        _, report = sum_hists_with_coverage(
+            {"Data": _data_payload(region=region, variants=(), blind=True)}, RUN3, [])
+        record = blinding_record(report)
+        assert record["applied"] is True
+        assert record["signal_regions"] == [f"wr_{f}_{region}_sr" for f in ("ee", "mumu")]
+        assert sorted(record["cutflow_truncated_before"]) == kinds
+
+    def test_blinding_record_not_applied_to_mc_or_unblinded_data(self):
+        mc = _payload(_hist(), {}, families=(), region="both", variants=("nomass",), blind=True)
+        _, report = sum_hists_with_coverage({"MC": mc}, RUN3, [])
+        assert blinding_record(report) == self.NOT_APPLIED
+        _, report = sum_hists_with_coverage({"Data": _data_payload(era=UL18)}, UL18, [])
+        assert blinding_record(report) == self.NOT_APPLIED
+
+    def test_blinding_record_not_applied_to_legacy_payloads(self):
+        h = _hist()
+        _fill(h, "wr_ee_resolved_sr", NOMINAL, 3.0, process="Observed")
+        _, report = sum_hists_with_coverage({"Data": {"mass_dilepton": h}}, RUN3, [])
+        assert not report.coverage_known
+        assert blinding_record(report) == self.NOT_APPLIED
+        # A tracked payload from before blinding existed (no "blind" entry).
+        payload = _data_payload()
+        legacy = json.loads(next(iter(payload["dataset_meta"]["syst_config"])))
+        del legacy["blind"]
+        payload["dataset_meta"]["syst_config"] = {json.dumps(legacy, sort_keys=True)}
+        _, report = sum_hists_with_coverage({"Data": payload}, RUN3, [])
+        assert report.coverage_known
+        assert blinding_record(report) == self.NOT_APPLIED
+
+
+# ---------------------------------------------------------------------------
 # End-to-end through the analyzer
 # ---------------------------------------------------------------------------
 
@@ -521,7 +660,9 @@ class TestAnalyzerCoverage:
         assert out["n_chunks"] == 1
         meta = out["dataset_meta"]
         assert (meta["era"], meta["datatype"], meta["physics_group"]) == ({UL18}, {"mc"}, {"DYJets"})
-        assert meta["syst_config"] == {production_config(self.FAMILIES, self.OMIT, None, region="resolved")}
+        # Blinding is run-level (recorded for MC too); the processor default is blind.
+        assert meta["syst_config"] == {production_config(self.FAMILIES, self.OMIT, None, region="resolved",
+                                                          blind=True)}
         assert set(out["syst_coverage"]) == set(RESOLVED_REGIONS)
         for region in RESOLVED_REGIONS:
             labels = set(out["syst_coverage"][region])

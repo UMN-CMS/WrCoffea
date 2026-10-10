@@ -12,6 +12,7 @@ from coffea.nanoevents.methods import candidate
 
 from wrcoffea.analysis_config import CUTS, LUMIS
 from wrcoffea.analyzer import WrAnalysis
+from wrcoffea.regions import is_signal_region, region_names
 
 ak.behavior.update(vector.behavior)
 ak.behavior.update(candidate.behavior)
@@ -733,42 +734,50 @@ class TestProcessIntegration:
     @pytest.mark.parametrize("nomass", [False, True], ids=["sr", "nomass"])
     @_apply_sf_patches
     def test_process_data_skips_lepton_sfs(self, flavor, topology, nomass):
-        """Selected data retains unit weights without evaluating efficiency payloads."""
+        """Selected data retains unit weights without evaluating efficiency payloads.
+
+        The signal regions are only filled for unblinded data, which the
+        fixture era (UL18, Run 2) allows; blinded data never builds them.
+        """
         from contextlib import ExitStack
 
-        proc = WrAnalysis(
-            mass_point=None, region="both", region_variants={"nomass"},
-            enabled_systs=["sf", "lumi", "pileup", "jes", "jer", "elescale", "muscale"],
-        )
+        systs = ["sf", "lumi", "pileup", "jes", "jer", "elescale", "muscale"]
         n = 3
-        events = _make_integration_events(
-            n_events=n, n_muons=2 if flavor == "mumu" else 0,
-            n_electrons=2 if flavor == "ee" else 0, n_jets=2, n_fatjets=1,
-            metadata={"datatype": "data", "physics_group": "Observed", "sample": "Observed"},
-            include_genweight=False,
-        )
-        collection = "Muon" if flavor == "mumu" else "Electron"
-        leptons = getattr(events, collection)
-        leptons = ak.with_field(leptons, ak.Array([[300.0, 250.0]] * n), "pt")
-        leptons = ak.with_field(leptons, ak.zeros_like(leptons.eta), "eta")
-        leptons = ak.with_field(leptons, ak.Array([[0.0, np.pi]] * n), "phi")
-        if topology == "boosted":
-            # The second lepton is loose and embedded in the AK8 jet.
-            if collection == "Muon":
-                leptons = ak.with_field(leptons, ak.Array([[0.05, 0.2]] * n), "tkRelIso")
-            else:
-                leptons = ak.with_field(leptons, ak.Array([[True, False]] * n), "cutBased_HEEP")
-                leptons = ak.with_field(leptons, ak.Array([[4, 2]] * n), "cutBased")
-        setattr(events, collection, leptons)
-        jet_pt = 60.0 if nomass else 300.0
-        events.Jet = ak.with_field(events.Jet, ak.full_like(events.Jet.pt, jet_pt), "pt")
-        events.Jet = ak.with_field(events.Jet, ak.zeros_like(events.Jet.eta), "eta")
-        events.Jet = ak.with_field(events.Jet, ak.Array([[np.pi / 2, -np.pi / 2]] * n), "phi")
-        events.FatJet = ak.with_field(
-            events.FatJet, ak.full_like(events.FatJet.pt, 300.0 if nomass else 600.0), "pt",
-        )
-        events.FatJet = ak.with_field(events.FatJet, ak.zeros_like(events.FatJet.eta), "eta")
-        events.FatJet = ak.with_field(events.FatJet, ak.full_like(events.FatJet.phi, np.pi), "phi")
+
+        def make_events():
+            events = _make_integration_events(
+                n_events=n, n_muons=2 if flavor == "mumu" else 0,
+                n_electrons=2 if flavor == "ee" else 0, n_jets=2, n_fatjets=1,
+                metadata={"datatype": "data", "physics_group": "Observed", "sample": "Observed"},
+                include_genweight=False,
+            )
+            collection = "Muon" if flavor == "mumu" else "Electron"
+            leptons = getattr(events, collection)
+            leptons = ak.with_field(leptons, ak.Array([[300.0, 250.0]] * n), "pt")
+            leptons = ak.with_field(leptons, ak.zeros_like(leptons.eta), "eta")
+            leptons = ak.with_field(leptons, ak.Array([[0.0, np.pi]] * n), "phi")
+            if topology == "boosted":
+                # The second lepton is loose and embedded in the AK8 jet.
+                if collection == "Muon":
+                    leptons = ak.with_field(leptons, ak.Array([[0.05, 0.2]] * n), "tkRelIso")
+                else:
+                    leptons = ak.with_field(leptons, ak.Array([[True, False]] * n), "cutBased_HEEP")
+                    leptons = ak.with_field(leptons, ak.Array([[4, 2]] * n), "cutBased")
+            setattr(events, collection, leptons)
+            jet_pt = 60.0 if nomass else 300.0
+            events.Jet = ak.with_field(events.Jet, ak.full_like(events.Jet.pt, jet_pt), "pt")
+            events.Jet = ak.with_field(events.Jet, ak.zeros_like(events.Jet.eta), "eta")
+            events.Jet = ak.with_field(events.Jet, ak.Array([[np.pi / 2, -np.pi / 2]] * n), "phi")
+            events.FatJet = ak.with_field(
+                events.FatJet, ak.full_like(events.FatJet.pt, 300.0 if nomass else 600.0), "pt",
+            )
+            events.FatJet = ak.with_field(events.FatJet, ak.zeros_like(events.FatJet.eta), "eta")
+            events.FatJet = ak.with_field(events.FatJet, ak.full_like(events.FatJet.phi, np.pi), "phi")
+            return events
+
+        def make_proc(**kwargs):
+            return WrAnalysis(mass_point=None, region="both", region_variants={"nomass"},
+                              enabled_systs=systs, **kwargs)
 
         with ExitStack() as stack:
             for name in ("muon_sf", "muon_sf_loose", "muon_trigger_sf",
@@ -777,11 +786,13 @@ class TestProcessIntegration:
                     f"wrcoffea.analyzer.{name}",
                     side_effect=AssertionError(f"{name} must not be called for data"),
                 ))
-            output = proc.process(events)["Observed"]
+            output = make_proc(unblind=True).process(make_events())["Observed"]
+            blinded = make_proc().process(make_events())["Observed"]
 
         suffix = "sr_nomass" if nomass else "sr"
+        region = f"wr_{flavor}_{topology}_{suffix}"
         selected = output["mass_dilepton"][{
-            "process": "Observed", "region": f"wr_{flavor}_{topology}_{suffix}", "syst": "Nominal",
+            "process": "Observed", "region": region, "syst": "Nominal",
         }]
         assert selected.sum(flow=True).value == pytest.approx(n)
         assert selected.sum(flow=True).variance == pytest.approx(n)
@@ -790,6 +801,14 @@ class TestProcessIntegration:
                 # Booked but unfilled histograms can have an empty category axis.
                 assert set(obj.axes["syst"]) <= {"Nominal"}
         assert "_sumw" not in output
+
+        # Blinded data (the default) neither fills nor records any signal region.
+        assert set(blinded["syst_coverage"]) == set(region_names("both", {"nomass"}, blind=True))
+        assert region in output["syst_coverage"] and region not in blinded["syst_coverage"]
+        for obj in blinded.values():
+            if hasattr(obj, "axes"):
+                assert not any(is_signal_region(r) for r in obj.axes["region"])
+        assert "_sumw" not in blinded
 
     # ------------------------------------------------------------------
     # compute_sumw=True accumulates genWeight sum
@@ -1410,7 +1429,7 @@ class TestBoostedSFCandidates:
         captured = {}
 
         def fake_sfs(region, syst_weights, era, tight_muons, tight_electrons,
-                     loose_muons=None, loose_electrons=None, *, is_mc):
+                     loose_muons=None, loose_electrons=None, *, is_mc, factors=None):
             captured[region] = {
                 "tight_mu": ak.to_list(ak.flatten(tight_muons.pt)),
                 "tight_e": ak.to_list(ak.flatten(tight_electrons.pt)),

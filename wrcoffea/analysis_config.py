@@ -8,6 +8,9 @@ Selection name constants (``SEL_*``) remain here as Python constants since
 they are code-level identifiers used for PackedSelection bookkeeping.
 """
 
+import re
+import logging
+import os
 from pathlib import Path
 
 import yaml
@@ -19,6 +22,30 @@ import yaml
 _CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
 with open(_CONFIG_PATH, "r", encoding="utf-8") as _f:
     _cfg = yaml.safe_load(_f)
+
+#: Environment variable naming a YAML overlay merged on top of config.yaml:
+#: each top-level mapping is updated key by key, anything else is replaced.
+#: Meant for studies (e.g. a new reweighting payload) that must not change the
+#: shared config other runs read; local Dask workers inherit the environment,
+#: Condor jobs do not.
+CONFIG_OVERLAY_ENV = "WRCOFFEA_CONFIG_OVERLAY"
+
+
+def _merge_overlay(cfg: dict, overlay: dict) -> dict:
+    out = dict(cfg)
+    for key, value in (overlay or {}).items():
+        if isinstance(value, dict) and isinstance(out.get(key), dict):
+            out[key] = {**out[key], **value}
+        else:
+            out[key] = value
+    return out
+
+
+CONFIG_OVERLAY = os.environ.get(CONFIG_OVERLAY_ENV) or None
+if CONFIG_OVERLAY:
+    with open(CONFIG_OVERLAY, "r", encoding="utf-8") as _f:
+        _cfg = _merge_overlay(_cfg, yaml.safe_load(_f))
+    logging.getLogger(__name__).warning("config.yaml overlaid with %s (%s)", CONFIG_OVERLAY, CONFIG_OVERLAY_ENV)
 
 # ---------------------------------------------------------------------------
 # Resolve repo-relative data paths against the repo root, so lumi masks and
@@ -74,6 +101,28 @@ MC_ALIAS = _cfg.get("mc_alias") or {}
 DY_ZPT_REWEIGHT_JSONS = _cfg.get("dy_zpt_reweight") or {}
 # era -> JSON payload for the data-driven DY reshape vs jet pT.
 DY_RESHAPE_JSONS = _cfg.get("dy_reshape") or {}
+# era -> regex of the DY dataset names its Z-pT reweight and reshape were derived
+# for; other DY samples get the identity.  Required for every era with a payload.
+DY_REWEIGHT_DATASETS = _cfg.get("dy_reweight_datasets") or {}
+
+
+def check_dy_reweight_datasets(zpt_jsons, reshape_jsons, datasets):
+    """Raise unless every era with a DY Z-pT or reshape payload names, with a valid
+    regular expression, the DY datasets it was derived for."""
+    missing = sorted((set(zpt_jsons) | set(reshape_jsons)) - set(datasets))
+    if missing:
+        raise ValueError(
+            f"config.yaml: eras {missing} have a dy_zpt_reweight or dy_reshape payload but no "
+            "dy_reweight_datasets entry naming the DY datasets it was derived for."
+        )
+    for era, pattern in datasets.items():
+        try:
+            re.compile(pattern)
+        except re.error as exc:
+            raise ValueError(f"config.yaml: dy_reweight_datasets[{era}] = {pattern!r}: {exc}") from exc
+
+
+check_dy_reweight_datasets(DY_ZPT_REWEIGHT_JSONS, DY_RESHAPE_JSONS, DY_REWEIGHT_DATASETS)
 # era -> JSON payload for the signal k(m_lN)/<k> reweighting.
 SIGNAL_KFACTOR_JSONS = _cfg.get("signal_kfactor") or {}
 # era -> {eta_max, phi_min, phi_max}: HEM 15/16 electron veto window; eras
@@ -121,6 +170,14 @@ SEL_LEAD_TIGHT_PT60 = "lead_tight_lepton_pt60"
 SEL_SUBLEAD_TIGHT_PT53 = "sublead_tight_pt53"
 SEL_MIN_TWO_AK4_JETS = "min_two_ak4_jets"
 SEL_60_MLL_150 = "60_mll_150"
+
+# DY CR halves of the AN-19-083 CR1 -> CR2 reshape test (study ``dy-cr-split``).
+# The resolved selections cut on the two tight leptons, the boosted ones on the
+# DY candidate pair; each topology fills its own PackedSelection, and only when
+# the study is requested.
+DYCR_MLL_SPLIT = 100.0
+SEL_MLL_60_100 = "mll_60_100"
+SEL_MLL_100_150 = "mll_100_150"
 
 # Boosted region selection keys
 SEL_BOOSTEDTAG = "boosted_tag"

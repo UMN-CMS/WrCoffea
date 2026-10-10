@@ -14,6 +14,12 @@ Output conventions:
     - All physics histograms carry categorical axes: (process, region, syst).
     - Cutflows contain labeled one-cut and cumulative histograms with raw
         counts and base-weight yields/variances, before per-region lepton SFs.
+    - Data is blinded unless ``unblind``: no signal regions, and the ee/mumu
+        cutflows stop before the mll cut (policy in ``wrcoffea.regions``).
+    - MC carries ``event_weights[region]["positive"|"negative"]``: event
+        counts vs log10|w| of the region's nominal weight (not with compute_sumw),
+        and ``event_weights[region]["components"]``: one distribution per
+        factor of that weight (see ``histograms.fill_event_weights``).
 
 Notes for distributed execution (Dask/Condor):
     - correctionlib payloads are cached per worker process.
@@ -27,12 +33,13 @@ from coffea.lumi_tools import LumiMask
 import awkward as ak
 import numpy as np
 import copy
+import re
 import os
 import logging
 from coffea.nanoevents.methods import vector
 from wrcoffea.analysis_config import (
     CUTS, DY_RESHAPE_JSONS, DY_ZPT_REWEIGHT_JSONS, ELECTRON_JSONS, HEM_VETO, JME_JSONS, LUMI_JSONS, LUMI_UNC, LUMIS,
-    MUON_JSONS, PILEUP_JSONS, SIGNAL_KFACTOR_JSONS,
+    DY_REWEIGHT_DATASETS, MUON_JSONS, PILEUP_JSONS, SIGNAL_KFACTOR_JSONS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
@@ -40,7 +47,7 @@ from wrcoffea.analysis_config import (
     SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
     SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
-    SEL_60_MLL_150,
+    SEL_60_MLL_150, DYCR_MLL_SPLIT, SEL_MLL_60_100, SEL_MLL_100_150,
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR,
@@ -55,7 +62,9 @@ from wrcoffea.dy_reshape import dy_reshape_weight
 from wrcoffea.dy_reweight import DY_PROCESS_GROUP, dy_zpt_weight
 from wrcoffea.signal_kfactor import SIGNAL_PROCESS_GROUP, mass_point_key, signal_kfactor_weight
 from wrcoffea.era_utils import ERA_MAPPING
-from wrcoffea.regions import RESOLVED_REGIONS, BOOSTED_REGIONS, build_regions, validate_variants
+from wrcoffea.regions import (
+    RESOLVED_REGIONS, BOOSTED_REGIONS, added_selections, build_regions, check_unblind_allowed, validate_variants,
+)
 from wrcoffea.systematics import (
     DIRECTIONS, NOMINAL, SHAPE, WEIGHT,
     normalize_families, normalize_omitted, producible, production_config,
@@ -67,6 +76,7 @@ from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
     fill_resolved_histograms, fill_boosted_histograms, fill_cutflows, fill_boosted_cutflows,
+    fill_event_weights, GENWEIGHT_COMPONENT, NORMALIZATION_COMPONENT,
 )
 
 ak.behavior.update(vector.behavior)
@@ -119,17 +129,24 @@ class WrAnalysis(processor.ProcessorABC):
       for eras with a payload in ``config.yaml`` (default True).  It is
       derived on top of the Z-pT reweighting, so it is only applied when
       that is on too.
+    - `unblind`: also build the signal regions for data and keep its full
+      cutflows (default False: data is blinded, see ``wrcoffea.regions``).
+      Only Run 2 data may be unblinded; MC is never blinded.  Recorded in
+      the production configuration of every chunk.
     """
     def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False,
                  region_variants=None, syst_observables=None, omit_systs=None,
                  dy_zpt_reweight=True, signal_kfactor=True, dy_reshape=True,
-                 save_events=False):
+                 save_events=False, unblind=False):
         self._signal_sample = mass_point
         self._compute_sumw = compute_sumw
         # --save-events: also keep the per-event (mass, nominal weight) of the
         # signal regions (resolved: mass_fourobject, boosted: mass_twoobject),
         # written as TTrees next to the histograms (save_hists).
         self._save_events = bool(save_events)
+        # Blinding: data never builds the signal regions (or their variants)
+        # and its ee/mumu cutflows stop before the mll cut, unless unblinded.
+        self._blind = not bool(unblind)
         self._dy_zpt_reweight = bool(dy_zpt_reweight)
         self._dy_reshape = bool(dy_reshape) and self._dy_zpt_reweight
         self._signal_kfactor = bool(signal_kfactor)
@@ -150,7 +167,7 @@ class WrAnalysis(processor.ProcessorABC):
         # payloads made with different settings.
         self._syst_config = production_config(
             self._enabled_systs, self._omit_systs, self._syst_observables,
-            region=self._region, variants=self._region_variants,
+            region=self._region, variants=self._region_variants, blind=self._blind,
         )
         booking = _booking_specs()
         def _make_output():
@@ -362,34 +379,31 @@ class WrAnalysis(processor.ProcessorABC):
 
         return tight_leps, loose_leps, masks
 
-    def select_jets(self, events, era, *, is_signal: bool = False):
+    def select_jets(self, events, era):
         """Select AK4 and AK8 jets and return (collections, per-object masks).
 
-        For eras with a JME JSON configured (backgrounds only), AK4 PUPPI
-        TightLeptonVeto is evaluated via correctionlib.  If the required
-        NanoAOD fields are missing, fall back to ``Jet.isTightLeptonVeto``
-        and warn once per worker.
+        For eras with a JME JSON configured, AK4 PUPPI TightLeptonVeto is
+        evaluated via correctionlib.  If the required NanoAOD fields are
+        missing, fall back to ``Jet.jetId >= 6`` and warn once per worker.
         """
         # ---------- AK4 ----------
         ak4_pteta_mask = (events.Jet.pt > CUTS["ak4_pt_min"]) & (np.abs(events.Jet.eta) < CUTS["ak4_eta_max"])
-        # 2024 signal samples are really Run3Summer23BPix files
-        jetid_era = "Run3Summer23BPix" if (is_signal and era == "RunIII2024Summer24") else era
-        if jetid_era in JME_JSONS:
+        if era in JME_JSONS:
             try:
-                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, jetid_era, jetid_name="AK4PUPPI_TightLeptonVeto")
+                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, era, jetid_name="AK4PUPPI_TightLeptonVeto")
             except AttributeError as e:
                 # Fallback for missing fields (shouldn't happen after config fix)
-                key = f"jetid_fallback::{jetid_era}"
+                key = f"jetid_fallback::{era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", jetid_era, e
+                        "(example error: %s)", era, e
                     )
                 ak4_id_mask = events.Jet.jetId >= 6
         else:
-            # For eras without jetid.json (including NanoAODv12 eras and signal remapped from 2024)
+            # For eras without jetid.json (the NanoAODv12 eras)
             # Use isTightLeptonVeto if available, otherwise use jetId >= 6
             if hasattr(events.Jet, 'isTightLeptonVeto'):
                 ak4_id_mask = events.Jet.isTightLeptonVeto
@@ -499,6 +513,18 @@ class WrAnalysis(processor.ProcessorABC):
             bad |= np.asarray(is_electron & in_window, dtype=bool)
         return ~bad
 
+    def _add_dycr_split_selections(self, selections, mll):
+        """DY CR1 / CR2 halves for the ``dy-cr-split`` study, on *mll* (the tight pair in
+        resolved, the DY candidate pair in boosted).  Filled only when a requested region
+        variant uses them, so other runs keep their selections unchanged."""
+        added = added_selections(getattr(self, "_region_variants", ()))
+        if SEL_MLL_60_100 in added:
+            selections.add(SEL_MLL_60_100,
+                           ak.fill_none((mll > CUTS["mll_dy_low"]) & (mll < DYCR_MLL_SPLIT), False))
+        if SEL_MLL_100_150 in added:
+            selections.add(SEL_MLL_100_150,
+                           ak.fill_none((mll >= DYCR_MLL_SPLIT) & (mll < CUTS["mll_dy_high"]), False))
+
     def resolved_selections(self, tight_leptons, ak4_jets, *, lepton_masks=None, jet_masks=None, triggers=None,
                             era=None):
         """
@@ -562,6 +588,7 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add("mll_gt400",    ak.fill_none(mll > CUTS["mll_sr_high_min"], False))
         selections.add("mlljj_gt800",  ak.fill_none(mlljj > CUTS["mlljj_min"], False))
         selections.add("mlljj_lt800",  ak.fill_none(mlljj < CUTS["mlljj_min"], False))
+        self._add_dycr_split_selections(selections, mll)
 
         # ΔR > 0.4 requirements among {l1, l2, j1, j2}.
         dr_ll   = ak.fill_none(l1.deltaR(l2) > CUTS["dr_min"], False)
@@ -669,22 +696,20 @@ class WrAnalysis(processor.ProcessorABC):
         loose_muons = (events.Muon.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Muon.eta) < CUTS["muon_eta_max"]) & (events.Muon.highPtId == CUTS["muon_highPtId"])
         return events.Muon[loose_muons]
     
-    def selectAK8Jets(self,events,era, is_signal: bool = False):
+    def selectAK8Jets(self,events,era):
         """Baseline AK8 selection used in boosted categories."""
-        # 2024 signal samples are really Run3Summer23BPix files
-        jetid_era = "Run3Summer23BPix" if (is_signal and era == "RunIII2024Summer24") else era
-        if jetid_era in JME_JSONS:
+        if era in JME_JSONS:
             try:
-                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, jetid_era, jetid_name="AK8PUPPI_Tight")
+                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era, jetid_name="AK8PUPPI_Tight")
             except AttributeError as e:
                 # Fallback for missing fields (shouldn't happen after config fix)
-                key = f"jetid_fallback::{jetid_era}"
+                key = f"jetid_fallback::{era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", jetid_era, e
+                        "(example error: %s)", era, e
                     )
                 ak8_id_mask = events.FatJet.isTight #jetId >= 6
         else:
@@ -696,22 +721,20 @@ class WrAnalysis(processor.ProcessorABC):
         ak8_jets = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])  & (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"]) & ak8_id_mask
         return events.FatJet[ak8_jets]
 
-    def selectAK8Jets_withLSF(self,events,era, is_signal: bool = False):
+    def selectAK8Jets_withLSF(self,events,era):
         """AK8 selection with LSF requirement used for boosted SR/CR definitions."""
-        # 2024 signal samples are really Run3Summer23BPix files
-        jetid_era = "Run3Summer23BPix" if (is_signal and era == "RunIII2024Summer24") else era
-        if jetid_era in JME_JSONS:
+        if era in JME_JSONS:
             try:
-                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, jetid_era, jetid_name="AK8PUPPI_Tight")
+                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era, jetid_name="AK8PUPPI_Tight")
             except AttributeError as e:
                 # Fallback for missing fields (shouldn't happen after config fix)
-                key = f"jetid_fallback::{jetid_era}"
+                key = f"jetid_fallback::{era}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", jetid_era, e
+                        "(example error: %s)", era, e
                     )
                 ak8_id_mask = events.FatJet.isTight #jetId >= 6
         else:
@@ -766,10 +789,9 @@ class WrAnalysis(processor.ProcessorABC):
         looseMuons = self.selectLooseMuons(events)
         looseElectrons = ak.with_field(looseElectrons, "electron", "flavor")
         looseMuons = ak.with_field(looseMuons, "muon", "flavor")
-        is_signal = (getattr(events, "metadata", {}) or {}).get("physics_group") == "Signal"
-        AK8Jets = self.selectAK8Jets(events,era,is_signal=is_signal)
-        AK8Jets_withLSF = self.selectAK8Jets_withLSF(events,era,is_signal=is_signal)
-        AK4Jets_inc, _, _ = self.select_jets(events, era, is_signal=is_signal)
+        AK8Jets = self.selectAK8Jets(events,era)
+        AK8Jets_withLSF = self.selectAK8Jets_withLSF(events,era)
+        AK4Jets_inc, _, _ = self.select_jets(events, era)
         # define tight by querying loose
         tight_mask_e = (looseElectrons.cutBased_HEEP)
         tightElectrons_inc = looseElectrons[tight_mask_e]
@@ -892,6 +914,7 @@ class WrAnalysis(processor.ProcessorABC):
         is_sublead_e = sublead_pdgID ==11
         DYCR_mask = has_dy_pair & (mlj_dy > CUTS["mlljj_min"])
         selections.add(SEL_DYCR_MASK, DYCR_mask)
+        self._add_dycr_split_selections(selections, mll_dy)
         # Veto extra tight leptons for DY CR.
         no_extra_tight_dyCR = self._no_extra_tight_leptons(
             looseMuons, looseElectrons, tight_lep, DY_loose_lep)
@@ -995,7 +1018,8 @@ class WrAnalysis(processor.ProcessorABC):
           - Data: unit weights
         """
         n = len(events)
-        weights = Weights(n)
+        # Individual factors are kept for the event-weight component histograms.
+        weights = Weights(n, storeIndividual=True)
 
         if is_mc:
             # --- Base Weights ---
@@ -1014,29 +1038,19 @@ class WrAnalysis(processor.ProcessorABC):
 
             weights.add("event_weight", event_weight)
 
-            # Pileup reweighting.  The "2024" signal is a Run3Summer23BPix
-            # placeholder (no 2024 signal production yet): weight it with its
-            # own campaign's pileup profile, as the jet-ID remap already does;
-            # the 2024 profile on a 2023 sample gave +260%/-60% variations.
+            # Pileup reweighting.
             era = metadata.get("era")
-            pu_era = era
-            if era == "RunIII2024Summer24" and metadata.get("physics_group") == SIGNAL_PROCESS_GROUP:
-                pu_era = "Run3Summer23BPix"
-                key = f"pileup_placeholder_era::{era}"
-                if key not in _WARN_ONCE_ANALYZER:
-                    _WARN_ONCE_ANALYZER.add(key)
-                    logger.info("Placeholder 2024 signal: pileup weights evaluated with the "
-                                "%s profile (sample campaign); lumi stays %s.", pu_era, era)
-            if pu_era in PILEUP_JSONS:
-                pu_nom, pu_up, pu_down = pileup_weight(events, pu_era)
+            if era in PILEUP_JSONS:
+                pu_nom, pu_up, pu_down = pileup_weight(events, era)
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
             # DY Z-pT reweighting (QCD NLO/LO x EW, ported from the Run 2
-            # HNWRAnalyzer).  Non-trivial for DYJets only; other MC gets the
+            # HNWRAnalyzer).  Non-trivial only for the DY sample the payload was
+            # derived for; other MC (and other DY samples, e.g. NLO) gets the
             # identity so the variation labels still exist for coverage.
             dy = None
             if self._dy_zpt_reweight and era in DY_ZPT_REWEIGHT_JSONS:
-                dy = dy_zpt_weight(events, era, is_dy=(metadata.get("physics_group") == DY_PROCESS_GROUP))
+                dy = dy_zpt_weight(events, era, is_dy=self._dy_reweight_target(metadata))
                 weights.add("dy_zpt", dy["nominal"])
 
             # Signal NLO/LO k-factor vs gen m(lN), divided by the per-mass-point
@@ -1080,6 +1094,26 @@ class WrAnalysis(processor.ProcessorABC):
             }
 
         return weights, syst_weights
+
+    @staticmethod
+    def _event_weight_factors(events, metadata, weights):
+        """{name: per-event array} of the factors of the base MC weight.
+
+        The ``event_weight`` term is split into the generator weight and the
+        xsec * lumi / sumw normalization; every other entry of *weights*
+        (pileup, DY Z-pT, signal k-factor) is its own factor.  The product of
+        the factors is ``weights.weight()``.
+        """
+        lumi = float(LUMIS[metadata.get("era")])
+        normalization = float(metadata.get("xsec")) * lumi * 1000.0 / float(metadata.get("genEventSumw"))
+        factors = {
+            GENWEIGHT_COMPONENT: np.asarray(events.genWeight, dtype=np.float64),
+            NORMALIZATION_COMPONENT: np.full(len(events), normalization),
+        }
+        for name in weights.weightStatistics:
+            if name != "event_weight":
+                factors[name] = np.asarray(weights.partial_weight(include=[name]), dtype=np.float64)
+        return factors
 
     # (up, down) indices in the NanoAOD 9-weight LHEScaleWeight order
     # [muR,muF] = [0.5,0.5] [0.5,1] [0.5,2] [1,0.5] [1,1] [1,2] [2,0.5] [2,1] [2,2]
@@ -1169,21 +1203,28 @@ class WrAnalysis(processor.ProcessorABC):
                 out[name] = (up, down)
         return out
 
-    def _dy_reshape_for_region(self, syst_weights, kind, jet_pt, era, process_name, is_mc):
+    def _dy_reshape_for_region(self, syst_weights, kind, jet_pt, era, is_dy, is_mc,
+                               *, factors=None):
         """Multiply the DY reshape ratio (and its variations) into region weights.
 
         *kind* is ``"resolved"`` or ``"boosted"``, *jet_pt* the per-event
-        leading AK4 pT or AK8-candidate pT the ratio is binned in.  Non-DY
-        MC receives the identity so the variation labels still exist for
-        coverage.  Returns *syst_weights* unchanged when the era has no
-        payload or the reshape is disabled.
+        leading AK4 pT or AK8-candidate pT the ratio is binned in.  *is_dy*
+        is ``_dy_reweight_target(metadata)``: only the DY sample the payload
+        was derived for is reshaped; other MC receives the identity so the
+        variation labels still exist for coverage.  Returns *syst_weights*
+        unchanged when the era has no payload or the reshape is disabled.
+        *factors*, when given, receives the nominal ratio as ``"dy_reshape"``.
         """
+        if not isinstance(is_dy, (bool, np.bool_)):
+            raise TypeError(f"is_dy must be a bool (from _dy_reweight_target), got {is_dy!r}")
         if not is_mc or not self._dy_reshape:
             return syst_weights
-        rw = dy_reshape_weight(jet_pt, era, kind, is_dy=(process_name == DY_PROCESS_GROUP))
+        rw = dy_reshape_weight(jet_pt, era, kind, is_dy=bool(is_dy))
         if rw is None:
             return syst_weights
         nom = rw["nominal"]
+        if factors is not None:
+            factors["dy_reshape"] = np.asarray(nom, dtype=np.float64)
         result = {k: v * nom for k, v in syst_weights.items()}
         if NOMINAL in syst_weights:
             allowed = self._producible_names(era, WEIGHT)
@@ -1193,6 +1234,29 @@ class WrAnalysis(processor.ProcessorABC):
                     result[f"{name}Up"] = result[NOMINAL] * (up / safe_nom)
                     result[f"{name}Down"] = result[NOMINAL] * (down / safe_nom)
         return result
+
+    @staticmethod
+    def _dy_reweight_target(metadata):
+        """Whether this dataset is the DY sample its era's Z-pT reweight and reshape
+        were derived for (config.yaml ``dy_reweight_datasets``, matched against the
+        dataset name).  Any other dataset, including other DY samples of the era
+        (NLO, LO inclusive, ...), gets the identity: an NLO/LO correction must
+        never be applied to an NLO sample.
+        """
+        if metadata.get("physics_group") != DY_PROCESS_GROUP:
+            return False
+        era = metadata.get("era")
+        pattern = DY_REWEIGHT_DATASETS.get(era)
+        dataset = str(metadata.get("sample") or metadata.get("dataset") or "")
+        if pattern is not None and re.search(pattern, dataset):
+            return True
+        if era in DY_ZPT_REWEIGHT_JSONS or era in DY_RESHAPE_JSONS:
+            key = f"dy_reweight_not_for_sample::{era}::{dataset}"
+            if key not in _WARN_ONCE_ANALYZER:
+                _WARN_ONCE_ANALYZER.add(key)
+                logger.warning("DY dataset %s is not the sample the %s DY Z-pT reweight / reshape "
+                               "were derived for (%r): not reweighted.", dataset, era, pattern)
+        return False
 
     def _mass_point_key(self, metadata):
         """``WR<m>_N<m>`` for a signal dataset, from its name or ``--mass``."""
@@ -1236,7 +1300,7 @@ class WrAnalysis(processor.ProcessorABC):
         return None
 
     def _lepton_sfs_for_region(self, region, syst_weights, era, tight_muons, tight_electrons,
-                              loose_muons=None, loose_electrons=None, *, is_mc):
+                              loose_muons=None, loose_electrons=None, *, is_mc, factors=None):
         """Multiply per-region lepton SFs into MC base syst_weights.
 
         Data keeps its base weights, without efficiency SFs or SF variations.
@@ -1255,6 +1319,9 @@ class WrAnalysis(processor.ProcessorABC):
         Per-component up/down variations are added to the returned dict for
         every component whose systematic source is enabled and producible
         (the ``sf`` family for the lepton components, ``lsf`` for the LSF SF).
+
+        *factors*, when given, receives each component's nominal SF under its
+        label (MC only).
 
         Returns a new syst_weights dict, with lepton SFs multiplied in for MC.
         """
@@ -1311,8 +1378,10 @@ class WrAnalysis(processor.ProcessorABC):
 
         # Build combined nominal SF.
         sf_nom = np.ones(n, dtype=np.float64)
-        for _label, (comp_nom, _comp_up, _comp_down) in components.items():
+        for label, (comp_nom, _comp_up, _comp_down) in components.items():
             sf_nom *= comp_nom
+            if factors is not None:
+                factors[label] = np.asarray(comp_nom, dtype=np.float64)
 
         result = {k: v * sf_nom for k, v in syst_weights.items()}
 
@@ -1442,10 +1511,9 @@ class WrAnalysis(processor.ProcessorABC):
         """
         mc_campaign = metadata.get("era")
         process_name = metadata.get("physics_group")
-        is_signal = (process_name == "Signal")
 
         tight_leptons, loose_leptons, lepton_masks = self.select_leptons(events)
-        ak4_jets, _ak8_jets, jet_masks = self.select_jets(events, mc_campaign, is_signal=is_signal)
+        ak4_jets, _ak8_jets, jet_masks = self.select_jets(events, mc_campaign)
 
         resolved_selections = None
         if self._region in ("resolved", "both"):
@@ -1477,44 +1545,55 @@ class WrAnalysis(processor.ProcessorABC):
             coverage.update(self._fill_resolved(
                 output, resolved_selections, process_name, ak4_jets, tight_leptons,
                 weights, syst_weights, era, tight_muons, tight_electrons,
-                is_mc=is_mc, skip_cutflows=True,
+                is_mc=is_mc, skip_cutflows=True, dy_target=self._dy_reweight_target(metadata),
             ))
 
         if boosted_payload is not None:
             coverage.update(self._fill_boosted(
                 output, boosted_payload, process_name, weights, syst_weights,
-                era, is_mc=is_mc, skip_cutflows=True,
+                era, is_mc=is_mc, skip_cutflows=True, dy_target=self._dy_reweight_target(metadata),
             ))
         return coverage
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
-                       *, is_mc, skip_cutflows=False, event_lists=None):
+                       *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
+                       weight_factors=None, dy_target=False):
         """Build resolved region masks and fill histograms + cutflows.
 
-        Regions (and any enabled variants) come from ``wrcoffea.regions``.
+        Regions (and any enabled variants) come from ``wrcoffea.regions``;
+        blinded data skips the signal regions and truncates its cutflows.
+        *event_weights*, when given, receives each region's nominal weight
+        distribution and, with *weight_factors* (the base-weight factors from
+        ``_event_weight_factors``), its per-factor distributions.
         Returns ``{region: set(labels filled)}``.
         """
-        resolved_regions = build_regions(RESOLVED_REGIONS, resolved_selections, self._region_variants)
+        blind = self._blind and not is_mc
+        resolved_regions = build_regions(RESOLVED_REGIONS, resolved_selections, self._region_variants,
+                                         blind=blind)
         # Leading AK4 jet pT for the DY reshape (0 where the event has no jet;
         # such events never enter a resolved region).
         lead_ak4_pt = np.asarray(ak.fill_none(ak.pad_none(ak4_jets, 1)[:, 0].pt, 0.0), dtype=np.float64)
 
         coverage = {}
         for region, cuts in resolved_regions.items():
+            factors = dict(weight_factors) if weight_factors is not None else None
             region_syst = self._lepton_sfs_for_region(
                 region, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
+                factors=factors,
             )
             region_syst = self._dy_reshape_for_region(
-                region_syst, "resolved", lead_ak4_pt, era, process_name, is_mc,
+                region_syst, "resolved", lead_ak4_pt, era, dy_target, is_mc, factors=factors,
             )
             coverage[region] = fill_resolved_histograms(
                 output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst,
                 syst_observables=self._syst_observables, event_lists=event_lists,
             )
+            if event_weights is not None:
+                fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
 
         if not skip_cutflows:
-            fill_cutflows(output, resolved_selections, weights)
+            fill_cutflows(output, resolved_selections, weights, blind=blind)
         return coverage
 
     @staticmethod
@@ -1531,10 +1610,14 @@ class WrAnalysis(processor.ProcessorABC):
         return col[pdg == 13], col[pdg == 11]
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
-                      era, *, is_mc, skip_cutflows=False, event_lists=None):
+                      era, *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
+                      weight_factors=None, dy_target=False):
         """Unpack boosted payload, build region masks, and fill histograms.
 
-        Returns ``{region: set(labels filled)}``.
+        Returns ``{region: set(labels filled)}``.  As in ``_fill_resolved``,
+        blinded data skips the signal regions and truncates its cutflows, and
+        *event_weights*, when given, receives the nominal weight distributions
+        (per factor too, with *weight_factors*).
 
         Lepton SFs are evaluated on the two objects each region is built from:
         the leading tight lepton gets the tight SFs (and the trigger SF), and
@@ -1543,10 +1626,11 @@ class WrAnalysis(processor.ProcessorABC):
         SFs.  This matches the objects used to fill the histograms.
         """
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
+        blind = self._blind and not is_mc
 
         # Fill boosted cutflows
         if not skip_cutflows:
-            fill_boosted_cutflows(output, boosted_sel, weights)
+            fill_boosted_cutflows(output, boosted_sel, weights, blind=blind)
 
         lead_mu, lead_e = self._candidates_by_flavor(tight_lep)
         sublead_by_kind = {
@@ -1555,18 +1639,19 @@ class WrAnalysis(processor.ProcessorABC):
             "sr": self._candidates_by_flavor(sf_candidate),
         }
 
-        def _region_sfs(region):
+        def _region_sfs(region, factors):
             kind = "dy_cr" if "dy_cr" in region else ("flavor_cr" if "flavor_cr" in region else "sr")
             sub_mu, sub_e = sublead_by_kind[kind]
             return self._lepton_sfs_for_region(
                 region, syst_weights, era, lead_mu, lead_e,
-                loose_muons=sub_mu, loose_electrons=sub_e, is_mc=is_mc,
+                loose_muons=sub_mu, loose_electrons=sub_e, is_mc=is_mc, factors=factors,
             )
 
-        boosted_regions = build_regions(BOOSTED_REGIONS, boosted_sel, self._region_variants)
+        boosted_regions = build_regions(BOOSTED_REGIONS, boosted_sel, self._region_variants, blind=blind)
         coverage = {}
         for region, cuts in boosted_regions.items():
-            region_syst = _region_sfs(region)
+            factors = dict(weight_factors) if weight_factors is not None else None
+            region_syst = _region_sfs(region, factors)
             if "dy_cr" in region:
                 sublead, ak8 = DY_loose_lep, AK8_cand_dy
             elif "flavor_cr" in region:
@@ -1575,12 +1660,14 @@ class WrAnalysis(processor.ProcessorABC):
                 sublead, ak8 = sf_candidate, AK8_cand
             ak8_pt = np.asarray(ak.fill_none(ak8.pt, 0.0), dtype=np.float64)
             region_syst = self._dy_reshape_for_region(
-                region_syst, "boosted", ak8_pt, era, process_name, is_mc,
+                region_syst, "boosted", ak8_pt, era, dy_target, is_mc, factors=factors,
             )
             coverage[region] = fill_boosted_histograms(
                 output, region, cuts, process_name, tight_lep, ak8, sublead, weights, region_syst,
                 syst_observables=self._syst_observables, event_lists=event_lists,
             )
+            if event_weights is not None:
+                fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
         return coverage
 
     def process(self, events):
@@ -1594,7 +1681,9 @@ class WrAnalysis(processor.ProcessorABC):
         datatype = (metadata.get("datatype") or "").strip().lower()
         is_mc = datatype == "mc"
         is_data = not is_mc
-        is_signal = (metadata.get("physics_group") == "Signal")
+        if is_data and not self._blind:
+            # The CLI refuses --unblind outside Run 2; direct use must not bypass that.
+            check_unblind_allowed(mc_campaign)
 
         # Normalization includes all input MC events, including those rejected
         # by the filters below. Preserve signed generator weights per chunk.
@@ -1627,19 +1716,17 @@ class WrAnalysis(processor.ProcessorABC):
 
 
         # apply jet veto
-        # 2024 signal samples are really Run3Summer23BPix files
-        jetid_era = "Run3Summer23BPix" if (is_signal and mc_campaign == "RunIII2024Summer24") else mc_campaign
-        if jetid_era in JME_JSONS:
+        if mc_campaign in JME_JSONS:
             try:
-                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, jetid_era, jetid_name="AK4PUPPI_TightLeptonVeto")
+                ak4_id_mask = self.jetid_mask_ak4puppi(events.Jet, mc_campaign, jetid_name="AK4PUPPI_TightLeptonVeto")
             except AttributeError as e:
-                key = f"jetid_fallback::{jetid_era}"
+                key = f"jetid_fallback::{mc_campaign}"
                 if key not in _WARN_ONCE:
                     _WARN_ONCE.add(key)
                     logger.warning(
                         "correctionlib puppi JetID requested for era '%s' but required jet fields "
                         "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", jetid_era, e
+                        "(example error: %s)", mc_campaign, e
                     )
 
                 ak4_id_mask = events.Jet.jetId >= 6
@@ -1672,7 +1759,7 @@ class WrAnalysis(processor.ProcessorABC):
                     events["Muon", syst] = corrected_muons[syst]
         
         tight_leptons, loose_leptons, lepton_masks = self.select_leptons(events)
-        ak4_jets, ak8_jets, jet_masks = self.select_jets(events, mc_campaign, is_signal=(process_name == "Signal"))
+        ak4_jets, ak8_jets, jet_masks = self.select_jets(events, mc_campaign)
         triggers = self.build_trigger_masks(events, mc_campaign)
         
         # Resolved selections (only if requested).
@@ -1715,18 +1802,30 @@ class WrAnalysis(processor.ProcessorABC):
 
         # Fill histograms (and, with --save-events, the per-event SR lists).
         event_lists = output.setdefault("event_lists", {}) if self._save_events else None
+        # Per-region distribution of the nominal MC event weight, filled in
+        # this nominal pass only (shape passes never get it), never for data.
+        # Not in compute_sumw mode: there the weights lack the 1/sumw factor
+        # that normalize_by_sumw divides out of the histogram contents later,
+        # which cannot repair a log10|w| axis.
+        event_weights = (output.setdefault("event_weights", {})
+                         if is_mc and not self._compute_sumw else None)
+        weight_factors = (self._event_weight_factors(events, metadata, weights)
+                          if event_weights is not None else None)
+        dy_target = self._dy_reweight_target(metadata)
         coverage = {}
         if resolved_selections is not None:
             coverage.update(self._fill_resolved(
                 output, resolved_selections, process_name, ak4_jets, tight_leptons,
                 weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
-                event_lists=event_lists,
+                event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
+                dy_target=dy_target,
             ))
 
         if boosted_payload is not None:
             coverage.update(self._fill_boosted(
                 output, boosted_payload, process_name, weights, syst_weights, era, is_mc=is_mc,
-                event_lists=event_lists,
+                event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
+                dy_target=dy_target,
             ))
 
         # Shape systematics: re-run selections with shifted kinematics.
@@ -1744,18 +1843,20 @@ class WrAnalysis(processor.ProcessorABC):
             for region, labels in coverage.items()
         }
         output["n_chunks"] = 1
+        # A DY dataset other than the one the DY payloads were derived for is "not_for_sample".
+        dy_identity = "not_for_sample" if process_name == DY_PROCESS_GROUP else "identity"
         if not is_mc or era not in DY_ZPT_REWEIGHT_JSONS:
             dy_zpt_status = "unconfigured"
         elif not self._dy_zpt_reweight:
             dy_zpt_status = "off"
         else:
-            dy_zpt_status = "applied" if process_name == DY_PROCESS_GROUP else "identity"
+            dy_zpt_status = "applied" if dy_target else dy_identity
         if not is_mc or era not in DY_RESHAPE_JSONS:
             dy_reshape_status = "unconfigured"
         elif not self._dy_reshape:
             dy_reshape_status = "off"
         else:
-            dy_reshape_status = "applied" if process_name == DY_PROCESS_GROUP else "identity"
+            dy_reshape_status = "applied" if dy_target else dy_identity
         if not is_mc or era not in SIGNAL_KFACTOR_JSONS or process_name != SIGNAL_PROCESS_GROUP:
             kfactor_status = "unconfigured"
         else:

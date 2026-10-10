@@ -414,6 +414,25 @@ class TestSaveHistogramsIntegration:
             # Systematic in syst folder
             assert "syst_lumiup_wr_ee_resolved_sr/pt_leading_lepton_syst_lumiup_wr_ee_resolved_sr" in f
 
+    def test_normalize_by_sumw_divides_saved_event_weights(self):
+        """--save-events weights are divided by sumw; the masses are not."""
+        import sys, os
+        import numpy as np
+        from coffea.processor import column_accumulator
+        bin_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "bin")
+        if bin_dir not in sys.path:
+            sys.path.insert(0, bin_dir)
+        import run_analysis
+
+        sumw = 400.0
+        mass = column_accumulator(np.array([900.0, 1500.0]))
+        weight = column_accumulator(np.array([8.0, -4.0]))
+        hists_dict = {"dataset1": {"_sumw": sumw,
+                                   "event_lists": {"wr_ee_resolved_sr": {"mass": mass, "weight": weight}}}}
+        run_analysis.normalize_by_sumw(hists_dict)
+        assert weight.value.tolist() == pytest.approx([0.02, -0.01])
+        assert mass.value.tolist() == [900.0, 1500.0]
+
     def test_normalize_by_sumw_skips_unweighted_cutflows(self, tmp_path, monkeypatch):
         """Test that normalize_by_sumw does not divide unweighted cutflow histograms."""
         import sys, importlib, os

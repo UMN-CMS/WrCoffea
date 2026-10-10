@@ -36,17 +36,22 @@ lumis:
 
 # Default MC fileset tag per era.  Controls which DY variant is used
 # when --dy is not explicitly given on the command line.
+# LO madgraphMLM HT-binned DY (HT > 40 GeV in Run 3, > 70 GeV in Run 2) by default.
+# It holds no events below the first HT bin: ~1 % of the resolved SR DY and
+# 9-16 % of the boosted SR DY in 2024 (none of either DY CR) come from there.
+# Those boosted SR events are high-mass DY -> ll+gamma with no partons: the AK8
+# jet is the second lepton plus its FSR photon.
 default_mc_tag:
   RunIISummer20UL16APV: dy_lo_ht
   RunIISummer20UL16: dy_lo_ht
   RunIISummer20UL17: dy_lo_ht
   RunIISummer20UL18: dy_lo_ht
-  Run3Summer22: dy_lo_inc
-  Run3Summer22EE: dy_lo_inc
-  Run3Summer23: dy_lo_inc
-  Run3Summer23BPix: dy_lo_inc
-  RunIII2024Summer24: dy_lo_inc
-  RunIII2025Summer25: dy_lo_inc
+  Run3Summer22: dy_lo_ht
+  Run3Summer22EE: dy_lo_ht
+  Run3Summer23: dy_lo_ht
+  Run3Summer23BPix: dy_lo_ht
+  RunIII2024Summer24: dy_lo_ht
+  RunIII2025Summer25: dy_lo_ht
 
 # Available --dy variants per era.  To add a new DY fileset for an era,
 # create the JSON at data/filesets/.../{{era}}_mc_dy_{{variant}}_fileset.json
@@ -56,12 +61,12 @@ dy_variants:
   RunIISummer20UL16: [lo_inc, nlo_inc, lo_ht, nlo_mll, nlo_ptll, nlo_njet, nlo_njet_mll, lo_njet]
   RunIISummer20UL17: [lo_inc, nlo_inc, lo_ht, nlo_mll, nlo_ptll, nlo_njet, nlo_njet_mll, lo_njet]
   RunIISummer20UL18: [lo_inc, nlo_inc, lo_ht, nlo_mll, nlo_ptll, nlo_njet, nlo_njet_mll, lo_njet]
-  Run3Summer22: [lo_inc, nlo_inc, lo_ht]
-  Run3Summer22EE: [lo_inc, nlo_inc, lo_ht]
-  Run3Summer23: [lo_inc, nlo_inc, lo_ht]
-  Run3Summer23BPix: [lo_inc, nlo_inc, lo_ht]
-  RunIII2024Summer24: [lo_inc, nlo_inc]
-  RunIII2025Summer25: [lo_inc, nlo_inc]
+  Run3Summer22: [lo_inc, nlo_inc, lo_ht, lo_njet, lo_ptll, nlo_mll, nlo_njet, nlo_ptll]
+  Run3Summer22EE: [lo_inc, nlo_inc, lo_ht, lo_njet, lo_ptll, nlo_mll, nlo_njet, nlo_ptll]
+  Run3Summer23: [lo_inc, nlo_inc, lo_ht, lo_njet, lo_ptll, nlo_mll, nlo_njet, nlo_ptll]
+  Run3Summer23BPix: [lo_inc, nlo_inc, lo_ht, lo_njet, lo_ptll, nlo_mll, nlo_njet, nlo_ptll]
+  RunIII2024Summer24: [lo_inc, nlo_inc, lo_ht, nlo_mll, nlo_njet, nlo_ptll]
+  RunIII2025Summer25: [lo_inc, nlo_inc, lo_ht, nlo_mll, nlo_njet, nlo_ptll]
 # Data-only eras whose MC filesets reuse another era's skims (PdmV: use the
 # RunIII2024Summer24 MC for 2025 data).  `skim.py fileset` writes the MC
 # filesets of the key era from the value era's parts, with era/year rewritten.
@@ -387,6 +392,14 @@ lumi_unc:
 # DYJetsToLL_M-50 samples (our UL18 dy_lo_ht fileset).  It is deliberately
 # not mapped to the 13.6 TeV Run 3 eras: point a Run 3 era at it only for a
 # study, never for a result.
+#
+# RunIII2024Summer24: first Run 3 derivation (2026-10-08) with
+# scripts/derive_dy_zpt_reweight.py, the Run 2 GetZPtReweight.C recipe on the
+# 2024 samples: NLO amcatnloFXFX (inclusive + PTLL-binned) over the LO dy_lo_ht
+# set (+ LO inclusive below HT 40) at their configured cross sections.  The EW
+# block is the Run 2 13 TeV one, copied.  Valid only for the 2024 dy_lo_ht DY.
+# Not mapped by default yet (a study until the CR closure is reviewed); map it with
+#   RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json
 dy_zpt_reweight:
   RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_zpt_reweight_run2legacy_v4_2018.json
 
@@ -404,6 +417,16 @@ dy_zpt_reweight:
 # its DY cross sections (~1.35x ours); the product is what matters.
 dy_reshape:
   RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_reshape_run2jetpt_20260907.json
+
+# The DY datasets the era's Z-pT reweight and reshape were derived for: a regular
+# expression searched in the dataset name (fileset metadata "sample").  Other DY
+# samples of the era (NLO, LO inclusive, ...) get the identity and the manifest
+# records "not_for_sample": an NLO/LO correction must never reach an NLO sample.
+# Every era with a dy_zpt_reweight or dy_reshape payload needs an entry here (the
+# analyzer refuses to start otherwise); an entry without a payload does nothing.
+dy_reweight_datasets:
+  RunIISummer20UL18: "^DYJetsToLL_M-50_HT-"      # dy_lo_ht (madgraphMLM HT-binned)
+  RunIII2024Summer24: "^DYto2L-4Jets_Bin-HT-"    # dy_lo_ht (madgraphMLM HT-binned)
 
 # Signal NLO/LO k-factor vs generator-level m(lN), applied as k(m_lN)/<k>
 # (shape only: the signal cross sections in the configs are AN-19-083 LO x <k>).

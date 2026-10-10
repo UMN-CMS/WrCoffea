@@ -180,7 +180,9 @@ class TestAnalyzerWiring:
 
     def _run(self, proc, kind, pt, group, syst=None):
         base = {NOMINAL: np.full(self.N, 2.0)} if syst is None else syst
-        return proc._dy_reshape_for_region(base, kind, np.asarray(pt, dtype=float), UL18, group, True)
+        # Only the DY sample the payload was derived for is reshaped (_dy_reweight_target).
+        return proc._dy_reshape_for_region(base, kind, np.asarray(pt, dtype=float), UL18,
+                                           group == "DYJets", True)
 
     def test_dy_gets_ratio_and_variations(self, configured):
         proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
@@ -215,4 +217,18 @@ class TestAnalyzerWiring:
     def test_unconfigured_era_untouched(self):
         proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
         base = {NOMINAL: np.ones(self.N)}
-        assert proc._dy_reshape_for_region(base, "resolved", np.ones(self.N), RUN3, "DYJets", True) is base
+        assert proc._dy_reshape_for_region(base, "resolved", np.ones(self.N), RUN3, True, True) is base
+
+    def test_other_dy_sample_gets_identity(self, configured):
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
+        base = {NOMINAL: np.full(self.N, 2.0)}
+        out = proc._dy_reshape_for_region(base, "resolved", np.full(self.N, 150.0), UL18, False, True)
+        np.testing.assert_allclose(out[NOMINAL], 2.0)
+        for name in SOURCE_NAMES:
+            np.testing.assert_array_equal(out[f"{name}Up"], out[NOMINAL])
+
+    def test_group_name_instead_of_flag_refused(self, configured):
+        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both")
+        with pytest.raises(TypeError, match="must be a bool"):
+            proc._dy_reshape_for_region({NOMINAL: np.ones(self.N)}, "resolved", np.ones(self.N),
+                                        UL18, "DYJets", True)

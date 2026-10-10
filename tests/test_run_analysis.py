@@ -286,6 +286,94 @@ def test_validate_dy_lo_ht_accepted_for_ul18():
     run_analysis.validate_arguments(_dy_args("RunIISummer20UL18", "lo_ht"), [])
 
 
+def _unblind_args(era, unblind=True):
+    args = _dy_args(era, None)
+    args.sample = "Muon"
+    args.unblind = unblind
+    return args
+
+
+@pytest.mark.parametrize(
+    "era",
+    ["Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix",
+     "RunIII2024Summer24", "RunIII2025Summer25"],
+)
+def test_validate_unblind_rejected_for_run3(era):
+    """Run 3 data signal regions stay blind: --unblind is refused up front."""
+    with pytest.raises(ValueError, match=f"--unblind is not allowed for {era}"):
+        run_analysis.validate_arguments(_unblind_args(era), [])
+    # The blinded default needs no permission.
+    run_analysis.validate_arguments(_unblind_args(era, unblind=False), [])
+
+
+def test_validate_unblind_accepted_for_ul18():
+    """--unblind is allowed for Run 2 (UL18)."""
+    run_analysis.validate_arguments(_unblind_args("RunIISummer20UL18"), [])
+
+
+class _ReachedProcessing(Exception):
+    pass
+
+
+def _run_cli(monkeypatch, *argv):
+    """Run bin/run_analysis.py as a script until it starts the actual run."""
+    import runpy
+    import wrcoffea.era_utils as era_utils
+
+    def stop(era):
+        raise _ReachedProcessing(era)
+
+    # The script looks up the era details right after validating its arguments
+    # (the wrcoffea modules bound their own reference at import time).
+    monkeypatch.setattr(era_utils, "get_era_details", stop)
+    monkeypatch.chdir(os.path.dirname(BIN_DIR))
+    monkeypatch.setattr(sys, "argv", ["run_analysis.py", *argv])
+    runpy.run_path(os.path.join(BIN_DIR, "run_analysis.py"), run_name="__main__")
+
+
+def test_cli_unblind_flag(monkeypatch, caplog):
+    """--unblind on the command line is refused for Run 3 and accepted for UL18."""
+    with pytest.raises(ValueError, match="--unblind is not allowed for RunIII2024Summer24"):
+        _run_cli(monkeypatch, "RunIII2024Summer24", "Muon", "--unblind")
+    with pytest.raises(_ReachedProcessing):
+        _run_cli(monkeypatch, "RunIII2024Summer24", "Muon")
+    assert "--unblind" not in caplog.text
+    with pytest.raises(_ReachedProcessing):
+        _run_cli(monkeypatch, "RunIISummer20UL18", "Muon", "--unblind")
+    assert "--unblind: data signal regions" in caplog.text
+
+
+@pytest.mark.parametrize("extra, expected", [({}, False), ({"unblind": False}, False),
+                                             ({"unblind": True}, True)])
+def test_process_fileset_forwards_unblind(monkeypatch, extra, expected):
+    """_process_fileset hands --unblind to the processor (blinded by default)."""
+    captured = {}
+
+    class FakeRunner:
+        def __init__(self, **kwargs):
+            pass
+
+        def preprocess(self, fileset, treename):
+            return {}
+
+        def __call__(self, preproc, treename, processor_instance):
+            return {}, {}
+
+    class FakeWrAnalysis:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+    monkeypatch.setattr(coffea_processor, "DaskExecutor", lambda **kwargs: None)
+    monkeypatch.setattr(coffea_processor, "Runner", FakeRunner)
+    monkeypatch.setattr(analyzer_mod, "WrAnalysis", FakeWrAnalysis)
+    args = SimpleNamespace(sample="Muon", mass=None, systs=[], region="both", unskimmed=False,
+                           study=[], chunksize=1000, maxchunks=None, **extra)
+
+    run_analysis._process_fileset(args, fileset={}, client=object(), condor=False)
+
+    assert captured["unblind"] is expected
+
+
 def test_preprocess_with_xrd_fallback_raises_after_all_redirectors_fail(monkeypatch):
     fileset = {
         "dataset": {
