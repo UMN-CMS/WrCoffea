@@ -134,6 +134,44 @@ m_WR >= 4 TeV (the neighbouring points' tails raise the curve in its core); Run 
   `~/work/skims_v2/`). Run 3 signal histograms made before 06:55 are normalised at LO, 28 to 62 % low; UL18 sets
   made before 05:35 had cross sections for the 16 AN-19-083 Table 23 points only.
 
+## Open: the official samples have no N -> l t b (parked 2026-10-10)
+
+What is established:
+
+- The official gridpacks (13 and 13.6 TeV) generate `p p > nn ll, nn > ll jj jj` with
+  `define jj = u d c s b u~ d~ c~ s~ b~`: no top. The Run 2 private grid (`WRtoNLtoLLJJ`, AN-19-083) used
+  `jj = u d c s b t u~ d~ c~ s~ b~ t~` and both N flavours.
+- The per-point `c` = sigma_LO(production) / sigma_LO(sample) is flat, 1.016-1.020, from m_N = 100 to 7900 GeV at
+  both energies. A decay-chain cross section is sigma_prod x Gamma(generated channels) / Gamma_N(card); if the
+  card's N width included N -> l t b, `c` would rise by 1 / BR(l j j) once that channel opens (m_N > m_t + m_b).
+  It does not, so the N width in the official param_cards counts only the generated light-quark channels.
+- Physically N -> l W_R* -> l q q~' has the channels u d, c s and t b with the same coupling, so for m_N >> m_t
+  about one third of the N decays go to l t b (phase-space suppressed near threshold, m_N ~ 200-400 GeV). The
+  official samples contain no such events and normalise l l + light jets to the full W_R -> l N rate.
+
+What this means for the analysis (not evaluated): for m_N above a few hundred GeV the true l l q q'(light) rate
+is ~2/3 of what the official samples claim, and the l t b events (t -> b W) have a different acceptance in both
+topologies, so the predicted SR yield at those points is off by something between 0 and -33 % depending on that
+acceptance. Run 2's efficiencies include the l t b events; ours (official samples) do not, which also matters for
+the Run 2 comparison at high m_N.
+
+How to pick it up:
+
+1. Read `DECAY 9900014` of a heavy official point (e.g. WR6000_N3000, gridpack on cvmfs,
+   `/cvmfs/cms.cern.ch/phys_generator/gridpacks/RunII/13TeV/MadGraph5_aMCatNLO/v265/WRtoNLtoLLJJ_emu/` and
+   `.../RunIII/13p6TeV/MadGraph5_aMCatNLO/v2918/WRtoNLtoLLJJ_mu/`) and compare it with MG `compute_widths 9900014`
+   on the full model (with t b): the ratio is 1 / BR(l j j_light). Do it for a few m_N to get BR(m_N).
+2. Decide how to treat it: scale the official-sample normalisation by BR(N -> l j j_light)(m_N) and model the
+   l t b part separately (a private production with the Run 2-style `jj`, or an acceptance study on the Run 2
+   private grid, which has the events), or document the assumption. Either way the AN must state it.
+3. The same `jj` definition applies to the 2024 private production (same gridpack cards); check its proc_card.
+
+Tooling and records from the 2026-10-10 checks (LPC login node, `~/nobackup/kfactor/`): `test_job136/dec_test.sh`
+(the bwcutoff test, 13.6 TeV WR2000_N100), `test_job13_lhapdf/` (the 2.6.5 route: `go.sh`, `go3.sh`,
+`out/13_WR*`), `lhapdf-6.2.3/` built by `lhapdf_build/build.sh`, gridpack cards under `~/nobackup/provdump/cards/`
+(`off_2000_100`, `priv_2000_100`). Copies of the two scripts: `scripts/signal_kfactor/build_lhapdf.sh` and
+`scripts/signal_kfactor/decay_chain_test.sh`.
+
 ## Payloads
 
 - 13 TeV: `data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json` (600 `direct_k` and
