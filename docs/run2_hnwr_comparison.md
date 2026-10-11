@@ -140,6 +140,31 @@ Data/MC per region:
   behaviour Run 2 removed with its two DY corrections.  The boosted DY CRs
   close (1.04 / 0.96) without them, as a cancellation.
 
+## UL16, UL16APV and UL17 data against the Run 2 data (2026-10-11)
+
+Event counts per fb⁻¹ in the data control regions of the first UL16/UL16APV/UL17
+productions (`20261011_skims_v2`, skims_v2, brilcalc luminosities 19.50 + 16.81
+and 42.04) against the Run 2 `Regions` histograms (35.92 and 41.53 fb⁻¹), with
+UL18 (`20261010_skims_v2`, 59.52 vs 59.74) for reference.  The first pass had
+the electron channel 1.5-2.2× too high: the EGamma group held the SingleElectron
+and SinglePhoton primary datasets without overlap removal.  Run 2 used
+SingleElectron only (and, in 2017, no Ele115), which the configs now follow.
+
+| year | region | Run 2 /fb | ours /fb | ours/Run 2 |
+|---|---|---|---|---|
+| 2016 | resolved DY CR ee / mumu | 270 / 422 | 287 / 402 | 1.06 / 0.95 |
+| 2016 | boosted DY CR ee / mumu | 31 / 31 | 32 / 36 | 1.00 / 1.16 |
+| 2016 | resolved e-mu CR | 24 | 25 | 1.04 |
+| 2017 | resolved DY CR ee / mumu | 296 / 444 | 282 / 406 | 0.96 / 0.92 |
+| 2017 | boosted DY CR ee / mumu | 29 / 34 | 35 / 44 | 1.18 / 1.31 |
+| 2017 | resolved e-mu CR | 27 | 25 | 0.94 |
+| 2018 | resolved DY CR ee / mumu | 285 / 444 | 279 / 417 | 0.98 / 0.94 |
+| 2018 | boosted DY CR ee / mumu | 28 / 31 | 33 / 40 | 1.17 / 1.29 |
+| 2018 | resolved e-mu CR | 27 | 26 | 0.98 |
+
+The boosted DY CR excess is the corrected-vs-raw soft-drop mass plus the UL/EOY
+reconstruction difference already seen for UL18 (`local_notes/2026-10-10_ul18_boosted_dycr`).
+
 ## The ported DY Z-pT reweighting
 
 Run 2 applied, for `DYJets` samples only and before any selection:
@@ -158,9 +183,14 @@ weight *= ZPtReweight(ptZ) * ZPtEWCorr(ptZ)
   PDF uncertainty; `h_Ratio_ScaleUp/Down` and `h_Ratio_AlphaSUp/Down` are the
   QCD scale and αS variations.  The ratio is about 0.95 below 20 GeV, 1.28 at
   70–90 GeV and falls to 0.28 above 2 TeV.  It was made by
-  `Analyzers/src/GetZPtReweight.C`: generator Z with m(Z) ≥ 50, each sample at
-  1 pb⁻¹ with the SKFlat cross sections, so the LO denominator carries the
-  2016 LO × 1.23 HT weighting.
+  `Analyzers/src/GetZPtReweight.C` and `HNWR_Plotter/python/Get_ZPtReweight.py`:
+  generator Z with m(Z) ≥ 50, histogrammed per sample at 1 pb⁻¹ with the SKFlat
+  cross sections in the inclusive LO madgraphMLM sample (`DYJets_MG`) and the
+  inclusive NLO amcatnloFXFX sample (`DYJets`), both 6077.22 pb in SKFlat, and
+  divided as unit-normalized shapes (the ~0.95 at low pT is only possible with a
+  full-phase-space LO denominator; the HT-binned set alone would give ≫ 1 there).
+  The scale / αS variations are the varied NLO spectrum over the nominal LO, not
+  renormalized.
 * `ZPtEWCorr` is `hist_v` of `HNWRDYPtReweight/ZPtEWCorr.root` (42 bins,
   30–6500 GeV; `ptZ < 30` evaluated at 31, `ptZ ≥ 6500` at 6499), from 1.00 at
   low pT to 0.69 at 3 TeV.  `hist_e1/e2/e3` carry three uncertainty components
@@ -174,13 +204,72 @@ payload (`--no-dy-zpt-reweight` turns it off) and `--systs dyzpt` produces the
 six Up/Down pairs.  Every MC dataset records `dy_zpt_reweight` in its
 `dataset_meta` (`applied`, `identity`, `off`, or `unconfigured`).
 
+## Our own Z-pT reweight for the UL eras (2026-10-11)
+
+Derived with `scripts/derive_dy_zpt_reweight.py` the way AN-19-083 did it: the
+inclusive NLO amcatnloFXFX sample over the inclusive LO madgraphMLM sample, both
+at the NNLO cross section, generator Z with m(Z) ≥ 50, every file of both
+samples (UL17: 103M LO + 196M NLO events), Run 2 binning, scale/PDF/αS
+variations from the NLO LHE weights, the Run 2 EW block copied.  Payloads
+`data/reweights/RunII/<year>/<era>/dy_zpt_reweight_ul_20261011.json`, mapped
+for all four UL eras (UL18 switched from the converted Run 2 file).
+
+| generator Z pT [GeV] | UL16APV | UL16 | UL17 | UL18 | Run 2 2016 | Run 2 2017 | Run 2 2018 |
+|---|---|---|---|---|---|---|---|
+| 0-2 | 0.94 | 0.94 | 0.94 | 0.94 | 0.97 | 0.95 | 0.95 |
+| 20-30 | 1.09 | 1.11 | 1.09 | 1.09 | 1.05 | 1.10 | 1.09 |
+| 50-60 | 1.24 | 1.29 | 1.25 | 1.24 | 1.09 | 1.24 | 1.26 |
+| 100-120 | 1.35 | 1.39 | 1.35 | 1.34 | 1.17 | 1.21 | 1.26 |
+| 250-350 | 1.33 | 1.34 | 1.33 | 1.34 | 1.06 | 0.97 | 0.97 |
+| 500-1000 | 1.32 ± 0.07 | 1.19 ± 0.07 | 1.25 ± 0.05 | 1.19 ± 0.05 | 0.89 | 0.70 | 0.70 |
+| 1000-2000 | 2.2 ± 0.7 | 0.8 ± 0.4 | 1.1 ± 0.3 | 1.5 ± 0.4 | 0.67 | 0.46 | 0.45 |
+
+The integrated NLO/LO is 0.996-0.999 in every era (shape-only weight); ee and
+μμ agree within 1 %.  Up to ~60 GeV the four eras and the Run 2 files agree;
+above 100 GeV our ratio stays at 1.3-1.4 where Run 2's falls below 1.  The
+Run 2 LO/NLO input histograms are not in the cloned repositories, so what made
+their ratio fall is not known.  Above 1 TeV the inclusive LO sample holds a few
+tens of events per era, so that bin is statistically weak in any derivation of
+this kind (Run 2's included); the empty 2-8 TeV bin takes the 1-2 TeV value.
+
+## Our own jet-pT reshapes for the UL eras (2026-10-11)
+
+`scripts/derive_dy_reshape.py` per era: (data − non-DY MC) / DY MC in the DY
+CRs, ee + μμ combined, DY with the own Z-pT payload and no reshape, Run 2
+DYReshapeJetPt bins (resolved 40, 100, 200, 400, 600, 800, 1000, 2000 GeV;
+boosted 200, 400, 600, 800, 1000, 2000 GeV; the first bin is empty by
+construction).  Payloads `dy_reshape_run2jetpt_20261011.json` per era, mapped.
+Run 2 values from `SKFlatAnalyzer/data/Run2Legacy_v4/<year>/HNWRDYReshape/DYReshapeJetPt_<year>.root`
+(`Resolved_ratio_AllCh`, `Boosted_ratio_AllCh`).
+
+| year | resolved: ours (per era) | resolved: Run 2 | boosted: ours | boosted: Run 2 |
+|---|---|---|---|---|
+| 2016 | UL16APV 1.31, 1.10, 0.95, 0.84, 0.72, 0.81, 0.75; UL16 1.48, 1.14, 0.95, 0.86, 0.72, 0.77, 0.64 | 1.41, 1.24, 1.09, 0.98, 0.84, 0.90, 0.76 | 0.85, 0.69, 0.50, 0.35, 0.12; 0.82, 0.82, 0.80, 0.59, 0.64 | 0.92, 0.86, 0.76, 0.57, 0.24 |
+| 2017 | 1.33, 1.13, 0.97, 0.87, 0.77, 0.68, 0.78 | 1.32, 1.23, 1.09, 1.00, 0.87, 0.79, 0.83 | 0.96, 0.88, 0.73, 0.67, 0.61 | 1.11, 1.14, 0.99, 0.85, 0.95 |
+| 2018 | 1.47, 1.18, 1.01, 0.90, 0.82, 0.75, 0.57 | 1.25, 1.13, 1.03, 0.95, 0.86, 0.85, 0.69 | 0.97, 0.82, 0.74, 0.48, 0.71 | 0.98, 0.92, 0.98, 0.63, 0.98 |
+
+Same shape as Run 2 (a 1.3-1.5 excess of data at 40-100 GeV falling to
+0.6-0.8 above 1 TeV); our resolved ratio sits 5-10 % below Run 2's in the
+middle bins because our Z-pT ratio is higher there.  The boosted ratios fall
+further than Run 2's at high jet pT, where the corrected-vs-raw soft-drop mass
+choice acts (parked).  The two UL16 eras differ by their statistics.
+
 ## Run 3 DY corrections (2024)
 
 ### Z-pT reweight
 
-`scripts/derive_dy_zpt_reweight.py` repeats the Run 2 `GetZPtReweight.C`
-recipe on the 2024 samples and writes a payload in the format of the Run 2
-conversion, `data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json`,
+> **Superseded 2026-10-11.** Billy asked for the derivation to be done exactly
+> as AN-19-083 did it: the inclusive NLO sample over the inclusive LO sample, no
+> binned samples and no stitching.  `scripts/derive_dy_zpt_reweight.py` was
+> rewritten to that recipe (roles `lo` = `dy_lo_inc`, `nlo` = `dy_nlo_inc`,
+> MLL-50 only, 10M events per sample); the UL eras were derived with it the same
+> day, and the 2024 payload described below (stitched: HT-binned LO + PTLL-binned
+> NLO) is to be re-derived with it before any further use.  The text below is
+> kept as the record of what the 2026-10-08/10 payload contains.
+
+The 2026-10-08 version of `scripts/derive_dy_zpt_reweight.py` repeated the Run 2
+`GetZPtReweight.C` recipe on the 2024 samples with stitched inputs and wrote a
+payload in the format of the Run 2 conversion, `data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json`,
 mapped in `config.yaml` (`dy_zpt_reweight: RunIII2024Summer24`).
 
 * `fill` reads generator information from unskimmed NanoAOD over XRootD (the

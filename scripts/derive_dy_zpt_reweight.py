@@ -1,40 +1,39 @@
 #!/usr/bin/env python3
-"""Derive the DY Z-pT (QCD NLO/LO) reweighting for a Run 3 era from generator-level spectra.
+"""Derive the DY Z-pT (QCD NLO/LO) reweighting of an era the way AN-19-083 did it (Sec. 5.1).
 
-Follows the Run 2 recipe (SKFlat ``HNWR/Run2Legacy_v4``, ``Analyzers/src/GetZPtReweight.C``):
-the generator-level Z of ``GenFinderForDY`` (``wrcoffea.dy_reweight.find_gen_z``), m(Z) >= 50 GeV,
-every sample at 1 pb^-1 with the cross section the analysis uses for it, and
+Run 2 (SKFlat ``HNWR/Run2Legacy_v4`` ``Analyzers/src/GetZPtReweight.C`` and HNWR_Plotter
+``python/Get_ZPtReweight.py``) histogrammed the generator-level Z of ``GenFinderForDY`` with m(Z) >= 50 GeV
+in the inclusive LO madgraphMLM sample (SKFlat ``DYJets_MG``) and in the inclusive NLO amcatnloFXFX sample
+(``DYJets``), each at 1 pb^-1 with its cross section (both 6077.22 pb), and took
 
     ratio(pT_Z) = NLO(pT_Z) / LO(pT_Z)
 
-in the Run 2 binning (28 bins, 0-8000 GeV).  The QCD scale (7-point envelope), PDF (Hessian) and
-alpha_S variations of the numerator come from the NLO samples' LHE weights.  Only ee and mumu Z enter
-(the Run 3 NLO inclusive samples are DYto2E / DYto2Mu); the ratio is flavour universal and is applied
-to DY -> tautau as well, as in Run 2.
+in 28 bins from 0 to 8000 GeV; the QCD scale, PDF and alpha_S variations of the NLO sample's LHE weights give
+the variations of the ratio.  This script repeats that with our samples and cross sections:
 
-Samples (from the era's dataset configs, at their configured cross sections):
+* LO  = the inclusive madgraphMLM ``M-50`` / ``MLL-50`` sample(s) of the era's ``dy_lo_inc`` config;
+* NLO = the inclusive amcatnloFXFX ``M-50`` / ``MLL-50`` sample(s) of the era's ``dy_nlo_inc`` config;
 
-* LO = the madgraphMLM HT-binned DY of the ``dy_lo_ht`` config (what the analysis reweights) plus the
-  LO inclusive sample below the first HT bin (``LHE_HT`` < 40 in Run 3), so the denominator is the full
-  LO spectrum even though the analysis sample has no events there.
-* NLO = the amcatnloFXFX inclusive sample below the first pT(ll) bin (``LHE_Vpt`` < 100) plus the
-  pT(ll)-binned samples.  The Run 3 ``PTLL-X`` samples are open-ended (pT(ll) > X), so each one is
-  restricted to [X, next X).
-
-Each dataset's events are also kept per LHE slice, so the inclusive samples can be compared with the
-binned ones where they overlap (the "stitch checks" in the payload provenance).
+both at their configured cross sections (the same inclusive NNLO value, so the per-pb ratio equals the ratio of
+the unit-normalized shapes that Get_ZPtReweight.py divided).  Only ee and mumu Z enter (the Run 3 inclusive
+samples are DYto2E / DYto2Mu); the ratio is applied to DY -> tautau as well, as in Run 2.  The HT-binned LO and
+the pT(Z)-binned NLO samples are not used and nothing is stitched, as in Run 2; the weight is applied to the
+HT-binned LO set, which is the same LO generator setup as the inclusive sample.
 
 Two steps; ``fill`` caches one JSON per dataset in ``--workdir`` and ``combine`` reads the cache::
 
-    python scripts/derive_dy_zpt_reweight.py fill    --era RunIII2024Summer24 --workdir logs/dy_zpt_spectra/RunIII2024Summer24
-    python scripts/derive_dy_zpt_reweight.py combine --era RunIII2024Summer24 --workdir logs/dy_zpt_spectra/RunIII2024Summer24 \\
-        --out data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_<date>.json
+    python scripts/derive_dy_zpt_reweight.py fill    --era RunIISummer20UL17 --workdir ~/work/skim_scratch/dy_zpt_spectra/RunIISummer20UL17
+    python scripts/derive_dy_zpt_reweight.py combine --era RunIISummer20UL17 --workdir ~/work/skim_scratch/dy_zpt_spectra/RunIISummer20UL17 \\
+        --ew-from data/reweights/RunII/2017/RunIISummer20UL17/dy_zpt_reweight_run2legacy_v4_2017.json \\
+        --out data/reweights/RunII/2017/RunIISummer20UL17/dy_zpt_reweight_<date>.json
 
-``fill`` reads a spread of unskimmed NanoAOD files per dataset over XRootD (needs a grid proxy); the
-skims cannot be used because their reco-level selection biases the generator spectrum.
+``fill`` reads every file of both samples from unskimmed NanoAOD over XRootD (needs a grid proxy; about an hour
+per UL era), as Run 2 ran over the full samples; the skims cannot be used because their reco-level selection
+biases the generator spectrum.  ``--target-events N`` reads an even spread of about N events per dataset
+instead, for a quick look (the bins above 1 TeV are then statistically empty).
 
-The electroweak correction is not re-derived: the Run 2 (13 TeV) ``ZPtEWCorr`` block is copied from
-``--ew-from`` and flagged in the provenance.
+The electroweak correction is not re-derived: the Run 2 (13 TeV) ``ZPtEWCorr`` block of the year is copied
+from ``--ew-from`` and flagged in the provenance.
 """
 
 from __future__ import annotations
@@ -44,7 +43,6 @@ import concurrent.futures as cf
 import json
 import logging
 import math
-import re
 import sys
 import time
 from datetime import date
@@ -71,8 +69,8 @@ _FLAVOUR_PDG = {11: 0, 13: 1, 15: 2}
 # envelope drops the anti-correlated (muF, muR) = (2, 0.5) and (0.5, 2), i.e. indices 2 and 6.
 N_SCALE = 9
 SCALE_ENVELOPE = (0, 1, 3, 5, 7, 8)
-# LHEPdfWeight for LHA 325300 (NNPDF31_nnlo_as_0118_mc_hessian_pdfas): 0 central, 1-100 Hessian,
-# 101/102 alpha_S = 0.116 / 0.120.
+# LHEPdfWeight of an NNPDF3.1 NNLO Hessian pdfas set (LHA 306000 in UL, 325300 in Run 3): 0 central,
+# 1-100 Hessian, 101/102 alpha_S = 0.116 / 0.120.
 N_PDF = 103
 PDF_HESSIAN = range(1, 101)
 PDF_ALPHAS_DOWN, PDF_ALPHAS_UP = 101, 102
@@ -80,10 +78,9 @@ PDF_ALPHAS_DOWN, PDF_ALPHAS_UP = 101, 102
 GEN_BRANCHES = ["GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_mass", "GenPart_pdgId",
                 "GenPart_status", "GenPart_statusFlags", "GenPart_genPartIdxMother"]
 
-ROLES = ("lo_inc", "lo_ht", "nlo_inc", "nlo_ptll")
-ROLE_CONFIG = {"lo_inc": "dy_lo_inc", "lo_ht": "dy_lo_ht", "nlo_inc": "dy_nlo_inc", "nlo_ptll": "dy_nlo_ptll"}
-ROLE_SLICE_VAR = {"lo_inc": "LHE_HT", "lo_ht": "LHE_HT", "nlo_inc": "LHE_Vpt", "nlo_ptll": "LHE_Vpt"}
-ROLE_IS_NLO = {"lo_inc": False, "lo_ht": False, "nlo_inc": True, "nlo_ptll": True}
+ROLES = ("lo", "nlo")
+ROLE_CONFIG = {"lo": "dy_lo_inc", "nlo": "dy_nlo_inc"}
+ROLE_IS_NLO = {"lo": False, "nlo": True}
 
 REDIRECTORS = ["root://cmsxrootd.fnal.gov/", "root://cms-xrd-global.cern.ch/"]
 
@@ -98,14 +95,9 @@ def config_path(era: str, tag: str) -> Path:
     return REPO / "data" / "configs" / run / year / era / f"{era}_mc_{tag}.json"
 
 
-def _ht_low(name: str) -> float | None:
-    m = re.search(r"Bin-HT-(\d+)", name)
-    return float(m.group(1)) if m else None
-
-
-def _ptll_low(name: str) -> float | None:
-    m = re.search(r"PTLL-(\d+)", name)
-    return float(m.group(1)) if m else None
+def _is_low_mass(sample: str) -> bool:
+    """The m(ll) 10-50 companions of the inclusive samples, which never reach m(Z) >= 50."""
+    return "MLL-10to50" in sample or "M-10to50" in sample
 
 
 def _is_dy(entry: dict) -> bool:
@@ -113,10 +105,10 @@ def _is_dy(entry: dict) -> bool:
 
 
 def select_datasets(era: str) -> dict[str, list[dict]]:
-    """DY datasets per role with their cross sections, from the era's dataset configs.
+    """The inclusive DY sample(s) per role with their cross sections, from the era's dataset configs.
 
-    ``lo_inc`` and ``nlo_inc`` keep only their MLL-50 samples (the MLL-10to50 ones never reach
-    m(Z) >= 50).
+    Only the ``M-50`` / ``MLL-50`` samples (the ``M-10to50`` companions never reach m(Z) >= 50); a second
+    DAS path of the same primary dataset (UL ``_ext1``) is the same physics and is counted once.
     """
     out: dict[str, list[dict]] = {}
     for role in ROLES:
@@ -126,57 +118,49 @@ def select_datasets(era: str) -> dict[str, list[dict]]:
             if not _is_dy(entry):
                 continue
             sample = das.split("/")[1]
-            if role in ("lo_inc", "nlo_inc") and "MLL-50_" not in sample:
+            if _is_low_mass(sample) or any(r["sample"] == sample for r in rows):
                 continue
             rows.append({"das": das, "sample": sample, "xsec": float(entry["xsec"]), "role": role})
         if not rows:
-            raise RuntimeError(f"{era}: no DY datasets for role '{role}' in {config_path(era, ROLE_CONFIG[role])}")
+            raise RuntimeError(f"{era}: no inclusive DY dataset for role '{role}' in {config_path(era, ROLE_CONFIG[role])}")
         out[role] = rows
     return out
 
 
-def slice_edges(datasets: dict[str, list[dict]]) -> dict[str, list[float]]:
-    """LHE slice edges per slice variable: the binned samples' lower edges, from 0 to infinity."""
-    ht = sorted({_ht_low(d["sample"]) for d in datasets["lo_ht"]} - {None})
-    ptll = sorted({_ptll_low(d["sample"]) for d in datasets["nlo_ptll"]} - {None})
-    if not ht or not ptll:
-        raise RuntimeError("could not parse the HT / PTLL bin edges from the sample names")
-    return {"LHE_HT": [0.0, *ht, math.inf], "LHE_Vpt": [0.0, *ptll, math.inf]}
-
-
-def kept_slice(d: dict, edges: list[float]) -> tuple[float, float]:
-    """[lo, hi) of the slice variable this dataset contributes to the stitched spectrum."""
-    if d["role"] in ("lo_inc", "nlo_inc"):
-        return 0.0, edges[1]
-    low = _ht_low(d["sample"]) if d["role"] == "lo_ht" else _ptll_low(d["sample"])
-    i = edges.index(low)
-    return low, edges[i + 1]
-
-
-def pick_files(files: list, target_events: int, max_files: int) -> list:
-    """Files spread evenly over the (sorted) dataset, enough for *target_events* (at most *max_files*)."""
+def pick_files(files: list, target_events: int = 0, max_files: int = 0) -> list:
+    """Every file of the (sorted) dataset, or, with *target_events* > 0, the smallest even spread whose files hold
+    that many events (at most *max_files* when > 0).  Counted with the picked files' own event numbers, not the
+    dataset mean: UL NanoAOD files range from a few thousand to a few million events, and a spread sized by the
+    mean can land on tiny ones (UL18 inclusive NLO: one file of 59k events for a 500k target)."""
     files = sorted(files, key=lambda f: f.lfn)
     if not files:
         return []
-    mean = max(1.0, sum(f.events for f in files) / len(files))
-    k = int(min(max_files, len(files), max(1, math.ceil(target_events / mean))))
-    idx = np.unique(np.round(np.linspace(0, len(files) - 1, k)).astype(int))
-    return [files[i] for i in idx]
+    if target_events <= 0:
+        return files
+    if max_files <= 0:
+        max_files = len(files)
+    picked: list = []
+    for k in range(1, min(max_files, len(files)) + 1):
+        idx = np.unique(np.round(np.linspace(0, len(files) - 1, k)).astype(int))
+        picked = [files[i] for i in idx]
+        if sum(f.events for f in picked) >= target_events:
+            break
+    return picked
 
 
 # ---------------------------------------------------------------------------
 # Filling (one task per file)
 # ---------------------------------------------------------------------------
 
-def _empty(n_slices: int, n_bins: int, with_lhe: bool) -> dict:
+def _empty(n_bins: int, with_lhe: bool) -> dict:
     h = {
-        "sumw": np.zeros((len(FLAVOURS), n_slices, n_bins)),
-        "sumw2": np.zeros((len(FLAVOURS), n_slices, n_bins)),
-        "entries": np.zeros((len(FLAVOURS), n_slices, n_bins)),
+        "sumw": np.zeros((len(FLAVOURS), n_bins)),
+        "sumw2": np.zeros((len(FLAVOURS), n_bins)),
+        "entries": np.zeros((len(FLAVOURS), n_bins)),
     }
     if with_lhe:
-        h["scale"] = np.zeros((n_slices, N_SCALE, n_bins))
-        h["pdf"] = np.zeros((n_slices, N_PDF, n_bins))
+        h["scale"] = np.zeros((N_SCALE, n_bins))
+        h["pdf"] = np.zeros((N_PDF, n_bins))
     return h
 
 
@@ -201,18 +185,16 @@ def gen_z(arrays):
     return pt, mass, found, flav
 
 
-def fill_file(lfn: str, slice_var: str, s_edges: list[float], with_lhe: bool,
-              step: int = 100_000, timeout: int = 180) -> dict:
-    """Generator Z-pT histograms of one file, per flavour and LHE slice (all events of the file)."""
+def fill_file(lfn: str, with_lhe: bool, step: int = 100_000, timeout: int = 180) -> dict:
+    """Generator Z-pT histograms of one file, per flavour (all events of the file)."""
     import uproot
 
-    n_bins, n_slices = len(PT_EDGES) - 1, len(s_edges) - 1
+    n_bins = len(PT_EDGES) - 1
     edges = np.asarray(PT_EDGES, dtype=np.float64)
-    sedges = np.asarray(s_edges, dtype=np.float64)
-    branches = GEN_BRANCHES + ["genWeight", slice_var] + (["LHEScaleWeight", "LHEPdfWeight"] if with_lhe else [])
+    branches = GEN_BRANCHES + ["genWeight"] + (["LHEScaleWeight", "LHEPdfWeight"] if with_lhe else [])
     last_err = None
     for red in REDIRECTORS:
-        h = _empty(n_slices, n_bins, with_lhe)
+        h = _empty(n_bins, with_lhe)
         stats = {"events": 0, "sumw_all": 0.0, "no_pair": 0, "mz_lt_50": 0, "bad_lhe_len": 0}
         try:
             with uproot.open(red + lfn, timeout=timeout) as f:
@@ -226,10 +208,8 @@ def fill_file(lfn: str, slice_var: str, s_edges: list[float], with_lhe: bool,
                     stats["mz_lt_50"] += int(np.count_nonzero(found & (mass < MZ_MIN)))
                     sel = found & (mass >= MZ_MIN) & (flav >= 0)
                     ib = np.clip(np.searchsorted(edges, np.minimum(pt, QCD_PT_MAX), side="right") - 1, 0, n_bins - 1)
-                    sv = np.asarray(arr[slice_var], dtype=np.float64)
-                    isl = np.clip(np.searchsorted(sedges, sv, side="right") - 1, 0, n_slices - 1)
                     for name, val in (("sumw", w), ("sumw2", w * w), ("entries", np.ones_like(w))):
-                        np.add.at(h[name], (flav[sel], isl[sel], ib[sel]), val[sel])
+                        np.add.at(h[name], (flav[sel], ib[sel]), val[sel])
                     if with_lhe:
                         import awkward as ak
                         light = sel & (flav <= 1)
@@ -243,14 +223,14 @@ def fill_file(lfn: str, slice_var: str, s_edges: list[float], with_lhe: bool,
                                 continue
                             m = np.asarray(ak.to_numpy(lhe[use]), dtype=np.float64)       # (n_use, n)
                             wv = m * w[use][:, None]
-                            np.add.at(h[key], (isl[use][:, None], np.arange(n)[None, :], ib[use][:, None]), wv)
+                            np.add.at(h[key], (np.arange(n)[None, :], ib[use][:, None]), wv)
             stats["runs_sumw"] = runs_sumw
             stats["redirector"] = red
             return {"lfn": lfn, "stats": stats, "hist": {k: v.tolist() for k, v in h.items()}}
         except Exception as e:  # noqa: BLE001 - try the next redirector, then report
             last_err = e
             logger.warning("%s via %s failed: %s", lfn, red, e, exc_info=logger.isEnabledFor(logging.DEBUG))
-    raise RuntimeError(f"{lfn}: all redirectors failed: {last_err}")
+    raise RuntimeError(f"{lfn}: every redirector failed ({last_err})")
 
 
 def _cache_path(workdir: Path, d: dict) -> Path:
@@ -262,7 +242,6 @@ def fill(era: str, workdir: Path, target_events: int, max_files: int, workers: i
     from wrcoffea.skim.catalog import DBSClient
 
     datasets = select_datasets(era)
-    sedges = slice_edges(datasets)
     workdir.mkdir(parents=True, exist_ok=True)
     dbs = DBSClient()
     jobs = []
@@ -275,26 +254,31 @@ def fill(era: str, workdir: Path, target_events: int, max_files: int, workers: i
                 logger.info("cached: %s", out.name)
                 continue
             files = pick_files(dbs.files(d["das"]), target_events, max_files)
+            if not files:
+                raise RuntimeError(f"{d['das']}: DBS lists no files")
             jobs.append((d, files, out))
-            logger.info("%-8s %-75s %d files, %d events", role, d["sample"], len(files), sum(f.events for f in files))
+            logger.info("%-4s %-75s %d files, %d events", role, d["sample"], len(files), sum(f.events for f in files))
     t0 = time.time()
     with cf.ProcessPoolExecutor(max_workers=workers) as pool:
         futs = {}
         for d, files, out in jobs:
-            var = ROLE_SLICE_VAR[d["role"]]
             for f in files:
-                futs[pool.submit(fill_file, f.lfn, var, sedges[var], ROLE_IS_NLO[d["role"]])] = (d["sample"], f)
+                futs[pool.submit(fill_file, f.lfn, ROLE_IS_NLO[d["role"]])] = (d["sample"], f)
         results: dict[str, list] = {}
+        failed: dict[str, list] = {}
         for i, fut in enumerate(cf.as_completed(futs), 1):
             sample, f = futs[fut]
-            results.setdefault(sample, []).append((f, fut.result()))
+            try:
+                results.setdefault(sample, []).append((f, fut.result()))
+            except Exception as e:  # noqa: BLE001 - one unreadable file must not lose the whole fill
+                failed.setdefault(sample, []).append(f.lfn)
+                logger.warning("skipping %s: %s", f.lfn, e)
             if i % 10 == 0 or i == len(futs):
                 logger.info("%d/%d files done (%.0f s)", i, len(futs), time.time() - t0)
     for d, files, out in jobs:
         parts = results.get(d["sample"], [])
-        var = ROLE_SLICE_VAR[d["role"]]
         agg = None
-        stats = {}
+        stats: dict = {}
         for _, r in parts:
             hh = {k: np.asarray(v) for k, v in r["hist"].items()}
             agg = hh if agg is None else {k: agg[k] + hh[k] for k in agg}
@@ -303,27 +287,30 @@ def fill(era: str, workdir: Path, target_events: int, max_files: int, workers: i
                     stats[k] = stats.get(k, 0) + v
         payload = {
             "era": era, "role": d["role"], "das": d["das"], "sample": d["sample"], "xsec": d["xsec"],
-            "slice_var": var, "slice_edges": [e if math.isfinite(e) else "inf" for e in sedges[var]],
-            "kept_slice": [x if math.isfinite(x) else "inf" for x in kept_slice(d, sedges[var])],
             "pt_edges": PT_EDGES, "flavours": list(FLAVOURS), "mz_min": MZ_MIN,
             "files": [{"lfn": f.lfn, "events": f.events, "redirector": r["stats"]["redirector"]} for f, r in parts],
+            "failed_files": failed.get(d["sample"], []),
             "stats": stats, "filled_on": date.today().isoformat(),
             "hist": {k: v.tolist() for k, v in agg.items()},
         }
+        if agg is None:
+            raise RuntimeError(f"{d['sample']}: no file could be read")
         out.write_text(json.dumps(payload))
+        if failed.get(d["sample"]):
+            logger.warning("%s: %d of %d files skipped (listed in the cache as failed_files)", d["sample"],
+                           len(failed[d["sample"]]), len(files))
         if stats.get("runs_sumw") and abs(stats["sumw_all"] / stats["runs_sumw"] - 1) > 1e-6:
             logger.warning("%s: summed genWeight %.6g != Runs genEventSumw %.6g", d["sample"],
                            stats["sumw_all"], stats["runs_sumw"])
+        if stats.get("bad_lhe_len"):
+            logger.warning("%s: %d events with an unexpected LHE weight count were left out of the variations",
+                           d["sample"], stats["bad_lhe_len"])
         logger.info("wrote %s (%d events)", out.name, stats.get("events", 0))
 
 
 # ---------------------------------------------------------------------------
 # Combining
 # ---------------------------------------------------------------------------
-
-def _f(x):
-    return math.inf if x == "inf" else float(x)
-
 
 def load_cache(workdir: Path, era: str) -> list[dict]:
     rows = []
@@ -337,8 +324,9 @@ def load_cache(workdir: Path, era: str) -> list[dict]:
         if abs(c["xsec"] - d["xsec"]) > 1e-9 * max(1.0, d["xsec"]):
             raise ValueError(f"{p.name}: cached xsec {c['xsec']} != config {d['xsec']}; re-run fill --force")
         c["hist"] = {k: np.asarray(v, dtype=np.float64) for k, v in c["hist"].items()}
-        c["slice_edges"] = [_f(x) for x in c["slice_edges"]]
-        c["kept_slice"] = [_f(x) for x in c["kept_slice"]]
+        if c["hist"]["sumw"].ndim != 2:
+            raise ValueError(f"{p.name}: cache in the old per-slice layout; re-run fill --force")
+        c["role"] = d["role"]
         rows.append(c)
     return rows
 
@@ -348,51 +336,18 @@ def _norm(c: dict) -> float:
     return c["xsec"] / c["stats"]["sumw_all"]
 
 
-def _kept_mask(c: dict) -> np.ndarray:
-    e = c["slice_edges"]
-    lo, hi = c["kept_slice"]
-    return np.array([(e[i] >= lo) and (e[i + 1] <= hi) for i in range(len(e) - 1)])
-
-
-def spectrum(rows: list[dict], *, flavours=(0, 1), key="sumw", slices="kept") -> np.ndarray:
-    """Stitched, per-pb spectrum summed over *rows* (nominal key arrays have a flavour axis)."""
+def spectrum(rows: list[dict], *, flavours=(0, 1), key="sumw") -> np.ndarray:
+    """Per-pb Z-pT spectrum summed over *rows* (ee + mumu by default); ``scale`` / ``pdf`` give (variation, bin)."""
     total = None
     for c in rows:
         h = c["hist"][key]
-        mask = _kept_mask(c) if slices == "kept" else slices(c)
         n = _norm(c) ** (2 if key == "sumw2" else 1)
         if key in ("sumw", "sumw2", "entries"):
-            part = h[list(flavours)][:, mask].sum(axis=(0, 1)) * (1 if key == "entries" else n)
-        else:                                   # scale / pdf: (slice, variation, bin), ee + mumu only
-            part = h[mask].sum(axis=0) * n
+            part = h[list(flavours)].sum(axis=0) * (1 if key == "entries" else n)
+        else:                                   # scale / pdf: (variation, bin), ee + mumu only
+            part = h * n
         total = part if total is None else total + part
     return total
-
-
-def stitch_checks(rows: list[dict]) -> list[dict]:
-    """Inclusive vs binned per-pb cross section (ee+mumu, m(Z) >= 50) in each overlapping slice.
-
-    "Binned" is the sample(s) the stitch takes that slice from (both MLL bins of an HT bin; the one
-    PTLL sample whose edge opens the slice), so overlapping open-ended samples are not added up.
-    """
-    out = []
-    for inc_role, bin_role in (("lo_inc", "lo_ht"), ("nlo_inc", "nlo_ptll")):
-        inc = [c for c in rows if c["role"] == inc_role]
-        edges = inc[0]["slice_edges"]
-        for i in range(1, len(edges) - 1):
-            binned = [c for c in rows if c["role"] == bin_role and _kept_mask(c)[i]]
-            def tot(cs, var="sumw"):
-                v = 0.0
-                for c in cs:
-                    v += float(c["hist"][var][[0, 1], :, :][:, i].sum()) * _norm(c) ** (2 if var == "sumw2" else 1)
-                return v
-            x_inc, x_bin = tot(inc), tot(binned)
-            e_inc, e_bin = math.sqrt(tot(inc, "sumw2")), math.sqrt(tot(binned, "sumw2"))
-            r = x_inc / x_bin if x_bin > 0 else float("nan")
-            err = r * math.sqrt((e_inc / x_inc) ** 2 + (e_bin / x_bin) ** 2) if x_inc > 0 and x_bin > 0 else float("nan")
-            out.append({"slice_var": inc[0]["slice_var"], "slice": [edges[i], edges[i + 1] if math.isfinite(edges[i + 1]) else "inf"],
-                        "inclusive_pb": x_inc, "binned_pb": x_bin, "inclusive_over_binned": r, "err": err})
-    return out
 
 
 def _fill_empty(values: np.ndarray, ok: np.ndarray) -> np.ndarray:
@@ -404,10 +359,12 @@ def _fill_empty(values: np.ndarray, ok: np.ndarray) -> np.ndarray:
     return out
 
 
-def combine(era: str, workdir: Path, ew_from: Path) -> dict:
-    rows = load_cache(workdir, era)
-    lo = [c for c in rows if c["role"] in ("lo_inc", "lo_ht")]
-    nlo = [c for c in rows if c["role"] in ("nlo_inc", "nlo_ptll")]
+def qcd_block(lo: list[dict], nlo: list[dict]) -> tuple[dict, dict]:
+    """The payload's ``qcd`` block (ratio and variations) and its checks, from the cached LO and NLO rows.
+
+    Everything is per pb at the configured cross sections: the central ratio is NLO / LO, and each variation
+    is the varied NLO spectrum over the nominal LO, not renormalized (as the Run 2 ratio files).
+    """
     lo_w, lo_w2 = spectrum(lo), spectrum(lo, key="sumw2")
     nlo_w, nlo_w2 = spectrum(nlo), spectrum(nlo, key="sumw2")
     scale = spectrum(nlo, key="scale")          # (9, bins)
@@ -434,44 +391,98 @@ def combine(era: str, workdir: Path, ew_from: Path) -> dict:
         a, b = spectrum(nlo, flavours=(i,)), spectrum(lo, flavours=(i,))
         flav[name] = np.where(b > 0, a / np.where(b > 0, b, 1.0), np.nan).tolist()
 
+    qcd = {
+        "edges": [float(e) for e in PT_EDGES],
+        "central": ratio.tolist(),
+        "central_plain": ratio.tolist(),
+        "stat_err": stat.tolist(),
+        "pdf_err": pdf_err.tolist(),
+        "scale_up": scale_up.tolist(),
+        "scale_down": scale_down.tolist(),
+        "alphas_up": as_up.tolist(),
+        "alphas_down": as_down.tolist(),
+        "pt_max": QCD_PT_MAX,
+        "lo_pb_per_bin": lo_w.tolist(),
+        "nlo_pb_per_bin": nlo_w.tolist(),
+    }
+    checks = {
+        "integrated": {"lo_pb": float(lo_w.sum()), "nlo_pb": float(nlo_w.sum()),
+                       "nlo_over_lo": float(nlo_w.sum() / lo_w.sum())},
+        "per_flavour_ratio": flav,
+        "entries": {"lo": spectrum(lo, key="entries").tolist(), "nlo": spectrum(nlo, key="entries").tolist()},
+    }
+    return qcd, checks
+
+
+def merge_eras(rows_by_era: dict[str, list[dict]]) -> list[dict]:
+    """Cached rows of several eras merged by (role, sample): the same primary dataset in two campaigns is more
+    files of one sample (histograms and sums of weights added, one per-pb normalization), so every era counts with
+    its events; samples with different names (2024's DYto2E / DYto2Mu) stay separate rows and add per pb."""
+    merged: dict[tuple, dict] = {}
+    for era, rows in rows_by_era.items():
+        for c in rows:
+            key = (c["role"], c["sample"])
+            if key not in merged:
+                m = dict(c)
+                m["hist"] = {k: v.copy() for k, v in c["hist"].items()}
+                m["stats"] = dict(c["stats"])
+                m["files"] = list(c["files"])
+                m["eras"] = [era]
+                merged[key] = m
+                continue
+            m = merged[key]
+            if abs(m["xsec"] - c["xsec"]) > 1e-9 * max(1.0, c["xsec"]):
+                raise ValueError(f"{c['sample']}: cross section differs between eras ({m['xsec']} vs {c['xsec']} in {era})")
+            for k in m["hist"]:
+                m["hist"][k] = m["hist"][k] + c["hist"][k]
+            for k, v in c["stats"].items():
+                if isinstance(v, (int, float)):
+                    m["stats"][k] = m["stats"].get(k, 0) + v
+            m["files"] = m["files"] + list(c["files"])
+            m["eras"].append(era)
+    return list(merged.values())
+
+
+def combine(eras: list[str], workdirs: list[Path], ew_from: Path, label: str | None = None) -> dict:
+    """The payload of one era, or of several eras merged (``label`` names the combination, e.g. ``Run3``)."""
+    if len(eras) != len(workdirs):
+        raise ValueError("one --workdir per --era")
+    rows = merge_eras({era: load_cache(w, era) for era, w in zip(eras, workdirs)})
+    era = label or (eras[0] if len(eras) == 1 else "+".join(eras))
+    lo = [c for c in rows if c["role"] == "lo"]
+    nlo = [c for c in rows if c["role"] == "nlo"]
+    xs_lo, xs_nlo = sum(c["xsec"] for c in lo), sum(c["xsec"] for c in nlo)
+    if abs(xs_nlo / xs_lo - 1) > 1e-3:
+        logger.warning("LO and NLO cross sections differ (%.2f vs %.2f pb): the per-pb ratio carries their "
+                       "ratio %.4f on top of the shape", xs_lo, xs_nlo, xs_nlo / xs_lo)
+    qcd, checks = qcd_block(lo, nlo)
     ew = json.loads(ew_from.read_text())["ew"]
     payload = {
         "provenance": {
             "era": era,
+            "eras": list(eras),
             "derived_on": date.today().isoformat(),
             "script": "scripts/derive_dy_zpt_reweight.py",
-            "method": "Run 2 GetZPtReweight.C recipe: generator Z of GenFinderForDY (find_gen_z), m(Z) >= 50, "
-                      "ee+mumu, per-pb spectra at the configured cross sections; ratio = NLO / LO",
-            "lo": "dy_lo_ht HT-binned samples + dy_lo_inc MLL-50 below the first HT bin",
-            "nlo": "dy_nlo_inc MLL-50 below the first PTLL bin + dy_nlo_ptll samples restricted to exclusive slices",
+            "method": "AN-19-083 Sec. 5.1 (SKFlat GetZPtReweight.C, HNWR_Plotter Get_ZPtReweight.py): generator Z "
+                      "of GenFinderForDY (find_gen_z), m(Z) >= 50, ee+mumu, the inclusive LO madgraphMLM and the "
+                      "inclusive NLO amcatnloFXFX samples at 1 pb^-1 with their configured cross sections; "
+                      "ratio = NLO / LO per bin, no binned samples, no stitching",
+            "lo": "inclusive madgraphMLM M-50 / MLL-50 sample(s) of the dy_lo_inc config",
+            "nlo": "inclusive amcatnloFXFX M-50 / MLL-50 sample(s) of the dy_nlo_inc config",
             "variations": "scale: 7-point envelope of LHEScaleWeight (indices 0,1,3,5,7,8) on NLO; pdf: Hessian "
-                          "(LHEPdfWeight 1-100) on NLO; alphas: LHEPdfWeight 101/102 on NLO; all over nominal LO",
-            "integrated": {"lo_pb": float(lo_w.sum()), "nlo_pb": float(nlo_w.sum()),
-                           "nlo_over_lo": float(nlo_w.sum() / lo_w.sum())},
-            "stitch_checks": stitch_checks(rows),
-            "per_flavour_ratio": flav,
-            "datasets": [{"sample": c["sample"], "role": c["role"], "xsec": c["xsec"], "kept_slice":
-                          [x if math.isfinite(x) else "inf" for x in c["kept_slice"]],
+                          "(LHEPdfWeight 1-100) on NLO; alphas: LHEPdfWeight 101/102 on NLO; all over nominal LO, "
+                          "not renormalized",
+            "integrated": checks["integrated"],
+            "per_flavour_ratio": checks["per_flavour_ratio"],
+            "entries_per_bin": checks["entries"],
+            "datasets": [{"sample": c["sample"], "role": c["role"], "xsec": c["xsec"], "eras": c.get("eras", [era]),
                           "files": len(c["files"]), "events": c["stats"]["events"]} for c in rows],
-            "ew_note": f"EW correction copied unchanged from {ew_from.name} (Run 2, 13 TeV ZPtEWCorr); not re-derived "
-                       "for 13.6 TeV",
-            "note": "first Run 3 derivation; the analyzer applies central x EW to DYJets whenever the era is mapped "
-                    "in config.yaml dy_zpt_reweight",
+            "ew_note": f"EW correction copied unchanged from {ew_from.name} (Run 2 SKFlat ZPtEWCorr, 13 TeV); not "
+                       "re-derived",
+            "note": f"own derivation for {era}; the analyzer applies central x EW to DYJets whenever the era is "
+                    "mapped in config.yaml dy_zpt_reweight",
         },
-        "qcd": {
-            "edges": [float(e) for e in PT_EDGES],
-            "central": ratio.tolist(),
-            "central_plain": ratio.tolist(),
-            "stat_err": stat.tolist(),
-            "pdf_err": pdf_err.tolist(),
-            "scale_up": scale_up.tolist(),
-            "scale_down": scale_down.tolist(),
-            "alphas_up": as_up.tolist(),
-            "alphas_down": as_down.tolist(),
-            "pt_max": QCD_PT_MAX,
-            "lo_pb_per_bin": lo_w.tolist(),
-            "nlo_pb_per_bin": nlo_w.tolist(),
-        },
+        "qcd": qcd,
         "ew": ew,
     }
     return payload
@@ -497,7 +508,7 @@ def plot(payload: dict, reference: Path | None, out: Path) -> None:
         re_ = np.asarray(ref["edges"])
         rc = np.sqrt(np.maximum(re_[:-1], 1.0) * re_[1:])
         ax.errorbar(rc, ref["central"], yerr=ref["pdf_err"], fmt="s", color="#eb6834", ms=7, lw=2,
-                    label="Run 2 2018 (HNWR)")
+                    label=f"Run 2 reference ({reference.stem})")
     ax.axhline(1, color="0.4", ls="--", lw=1)
     ax.set_xscale("log")
     ax.set_xlim(1, 8000)
@@ -516,19 +527,23 @@ def main(argv=None):
     sub = p.add_subparsers(dest="cmd", required=True)
     for name in ("fill", "combine"):
         s = sub.add_parser(name)
-        s.add_argument("--era", required=True)
-        s.add_argument("--workdir", type=Path, required=True, help="per-dataset spectrum cache")
         s.add_argument("-v", "--verbose", action="store_true")
     f = sub.choices["fill"]
-    f.add_argument("--target-events", type=int, default=500_000, help="events per dataset (default 500k)")
-    f.add_argument("--max-files", type=int, default=8)
+    f.add_argument("--era", required=True)
+    f.add_argument("--workdir", type=Path, required=True, help="per-dataset spectrum cache")
+    f.add_argument("--target-events", type=int, default=0,
+                   help="read an even spread of about this many events per dataset; 0 (default) reads every file")
+    f.add_argument("--max-files", type=int, default=0, help="cap on the files of a spread; 0 (default) = no cap")
     f.add_argument("--workers", type=int, default=6)
     f.add_argument("--force", action="store_true", help="refill datasets already cached")
     f.add_argument("--only", nargs="*", default=None, help="substrings of sample names to fill")
     c = sub.choices["combine"]
+    c.add_argument("--era", nargs="+", required=True, help="one era, or several to merge (e.g. the five Run 3 eras)")
+    c.add_argument("--workdir", type=Path, nargs="+", required=True, help="one spectrum cache per --era, same order")
+    c.add_argument("--label", default=None, help="name of the combination in the payload (default: the era)")
     c.add_argument("--out", type=Path, required=True)
-    c.add_argument("--ew-from", type=Path,
-                   default=REPO / "data/reweights/RunII/2018/RunIISummer20UL18/dy_zpt_reweight_run2legacy_v4_2018.json")
+    c.add_argument("--ew-from", type=Path, required=True,
+                   help="converted Run 2 payload of the year whose EW block is copied")
     c.add_argument("--plot", type=Path, default=None, help="PDF comparing the ratio with --ew-from's QCD ratio")
     args = p.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
@@ -536,15 +551,16 @@ def main(argv=None):
     if args.cmd == "fill":
         fill(args.era, args.workdir, args.target_events, args.max_files, args.workers, args.force, args.only)
         return 0
-    payload = combine(args.era, args.workdir, args.ew_from)
+    payload = combine(args.era, args.workdir, args.ew_from, args.label)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, indent=1))
     q, prov = payload["qcd"], payload["provenance"]
-    print(f"integrated NLO/LO = {prov['integrated']['nlo_over_lo']:.4f}")
-    for lo_e, hi_e, r, s, u, d in zip(q["edges"][:-1], q["edges"][1:], q["central"], q["stat_err"], q["scale_up"], q["scale_down"]):
-        print(f"  [{lo_e:6.0f},{hi_e:6.0f})  {r:6.3f} +- {s:5.3f}  scale [{d:.3f}, {u:.3f}]")
-    for chk in prov["stitch_checks"]:
-        print(f"  stitch {chk['slice_var']} {chk['slice']}: inclusive/binned = {chk['inclusive_over_binned']:.3f} +- {chk['err']:.3f}")
+    print(f"integrated NLO/LO = {prov['integrated']['nlo_over_lo']:.4f} "
+          f"(LO {prov['integrated']['lo_pb']:.1f} pb, NLO {prov['integrated']['nlo_pb']:.1f} pb)")
+    ent = prov["entries_per_bin"]
+    for i, (lo_e, hi_e) in enumerate(zip(q["edges"][:-1], q["edges"][1:])):
+        print(f"  [{lo_e:6.0f},{hi_e:6.0f})  {q['central'][i]:6.3f} +- {q['stat_err'][i]:5.3f}  "
+              f"scale [{q['scale_down'][i]:.3f}, {q['scale_up'][i]:.3f}]  events LO {ent['lo'][i]:.0f} NLO {ent['nlo'][i]:.0f}")
     if args.plot:
         plot(payload, args.ew_from, args.plot)
         print(f"plot: {args.plot}")

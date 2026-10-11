@@ -94,6 +94,20 @@ def background_files(rootfiles: Path) -> list[Path]:
     return out
 
 
+def _as_dirs(rootfiles) -> list[Path]:
+    return [Path(rootfiles)] if isinstance(rootfiles, (str, Path)) else [Path(p) for p in rootfiles]
+
+
+def _read_sum(paths: list[Path], key: str, edges_out):
+    """One histogram summed over several productions (the sub-eras of a data-taking year)."""
+    values = variances = None
+    for p in paths:
+        v, var = _read(p, key, edges_out)
+        values = v if values is None else values + v
+        variances = var if variances is None else variances + var
+    return values, variances
+
+
 def _ratio(data, var_data, bkg, var_bkg, dy, var_dy):
     num = data - bkg
     ratio = np.ones_like(dy)
@@ -104,8 +118,10 @@ def _ratio(data, var_data, bkg, var_bkg, dy, var_dy):
     return ratio, err, ok
 
 
-def derive_kind(rootfiles: Path, kind: str, bkgs: list[Path], dy_rootfiles: Path | None = None,
-                region_suffix: str = "") -> dict:
+def derive_kind(rootfiles, kind: str, bkgs: list[str], dy_rootfiles=None, region_suffix: str = "") -> dict:
+    """*rootfiles* / *dy_rootfiles*: one production directory, or several whose histograms are summed (a
+    data-taking year from its sub-eras); *bkgs* are the non-DY file names, read from every directory."""
+    dirs, dy_dirs = _as_dirs(rootfiles), _as_dirs(dy_rootfiles or rootfiles)
     cfg = KINDS[kind]
     edges = cfg["edges"]
     per_channel = {}
@@ -113,12 +129,12 @@ def derive_kind(rootfiles: Path, kind: str, bkgs: list[Path], dy_rootfiles: Path
     for channel, region in cfg["regions"].items():
         region = region + region_suffix
         key = f"{region}/{cfg['variable']}_{region}"
-        data, var_data = _read(rootfiles / DATA_FILES[channel], key, edges)
-        dy, var_dy = _read((dy_rootfiles or rootfiles) / DY_FILE, key, edges)
+        data, var_data = _read_sum([d / DATA_FILES[channel] for d in dirs], key, edges)
+        dy, var_dy = _read_sum([d / DY_FILE for d in dy_dirs], key, edges)
         bkg = np.zeros_like(dy)
         var_bkg = np.zeros_like(dy)
-        for p in bkgs:
-            b, vb = _read(p, key, edges)
+        for name in bkgs:
+            b, vb = _read_sum([d / name for d in dirs], key, edges)
             bkg += b
             var_bkg += vb
         ratio, err, ok = _ratio(data, var_data, bkg, var_bkg, dy, var_dy)
@@ -148,20 +164,23 @@ def derive_kind(rootfiles: Path, kind: str, bkgs: list[Path], dy_rootfiles: Path
     }
 
 
-def derive(rootfiles: Path, era: str, note: str = "", dy_rootfiles: Path | None = None,
-           region_suffix: str = "") -> dict:
-    bkgs = background_files(rootfiles)
-    if not bkgs:
-        raise FileNotFoundError(f"No non-DY background files found in {rootfiles}")
+def derive(rootfiles, era: str, note: str = "", dy_rootfiles=None, region_suffix: str = "") -> dict:
+    dirs, dy_dirs = _as_dirs(rootfiles), _as_dirs(dy_rootfiles or rootfiles)
+    names = [[p.name for p in background_files(d)] for d in dirs]
+    if not names[0]:
+        raise FileNotFoundError(f"No non-DY background files found in {dirs[0]}")
+    if any(n != names[0] for n in names[1:]):
+        raise ValueError(f"the productions hold different non-DY background files: {names}")
+    bkgs = names[0]
     out = {
         "provenance": {
             "era": era,
-            "rootfiles": str(rootfiles),
-            "dy_rootfiles": str(dy_rootfiles or rootfiles),
+            "rootfiles": [str(d) for d in dirs] if len(dirs) > 1 else str(dirs[0]),
+            "dy_rootfiles": [str(d) for d in dy_dirs] if len(dy_dirs) > 1 else str(dy_dirs[0]),
             "regions": {k: {ch: r + region_suffix for ch, r in v["regions"].items()} for k, v in KINDS.items()},
             "dy_file": DY_FILE,
             "data_files": DATA_FILES,
-            "background_files": [p.name for p in bkgs],
+            "background_files": bkgs,
             "derived_on": date.today().isoformat(),
             "method": "Run 2 DYReshapeJetPt: (data - non-DY MC) / DY MC in the DY CRs, ee and mumu combined",
             "note": note,
@@ -169,23 +188,26 @@ def derive(rootfiles: Path, era: str, note: str = "", dy_rootfiles: Path | None 
         "requires_dy_zpt_reweight": True,
     }
     for kind in KINDS:
-        out[kind] = derive_kind(rootfiles, kind, bkgs, dy_rootfiles, region_suffix)
+        out[kind] = derive_kind(dirs, kind, bkgs, dy_dirs, region_suffix)
     return out
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--era", required=True)
-    parser.add_argument("--rootfiles", type=Path, required=True, help="WR_Plotter rootfile directory of one production")
-    parser.add_argument("--dy-rootfiles", type=Path, default=None,
-                        help="Directory holding WRAnalyzer_DYJets.root (default: --rootfiles)")
+    parser.add_argument("--rootfiles", type=Path, nargs="+", required=True,
+                        help="WR_Plotter rootfile directory of one production, or several (the sub-eras of a year) "
+                             "whose histograms are summed")
+    parser.add_argument("--dy-rootfiles", type=Path, nargs="*", default=None,
+                        help="Directory (or directories, one per --rootfiles entry) holding WRAnalyzer_DYJets.root "
+                             "(default: --rootfiles)")
     parser.add_argument("--region-suffix", default="",
                         help="Suffix of the DY CR regions to use, e.g. _mll60to100 (study dy-cr-split)")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--note", default="", help="Free-text provenance note (e.g. the production command)")
     args = parser.parse_args(argv)
 
-    payload = derive(args.rootfiles, args.era, args.note, args.dy_rootfiles, args.region_suffix)
+    payload = derive(args.rootfiles, args.era, args.note, args.dy_rootfiles or None, args.region_suffix)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=1)
