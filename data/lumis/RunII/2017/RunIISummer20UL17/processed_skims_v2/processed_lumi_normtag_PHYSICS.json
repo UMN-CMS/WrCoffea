@@ -1,0 +1,166 @@
+{
+ "byls_table": "/Users/billy/work/skims_v2/_lumi/golden2017_byls_physics.csv",
+ "channel_by_period": {
+  "SinglePhoton": {
+   "Run2017B": 4.88085822100001,
+   "Run2017C": 9.724070132999907,
+   "Run2017D": 4.3136023789999856,
+   "Run2017E": 9.419146780999906,
+   "Run2017F": 13.727223992000027
+  },
+  "electron": {
+   "Run2017B": 4.88085822100001,
+   "Run2017C": 9.723751220999908,
+   "Run2017D": 4.312436234999986,
+   "Run2017E": 9.419146780999906,
+   "Run2017F": 13.727223992000027
+  },
+  "muon": {
+   "Run2017B": 4.88085822100001,
+   "Run2017C": 9.71918674799991,
+   "Run2017D": 4.308218739999989,
+   "Run2017E": 9.4138482959999,
+   "Run2017F": 13.694131146000025
+  }
+ },
+ "channel_total_fb": {
+  "SinglePhoton": 42.064901505999835,
+  "electron": 42.063416449999835,
+  "muon": 42.016243150999834
+ },
+ "golden_by_period": {
+  "Run2017B": 4.880866835,
+  "Run2017C": 9.725638282,
+  "Run2017D": 4.313714702,
+  "Run2017E": 9.4200946,
+  "Run2017F": 13.727914202
+ },
+ "golden_in_dataset_runs_fb": 42.068228621,
+ "golden_json": "data/lumis/RunII/2017/RunIISummer20UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
+ "golden_runs_in_no_dataset": [],
+ "golden_runs_in_no_dataset_fb": 0,
+ "golden_total_fb": 42.068228621,
+ "normtag": "normtag_PHYSICS.json",
+ "per_stream": {
+  "SingleElectron_Run2017B": {
+   "golden_ls": 24280,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 4.880858221,
+   "pd": "SingleElectron",
+   "period": "Run2017B"
+  },
+  "SingleElectron_Run2017C": {
+   "golden_ls": 51575,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 9.723751221,
+   "pd": "SingleElectron",
+   "period": "Run2017C"
+  },
+  "SingleElectron_Run2017D": {
+   "golden_ls": 27037,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 4.312436235,
+   "pd": "SingleElectron",
+   "period": "Run2017D"
+  },
+  "SingleElectron_Run2017E": {
+   "golden_ls": 42837,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 9.419146781,
+   "pd": "SingleElectron",
+   "period": "Run2017E"
+  },
+  "SingleElectron_Run2017F": {
+   "golden_ls": 58484,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 13.727223992,
+   "pd": "SingleElectron",
+   "period": "Run2017F"
+  },
+  "SingleMuon_Run2017B": {
+   "golden_ls": 24280,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 4.880858221,
+   "pd": "SingleMuon",
+   "period": "Run2017B"
+  },
+  "SingleMuon_Run2017C": {
+   "golden_ls": 51557,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 9.719186748,
+   "pd": "SingleMuon",
+   "period": "Run2017C"
+  },
+  "SingleMuon_Run2017D": {
+   "golden_ls": 27010,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 4.30821874,
+   "pd": "SingleMuon",
+   "period": "Run2017D"
+  },
+  "SingleMuon_Run2017E": {
+   "golden_ls": 42810,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 9.413848296,
+   "pd": "SingleMuon",
+   "period": "Run2017E"
+  },
+  "SingleMuon_Run2017F": {
+   "golden_ls": 58195,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 13.694131146,
+   "pd": "SingleMuon",
+   "period": "Run2017F"
+  },
+  "SinglePhoton_Run2017B": {
+   "golden_ls": 24280,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 4.880858221,
+   "pd": "SinglePhoton",
+   "period": "Run2017B"
+  },
+  "SinglePhoton_Run2017C": {
+   "golden_ls": 51576,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 9.724070133,
+   "pd": "SinglePhoton",
+   "period": "Run2017C"
+  },
+  "SinglePhoton_Run2017D": {
+   "golden_ls": 27045,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 4.313602379,
+   "pd": "SinglePhoton",
+   "period": "Run2017D"
+  },
+  "SinglePhoton_Run2017E": {
+   "golden_ls": 42837,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 9.419146781,
+   "pd": "SinglePhoton",
+   "period": "Run2017E"
+  },
+  "SinglePhoton_Run2017F": {
+   "golden_ls": 58484,
+   "golden_ls_without_lumi": 0,
+   "half": "",
+   "lumi_fb": 13.727223992,
+   "pd": "SinglePhoton",
+   "period": "Run2017F"
+  }
+ }
+}
