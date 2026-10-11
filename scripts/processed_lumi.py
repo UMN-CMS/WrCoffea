@@ -82,23 +82,27 @@ def compute(byls: dict, golden: set, masks: dict[str, set]) -> dict:
     covered = set().union(*runs_by_period.values()) if runs_by_period else set()
     orphan_runs = sorted({r for (r, _) in byls if r not in covered})
     orphan_lumi = sum(v for (r, _), v in byls.items() if r in orphan_runs)
-    # family = one primary dataset (with or without halves) in one period
-    families: dict[tuple[str, str, str], list[set]] = collections.defaultdict(list)
+    # family = one primary dataset in one period.  Its members are either numbered halves (Run 3 Muon0/Muon1,
+    # EGamma0/EGamma1: every lumisection in both, half of the events in each) or version splits of disjoint run
+    # ranges (2016B_ver1/_ver2): halves contribute (halves containing the lumisection) / (number of halves),
+    # version splits are a plain union (a lumisection is fully processed if any member holds it).
+    families: dict[tuple[str, str, str], list[tuple[set, str]]] = collections.defaultdict(list)
     for name, mask in masks.items():
         st = per_stream[name]
-        families[(CHANNEL_OF.get(st["pd"], st["pd"]), st["period"], st["pd"])].append(mask & golden)
+        families[(CHANNEL_OF.get(st["pd"], st["pd"]), st["period"], st["pd"])].append((mask & golden, st["half"]))
     period_of_run = {r: p for p, runs in runs_by_period.items() for r in runs}
     channel_lumi: dict[str, dict[str, float]] = collections.defaultdict(lambda: collections.defaultdict(float))
     for ch in sorted({c for c, _, _ in families}):
-        fams = [(halves) for (c, _, _), halves in families.items() if c == ch]
+        fams = [members for (c, _, _), members in families.items() if c == ch]
         frac: dict[tuple[int, int], float] = collections.defaultdict(float)
-        for halves in fams:
-            n = len(halves)
+        for members in fams:
+            halved = all(half for _, half in members)
+            n = len(members) if halved else 1
             count: collections.Counter = collections.Counter()
-            for h in halves:
+            for h, _ in members:
                 count.update(h)
             for ls, k in count.items():
-                frac[ls] = max(frac[ls], k / n)
+                frac[ls] = max(frac[ls], min(k, n) / n)
         for ls, f in frac.items():
             channel_lumi[ch][period_of_run.get(ls[0], "?")] += byls.get(ls, 0.0) * f
     channel_lumi = {ch: dict(v) for ch, v in channel_lumi.items()}

@@ -40,3 +40,16 @@ def test_non_golden_lumisections_do_not_count():
     golden = _ls(300, 1, 2)
     r = pl.compute(byls, golden, {"EGamma0_Run2024B": _ls(300, 1, 4), "EGamma1_Run2024B": _ls(300, 1, 4)})
     assert r["channel_by_period"]["electron"]["Run2024B"] == pytest.approx(4.0)
+
+
+def test_version_splits_of_one_period_are_a_union_not_halves():
+    """2016B comes as SingleMuon_Run2016B_ver1 (runs before the golden JSON) and _ver2 (the golden runs): they are
+    disjoint run ranges, not Run 3-style halves, so a lumisection held by one of them counts fully."""
+    byls = {(273150, i): 1.0 for i in range(1, 11)}
+    golden = set(byls)
+    masks = {"SingleMuon_Run2016B_ver1": set(_ls(272007, 1, 10)),       # not golden at all
+             "SingleMuon_Run2016B_ver2": set(_ls(273150, 1, 10))}
+    res = pl.compute(byls, golden, masks)
+    assert res["channel_total_fb"]["muon"] == pytest.approx(10.0)
+    assert res["per_stream"]["SingleMuon_Run2016B_ver1"]["golden_ls"] == 0
+
