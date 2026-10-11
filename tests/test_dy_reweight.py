@@ -16,7 +16,7 @@ import numpy as np
 import pytest
 from coffea.nanoevents.methods import vector
 
-from wrcoffea.analysis_config import DY_ZPT_REWEIGHT_JSONS
+from wrcoffea.analysis_config import DY_ZPT_REWEIGHT_JSONS, LUMIS
 from wrcoffea.analyzer import WrAnalysis
 from wrcoffea.dy_reweight import (
     DY_PROCESS_GROUP,
@@ -271,7 +271,7 @@ class TestAnalyzerWiring:
         ev = self._events()
         weights, syst = proc.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
         expected = dy_zpt_weight(ev, UL18, is_dy=True)
-        base = 10.0 * 59.83 * 1000.0 / 100.0
+        base = 10.0 * LUMIS[UL18] * 1000.0 / 100.0      # the era's luminosity from config.yaml (brilcalc, 59.52 since 2026-10-10)
         np.testing.assert_allclose(syst[NOMINAL], base * expected["nominal"], rtol=1e-9)
         for name in SOURCE_NAMES:
             up, down = expected["variations"][name]
@@ -295,7 +295,7 @@ class TestAnalyzerWiring:
         ev = self._events()
         off = WrAnalysis(mass_point=None, enabled_systs=[], region="resolved", dy_zpt_reweight=False)
         _, syst_off = off.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
-        np.testing.assert_allclose(syst_off[NOMINAL], 10.0 * 59.83 * 1000.0 / 100.0)
+        np.testing.assert_allclose(syst_off[NOMINAL], 10.0 * LUMIS[UL18] * 1000.0 / 100.0)
         assert set(syst_off) == {NOMINAL}
         on = WrAnalysis(mass_point=None, enabled_systs=[], region="resolved")
         _, syst_on = on.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
@@ -341,7 +341,7 @@ class TestDySampleGuard:
         with caplog.at_level("WARNING"):
             _, syst = proc.build_event_weights(wiring._events(), wiring._meta(DY_PROCESS_GROUP, self.NLO),
                                                is_mc=True)
-        np.testing.assert_allclose(syst[NOMINAL], 10.0 * 59.83 * 1000.0 / 100.0)
+        np.testing.assert_allclose(syst[NOMINAL], 10.0 * LUMIS[UL18] * 1000.0 / 100.0)
         for name in SOURCE_NAMES:
             np.testing.assert_array_equal(syst[f"{name}Up"], syst[NOMINAL])
         assert "not the sample" in caplog.text

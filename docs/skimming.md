@@ -374,6 +374,23 @@ UL18 (normtag_PHYSICS, 2026-10-09): golden JSON 59.561 fb⁻¹; in the skims ee
   before the reskim. Switching to the processed value is an open decision.
 - The UL18 masks and result are not in `data/lumis/` yet.
 
+Run 2 (2026-10-10, "brilcalc for everything"): the same procedure gives
+UL18 e 59.500 / mumu 59.544 (golden JSON 59.561), used as 59.52, and UL17
+e 42.063 / mumu 42.016 (golden 42.068), used as 42.04. These differ from the
+published Run 2 luminosities (59.83 fb⁻¹ for 2018, 41.48 for 2017) because
+`brilcalc` is run with the current `normtag_PHYSICS.json` (December 2025,
+data tag 24v2), which recalibrated Run 2: 2018 moves down by 0.5 % and 2017
+up by 1.4 %. The normtag is applied even though the per-lumisection CSV that
+`--byls --output-style csv` writes says `Norm tag: None` and `source AVG` in
+its header: for a single run the CSV sum equals the `--normtag` summary
+exactly (run 297050: 0.106374 fb⁻¹ both ways, against 0.103287 without the
+normtag), and the 2017 golden-JSON total in summary mode with the normtag is
+the same 42.068. The 2016 table (both UL16 eras share the golden JSON) takes
+longer than 15 minutes and is streamed to the CSV, so wait for the `brilcalc`
+process to exit before copying it. Tables and results:
+`~/work/skims_v2/_lumi/golden<year>_byls_physics.csv` and
+`<era>_processed_lumi.json`.
+
 ## Edge eras (2022B, 2023B, 2024B)
 
 The golden JSONs certify runs before the eras that PdmV recommends (2022B,

@@ -1,0 +1,164 @@
+{
+  "/SingleElectron/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016F/SingleElectron_Run2016F_g0000p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SingleElectron/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 127536,
+      "physics_group": "EGamma",
+      "run": "RunII",
+      "sample": "SingleElectron_Run2016F",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SingleElectron/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016G/SingleElectron_Run2016G_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016G/SingleElectron_Run2016G_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016G/SingleElectron_Run2016G_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016G/SingleElectron_Run2016G_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016G/SingleElectron_Run2016G_g0004p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SingleElectron/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 2299296,
+      "physics_group": "EGamma",
+      "run": "RunII",
+      "sample": "SingleElectron_Run2016G",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SingleElectron/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016H/SingleElectron_Run2016H_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016H/SingleElectron_Run2016H_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016H/SingleElectron_Run2016H_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016H/SingleElectron_Run2016H_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleElectron_Run2016H/SingleElectron_Run2016H_g0004p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SingleElectron/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 2312056,
+      "physics_group": "EGamma",
+      "run": "RunII",
+      "sample": "SingleElectron_Run2016H",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SingleMuon/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016F/SingleMuon_Run2016F_g0000p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SingleMuon/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 124677,
+      "physics_group": "Muon",
+      "run": "RunII",
+      "sample": "SingleMuon_Run2016F",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SingleMuon/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016G/SingleMuon_Run2016G_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016G/SingleMuon_Run2016G_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016G/SingleMuon_Run2016G_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016G/SingleMuon_Run2016G_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016G/SingleMuon_Run2016G_g0004p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SingleMuon/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 2321109,
+      "physics_group": "Muon",
+      "run": "RunII",
+      "sample": "SingleMuon_Run2016G",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SingleMuon/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016H/SingleMuon_Run2016H_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016H/SingleMuon_Run2016H_g0001p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016H/SingleMuon_Run2016H_g0002p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016H/SingleMuon_Run2016H_g0003p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SingleMuon_Run2016H/SingleMuon_Run2016H_g0004p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SingleMuon/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 2716314,
+      "physics_group": "Muon",
+      "run": "RunII",
+      "sample": "SingleMuon_Run2016H",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SinglePhoton/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SinglePhoton_Run2016F/SinglePhoton_Run2016F_g0000p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SinglePhoton/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 99756,
+      "physics_group": "EGamma",
+      "run": "RunII",
+      "sample": "SinglePhoton_Run2016F",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SinglePhoton/Run2016G-UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SinglePhoton_Run2016G/SinglePhoton_Run2016G_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SinglePhoton_Run2016G/SinglePhoton_Run2016G_g0001p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SinglePhoton/Run2016G-UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 1795531,
+      "physics_group": "EGamma",
+      "run": "RunII",
+      "sample": "SinglePhoton_Run2016G",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  },
+  "/SinglePhoton/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
+    "files": {
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SinglePhoton_Run2016H/SinglePhoton_Run2016H_g0000p01.root": "Events",
+      "root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/RunII/2016/RunIISummer20UL16/data/SinglePhoton_Run2016H/SinglePhoton_Run2016H_g0001p01.root": "Events"
+    },
+    "metadata": {
+      "das_name": "/SinglePhoton/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
+      "datatype": "data",
+      "era": "RunIISummer20UL16",
+      "nevts": 1993302,
+      "physics_group": "EGamma",
+      "run": "RunII",
+      "sample": "SinglePhoton_Run2016H",
+      "skim_campaign": "v2",
+      "year": "2016"
+    }
+  }
+}

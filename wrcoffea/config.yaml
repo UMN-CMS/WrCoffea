@@ -7,15 +7,18 @@
 lumis:
   # Every era: the luminosity of the data in its skims_v2 skims (brilcalc normtag_PHYSICS on the processed-lumi
   # masks x golden JSON, mean of the electron and muon streams; decided 2026-10-10, "brilcalc for everything").
-  # UL16APV/UL16 (PdmV placeholders until their skims are validated) and 2025 (preliminary, no normtag yet) are the
-  # golden-JSON numbers; the correction payloads for UL16/UL16APV/UL17 are not in the repo yet.
-  RunIISummer20UL16APV: 19.5
-  RunIISummer20UL16: 16.8
-  # UL17: skims e 42.063 / mu 42.016 (golden JSON 42.068 with normtag_PHYSICS; PdmV quotes 41.48);
+  # 2025 (preliminary, no normtag yet) is the golden-JSON number; the correction payloads for UL16/UL16APV/UL17 are
+  # not in the repo yet.
+  # UL16APV (2016B_ver2 to F-early): skims e 19.497 / mu 19.495 (golden 19.502); UL16 (2016F-late to H): e 16.811 /
+  # mu 16.811 (golden 16.812); both from ~/work/skims_v2/_lumi/golden2016_byls_physics.csv (2026-10-10).
+  RunIISummer20UL16APV: 19.50
+  RunIISummer20UL16: 16.81
+  # UL17: skims e 42.063 / mu 42.016 (golden JSON 42.068 with the Dec-2025 normtag_PHYSICS, data tag 24v2, which
+  # recalibrated Run 2: PdmV/published 41.48 is 1.4 % lower; see docs/skimming.md, "Luminosity of the skimmed data");
   # ~/work/skims_v2/_lumi/RunIISummer20UL17_processed_lumi.json (2026-10-10).
   RunIISummer20UL17: 42.04
-  # UL18: skims e 59.500 / mu 59.544 (golden JSON 59.561 with normtag_PHYSICS; 59.83 before 2026-10-10 was the
-  # published 2018 number); ~/work/skims_v2/_lumi/RunIISummer20UL18_processed_lumi.json (2026-10-09).
+  # UL18: skims e 59.500 / mu 59.544 (golden JSON 59.561 with the Dec-2025 normtag_PHYSICS; the published 59.83,
+  # used before 2026-10-10, predates that recalibration, -0.5 %); ~/work/skims_v2/_lumi/RunIISummer20UL18_processed_lumi.json (2026-10-09).
   RunIISummer20UL18: 59.52
   # 2022: luminosity of the data in the skims_v2 skims (brilcalc normtag_PHYSICS on the processed-lumi masks x golden
   # JSON; one number per era = mean of the electron and muon streams): Run3Summer22 = 2022B + C + D, ee 8.082 / mumu

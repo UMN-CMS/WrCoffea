@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 from coffea.nanoevents.methods import vector
 
-from wrcoffea.analysis_config import SIGNAL_KFACTOR_JSONS
+from wrcoffea.analysis_config import LUMIS, SIGNAL_KFACTOR_JSONS
 from wrcoffea.analyzer import WrAnalysis
 from wrcoffea.signal_kfactor import (
     SIGNAL_PROCESS_GROUP,
@@ -233,7 +233,7 @@ class TestAnalyzerWiring:
         ev = self._events()
         _, syst = proc.build_event_weights(ev, self._meta(SIGNAL_PROCESS_GROUP), is_mc=True)
         expected = signal_kfactor_weight(ev, UL18, mass_point="WR1000_N100", is_signal=True)["nominal"]
-        base = 7.72343 * 59.83 * 1000.0 / 100.0
+        base = 7.72343 * LUMIS["RunIISummer20UL18"] * 1000.0 / 100.0
         np.testing.assert_allclose(syst[NOMINAL], base * expected, rtol=1e-9)
         assert set(syst) == {NOMINAL}
 
@@ -243,13 +243,13 @@ class TestAnalyzerWiring:
         mock_pu.return_value = (ones, ones, ones)
         proc = WrAnalysis(mass_point="WR1000_N100", enabled_systs=[], region="resolved")
         _, syst = proc.build_event_weights(self._events(), self._meta(SIGNAL_PROCESS_GROUP, dataset="signal"), is_mc=True)
-        assert not np.allclose(syst[NOMINAL], 7.72343 * 59.83 * 1000.0 / 100.0)
+        assert not np.allclose(syst[NOMINAL], 7.72343 * LUMIS["RunIISummer20UL18"] * 1000.0 / 100.0)
 
     @patch("wrcoffea.analyzer.pileup_weight")
     def test_background_and_disabled_are_untouched(self, mock_pu):
         ones = np.ones(self.N)
         mock_pu.return_value = (ones, ones, ones)
-        base = 7.72343 * 59.83 * 1000.0 / 100.0
+        base = 7.72343 * LUMIS["RunIISummer20UL18"] * 1000.0 / 100.0
         bkg = WrAnalysis(mass_point=None, enabled_systs=[], region="resolved")
         _, syst = bkg.build_event_weights(self._events(), self._meta("tt_tW"), is_mc=True)
         np.testing.assert_allclose(syst[NOMINAL], base)
