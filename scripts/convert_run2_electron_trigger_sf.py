@@ -122,12 +122,12 @@ def _correction(name, description, barrel, endcap, year_key):
     )
 
 
-def convert(skflat_data: Path, year: int) -> cs.CorrectionSet:
+def convert(skflat_data: Path, year: int, year_key: str | None = None) -> cs.CorrectionSet:
     src = skflat_data / str(year) / "ID" / "Electron" / "WREGammaTriggerEff.root"
     with uproot.open(src) as f:
         hists = {prefix: (_read(f, f"{prefix}_TH2F_Barrel"), _read(f, f"{prefix}_TH2F_EndCap"))
                  for prefix in ("DataEff", "MCEff", "SF")}
-    year_key = YEAR_KEYS[year]
+    year_key = year_key or YEAR_KEYS[year]      # the EGM payload key of the era; both UL16 eras share the 2016 measurement
     corrections = [
         _correction("Electron-HLT-DataEff", "Per-electron trigger efficiency in data (HEEP, electron trigger OR)",
                     *hists["DataEff"], year_key),
@@ -149,10 +149,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--skflat-data", type=Path, required=True, help="SKFlatAnalyzer data/Run2Legacy_v4 directory")
     parser.add_argument("--year", type=int, default=2018, choices=sorted(YEAR_KEYS))
+    parser.add_argument("--year-key", default=None, help="era key written into the payload (default: the year; UL16 eras: 2016preVFP / 2016postVFP)")
     parser.add_argument("--out", type=Path, required=True, help="Output .json or .json.gz path")
     args = parser.parse_args()
 
-    cset = convert(args.skflat_data, args.year)
+    cset = convert(args.skflat_data, args.year, args.year_key)
     text = cset.model_dump_json(exclude_unset=True, indent=1)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     if args.out.suffix == ".gz":

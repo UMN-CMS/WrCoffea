@@ -17,15 +17,6 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-  "/SinglePhoton/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
-    "das_name": "/SinglePhoton/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
-    "run": "RunII",
-    "year": "2016",
-    "era": "RunIISummer20UL16",
-    "dataset": "SinglePhoton_Run2016F",
-    "physics_group": "EGamma",
-    "datatype": "data"
-  },
   "/SingleMuon/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
     "das_name": "/SingleMuon/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
     "run": "RunII",
@@ -44,15 +35,6 @@
     "physics_group": "EGamma",
     "datatype": "data"
   },
-  "/SinglePhoton/Run2016G-UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD": {
-    "das_name": "/SinglePhoton/Run2016G-UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD",
-    "run": "RunII",
-    "year": "2016",
-    "era": "RunIISummer20UL16",
-    "dataset": "SinglePhoton_Run2016G",
-    "physics_group": "EGamma",
-    "datatype": "data"
-  },
   "/SingleMuon/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
     "das_name": "/SingleMuon/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
     "run": "RunII",
@@ -68,15 +50,6 @@
     "year": "2016",
     "era": "RunIISummer20UL16",
     "dataset": "SingleElectron_Run2016H",
-    "physics_group": "EGamma",
-    "datatype": "data"
-  },
-  "/SinglePhoton/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD": {
-    "das_name": "/SinglePhoton/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD",
-    "run": "RunII",
-    "year": "2016",
-    "era": "RunIISummer20UL16",
-    "dataset": "SinglePhoton_Run2016H",
     "physics_group": "EGamma",
     "datatype": "data"
   }
