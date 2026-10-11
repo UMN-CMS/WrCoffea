@@ -66,6 +66,7 @@ from wrcoffea.analysis_config import (
     MUON_JSONS,
     PDF_SETS,
     PILEUP_JSONS,
+    PREFIRING_ERAS,
 )
 
 WEIGHT = "weight"
@@ -87,7 +88,7 @@ FIT_KEYWORD = "fit"
 # Public CLI families, in the order they are documented.
 FAMILIES: tuple[str, ...] = (
     "lumi", "pileup", "sf", "jer", "jes", "elescale", "elesmear", "muscale", "musmear",
-    "dyzpt", "lsf", "dyreshape", "scale", "ps", "pdf",
+    "dyzpt", "lsf", "dyreshape", "scale", "ps", "pdf", "prefire",
 )
 
 # The JES source that keeps the historical bare "JES" label.
@@ -353,6 +354,8 @@ _STATIC_SOURCES: dict[str, list[Systematic]] = {
     "pdf": [Systematic("PDF", "pdf", MEMBERS, available_in=lambda e: e in PDF_SETS, note=_PDF_NOTE),
             Systematic("AlphaS", "pdf", MEMBERS, available_in=lambda e: e in PDF_SETS, note=_PDF_NOTE)],
     "pileup": [Systematic("Pileup", "pileup", WEIGHT, available_in=lambda e: e in PILEUP_JSONS)],
+    "prefire": [Systematic("L1Prefiring", "prefire", WEIGHT, available_in=lambda e: e in PREFIRING_ERAS,
+                           note="NanoAOD L1PreFiringWeight Up/Dn (Run 2 UL only).")],
     "sf": _sf_sources(),
     "jer": [Systematic("JER", "jer", SHAPE, available_in=_has_jer_variations,
                        objects=("Jet", "FatJet"), field_source="jer", varies_mass=True)],

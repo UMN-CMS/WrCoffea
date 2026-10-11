@@ -111,6 +111,12 @@ KNOWN_SETS: dict[int, PdfSet] = {
                    alphas_members=(101, 102), alphas_values=(0.116, 0.120)),
     # 4-flavour scheme (4FS single top, 4F tribosons), ErrorType symmhessian, 101 members
     325500: PdfSet(325500, "NNPDF31_nnlo_as_0118_nf_4_mc_hessian", "symmhessian", (1, 100)),
+    # Run 2 UL samples (checked 2026-10-11 on /cvmfs/cms.cern.ch/lhapdf/pdfsets/current): the 5-flavour Hessian
+    # set with alpha_s members, ErrorType symmhessian+as, 103 members ...
+    306000: PdfSet(306000, "NNPDF31_nnlo_hessian_pdfas", "symmhessian", (1, 100),
+                   alphas_members=(101, 102), alphas_values=(0.116, 0.120)),
+    # ... and the 4-flavour replica set (4FS single top), ErrorType replicas, 101 members
+    320900: PdfSet(320900, "NNPDF31_nnlo_as_0118_nf_4", "replicas", (1, 100)),
 }
 
 

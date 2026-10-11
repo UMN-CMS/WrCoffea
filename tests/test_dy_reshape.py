@@ -20,6 +20,7 @@ from wrcoffea.systematics import NOMINAL, expected_labels, systematics_for, vali
 
 UL18 = "RunIISummer20UL18"
 RUN3 = "Run3Summer22"
+UNMAPPED = "RunXSummer99"   # no era maps a reshape payload under this name
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -91,6 +92,20 @@ class TestDerivation:
         assert out["requires_dy_zpt_reweight"] is True
         assert "WRAnalyzer_signal_WR2000_N1000.root" not in out["provenance"]["background_files"]
 
+    def test_summed_productions_give_the_same_ratio_with_smaller_errors(self, tmp_path):
+        """A data-taking year = its sub-eras' productions summed before the ratio."""
+        a, b = _make_rootfiles(tmp_path / "a"), _make_rootfiles(tmp_path / "b")
+        s = _script()
+        one = s.derive(a, "Run3Summer22")
+        two = s.derive([a, b], "2022", dy_rootfiles=[a, b])
+        assert two["resolved"]["ratio"][2] == pytest.approx(one["resolved"]["ratio"][2])
+        assert two["resolved"]["stat_err"][2] == pytest.approx(one["resolved"]["stat_err"][2] / np.sqrt(2))
+        assert two["resolved"]["yields"]["data"][2] == pytest.approx(2 * one["resolved"]["yields"]["data"][2])
+        assert two["provenance"]["rootfiles"] == [str(a), str(b)] and one["provenance"]["rootfiles"] == str(a)
+        (b / "WRAnalyzer_Other.root").unlink()
+        with pytest.raises(ValueError, match="different non-DY background files"):
+            s.derive([a, b], "2022")
+
     def test_cli_writes_payload(self, tmp_path):
         rootfiles = _make_rootfiles(tmp_path / "prod")
         out = tmp_path / "dy_reshape.json"
@@ -152,7 +167,7 @@ class TestLookup:
             dy_reshape_weight(pt, UL18, "somewhere", is_dy=True)
 
     def test_unconfigured_era(self):
-        assert dy_reshape_weight(np.array([1.0]), RUN3, "resolved", is_dy=True) is None
+        assert dy_reshape_weight(np.array([1.0]), UNMAPPED, "resolved", is_dy=True) is None
 
     def test_ul18_payload_is_configured(self):
         from wrcoffea.analysis_config import DY_RESHAPE_JSONS
@@ -171,8 +186,9 @@ class TestRegistry:
         assert "DYReshapeStatUp" in expected_labels(UL18, ["dyreshape"], "wr_mumu_boosted_sr", is_mc=True)
 
     def test_unavailable_without_payload(self):
+        # every analysis era maps a payload now (Run 3 ahead of its derivation); a made-up era stands in
         with pytest.raises(ValueError, match="Cannot produce"):
-            validate_requested(RUN3, ["dyreshape"])
+            validate_requested(UNMAPPED, ["dyreshape"])
 
 
 class TestAnalyzerWiring:
@@ -217,7 +233,7 @@ class TestAnalyzerWiring:
     def test_unconfigured_era_untouched(self):
         proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
         base = {NOMINAL: np.ones(self.N)}
-        assert proc._dy_reshape_for_region(base, "resolved", np.ones(self.N), RUN3, True, True) is base
+        assert proc._dy_reshape_for_region(base, "resolved", np.ones(self.N), UNMAPPED, True, True) is base
 
     def test_other_dy_sample_gets_identity(self, configured):
         proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")

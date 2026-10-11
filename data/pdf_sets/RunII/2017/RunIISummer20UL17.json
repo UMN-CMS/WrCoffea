@@ -1,0 +1,4303 @@
+{
+ "era": "RunIISummer20UL17",
+ "written": "2026-10-11",
+ "command": "scripts/pdf_sets.py --era RunIISummer20UL17 --workers 6",
+ "note": "First LHA ID of each sample's LHEPdfWeight (read from an original NanoAOD file's branch description); null = no PDF weights. Written by scripts/pdf_sets.py.",
+ "sets": {
+  "306000": "NNPDF31_nnlo_hessian_pdfas",
+  "320900": "NNPDF31_nnlo_as_0118_nf_4",
+  "325300": "NNPDF31_nnlo_as_0118_mc_hessian_pdfas",
+  "325500": "NNPDF31_nnlo_as_0118_nf_4_mc_hessian"
+ },
+ "samples": {
+  "DY1JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DY1JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/00CFF6E9-45AB-1445-9524-8F7AD91DC015.root"
+  },
+  "DY2JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DY2JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/ED73C9AB-7345-894A-B7B2-9B8AC39AA0DB.root"
+  },
+  "DY3JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DY3JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/D51035F5-4C48-2349-885F-FFE84ACAA8D7.root"
+  },
+  "DY4JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DY4JetsToLL_M-50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/08780815-282F-3145-9537-E9D0DAB675C4.root"
+  },
+  "DYJetsToLL_0J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/A68EEC04-5D47-6140-8A3E-5D411F32DD6C.root"
+  },
+  "DYJetsToLL_0J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/0AD7F84C-92D5-AE4B-9D26-E0F74B974746.root"
+  },
+  "DYJetsToLL_0J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/AF23FB9B-C8EB-2A42-B609-5F23B3C19591.root"
+  },
+  "DYJetsToLL_0J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/0BFB08DB-A9F6-3843-8E50-99934C5E210F.root"
+  },
+  "DYJetsToLL_0J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/32CE308E-769F-1A46-A604-DF20273D2D1C.root"
+  },
+  "DYJetsToLL_0J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/0DCFB98A-0849-6542-BCE9-7B2C0AAD5B57.root"
+  },
+  "DYJetsToLL_0J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/2445F8A5-4BBC-104E-8F1D-E119A05EE89C.root"
+  },
+  "DYJetsToLL_0J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/71669062-5BBB-E749-9F06-D2B9D589150E.root"
+  },
+  "DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2540000/1208A55C-F0F9-5044-A363-755793418A2B.root"
+  },
+  "DYJetsToLL_1J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/B642E9AE-DF6A-954F-9718-5E4CE18B2475.root"
+  },
+  "DYJetsToLL_1J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/A85E6A9C-C1C2-B34F-8B2B-4ACD7363F2A5.root"
+  },
+  "DYJetsToLL_1J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/3AC2F013-CE2A-2740-8EEE-322F666A48FD.root"
+  },
+  "DYJetsToLL_1J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/1CDF1F8F-8415-6442-A126-CF7DDFAA74C5.root"
+  },
+  "DYJetsToLL_1J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/6F0DA3DE-DA6C-8843-8BBE-5E0C2996C7B7.root"
+  },
+  "DYJetsToLL_1J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/DA86FA1B-307F-E640-9CD2-441B15988AC8.root"
+  },
+  "DYJetsToLL_1J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/E56CD0A3-B95B-4E44-9A20-D0D12A3C336A.root"
+  },
+  "DYJetsToLL_1J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/7CCD8965-ECEB-8940-A89F-6574854C878E.root"
+  },
+  "DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/008AD509-FED8-B444-8B86-ACF399DE7144.root"
+  },
+  "DYJetsToLL_2J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_1400_2300_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/5F11A5CF-0A56-5D4B-98AB-0CFB820055FA.root"
+  },
+  "DYJetsToLL_2J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_200_400_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/135AA40C-E502-F142-A1F3-B4E45EA7AA60.root"
+  },
+  "DYJetsToLL_2J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_2300_3500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/A48B6C4F-C7E3-6D4E-A547-53D9070C837F.root"
+  },
+  "DYJetsToLL_2J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_3500_4500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/558FA468-133F-704F-8493-EADB38CD2B25.root"
+  },
+  "DYJetsToLL_2J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_400_800_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/CB6887E4-5919-5D40-AC23-3C8C71C676D0.root"
+  },
+  "DYJetsToLL_2J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_4500_6000_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/BC00DED2-2ADB-EE41-9F8D-FC310809C533.root"
+  },
+  "DYJetsToLL_2J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_6000_Inf_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/AF2158DB-3EF4-A14F-AA93-654CC3CF3E3D.root"
+  },
+  "DYJetsToLL_2J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_MLL_800_1400_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/6B4AFA15-BE96-4248-8C7F-BE12FC2B7406.root"
+  },
+  "DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/05F95093-F790-464C-8006-B011CBDAB19C.root"
+  },
+  "DYJetsToLL_LHEFilterPtZ-0To50_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_LHEFilterPtZ-0To50_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/0A9BE500-B811-ED47-8887-C2956ED152EA.root"
+  },
+  "DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2520000/02DF5164-0F4D-2F46-8F14-7A3C7D998F46.root"
+  },
+  "DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2520000/00AD2EBC-7F27-4F4E-9E87-1DC14B6693A3.root"
+  },
+  "DYJetsToLL_LHEFilterPtZ-400To650_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_LHEFilterPtZ-400To650_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2430000/1AB4D375-2367-114A-B681-F76AE7DDBA93.root"
+  },
+  "DYJetsToLL_LHEFilterPtZ-50To100_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_LHEFilterPtZ-50To100_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/0111B6A4-E76E-EC43-B5BC-C3C5CD7AB3F3.root"
+  },
+  "DYJetsToLL_LHEFilterPtZ-650ToInf_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_LHEFilterPtZ-650ToInf_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2520000/410F6278-675F-CC4A-8589-AE121EE46887.root"
+  },
+  "DYJetsToLL_M-1000to1500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-1000to1500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/3D890755-5ED7-514E-BFC6-3914A10F0637.root"
+  },
+  "DYJetsToLL_M-100to200_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-100to200_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/03F515C4-D27E-A941-915A-AD8467DB174E.root"
+  },
+  "DYJetsToLL_M-1500to2000_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-1500to2000_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2550000/A9068734-4A71-A245-BF81-7829E4C7C779.root"
+  },
+  "DYJetsToLL_M-2000to3000_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-2000to3000_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/5AA8856B-4EA9-E942-A09E-7E7A12E4FA25.root"
+  },
+  "DYJetsToLL_M-200to500_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-200to500_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/08555AA9-B1A9-C84F-901A-DA9390199CAF.root"
+  },
+  "DYJetsToLL_M-500to700_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-500to700_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/8D353EBB-4DEE-314A-A8FB-EF51604CE7DC.root"
+  },
+  "DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/14F7C10A-DBC4-CA4F-AC03-18E8CFF57492.root"
+  },
+  "DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/250000/E03BE919-6322-9C4D-81D9-84AEBBD34002.root"
+  },
+  "DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/0FFF0FC3-8C6C-B646-A753-DA85567EBBFD.root"
+  },
+  "DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/100000/0983C657-9CA5-2440-A21A-428B73249B32.root"
+  },
+  "DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/1F5A8633-EF99-A849-A5E5-04F50B2EC6C3.root"
+  },
+  "DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/B52EC6DA-70BF-F04E-A019-F2C341C1F698.root"
+  },
+  "DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/553DB118-8253-F04A-963A-A7CEB9FF5363.root"
+  },
+  "DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/0E24F6D8-8BC6-C64A-AA7C-723BFF24D9B5.root"
+  },
+  "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root"
+  },
+  "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/04935ACA-7B7B-564E-B14A-1CE95BABC768.root"
+  },
+  "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v1/130000/00CDEB53-1F42-5F44-AC39-FF8C045D8032.root"
+  },
+  "DYJetsToLL_M-700to800_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-700to800_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/40000/62EACB92-7B72-5B4E-A658-38CC6A6FB1B6.root"
+  },
+  "DYJetsToLL_M-800to1000_TuneCP5_13TeV-amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-800to1000_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/32E8248D-B16B-FB44-BC6D-0341C99BD0FD.root"
+  },
+  "ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/8918A0AD-AAFC-9F4E-9C11-FB4B14726FD1.root"
+  },
+  "ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2430000/12E0EFC9-A39A-BC4A-96B4-6A6C32984DE7.root"
+  },
+  "ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2430000/0423FB29-5F4D-4C43-9D84-C19A3192BB60.root"
+  },
+  "ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8": {
+   "lhaid": 320900,
+   "lhaid_last": 321000,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/230000/1F9C85C2-A7BB-BB42-BC47-26DD5A469622.root"
+  },
+  "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8": {
+   "lhaid": 320900,
+   "lhaid_last": 321000,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/089791AC-8184-FF4B-8233-60384D245C1F.root"
+  },
+  "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8": {
+   "lhaid": 306000,
+   "lhaid_last": 306102,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/011F120E-2342-D046-A22B-88307336493B.root"
+  },
+  "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8": {
+   "lhaid": 306000,
+   "lhaid_last": 306102,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/04729E95-78DB-434C-8F46-13A94379B243.root"
+  },
+  "WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/05158912-7616-504A-9C86-868C8A470DFE.root"
+  },
+  "WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v3/2810000/037D6200-A785-9147-BDCF-1C6F6E1A5F7F.root"
+  },
+  "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/5FAC379E-F00A-A348-B46A-E170AF84B22B.root"
+  },
+  "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/60000/199B678A-6A20-8E42-B349-59DD9965D509.root"
+  },
+  "WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8_ext2": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext2-v3/2810000/0C092B3D-698C-4A41-A20A-656FDAD4B114.root"
+  },
+  "WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/06E2F4CB-6ED0-B141-A8D7-C74ECE48011C.root"
+  },
+  "WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v3/2810000/05DCD149-D583-EE4F-AC1A-566C3F215D0C.root"
+  },
+  "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/22D278BD-CCE7-0C48-BFE3-DC9ADC4D480B.root"
+  },
+  "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v3/2810000/0F447D58-1444-0C45-AA95-405AD7ACC8D6.root"
+  },
+  "WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8_ext2": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext2-v3/2810000/04214C79-89DE-F649-A31A-316F1B8AB4F5.root"
+  },
+  "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/1243CFBF-C1B2-A54E-BF88-9869AF7F630C.root"
+  },
+  "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/2550000/B9C379CF-2912-9445-B2FA-B3682AF53CA9.root"
+  },
+  "WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8_ext2": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext2-v3/2810000/0575EEB0-E2B7-B947-AB3E-215692AF5770.root"
+  },
+  "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/046DBB61-5056-5F49-9284-B8B0EB9A915F.root"
+  },
+  "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/2550000/0C856FDD-A64D-6449-83C2-9DD50B277E77.root"
+  },
+  "WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8_ext2": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext2-v3/2550000/06FD9AF4-40B7-C64D-A90B-03827B253F46.root"
+  },
+  "WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/100000/49982CFE-3A1D-1745-9D43-49433144C36E.root"
+  },
+  "WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v3/2810000/007B7EA0-8228-CC4B-AD85-B583EDE64016.root"
+  },
+  "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v3/2520000/0258F4EE-DD45-3B40-9652-30C4F2C524D6.root"
+  },
+  "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/60000/0051B8C6-2B8C-B341-B1A5-4E196FA243AC.root"
+  },
+  "WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8_ext2": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext2-v3/2810000/0EB861D0-3488-D840-8198-4E81FACEB8D0.root"
+  },
+  "WRtoNEltoElElJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/6155D9C6-98EA-DE46-82E1-2571AAB56283.root"
+  },
+  "WRtoNEltoElElJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/13363328-50A0-754A-9A49-85300E26DE50.root"
+  },
+  "WRtoNEltoElElJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/1423280E-B58B-3546-8F2E-5327AA9C4470.root"
+  },
+  "WRtoNEltoElElJJ_MWR1000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR1000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/D221FE76-E47C-F34D-840A-F510B88F27A0.root"
+  },
+  "WRtoNEltoElElJJ_MWR1000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR1000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/68BA2A4B-FE7D-DD44-9446-14FB51BC1D0B.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/05BD6961-BE67-BE45-963C-66747B28F9CA.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1065E2BD-A0CE-9249-B984-B4050F29EA6E.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/177A37F1-4E5B-E443-AA22-344FB25F3EC9.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/04D9C65E-DCBA-4A4D-A735-9C544BC74244.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/451C25B7-80F1-5549-BE0D-1A84DE91D73F.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/1054323E-56AE-3F48-B278-40675D2A2746.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/0DB82AE6-047F-5744-972C-1EB1E0A22D53.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/21262385-E894-C048-980C-01B1FC9167C4.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/090D60A1-2309-5944-A26F-0FCFE20BF58E.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/00F0A823-767D-424F-92DF-1A96BF3A8291.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/24D71E30-F1F0-1748-A225-5E2137265CA1.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/00B2B8B5-AC5B-F74C-B084-F20D351F029D.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/075187CF-34A2-2340-B22E-C5DA900EAD6E.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/51684593-2255-3840-B94B-33BAA63CF009.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/024D0DFE-7CC4-F645-A9E3-A50CAD5B3BB4.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/3C9CBE09-BA36-5F47-A436-F066945ECF93.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/2CFA7998-010A-F444-AFC8-477EC95C8234.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/217071C5-A434-3B4A-94DE-207033424051.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/006AFFEE-A9FD-964A-B6B6-298AC5F51ACC.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0AC5CF5F-F78E-6940-BED9-FAFB0B1F657A.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1BD7F6AC-15A9-D248-893A-F967CF442810.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/1FFC3246-4CB2-8C47-9689-480B3DCBE775.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/029E536E-CAE0-5C43-B48D-B7A7C3EC036B.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/00D5A696-066F-E843-82C0-6DB8C13B7F3A.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/447755CA-F6B7-0F4C-9EA9-CB9EE2671E07.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/A4AFBCE4-F8F8-7248-B609-7BA93BC07743.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0AA87711-20FE-D142-97EA-AC4EBE23240C.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/5BB70613-607F-754F-913C-E5DF349A3B97.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/0765DEC9-38C0-4148-963E-2A3484995F39.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0D0D48A6-5058-5D4B-ADA5-62CD20F285F2.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/20BC2B9E-07E9-744F-8978-D0A236E7B7B9.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/24EA7974-9459-E34A-BE70-64CC55E4ED89.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/010E050E-579A-A141-B2DD-EA5E6A796694.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/0EDDE13A-4F13-FF45-908D-33D334194248.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/0780DEC8-EB3E-C04A-9411-4E68CB526047.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/04F2CB3F-5439-904F-B299-6B7E8EAFD4BF.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/05FD481D-FC62-5B4E-9CB2-22295B958B96.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/005EF22E-59C2-1F42-9FD4-774E45156D96.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/21A84020-924C-3147-A5AC-3439186A134A.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/076A885D-5746-504B-B6C2-ACFF3A41BB70.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/01A2FFB2-9898-824E-8A4B-FE4EE51A76A7.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/119F5BCE-31F8-0B4A-9DB5-5CEB305CF73F.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/06442C3E-0163-8A4A-A5D3-7D6916556348.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/1FBE5B98-EAA1-B44E-9B55-F0D7047A24B6.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/066D111A-D12D-F547-A5F7-2DE078D16D26.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/12D7C095-3A71-9F4F-B141-A84CD34DF5E2.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/08459CD3-CA44-1C48-8B37-01B188772CAA.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/17BD6E1B-0624-6742-8DE7-6EFF8C007778.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/29B70CDB-4283-D045-A063-3F637EA495FD.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/0E7B4FC7-4C8E-8642-8CDE-4316F7231E9A.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/73DC6A20-F3E9-9341-82C6-58DAE5EAE691.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/11C922C4-C1D3-C543-96C5-CA44C352B03E.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/20D275AE-4505-5648-BE0A-9D0289C0C8FB.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1977852C-F0EF-3A47-AA3C-7B74E8504EBE.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/013C52A7-6C95-864E-AC5E-F9202CBCA6B2.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/09B5BFFE-F6EB-C347-B410-141859479268.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/19C5EAC9-C6CF-7244-8D01-85DA41B34858.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/01ABFD6D-70C5-604F-9D28-2000D8FE0A85.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0E5EE733-CAFD-8B4D-860F-41F84C44F53F.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0F8153FF-B0B7-1E4F-915D-8D961834127F.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/064E49AA-9D38-C14F-971B-ECABF25B9D34.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/60D4B3A5-881C-D64C-994B-1270B3CA5251.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v3/2830000/0A0AC0A8-1239-A842-BBE5-96FCFAABDCFD.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/0821DC97-F884-6340-A387-2A5259B16AA7.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/1A33FDEE-25E0-AC4A-BE6B-1566A8409DF2.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/3B69728D-B020-614C-99A4-922EFD8CA7E4.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/083455CC-840E-F54C-8031-5991A198C012.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/0019EC0F-67CB-A04A-BE97-406B2E8F46B6.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/02600985-892B-C940-9746-5D923306709E.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/098FD9B8-201B-E345-B70D-B3F6DD479BAA.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/3B058B63-8962-564C-A2C0-677B83CCC930.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/03A01651-547D-3546-A121-648F0B0ED378.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/11BF7F73-7B35-4B41-8A4F-057D939830DC.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/13E3F0B2-392F-D440-B5AB-ABC6F81695A1.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/000AF0B5-2242-D944-82D8-18EBDB0D4A68.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/03383283-9ADA-7A4D-B6F2-F6BB3BBD89B1.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/11E3D1F8-2766-EB40-BF52-87E0FB0A3060.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/0A8EAF55-466D-ED4F-B0AA-2FCB15306F53.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/0FF7C1EA-CDFD-4F44-B309-B492B026819B.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/0C1DF941-6F1C-6B46-889E-8B8BD09AFAE2.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/0712DAC3-39AE-864E-8FDD-E01CFF7A30A1.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/04F093F8-DF6A-A84A-95F9-0CA336BA18E1.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/0348C2A5-4BF1-6C48-831A-B085F5AA1288.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/34E75DCC-6CF4-7B41-96DD-D0529F7ADB8D.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0106CC20-6578-FA4F-BC6D-F0727364D066.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/02FAF729-6A70-664F-89DD-DE5C7477A14F.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/17BFF050-B796-B547-96D6-17254469B46D.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/22F2B072-7690-8E43-89D1-E085F7D9CC7A.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/665E536C-A33E-3F4A-9248-6621F65B2D5D.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/056D8A0E-EB02-D049-A630-7D2B1C63463D.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/1D8B64CE-9DB2-C84E-9E3F-A7B5F08C5816.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1293F813-A8BD-0F4B-9A26-D734B170FA52.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/37021E1F-C13C-2D4E-994D-0E7A7F4DA9A1.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/204852C7-E40E-8D4D-B4FF-30CA377BF5F2.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/9DD936E3-8454-154C-92E4-D0C1AA58545E.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/084B9056-825C-1448-A6DE-18C0225923E3.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1770A8B9-0943-824C-A4D2-C3D5C5377930.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/055E9DDF-046D-C540-B773-10B7D5156461.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/19F168DE-075B-754A-B4F6-A135BB53B6BF.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/20C8C6B3-A1E0-B342-A92F-70E8C6873E69.root"
+  },
+  "WRtoNLtoLLJJ_MWR1000_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1000_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1000_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1000_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1000_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1000_MN900": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1200_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1200_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1200_MN1100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1200_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1200_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1200_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1200_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN1300": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1400_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN1500": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1600_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN1700": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR1800_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN1900": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2000_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN2100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2200_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN2300": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2400_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN2500": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2600_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN2700": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR2800_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN2900": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3000_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN3100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3200_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN3300": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3400_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN3500": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3600_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN3700": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR3800_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN3900": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4000_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN4100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4200_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN4300": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4400_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN4500": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4600_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN4600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN4700": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR4800_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN4600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN4800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN4900": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5000_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN4600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN4800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN5000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN5100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5200_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN4600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN4800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN5000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN5200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN5300": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5400_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN4600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN4800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN5000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN5200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN5400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN5500": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5600_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN4600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN4800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN5000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN5200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN5400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN5600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN5700": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR5800_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN1000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN1200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN1400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN1600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN1800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN2000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN2200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN2400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN2600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN2800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN3000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN3200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN3400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN3600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN3800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN4000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN4200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN4400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN4600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN4800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN5000": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN5200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN5400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN5600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN5800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN5900": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR6000_MN800": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR600_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR600_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR600_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR600_MN500": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR800_MN100": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR800_MN200": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR800_MN400": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR800_MN600": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNLtoLLJJ_MWR800_MN700": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WRtoNMutoMuMuJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/19BFD521-0F58-0A48-95C4-2DB301D16C31.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/15455C11-A190-544A-B164-247154232571.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/5329A844-1930-D845-A68B-92F01A5B1C9E.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR1000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR1000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/15C5CD6F-AEBD-0344-8538-E7FBC099E8EB.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR1000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR1000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/02ADAA86-6D58-9D49-AF77-911ACA3E2696.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/539D9806-0332-A540-A38F-785037473A9D.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/1A694FF2-D4CA-FF49-858B-8A879BA0128E.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/3847FC70-99E9-624B-8E26-D7EE345ECF89.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/00C71243-DDAE-7E49-94D8-CB2403D22BF6.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/17095529-EE0D-6046-B60D-68A71DB15D0F.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/0E3288D7-74FA-D04C-9749-3ECA2D078798.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/1BE07AAB-3DAA-2841-8A19-65CAC87F87AF.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/14CAA865-0A20-F840-9672-17B0BBB7A78F.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/13E27366-685B-9C4D-B8F4-264DF0FD63D9.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/7A38DA8F-508B-9B40-8A31-1C46D4E3D4BE.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/05941FE9-8BAF-9A4E-A65F-46C1B4522E6D.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/1AA5DADA-0616-4B48-9822-29C256A16ED7.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/18D298D8-1BC1-B449-A042-62B454F5B06B.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/907D5052-6A31-8A48-84A7-42830974FAC4.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/0A711C61-751B-5340-AF99-8E9B5F8926AF.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/04323383-A75D-664E-9124-AB5BE621B0D2.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/0E91B4D0-5045-804D-A245-8E132A661385.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/1210000/3E8BC5E0-DFE1-0B49-AD3A-FD6BA1478CDA.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v3/2820000/1017B2D4-0D25-1C40-89BC-EBF10B2760AA.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/068D5F0C-B1D1-E84F-9E2C-26775B388CE5.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/1B6A8F73-AD90-D64B-A78E-84365BD86991.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/0F7422F5-6B8B-5F44-8501-CD94C0A6149A.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/2016B0BF-C6B5-8146-9F67-A92E1E2FB466.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/AD0EECEA-E601-9246-BE37-FF8D4EB0BC25.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/097D3DB2-DE59-F742-942E-61193C4AF361.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/2F27D33E-3475-8C4F-9117-BB864D834D5F.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/145AC2A3-1DD0-6843-AF71-6DF69BB5EF05.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/097B1D82-413E-8A4B-A3BF-D42D3C1024FF.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/021B9E44-B4A4-0A4E-8972-C9242E6FB050.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/19D34E5C-DE6C-4243-81A4-5C63DDD8C344.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/7AFE1FEA-ED9B-3A40-8C92-BADE2063F5D5.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/2642DBEB-38A6-FF4E-BC4D-3AD4A91D4CBE.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/16E0A111-2E3F-104C-8750-F848930C7316.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/1D5F9700-C0D5-EF47-9E99-4A07579B9B8A.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/9948419B-658A-0743-AA2A-277FFD53B84B.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/4B48B1F5-C07E-1241-9E8E-14F537FDE14B.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/0E75AFB7-9CFD-354D-9D7E-A4B36F34C0E2.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/027F5D8D-0577-BA4D-965F-76F943A41552.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1BDAE205-8342-B642-A05E-A47985B7A09D.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/20D267BE-DFDD-864A-90CB-952B6D740B1B.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/03E71284-66F5-E44A-82F4-FD6CA47E5ACC.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/22C516FB-2EB0-FB40-822A-B512E05D9513.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/9EE96F3D-23C4-0E45-A8E5-77B90289840A.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/658BD4F6-CAD5-2448-964D-9C0C49B0B106.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/35504A00-A1D9-C940-B629-7CA1816F9D9B.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1881C34F-7FC4-C946-8F7F-50D8F8220EEF.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/4E1EF2DF-9B8D-D444-8A8E-0B12A321022C.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1F634F08-1070-144A-8AF9-EE3A776C6334.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0B2F8C5E-3A36-594B-8221-7DAF8C1CB93C.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/82A7CB79-4477-AD4D-AF4A-47DB51BF944C.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/02D0F6F5-706A-3E4F-8E69-6EE16E97100D.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/024BE513-C87E-204E-BC58-8605873C3CE3.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/03A82D9E-D0F4-484B-A415-4DF16FC97513.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/003A5404-8C35-044E-A56C-EF1720BB4E1D.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/01C12AB8-E0A5-5B47-8A4B-4031DA64B88A.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/262005D9-9A07-F74E-9B00-FD6B80641BF9.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/07FDD543-967F-DD4B-AB57-890112F2144B.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/107E1ABE-237E-674F-8B1E-80F143D82405.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/019C524B-D2C6-3443-9BA9-4E9815DD484A.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/A0CB2549-ACA3-D143-AC55-68C19B63E9E1.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/08438240-13E9-B14F-AE42-967D33293AE5.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/06855B1B-F86A-E343-B36A-8998E2D3476E.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/52330E62-B92F-2C4D-A8D1-71734883B2FC.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/39297F93-A8BE-6943-A3E6-A4DFC7428C45.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/04D9EDF9-E235-5040-9071-7F67B885C3CE.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/0736431F-B9DE-2F44-9CE4-F5749F057116.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/1589D164-DDFE-704B-82B4-4B152DEAF67A.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1A1AA95C-0347-E64F-A048-F0C1A902767C.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/13991559-A342-914A-936B-089566580DAE.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/05556373-30EF-044D-BAF2-D5F2135D6E49.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/3C5F4F60-E4DE-4645-8F64-2A1F2D104AB8.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/153B8B0C-B470-704A-AD7C-80CE65BB7BA4.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/07FC7DFB-F3D7-304F-B15C-FBAB809C4505.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/944E2BFA-91C2-3A4E-8387-9DA338A7DE44.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v3/100000/1B383D5C-95CD-BE48-A6FF-BC45CE576597.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/11F87BC4-419A-C148-97DA-10B2B26514E3.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/138657C7-25ED-FF47-8E69-392F1F24A604.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0093F82A-CBAB-7B4D-9C2F-7DBF05688BC6.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v3/100000/021966F3-CEE2-6F4B-A4BE-C8DAD1A7B32A.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/1CF3AEA8-84F2-8149-A0F8-5F8FD521F6AD.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/0A1CDA76-8C55-0942-91F8-A61E309DCC0E.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/064E209A-F324-814A-A47C-DD81AE4AD9A2.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/5BB4D0B8-1631-0341-A1CF-A0FC69D50498.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/14CF4A80-D8BD-8F44-970A-6FEABC8A78C8.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/10EF2B64-84EF-5046-AB46-4696EEAED4CE.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/2D19F2B5-4557-5B45-8EC5-B070BB678C6D.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/04802C91-1BBF-DC48-AD27-367478257F00.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/32CC9E1B-2CC8-9A41-854C-5749382B7A59.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/05311BCE-3A73-5741-88D6-1831BE700B69.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/2AC2DDBA-1E7C-E34F-BD53-803F79235B0B.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/30B722A1-6396-144F-A820-C43F34ABC08E.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/C831494A-358E-7E42-97D5-298F3927B647.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/478B4C1D-01DB-DE4F-B679-A423A62C98DF.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/3E3D578C-6E60-6944-A5F7-0322849AE373.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2810000/45FF05EA-66AE-4C46-BA77-93D4A2612504.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2560000/194832ED-BBF4-9044-849E-58084AC9C5BB.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/120000/454CC2F7-8A7B-1440-A795-8826C004641F.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2820000/42616429-DCAF-1449-86E3-2D0054FB17E6.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/14CF350A-A1EA-8B42-AB73-F67F959BD5A6.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/01861A44-5FB2-414F-969D-759D30831E69.root"
+  },
+  "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/59EA8D9C-24F3-754C-9646-9435B34A1B97.root"
+  },
+  "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/100000/C30E9EE8-8D5D-944E-B2E5-44A373C7312F.root"
+  },
+  "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/CBE06030-A2A2-234A-85A1-729818F5202D.root"
+  },
+  "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/2430000/84C2EB60-6682-F74C-B8CB-455A38468D9A.root"
+  },
+  "WW_TuneCP5_13TeV-pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WZZ_TuneCP5_13TeV-amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/100000/7EA2AD68-8098-D442-9A11-1A4AB14C25C1.root"
+  },
+  "WZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/110000/20582413-730E-C747-9101-99CD490210CA.root"
+  },
+  "WZ_TuneCP5_13TeV-pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/3877BF54-84D7-4D4C-8FD3-C2FF2331F786.root"
+  },
+  "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9_ext1-v2/2430000/2A9754F4-09AC-3B40-BB84-E98E5FC68D5F.root"
+  },
+  "ZZ_TuneCP5_13TeV-pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2520000/90F6DDD3-EBE3-4740-9849-3D706C0EEC70.root"
+  },
+  "ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/83CFF6D3-94C9-F04E-8568-12D6AB532386.root"
+  }
+ }
+}

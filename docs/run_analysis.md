@@ -224,7 +224,7 @@ cd WR_Plotter && python3 bin/emu_transfer_factor.py --era RunIII2024Summer24 --d
 
 | Flag | Description |
 |------|-------------|
-| `--systs FAMILY [FAMILY ...]` | Enable systematic variations (MC only; ignored for data). Choices: `lumi` `pileup` `sf` `jer` `jes` `elescale` `elesmear` `muscale` `musmear` `dyzpt` `lsf` `dyreshape` `scale` `ps` `pdf` (see [Systematics](#systematics)) |
+| `--systs FAMILY [FAMILY ...]` | Enable systematic variations (MC only; ignored for data). Choices: `lumi` `pileup` `prefire` `sf` `jer` `jes` `elescale` `elesmear` `muscale` `musmear` `dyzpt` `lsf` `dyreshape` `scale` `ps` `pdf` (see [Systematics](#systematics)) |
 | `--syst-observables OBS [OBS ...]` | Histograms that receive the variations (default: `all`; `fit` for the fit masses only, or explicit names) |
 | `--omit-systs SOURCE [SOURCE ...]` | Deliberately leave out named sources (e.g. `ElectronTrigSf`) although their family is enabled; recorded in the manifest |
 

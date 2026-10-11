@@ -395,6 +395,30 @@ class TestMuonScaleFactors:
         assert nom[1] == pytest.approx(0.9 / 0.8, rel=1e-9)
         assert not corrections["NUM_HLT_DEN_HighPtLooseRelIsoProbes"].evaluate.called
 
+    def test_muon_trigger_sf_muonz_or_efficiencies(self):
+        """2022-2025 (since 2026-10-11): the POG muon_Z entry of our trigger OR carries the data and MC efficiencies
+        as scale_factors values, and the per-leg OR formula is used (real payload, no mocks)."""
+        import correctionlib
+        from wrcoffea.analysis_config import MUON_HLT_CORRECTIONS, MUON_JSONS
+        era = "Run3Summer22"
+        name = MUON_HLT_CORRECTIONS[era]
+        assert name == "NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose"
+        corr = correctionlib.CorrectionSet.from_file(MUON_JSONS[era]["TRIGGER"])[name]
+        tight_muons = _make_tight_leptons([[60.0, 55.0], [300.0]], [[0.3, -2.0], [1.0]])
+        nom, up, down = sf.muon_trigger_sf(tight_muons, era)
+
+        def eff(val, eta, pt):
+            return corr.evaluate(eta, pt, val)
+        e_d = 1 - (1 - eff("nominal_DATAeff", 0.3, 60.0)) * (1 - eff("nominal_DATAeff", -2.0, 55.0))
+        e_m = 1 - (1 - eff("nominal_MCeff", 0.3, 60.0)) * (1 - eff("nominal_MCeff", -2.0, 55.0))
+        assert nom[0] == pytest.approx(e_d / e_m, rel=1e-9)
+        assert nom[1] == pytest.approx(eff("nominal_DATAeff", 1.0, 300.0) / eff("nominal_MCeff", 1.0, 300.0), rel=1e-9)
+        assert 0.97 < nom[0] < 1.01
+        # variations: each leg's efficiency moved by its stat (+) syst error, data and MC together
+        assert up[0] != nom[0] and down[0] != nom[0] and (up[0] - nom[0]) * (down[0] - nom[0]) < 0
+        # the leading-muon SF of the same entry would differ: the OR formula is in use
+        assert nom[0] != pytest.approx(corr.evaluate(0.3, 60.0, "nominal"), rel=1e-4)
+
     def test_muon_trigger_sf_leading_muon_fallback(self):
         """Payloads with only a per-lepton SF apply the leading-pT muon's SF once."""
         tight_muons = _make_tight_leptons(
@@ -414,7 +438,7 @@ class TestMuonScaleFactors:
         corrections = {"NUM_HLT_DEN_HighPtLooseRelIsoProbes": corr}
 
         with self._patch_trigger_cset(corrections):
-            nom, up, down = sf.muon_trigger_sf(tight_muons, "Run3Summer22")
+            nom, up, down = sf.muon_trigger_sf(tight_muons, "RunIISummer20UL18")   # muon_HighPt: SF only
 
         # Leading muon (pt=100) is the second entry in event 0: SF = 1.00,
         # not the product (0.8) and not the first-listed muon (0.8).
@@ -1230,3 +1254,23 @@ class TestJetCorrectionsWithoutRho:
     def test_jes_alone_still_runs(self):
         out = sf.apply_jet_corrections(self._events_without_rho(), self.ERA, True, variations={"jes"})
         assert "pt_CMS_scale_j_Total_up" in out.Jet.fields
+
+
+@pytest.mark.parametrize("era,barrel,endcap", [
+    ("RunIISummer20UL16APV", 0.985, 0.990),
+    ("RunIISummer20UL16", 0.985, 0.990),
+    ("RunIISummer20UL17", 0.979, 0.987),
+    ("RunIISummer20UL18", 0.973, 0.980),
+    ("Run3Summer22", 1.007, 1.019),
+    ("Run3Summer22EE", 0.997, 0.997),
+    ("Run3Summer23", 1.006, 0.988),
+    ("Run3Summer23BPix", 1.009, 0.988),
+])
+def test_heep_flat_sf_per_year(era, barrel, endcap):
+    """The Run 2 UL and the 2022/2023 electron payloads have no HEEPID working point: each era takes its own flat
+    HEEP scale factors (EGM twikis EgammaUL2016To2018 and EgammSFandSSRun3), barrel and endcap."""
+    tight_electrons = _make_tight_leptons([[100.0], [100.0]], [[0.5], [2.0]], deltaEtaSC_lists=[[0.0], [0.0]])
+    nom, up, down = sf.electron_id_sf(tight_electrons, era)      # one electron per event: barrel, then endcap
+    assert nom[0] == pytest.approx(barrel, abs=1e-4)
+    assert nom[1] == pytest.approx(endcap, abs=1e-4)
+    assert np.all(up > nom) and np.all(down < nom)

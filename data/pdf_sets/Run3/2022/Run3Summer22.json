@@ -1,0 +1,1713 @@
+{
+ "era": "Run3Summer22",
+ "written": "2026-10-11",
+ "command": "scripts/pdf_sets.py --era Run3Summer22 --workers 6",
+ "note": "First LHA ID of each sample's LHEPdfWeight (read from an original NanoAOD file's branch description); null = no PDF weights. Written by scripts/pdf_sets.py.",
+ "sets": {
+  "325300": "NNPDF31_nnlo_as_0118_mc_hessian_pdfas",
+  "325500": "NNPDF31_nnlo_as_0118_nf_4_mc_hessian"
+ },
+ "samples": {
+  "DYto2E_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/09404092-4882-450a-9e61-64b0804ba7f6.root"
+  },
+  "DYto2E_MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/93549211-a33f-4a23-b165-254ff884bbed.root"
+  },
+  "DYto2E_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/1db3a966-2c4e-4cbf-96d8-784b2f6af491.root"
+  },
+  "DYto2E_MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2540000/75ad2076-128a-494e-bc01-18264aedd24c.root"
+  },
+  "DYto2E_MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/7faedc8a-82b9-4bb5-b816-52c2e472b688.root"
+  },
+  "DYto2E_MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/05e43be1-bff7-417a-b652-f9625c4b9eb3.root"
+  },
+  "DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/62542d69-2c7f-4e4f-a9f1-ff74f35364ef.root"
+  },
+  "DYto2E_MLL-6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/48b94add-af6d-486f-91b9-8f130e5047a6.root"
+  },
+  "DYto2E_MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2E_MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/bfd96b11-b6c0-4e07-9792-a739b9abd74e.root"
+  },
+  "DYto2L-2Jets_MLL-50_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/100000/0229b7b7-bf5f-415e-a088-0b850afa8b06.root"
+  },
+  "DYto2L-2Jets_MLL-50_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/01a42801-a195-4371-95e4-23585dc22ab1.root"
+  },
+  "DYto2L-2Jets_MLL-50_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/100000/034ee95e-1ca7-400a-8eed-2fde4dffeea1.root"
+  },
+  "DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/02f3bd0a-b78f-4662-9bc8-b3317e40c65e.root"
+  },
+  "DYto2L-2Jets_MLL-50_PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/100000/05903c08-796b-4f14-bfec-f8b4a70e44f6.root"
+  },
+  "DYto2L-2Jets_MLL-50_PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/021430e4-103c-4a1d-be67-6254696a8472.root"
+  },
+  "DYto2L-2Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0162fdc0-6379-4cc5-b081-c7ccf93551b7.root"
+  },
+  "DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v5/120000/02c39db3-e55f-45aa-b3e8-cca8f2fbe820.root"
+  },
+  "DYto2L-4Jets_MLL-120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/90000/00b44dff-076f-4b48-b945-30470dd86517.root"
+  },
+  "DYto2L-4Jets_MLL-120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/1050a8b5-5b25-4dde-aa2a-e5b69edfa5e1.root"
+  },
+  "DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/034c7f8e-2132-4313-b9a3-8f154fbd9462.root"
+  },
+  "DYto2L-4Jets_MLL-120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/2520000/01005b3e-64ec-4c45-b683-b65880baee30.root"
+  },
+  "DYto2L-4Jets_MLL-120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/02479595-49cb-444b-a990-f569118596b0.root"
+  },
+  "DYto2L-4Jets_MLL-120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/2520000/0e5e4d5b-66f3-4d1d-bc87-322c7f3c8442.root"
+  },
+  "DYto2L-4Jets_MLL-120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/10b7b07d-b033-4d82-9e59-1d86732d9651.root"
+  },
+  "DYto2L-4Jets_MLL-50_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/015e7ba7-1720-4a5c-838e-9fa631c34f9d.root"
+  },
+  "DYto2L-4Jets_MLL-50_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/01f5fc7b-223d-410f-ba69-2d728beeb99a.root"
+  },
+  "DYto2L-4Jets_MLL-50_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/100000/021f9ae5-55d1-410f-b596-804fc904a43f.root"
+  },
+  "DYto2L-4Jets_MLL-50_4J_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_4J_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/100000/00154356-d4d3-42f5-912e-c44e3f134d0d.root"
+  },
+  "DYto2L-4Jets_MLL-50_PTLL-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_PTLL-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/01abb3b3-640e-4c20-9106-08c286203e96.root"
+  },
+  "DYto2L-4Jets_MLL-50_PTLL-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_PTLL-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/02c4644d-bcb7-4423-a5dd-6e179eb7c5d4.root"
+  },
+  "DYto2L-4Jets_MLL-50_PTLL-400to600_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_PTLL-400to600_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/2550000/0bec3963-74f9-4509-8359-99a42c0d6ed0.root"
+  },
+  "DYto2L-4Jets_MLL-50_PTLL-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_PTLL-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/100000/000a6a76-b55c-45a6-b7c0-ffbfbbafe21e.root"
+  },
+  "DYto2L-4Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/2550000/00e77345-1486-4b44-9e97-2387fb89ca8f.root"
+  },
+  "DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/0552a04f-0d08-458b-8112-30d318b6b421.root"
+  },
+  "DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/100000/00d3e599-6f9c-44ae-9d10-8eaf4d1c4b63.root"
+  },
+  "DYto2L-4Jets_MLL-50to120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50to120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/028fea30-5310-4f42-a25a-06855d376d1e.root"
+  },
+  "DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v4/120000/03fa146c-8225-4cd0-96c2-e3ca67a03166.root"
+  },
+  "DYto2L-4Jets_MLL-50to120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50to120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/03e2bda7-e290-4eaf-a6ae-f1df5cc0553e.root"
+  },
+  "DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/100000/00b9268a-a606-472a-a3de-511cb5cf0e8b.root"
+  },
+  "DYto2L-4Jets_MLL-50to120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50to120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/100000/06901847-df53-455a-a276-8d95e745207a.root"
+  },
+  "DYto2L-4Jets_MLL-50to120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2L-4Jets_MLL-50to120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/2520000/0d59acd4-c015-4dda-a441-20768346166f.root"
+  },
+  "DYto2Mu_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/68a9edae-40de-437d-b6a0-058c6da4ead3.root"
+  },
+  "DYto2Mu_MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-1500to2500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2540000/2502cadf-0dfd-4246-8348-67e90f42a479.root"
+  },
+  "DYto2Mu_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/50ef923a-4d07-43dd-9a94-53cb9a306ad0.root"
+  },
+  "DYto2Mu_MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-2500to4000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/30000/cf396edd-5169-4130-92ed-db753218b92a.root"
+  },
+  "DYto2Mu_MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-4000to6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/edf1e485-7666-4722-ad0a-cf437b2ff170.root"
+  },
+  "DYto2Mu_MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-400to800_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/5d188b75-6055-4faf-ade9-ec37356db99f.root"
+  },
+  "DYto2Mu_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/de75fafc-e5fa-4f3d-8c91-634b9e13407b.root"
+  },
+  "DYto2Mu_MLL-6000_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-6000_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/1d2a0c01-5953-47d7-b0a1-30cf0465ce9a.root"
+  },
+  "DYto2Mu_MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/DYto2Mu_MLL-800to1500_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2530000/2af6a028-b725-4332-ab48-4d8ec99cdc25.root"
+  },
+  "TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/110000/06435f30-34a2-4145-bd3f-b846f0753fc5.root"
+  },
+  "TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/42350e18-4317-4a6f-9a53-9c51df05a3f4.root"
+  },
+  "TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/90000/47efb927-decf-41dd-ab63-0844b5b7d76c.root"
+  },
+  "TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/mg35x_130X_mcRun3_2022_realistic_v5-v2/2810000/042a0b2c-097c-40c9-b963-bc1b535faf39.root"
+  },
+  "TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/140000/0a45d7e8-511f-4611-87b7-fd0f4b0fcc91.root"
+  },
+  "TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/66b834d6-61f7-4109-b5ae-54a150d4814b.root"
+  },
+  "TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/15706935-76fd-46e9-a730-e6b055dc36a3.root"
+  },
+  "TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2530000/14e2e86b-54ad-41f7-939b-e4ac41e485dd.root"
+  },
+  "TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/168b4c65-6a0a-4d07-88b7-8bee9f5c735d.root"
+  },
+  "TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5_ext1-v2/30000/004a6a7f-f03e-49bd-a351-102e6846f54c.root"
+  },
+  "TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/110000/0031efde-5391-4ffc-b266-41c57bcb23a8.root"
+  },
+  "TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/1c5b6e0c-361e-49e0-831e-cd3726242336.root"
+  },
+  "TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2530000/10821e1d-9f4a-49a9-96dd-6fdce1f1bbbb.root"
+  },
+  "TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/39f3f715-8a05-47fe-82d1-181215122189.root"
+  },
+  "TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_ext1": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5_ext1-v2/2520000/0e60537f-597d-4021-b708-513eb1ead00c.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/26478a76-87b6-4822-9369-d1bc285075f1.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/8b58041c-99e1-43c1-b53e-f335efbeec85.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/05bb6330-c8e6-48fb-ba02-c6e86dd4a9e7.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/36c575a4-f68d-41d3-9205-9f39f8bfb00c.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/02bbf358-b5cb-4d68-a8fc-ba104a8698ef.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/186e2d5c-2bb1-47fe-9a52-516af90e5dd3.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/091e204e-5d86-459e-b563-a4b30be7bafe.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/004a7a46-7084-473d-a514-dd058a06b14a.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/09f0e1c6-891b-493e-ac9a-6c3d8ed2c470.root"
+  },
+  "WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/11d93c31-7a4b-4b09-bd10-653c139571f8.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/1d6f4808-0426-4c56-afa5-cac2be31ed3e.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/4aa4bc7d-c353-47f3-b567-19f83e8e0761.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/08c7eefc-ac6f-4631-bb98-ef659279e5d7.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/110ee294-e223-4afa-bfb2-2287d0042fad.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/28211ba0-5dbf-4b24-b764-c046b923c82d.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/08df1c04-731d-481d-afc4-a22ec79aac16.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0259c569-6287-499f-a95b-327a9c8218e7.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0188c46c-6e03-4390-9e7b-93cd77315276.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0ded9428-b918-4f5b-afcf-35eea8b97413.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0535521d-af7c-42eb-b46a-0c9b380b4ef6.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/05f2235a-2275-4681-8d91-8f02b378fc9a.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/72949ce4-1612-4855-81e5-a273ba2eb758.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/719e690a-f783-4a92-81e2-e2a92bbf3474.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/2a729d62-4cae-4ad9-b482-69960655d218.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/21c9bbc8-1bc8-4457-8118-09599fb958e8.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/1eeb17d9-2fb9-423c-9f53-a56679ad8429.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0b870dc5-2f9e-45f2-a657-6dce2d3aaa1b.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/45748dcf-241a-4f79-ac13-957e5bb99e41.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0c535ce1-f5f6-4f59-9cb5-3c7407285372.root"
+  },
+  "WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/06b430e6-73e7-4418-9cdc-e2585b915733.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/1210000/e30621c2-0c33-4262-8c98-41b8eb19ba26.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/00085c46-06ad-488e-8cc6-f5b9d55d0e5b.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/00940d8d-9dd2-4be7-8969-45a1fa84e8d5.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2f16f9f2-ec9b-4f00-a946-19223aa4eec2.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0d9947e4-333d-45c7-a396-1a5e757a5218.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/34b88440-facd-464a-86da-775dd1f9b90f.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0722aa82-1b8e-4b6b-9dc7-6a804f5dfb5d.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0b533adb-9b8d-476e-a0ef-0954444bc7ec.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/03d84113-42bb-485e-86ae-357a4ef3efff.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/3b88f1d5-2147-4e31-9b8d-3380cd15cc9e.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/04e4815a-11db-49da-823e-812eab02b5b7.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/072be48f-5928-474f-b537-a8b753c52499.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/0a19dbf0-760d-49f3-80ff-a2d00bbc69a1.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/37814c2b-ef76-43e8-8732-9e41cd0239ff.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/0748b380-2081-4dd1-9713-05828100bf4c.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/03776ca9-e29c-4f30-b468-8159165ec9a6.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/09c2e543-c94f-459f-8913-5f42e0c9a4d8.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/082a3f81-ea40-4757-bd6c-e890be252969.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/55abf86c-98f9-4781-805f-ed4ffdd1e3eb.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/1fe3b711-809c-44ff-a476-6354452677b4.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/091b86a0-a74e-439b-b58e-ca47ef96e95a.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/40481904-b938-4145-9bcc-78f619ed6555.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/1e8345d1-e0dd-41e1-850b-f259158c977d.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0e157728-cec0-4b82-b035-5e1ce2fd90b6.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/07b0ac21-29a9-4621-8ff8-954023f28d80.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/1de47868-1e6f-4aa8-a7a4-9a1b13f4aa6f.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/6fecc857-37cf-41ae-ae80-b8a867f61b7d.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0209d224-d71c-49a5-98d5-85262da943bd.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/34612b7f-8f36-42ec-8a7f-9574e3fc63ab.root"
+  },
+  "WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/29c5fee1-da3d-467d-93d2-f9edea3fc139.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2113f0af-ac47-40d8-8e3c-529fafc2bdb2.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/098157c7-8aef-447b-b257-930cbcecfbdc.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0f312d21-6040-4ac5-9113-7d414605e2f5.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/077476b9-9ce4-4831-905e-197fec08b9a4.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2588e5e9-73e5-44b8-9abd-fb4ca36dc2d4.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/037ee050-3628-4991-981e-a38c6937f996.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2ff19026-8163-45b9-9124-1621e97da5c7.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0dda8178-29ea-47f4-abd8-fcd2933f97d0.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/010941d1-ba94-4bcb-973d-f4989103b391.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/03caf464-7739-4169-8c38-5fbcffa1e362.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0e7b6424-fedd-4bc7-b906-16b0b13a0981.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/24059adb-8061-4f58-961f-728b1323eaf9.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v4/2530000/1892e92c-d1a8-4bc6-a2e3-549fc5666ab6.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/08c8dab9-f024-4186-9438-ce4ecb2d6e2c.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/09617d99-dc9b-4f53-9fdb-8303e3032b8d.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0deedcbd-b007-463b-86e3-0c4d737a8a21.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/012cb3c6-5b0f-4524-8b42-3b18505adf4b.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/32efbbb6-7730-4f4d-9b8d-7df55d7c6616.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0de6e971-4273-4fe9-8aab-6b51871f7963.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/120000/3faeb86a-7d06-40d0-9b36-a795077cd30e.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/06aa8284-6e3c-4a7d-8e67-8d87586f8d85.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0c6be32e-f01d-497f-9b64-b4cf803a37c6.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/1630d3a6-60d7-49ec-b015-ea0500d97020.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/11038012-eba7-4654-b96f-2bad07cb241f.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/004f4a45-5255-4410-b6fb-1b280a488add.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/05ffcea5-4d03-4e8c-84eb-b0a346e6deff.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/159f0eaf-184a-4ff9-97bd-e55292ff1b0b.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/18dd734e-8b7e-40df-9c90-afdfb1b1e47e.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/5155061a-0113-464c-a690-4a8a07d80b6e.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0003e4f2-64c6-40da-a794-11fa1550d88a.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/013f2d47-71cb-4ad1-a06b-d3a31f11beac.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/050a905d-7a84-4b09-8bf1-f0f6b3baf6fa.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/1bbe0078-d033-4963-9ca5-809c3f917813.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0b806225-f17b-41be-bc61-b31d5278359c.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/026d3980-6a64-40ce-9d5b-53dfdc834af9.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/144c142f-5577-483b-872a-3891bd4eabdc.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/13a5eee2-8157-4c64-a250-06ee02445b1c.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0444d73d-57ea-4fa5-9fae-3cd0c1c3e09b.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/23795490-cf55-4c3c-b0ed-9863cb2709f3.root"
+  },
+  "WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNEltoElElJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0c9bc7e1-c8b8-43cc-810e-57dc31573bf8.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/09060445-505e-4425-a84a-ffc962c38c26.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0865b0cb-7564-4bd4-bca3-ffb4d10a884a.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/03c5a245-8713-40fd-a521-31a1a9ca2b3c.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/78b806b3-426d-40bc-9154-23e6b932af39.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0194d00e-3dca-47eb-8513-a436fd26982b.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/33103b78-57b6-4c9e-9ee8-9171f868c3f0.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0c5cd1d5-39bb-4e22-b6a4-bd18c66916fc.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/02560934-6127-4b9a-9968-492353a61a7a.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0a883bfd-e9df-47be-843d-4f2815c58baa.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR2000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/03a7894a-4cb7-4e86-a449-af8a84d12441.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/08d0241f-2a82-4164-b3dc-ba85b55a40f1.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/1f4fcbcd-5e57-46bd-b0b9-711c44f56b05.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0046db75-eb7f-4b66-860b-bd9b38a54765.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0348e801-fda8-4069-a6bb-18d597389b8f.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0e0032f7-2f60-4ccc-b966-68b4daa46df5.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/00cd08bd-0342-4f13-b3ef-5997acf9d5ad.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0c1fcbf6-0177-4f16-b014-142bedefd1d1.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/061e8590-4829-498a-b500-ee819f9f5d4c.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/5bb9c5b7-8f6c-4db6-9d50-1ae5ca6b1ec3.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/02e2675d-3093-4c00-a789-acfedb2573f9.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/061d2cc7-11ac-4bbf-8b76-d00edba69479.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/034b2d02-4a18-4a04-92e2-3ff1324ea66e.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/61175cfc-440a-4e59-86dc-ea306eee44d7.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/05220add-764b-4be3-a7b9-311901fd826c.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0a6062ee-c251-40cb-b5ad-040393cd0cb4.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0386aaf8-74b9-403c-b841-687e413f20c4.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2806375f-ce6f-4576-b7d3-8b18e5f7f395.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/113a4ffb-2cbc-45e0-979c-de4960960b7e.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/040778d8-6c9d-4b6d-a735-9887a9dab4ca.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR4000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/080b0414-7cff-49ff-ac3b-90f022421cc0.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/13d03264-4489-4db7-9164-d3892b33693a.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/1310000/515e5832-b0ac-4f53-89ec-44eca6366390.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0956783f-24b8-4c97-90d4-8845c5393f70.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/274dea3c-1582-4a20-aea2-2820cab27879.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/626d0b29-f44a-41ab-a96e-3d899bc1c8cb.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0670b656-91b7-409c-b20f-9ac6d5874f7d.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0d84bcab-416c-4e3a-8258-3fdbdae585f3.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/1369026b-99d3-4c01-b67c-55cc2d7c445e.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/065079ef-7c74-40a9-a8f2-c094220b06c5.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/098bbb52-08dc-4a51-9660-07c7cbc5a656.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/27296054-2fa1-40bb-a036-9927bf0f648d.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/10960177-4f6a-4c78-9966-9e2086cf3aaa.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/17698cea-6a13-45a5-a31a-22d0ac63a00d.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2a8cbc88-b6f3-46b4-b031-26818cc175a1.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/05e02de9-ed9b-40cf-b33a-f403fd264e2a.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/1230a5e9-d830-4360-9bf2-ba6fc591a318.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/15b3fa74-c6a1-4bab-bec6-f97e02019d0a.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/1115783c-1080-43d4-9abf-1b345d538e26.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2e281996-31e4-4636-8fb6-73bee8d7f5a0.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/07f40d9c-a312-4c27-9de9-6db86712319b.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/130000/89b8592e-f0a3-4415-8736-faeb107e3240.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/5373a956-9373-44ec-9db7-8805cb73f30c.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/05bbdc12-7c76-46ac-aebf-149fb1f9ef96.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/02c51146-149e-4751-aaa8-5e543d0c30ca.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/051dc514-34ad-401e-93d2-39df7bb0c2b8.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/05b55f28-2e99-483e-8274-398a5eb76bd9.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/10f61dec-8eb7-4c57-8e32-c3dd46b5293b.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/5bcb67b6-82be-428d-9f02-c4be026bc1ac.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/2097c1e0-f47c-4f9f-93fb-5934d67a6c41.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR6000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0338c2f4-34aa-4e1c-8f62-7b20ae126a09.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/00b9c0fe-bee5-463e-8bd0-e34c1b8ac1f2.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N1100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/11bbc373-c984-4227-8e42-1eafd89c179b.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N1300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2e19fd36-e22a-437e-8837-06b85e5febfa.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N1500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0cef7b60-9b46-4ac3-a24d-967b2d9b8305.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N1700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/3aa5713b-8b93-4802-9c00-d8606cb5ff9b.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N1900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0bb71f75-e330-403a-a4c3-48e842d4c13c.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N2100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/e5e0eb35-5bac-48fa-80f7-303a5de343ec.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N2300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/07e5b8d0-a2ec-434a-aac2-ca0a78394a7a.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N2500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/09691481-0d88-49e2-a379-09a0ba563936.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N2700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/02fa0e6c-d25b-4db2-97cf-8a72cf7df19b.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N2900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0da24fd1-fc6a-4c86-98bc-1e190c5cd8e5.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/1815ca32-76c0-4723-913c-88a0a2b2ebb8.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N3100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/82aa6398-3556-4b23-b40f-72f841f1a078.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N3300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0199457c-3d31-46f5-8374-830ac5080afd.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N3500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2810000/0d55d85b-2d0b-4cfd-be35-2ac15c2e92ef.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N3700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/11439a66-b381-42c5-aa0a-1cc2e86fb707.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N3900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/06f204c7-8df0-495e-9284-89f77a5bfb02.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N4100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/0db8f0e5-54c4-4ead-9b44-a1e225f4160a.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N4300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/007d26ce-eec6-4d16-b879-8ef7a816c912.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N4500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/10938049-996c-4406-8e6f-45e55a6aae99.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N4700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/44ae856a-7282-43d1-a20c-f449fb974e56.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N4900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/2769482b-ad54-461a-a490-b562fb27e811.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/6fcd7d11-76f3-4b86-a07f-af2f9e112d96.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N5100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/8235ef2d-e89b-4eee-bb3d-be932ed3a9f6.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N5300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/15a9e73f-7c60-440b-995f-d676cc7f1781.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N5500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/35a4a499-e34d-4712-b648-50b65c5b76a4.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N5700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/4a8ca7d7-1451-42aa-a265-813c18f9e104.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N5900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/22bacc58-af56-4760-addd-306b8ffa02da.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N6100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/025c1b98-c913-4088-8833-14601f36a13d.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N6300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0388c7c0-cc79-490d-bc0e-4356198ee933.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N6500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/18fb0af8-d9bf-47ac-88f1-db3b2311fbfb.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N6700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0eb6bd3f-e9e9-41a7-80fb-3ae9d996148f.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N6900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0b2e195d-9317-467d-a338-f3f965c46f2f.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/8a8852e3-0332-43da-a0d5-9b9fd2a03460.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N7100_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/130000/029a9226-81ef-4d8b-b18e-8b45b898d96c.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N7300_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/21973c17-ef91-4562-a9ec-c3135793fc6d.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N7500_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/0fbab99a-c176-449e-8347-beb0acd8ee53.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N7700_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/120000/40ea76af-01f3-4089-a41f-04b64f08cf21.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N7900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/671c1d27-1a12-4048-a378-c6f88c0e4f4c.root"
+  },
+  "WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WRtoNMutoMuMuJJ_MWR8000_N900_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2560000/13d749d7-674c-4ce9-ae59-7991786c14f9.root"
+  },
+  "WWW_4F_TuneCP5_13p6TeV_amcatnlo-madspin-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WWW_4F_TuneCP5_13p6TeV_amcatnlo-madspin-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/81a2464d-52d0-431a-8d60-b5597769f379.root"
+  },
+  "WWZ_4F_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325500,
+   "lhaid_last": 325600,
+   "n": 101,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WWZ_4F_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/63d65829-33db-4a51-a063-5f674a910067.root"
+  },
+  "WW_TuneCP5_13p6TeV_pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WZZ_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/4ce58c69-acbf-4079-929e-2bd40e17ad1c.root"
+  },
+  "WZ_TuneCP5_13p6TeV_pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  },
+  "WtoLNu-4Jets_MLNu-0to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-0to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/2560000/0274f9be-bd70-4e5c-9458-c0f8556eeace.root"
+  },
+  "WtoLNu-4Jets_MLNu-0to120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-0to120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/13a18b06-845b-48cb-837b-57275fe48de1.root"
+  },
+  "WtoLNu-4Jets_MLNu-0to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-0to120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2820000/062e0373-cc7c-4b99-8887-4f1be5cd6797.root"
+  },
+  "WtoLNu-4Jets_MLNu-0to120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-0to120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v1/2550000/0462b418-5f19-4d72-b098-ab476faad933.root"
+  },
+  "WtoLNu-4Jets_MLNu-0to120_HT-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-0to120_HT-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v3/2540000/063b3487-ba43-4d30-897a-bd11c84c9660.root"
+  },
+  "WtoLNu-4Jets_MLNu-0to120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-0to120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2820000/013dfd85-afaf-47a7-a013-265a48cfe5d3.root"
+  },
+  "WtoLNu-4Jets_MLNu-120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/06a5bc78-a9dd-4257-a8cd-ea3623464c67.root"
+  },
+  "WtoLNu-4Jets_MLNu-120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-120_HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/38128dfb-4b90-4c26-b2aa-946d5ceb1d2f.root"
+  },
+  "WtoLNu-4Jets_MLNu-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-120_HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/19c53558-3713-4d90-83cc-85ab181443a0.root"
+  },
+  "WtoLNu-4Jets_MLNu-120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-120_HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/0ed0339d-ddc5-48be-8e91-7c63a89e3f41.root"
+  },
+  "WtoLNu-4Jets_MLNu-120_HT-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-120_HT-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/04c6b692-8f07-49df-a4cc-e64003c0e228.root"
+  },
+  "WtoLNu-4Jets_MLNu-120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/WtoLNu-4Jets_MLNu-120_HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/40000/06b390ba-23c3-4671-8045-a9c61d78371f.root"
+  },
+  "ZZZ_TuneCP5_13p6TeV_amcatnlo-pythia8": {
+   "lhaid": 325300,
+   "lhaid_last": 325402,
+   "n": 103,
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer22NanoAODv12/ZZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_v5-v2/2520000/4945f37a-43ff-4ea6-b674-2c8078cd8c1a.root"
+  },
+  "ZZ_TuneCP5_13p6TeV_pythia8": {
+   "lhaid": null,
+   "n": 0,
+   "source": "no LHEPdfSumw in the fileset metadata"
+  }
+ }
+}

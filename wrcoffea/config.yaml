@@ -102,20 +102,28 @@ jme_jsons:
   RunIII2024Summer24: data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz
 
 jetveto_jsons:
+  RunIISummer20UL16APV: data/jsonpog/JME/RunII/RunIISummer20UL16APV/jetvetomaps.json.gz
+  RunIISummer20UL16: data/jsonpog/JME/RunII/RunIISummer20UL16/jetvetomaps.json.gz
+  RunIISummer20UL17: data/jsonpog/JME/RunII/RunIISummer20UL17/jetvetomaps.json.gz
   RunIISummer20UL18: data/jsonpog/JME/RunII/RunIISummer20UL18/jetvetomaps.json.gz
   Run3Summer22: data/jsonpog/JME/Run3/Run3Summer22/jetvetomaps.json.gz
   Run3Summer22EE: data/jsonpog/JME/Run3/Run3Summer22EE/jetvetomaps.json.gz
   Run3Summer23: data/jsonpog/JME/Run3/Run3Summer23/jetvetomaps.json.gz
   Run3Summer23BPix: data/jsonpog/JME/Run3/Run3Summer23BPix/jetvetomaps.json.gz
   RunIII2024Summer24: data/jsonpog/JME/Run3/RunIII2024Summer24/jetvetomaps.json.gz
+  RunIII2025Summer25: data/jsonpog/JME/Run3/RunIII2025Summer25/jetvetomaps.json.gz
 
 jetveto_correction_names:
+  RunIISummer20UL16APV: Summer19UL16_V1   # one 2016 map for both UL16 eras
+  RunIISummer20UL16: Summer19UL16_V1
+  RunIISummer20UL17: Summer19UL17_V1
   RunIISummer20UL18: Summer19UL18_V1
   Run3Summer22: Summer22_23Sep2023_RunCD_V1
   Run3Summer22EE: Summer22EE_23Sep2023_RunEFG_V1
   Run3Summer23: Summer23Prompt23_RunC_V1
   Run3Summer23BPix: Summer23BPixPrompt23_RunD_V1
   RunIII2024Summer24: Summer24Prompt24_RunBCDEFGHI_V1
+  RunIII2025Summer25: Summer24Prompt25_RunCDEFG_V1
 
 # How the jet veto map is applied (JME "Jet Veto Map Recommendations", screenshots in
 # docs/pog_recommendations/jme/jetvetomaps/).  Run 3, the default "event" for eras not listed:
@@ -124,32 +132,86 @@ jetveto_correction_names:
 # dR < 0.2 are spared) and keep the event.  NOTE: UL18 therefore differs from Run 3 on purpose
 # (Billy, 2026-10-10).  The event rule had cost UL18 ~17-20 % of events against the Run 2 analysis.
 jetveto_mode:
+  RunIISummer20UL16APV: jet
+  RunIISummer20UL16: jet
+  RunIISummer20UL17: jet
   RunIISummer20UL18: jet
 
 jerc_jsons:
+  # Run 2 UL (2026-10-11): CAT cat/metadata/JME/Run2-<era>-UL-NanoAODv9 latest (2026-06-10): the same Summer19UL
+  # V7 / V5 JEC values, with the data L2L3Residuals of all periods in one DATA tag that takes the run number, and the
+  # JER retagged (Summer20UL16(APV)_JRV5, Summer19UL17_JRV4, Summer19UL18_JRV3): same scale factors as the previous
+  # JRV3/JRV2 tags (nominal identical, up/down within 1e-4), new schema (ScaleFactor + SFUncertainty); only the UL17
+  # pT-resolution function changed (<= 3 %).  Values verified against the previous files on 2026-10-11.
+  RunIISummer20UL16APV:
+    JERC_AK4:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL16APV/jet_jerc.json.gz
+      tag_MC: "Summer19UL16APV_V7_MC"
+      tag_Data: "Summer19UL16APV_V7_DATA"
+      algo: "AK4PFchs"
+      JR_tag_MC: "Summer20UL16APV_JRV5"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JERC_AK8:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL16APV/fatJet_jerc.json.gz
+      tag_MC: "Summer19UL16APV_V7_MC"
+      tag_Data: "Summer19UL16APV_V7_DATA"
+      algo: "AK8PFPuppi"
+      JR_tag_MC: "Summer20UL16APV_JRV5"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JMAR: data/jsonpog/JME/RunII/RunIISummer20UL16APV/jmar.json.gz
+  RunIISummer20UL16:
+    JERC_AK4:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL16/jet_jerc.json.gz
+      tag_MC: "Summer19UL16_V7_MC"
+      tag_Data: "Summer19UL16_V7_DATA"
+      algo: "AK4PFchs"
+      JR_tag_MC: "Summer20UL16_JRV5"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JERC_AK8:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL16/fatJet_jerc.json.gz
+      tag_MC: "Summer19UL16_V7_MC"
+      tag_Data: "Summer19UL16_V7_DATA"
+      algo: "AK8PFPuppi"
+      JR_tag_MC: "Summer20UL16_JRV5"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JMAR: data/jsonpog/JME/RunII/RunIISummer20UL16/jmar.json.gz
+  RunIISummer20UL17:
+    JERC_AK4:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL17/jet_jerc.json.gz
+      tag_MC: "Summer19UL17_V5_MC"
+      tag_Data: "Summer19UL17_V5_DATA"
+      algo: "AK4PFchs"
+      JR_tag_MC: "Summer19UL17_JRV4"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JERC_AK8:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL17/fatJet_jerc.json.gz
+      tag_MC: "Summer19UL17_V5_MC"
+      tag_Data: "Summer19UL17_V5_DATA"
+      algo: "AK8PFPuppi"
+      JR_tag_MC: "Summer19UL17_JRV4"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JMAR: data/jsonpog/JME/RunII/RunIISummer20UL17/jmar.json.gz
   RunIISummer20UL18:
     JERC_AK4:
       json: data/jsonpog/JME/RunII/RunIISummer20UL18/jet_jerc.json.gz
       tag_MC: "Summer19UL18_V5_MC"
-      tag_Data:
-        Run_A: "Summer19UL18_RunA_V5_DATA"
-        Run_B: "Summer19UL18_RunB_V5_DATA"
-        Run_C: "Summer19UL18_RunC_V5_DATA"
-        Run_D: "Summer19UL18_RunD_V5_DATA"
+      tag_Data: "Summer19UL18_V5_DATA"
       algo: "AK4PFchs"
-      JR_tag_MC: "Summer19UL18_JRV2"
+      JR_tag_MC: "Summer19UL18_JRV3"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
     JERC_AK8:
       json: data/jsonpog/JME/RunII/RunIISummer20UL18/fatJet_jerc.json.gz
       tag_MC: "Summer19UL18_V5_MC"
-      tag_Data:
-        Run_A: "Summer19UL18_RunA_V5_DATA"
-        Run_B: "Summer19UL18_RunB_V5_DATA"
-        Run_C: "Summer19UL18_RunC_V5_DATA"
-        Run_D: "Summer19UL18_RunD_V5_DATA"
+      tag_Data: "Summer19UL18_V5_DATA"
       algo: "AK8PFPuppi"
-      JR_tag_MC: "Summer19UL18_JRV2"
+      JR_tag_MC: "Summer19UL18_JRV3"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
     JMAR: data/jsonpog/JME/RunII/RunIISummer20UL18/jmar.json.gz    
@@ -242,6 +304,25 @@ jerc_jsons:
       JR_tag_MC: "Summer24Prompt24_JRV2"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
+  # 2025 data on 2024 MC: CAT Run3-25Prompt-Summer24 latest (2026-07-16): Summer24Prompt25 V3 JEC (the MC tag is the
+  # one JME ships with the 2025 residuals), JRV2 JER; the DATA tag takes the run number.  Added 2026-10-11.
+  RunIII2025Summer25:
+    JERC_AK4:
+      json: data/jsonpog/JME/Run3/RunIII2025Summer25/jet_jerc.json.gz
+      tag_MC: "Summer24Prompt25_V3_MC"
+      tag_Data: "Summer24Prompt25_V3_DATA"
+      algo: "AK4PFPuppi"
+      JR_tag_MC: "Summer24Prompt25_JRV2"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JERC_AK8:
+      json: data/jsonpog/JME/Run3/RunIII2025Summer25/fatJet_jerc.json.gz
+      tag_MC: "Summer24Prompt25_V3_MC"
+      tag_Data: "Summer24Prompt25_V3_DATA"
+      algo: "AK8PFPuppi"
+      JR_tag_MC: "Summer24Prompt25_JRV2"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
 # JSON POG payloads — Muon
 #
 # TRIGGER payloads come in two shapes and muon_trigger_sf() picks the
@@ -251,49 +332,94 @@ jerc_jsons:
 #   - with the per-lepton SF only (UL18 POG file, 2022/2023 high-pT HLT files):
 #     the leading-pT tight muon's SF is applied once per event.
 muon_jsons:
+  RunIISummer20UL16APV:
+    RECO: data/jsonpog/MUO/RunII/RunIISummer20UL16APV/muon_HighPt.json.gz
+    TRIGGER: data/jsonpog/MUO/RunII/RunIISummer20UL16APV/muon_HighPt.json.gz
+  RunIISummer20UL16:
+    RECO: data/jsonpog/MUO/RunII/RunIISummer20UL16/muon_HighPt.json.gz
+    TRIGGER: data/jsonpog/MUO/RunII/RunIISummer20UL16/muon_HighPt.json.gz
+  RunIISummer20UL17:
+    RECO: data/jsonpog/MUO/RunII/RunIISummer20UL17/muon_HighPt.json.gz
+    TRIGGER: data/jsonpog/MUO/RunII/RunIISummer20UL17/muon_HighPt.json.gz
   RunIISummer20UL18:
     RECO: data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz
     TRIGGER: data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz
   Run3Summer22:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22/ScaleFactors_Muon_highPt_HLT_2022_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22/muon_scalesmearing.json.gz
   Run3Summer22EE:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22EE/ScaleFactors_Muon_highPt_HLT_2022_EE_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_scalesmearing.json.gz
   Run3Summer23:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23/ScaleFactors_Muon_highPt_HLT_2023_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23/muon_scalesmearing.json.gz
   Run3Summer23BPix:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23BPix/ScaleFactors_Muon_highPt_HLT_2023_BPix_schemaV2.json
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_scalesmearing.json.gz
   RunIII2024Summer24:
     RECO: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json.gz
     TRIGGER: data/jsonpog/MUO/Run3/RunIII2024Summer24/ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json
     ScaleNSmear: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_scalesmearing.json.gz
+  RunIII2025Summer25:    # CAT Run3-25Prompt-Summer24 (2026-04-28); the HLT file carries data/MC efficiencies like 2024's
+    RECO: data/jsonpog/MUO/Run3/RunIII2025Summer25/muon_HighPt.json.gz
+    TRIGGER: data/jsonpog/MUO/Run3/RunIII2025Summer25/muon_HighPt.json.gz
+    ScaleNSmear: data/jsonpog/MUO/Run3/RunIII2025Summer25/muon_scalesmearing.json.gz
+
+# Correction evaluated in the muon TRIGGER payload (default NUM_HLT_DEN_HighPtLooseRelIsoProbes, the high-pT
+# subgroup's HLT measurement).  2022/2023 (2026-10-11): the POG muon_Z entry for our exact trigger OR with the
+# HighPt ID + loose tracker-isolation denominator, whose scale_factors values include the data and MC
+# efficiencies, so the per-leg OR formula applies there too (the leading-muon SF was the only option before).
+muon_hlt_correction:
+  Run3Summer22: NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
+  Run3Summer22EE: NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
+  Run3Summer23: NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
+  Run3Summer23BPix: NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
+
+# L1 prefiring (Run 2 UL): the MC weight NanoAOD provides (L1PreFiringWeight Nom/Up/Dn), ECAL + muon in 2016 and
+# 2017 (about -3 % on 2017 DY), muon prefiring only in 2018 (the Run 2 analysis applied none in 2018; the muon
+# part is a few per mille).  --systs prefire adds the Up/Down variation.  Added 2026-10-11.
+prefiring_eras: [RunIISummer20UL16APV, RunIISummer20UL16, RunIISummer20UL17, RunIISummer20UL18]
 
 # JSON POG payloads — Pileup
 pileup_jsons:
+  RunIISummer20UL16APV: data/jsonpog/LUM/RunII/RunIISummer20UL16APV/puWeights.json.gz
+  RunIISummer20UL16: data/jsonpog/LUM/RunII/RunIISummer20UL16/puWeights.json.gz
+  RunIISummer20UL17: data/jsonpog/LUM/RunII/RunIISummer20UL17/puWeights.json.gz
   RunIISummer20UL18: data/jsonpog/LUM/RunII/RunIISummer20UL18/puWeights.json.gz
   Run3Summer22: data/jsonpog/LUM/Run3/Run3Summer22/puWeights.json.gz
   Run3Summer22EE: data/jsonpog/LUM/Run3/Run3Summer22EE/puWeights.json.gz
   Run3Summer23: data/jsonpog/LUM/Run3/Run3Summer23/puWeights.json.gz
   Run3Summer23BPix: data/jsonpog/LUM/Run3/Run3Summer23BPix/puWeights.json.gz
   RunIII2024Summer24: data/jsonpog/LUM/Run3/RunIII2024Summer24/puWeights_BCDEFGHI.json.gz
+  RunIII2025Summer25: data/jsonpog/LUM/Run3/RunIII2025Summer25/puWeights_2025pp_Golden_Summer24_25ns_69200ub.json.gz   # 2024 MC reweighted to the 2025 profile (preliminary, CAT 2026-06-05)
 
 pileup_correction_names:
+  RunIISummer20UL16APV: Collisions16_UltraLegacy_goldenJSON
+  RunIISummer20UL16: Collisions16_UltraLegacy_goldenJSON
+  RunIISummer20UL17: Collisions17_UltraLegacy_goldenJSON
   RunIISummer20UL18: Collisions18_UltraLegacy_goldenJSON
   Run3Summer22: Collisions2022_355100_357900_eraBCD_GoldenJson
   Run3Summer22EE: Collisions2022_359022_362760_eraEFG_GoldenJson
   Run3Summer23: Collisions2023_366403_369802_eraBC_GoldenJson
   Run3Summer23BPix: Collisions2023_369803_370790_eraD_GoldenJson
   RunIII2024Summer24: Collisions24_BCDEFGHI_goldenJSON
+  RunIII2025Summer25: Collisions25_goldenJSON
 
 # JSON POG payloads — Electron
 electron_jsons:
+  RunIISummer20UL16APV:
+    RECO: data/jsonpog/EGM/RunII/RunIISummer20UL16APV/electron.json.gz
+    TRIGGER: data/jsonpog/EGM/RunII/RunIISummer20UL16APV/electronHlt_WREGammaTrigger_run2legacy_v4.json.gz   # Run 2 HEEP trigger-OR efficiency (2016), see UL18
+  RunIISummer20UL16:
+    RECO: data/jsonpog/EGM/RunII/RunIISummer20UL16/electron.json.gz
+    TRIGGER: data/jsonpog/EGM/RunII/RunIISummer20UL16/electronHlt_WREGammaTrigger_run2legacy_v4.json.gz   # Run 2 HEEP trigger-OR efficiency (2016), see UL18
+  RunIISummer20UL17:
+    RECO: data/jsonpog/EGM/RunII/RunIISummer20UL17/electron.json.gz
+    TRIGGER: data/jsonpog/EGM/RunII/RunIISummer20UL17/electronHlt_WREGammaTrigger_run2legacy_v4.json.gz   # Run 2 HEEP trigger-OR efficiency (2017), see UL18
   RunIISummer20UL18:
     RECO: data/jsonpog/EGM/RunII/RunIISummer20UL18/electron.json.gz
     # Run 2 WR HEEP trigger efficiencies (SKFlat HNWR/Run2Legacy_v4), converted
@@ -319,29 +445,56 @@ electron_jsons:
     RECO: data/jsonpog/EGM/Run3/RunIII2024Summer24/electron.json.gz
     TRIGGER: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronHlt.json.gz
     ScaleNSmear: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronSS_EtDependent.json.gz
+  RunIII2025Summer25:    # CAT Run3-25Prompt-Summer24 (2026-06-26): reco + HEEP ID SFs and Et-dependent S&S; EGM ships no
+    RECO: data/jsonpog/EGM/Run3/RunIII2025Summer25/electron.json.gz        # 2025 HLT file, so the 2024 Ele30 proxy is a
+    TRIGGER: data/jsonpog/EGM/Run3/RunIII2024Summer24/electronHlt.json.gz   # PLACEHOLDER here (2026-10-11)
+    ScaleNSmear: data/jsonpog/EGM/Run3/RunIII2025Summer25/electronSS_EtDependent.json.gz
 
 # Trigger path name looked up in the electron TRIGGER payload.  Run 3 uses the
 # single-electron Ele30_TightID efficiencies as a proxy for the full trigger
 # OR; UL18 uses the Run 2 measurement of the OR itself on HEEP electrons.
 electron_hlt_paths:
+  RunIISummer20UL16APV: WREGammaTrigger
+  RunIISummer20UL16: WREGammaTrigger
+  RunIISummer20UL17: WREGammaTrigger
   RunIISummer20UL18: WREGammaTrigger
   Run3Summer22: HLT_SF_Ele30_TightID
   Run3Summer22EE: HLT_SF_Ele30_TightID
   Run3Summer23: HLT_SF_Ele30_TightID
   Run3Summer23BPix: HLT_SF_Ele30_TightID
   RunIII2024Summer24: HLT_SF_Ele30_TightID
+  RunIII2025Summer25: HLT_SF_Ele30_TightID   # evaluated in the 2024 file (placeholder)
 
 # correctionlib era key used inside EGM JSON payloads (differs from analysis era name)
 electron_sf_era_keys:
+  RunIISummer20UL16APV: "2016preVFP"
+  RunIISummer20UL16: "2016postVFP"
+  RunIISummer20UL17: "2017"
   RunIISummer20UL18: "2018"
   Run3Summer22: "2022Re-recoBCD"
   Run3Summer22EE: "2022Re-recoE+PromptFG"
   Run3Summer23: "2023PromptC"
   Run3Summer23BPix: "2023PromptD"
   RunIII2024Summer24: "2024Prompt"
+  RunIII2025Summer25: "2025Prompt"
 
 # Per-era electron Reco SF configuration
 electron_reco_config:
+  RunIISummer20UL16APV:
+    correction: UL-Electron-ID-SF
+    wp_low: RecoBelow20
+    wp_high: RecoAbove20
+    pt_split: 20.0
+  RunIISummer20UL16:
+    correction: UL-Electron-ID-SF
+    wp_low: RecoBelow20
+    wp_high: RecoAbove20
+    pt_split: 20.0
+  RunIISummer20UL17:
+    correction: UL-Electron-ID-SF
+    wp_low: RecoBelow20
+    wp_high: RecoAbove20
+    pt_split: 20.0
   RunIISummer20UL18:
     correction: UL-Electron-ID-SF
     wp_low: RecoBelow20
@@ -382,18 +535,24 @@ electron_reco_config:
     pt_split: 75.0
     pt_max: 500.0      # last measured RecoAbove75 bin; above it the payload is a 1 +- 20% placeholder
     id_pt_max: 1000.0  # last measured HEEPID bin
+  RunIII2025Summer25:
+    correction: Electron-ID-SF
+    wp_low: Reco20to75
+    wp_high: RecoAbove75
+    pt_split: 75.0
+    pt_max: 500.0      # same layout as 2024 (RecoAbove75 bins 75, 100, 500, inf)
+    id_pt_max: 1000.0  # HEEPID bins 35 ... 500, 1000, inf
 
 # Systematic uncertainties: integrated luminosity fractional uncertainty
 lumi_unc:
-  # UL16/UL17 values from the LumiRecommendationsRun2 table saved in pdmv/run2 (2026 version:
-  # 2016 1.2 %, 2017 0.82 %, 2018 0.84 %); UL18 keeps its earlier 2.5 % until the analysis
-  # normalization is revisited (the same table quotes 59.56 fb-1 Golden Legacy for 2018).
+  # UL values from the LumiRecommendationsRun2 table saved in pdmv/run2 (2026 version:
+  # 2016 1.2 %, 2017 0.82 %, 2018 0.84 %; Billy 2026-10-11: use the table for UL18 as well).
   # Run 3 values from the LumiRecommendationsRun3 twiki (r39, 2026-06-11) saved in pdmv/run3. The lumi group
   # correlates 2022-2024 through a covariance matrix; that belongs in the datacards, not here.
   RunIISummer20UL16APV: 0.012
   RunIISummer20UL16: 0.012
   RunIISummer20UL17: 0.0082
-  RunIISummer20UL18: 0.025     # 2.5% (UL2018)
+  RunIISummer20UL18: 0.0084    # 0.84 % (UL2018, 2026 table; was 2.5 % until 2026-10-11)
   Run3Summer22: 0.014          # 1.4% (2022, final: LUM-22-001)
   Run3Summer22EE: 0.014        # 1.4% (2022EE, final: LUM-22-001)
   Run3Summer23: 0.013          # 1.3% (2023, CMS-DP-2024-068)
@@ -402,26 +561,42 @@ lumi_unc:
   RunIII2025Summer25: 0.05     # 5% (2025 preliminary; uncorrelated with the other years)
 
 # Drell-Yan Z-pT reweighting (QCD NLO/LO ratio x EW correction) evaluated on
-# the generator-level Z pT of DYJets events.  Payloads are produced by
-# scripts/convert_run2_dy_reweight.py from the Run 2 HNWRAnalyzer inputs
-# (SKFlatAnalyzer HNWR/Run2Legacy_v4).  The nominal weight is applied to
+# the generator-level Z pT of DYJets events.  The nominal weight is applied to
 # DYJets whenever an era is listed here (disable with --no-dy-zpt-reweight);
-# --systs dyzpt adds the QCD scale/PDF/alphaS and EW variations.
+# --systs dyzpt adds the QCD scale/PDF/alphaS and EW variations.  It applies
+# only to the datasets named by dy_reweight_datasets (the LO HT-binned set).
 #
-# The 2018 payload was derived for the 13 TeV LO madgraphMLM HT-binned
-# DYJetsToLL_M-50 samples (our UL18 dy_lo_ht fileset).  It is deliberately
-# not mapped to the 13.6 TeV Run 3 eras: point a Run 3 era at it only for a
-# study, never for a result.
+# Payloads are our own derivations with scripts/derive_dy_zpt_reweight.py,
+# done the way AN-19-083 Sec. 5.1 did it (Billy, 2026-10-11; SKFlat
+# GetZPtReweight.C): the inclusive NLO amcatnloFXFX sample over the inclusive
+# LO madgraphMLM sample, generator Z with m(Z) >= 50, each at its configured
+# (NNLO) cross section, bin by bin in the Run 2 Z-pT binning, with the
+# scale/PDF/alphaS variations from the NLO LHE weights; the EW block is the
+# Run 2 13 TeV one, copied.  No binned samples, no stitching.  A payload is
+# valid only for the era it was derived for.  The converted Run 2 files
+# (scripts/convert_run2_dy_reweight.py, dy_zpt_reweight_run2legacy_v4_<year>.json)
+# are comparison material only; UL18 used the 2018 one until 2026-10-11, so its
+# dy_reshape below must be re-derived with the new payload before the two are
+# used together.
 #
-# RunIII2024Summer24: first Run 3 derivation (2026-10-08) with
-# scripts/derive_dy_zpt_reweight.py, the Run 2 GetZPtReweight.C recipe on the
-# 2024 samples: NLO amcatnloFXFX (inclusive + PTLL-binned) over the LO dy_lo_ht
-# set (+ LO inclusive below HT 40) at their configured cross sections.  The EW
-# block is the Run 2 13 TeV one, copied.  Valid only for the 2024 dy_lo_ht DY.
-# Not mapped by default yet (a study until the CR closure is reviewed); map it with
-#   RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261008.json
+# Run 3 (2026-10-11, Billy: same method): the 2022, 2022EE, 2023 and 2023BPix
+# inclusive samples are one generator setup and are merged into one payload
+# (50M events per sample and era); the Summer24 FxFx samples are ~5 % softer in
+# Z pT above 50 GeV than the 2022/2023 ones (LO samples agree to 0.3 %), so 2024
+# has its own.  The per-era checks are in local_notes/2026-10-10_dy_nnlo/zpt_checks.
+# The 2024 overlay files next to the payload (dy_corrections_study_overlay.yaml,
+# dy_zpt_only_study_overlay.yaml) point at the superseded stitched payloads.
 dy_zpt_reweight:
-  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_zpt_reweight_run2legacy_v4_2018.json
+  RunIISummer20UL16APV: data/reweights/RunII/2016/RunIISummer20UL16APV/dy_zpt_reweight_ul_20261011.json
+  RunIISummer20UL16: data/reweights/RunII/2016/RunIISummer20UL16/dy_zpt_reweight_ul_20261011.json
+  RunIISummer20UL17: data/reweights/RunII/2017/RunIISummer20UL17/dy_zpt_reweight_ul_20261011.json
+  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_zpt_reweight_ul_20261011.json
+  Run3Summer22: data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json
+  Run3Summer22EE: data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json
+  Run3Summer23: data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json
+  Run3Summer23BPix: data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261011.json
+  RunIII2025Summer25: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261011.json   # 2024 MC
 
 # DY reshape: data-driven (data - non-DY MC)/DY ratio vs leading AK4 jet pT
 # (resolved) or DY-candidate AK8 jet pT (boosted), measured in the DY CRs with
@@ -438,7 +613,21 @@ dy_zpt_reweight:
 dy_reshape:
   # 2026-10-10: re-derived on the skims_v2 production (DY LO x k(NNLO) 1.136, W+jets x 1.149, jet-veto jets dropped);
   # the 2026-09-07 payload (bare-LO DY, old skims, event veto) is kept for reference.
-  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_reshape_run2jetpt_20261010.json
+  # 2026-10-11: derived per UL era from the skims_v2 productions (data + non-DY of 20261011_skims_v2, UL18:
+  # 20261010_skims_v2) with the DY of the matching *_noreshape production (own AN-19-083-style Z-pT payload, no
+  # reshape); Run 2 DYReshapeJetPt bins, ee + mumu combined. UL18's 20261010 file (Run 2 Z-pT payload) is kept for
+  # reference. Run 3: one payload per data-taking year (Billy 2026-10-11), mapped when derived.
+  RunIISummer20UL16APV: data/reweights/RunII/2016/RunIISummer20UL16APV/dy_reshape_run2jetpt_20261011.json
+  RunIISummer20UL16: data/reweights/RunII/2016/RunIISummer20UL16/dy_reshape_run2jetpt_20261011.json
+  RunIISummer20UL17: data/reweights/RunII/2017/RunIISummer20UL17/dy_reshape_run2jetpt_20261011.json
+  RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/dy_reshape_run2jetpt_20261011.json
+  # Run 3: one payload per data-taking year (22 + 22EE, 23 + 23BPix, 2024), derived by the final rerun chain of
+  # 2026-10-11 into these paths (mapped ahead of the derivation; a DYJets run before the file exists fails loudly).
+  Run3Summer22: data/reweights/Run3/2022/dy_reshape_run2jetpt_20261011.json
+  Run3Summer22EE: data/reweights/Run3/2022/dy_reshape_run2jetpt_20261011.json
+  Run3Summer23: data/reweights/Run3/2023/dy_reshape_run2jetpt_20261011.json
+  Run3Summer23BPix: data/reweights/Run3/2023/dy_reshape_run2jetpt_20261011.json
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261011.json
 
 # The DY datasets the era's Z-pT reweight and reshape were derived for: a regular
 # expression searched in the dataset name (fileset metadata "sample").  Other DY
@@ -447,8 +636,16 @@ dy_reshape:
 # Every era with a dy_zpt_reweight or dy_reshape payload needs an entry here (the
 # analyzer refuses to start otherwise); an entry without a payload does nothing.
 dy_reweight_datasets:
+  RunIISummer20UL16APV: "^DYJetsToLL_M-50_HT-"      # dy_lo_ht (madgraphMLM HT-binned)
+  RunIISummer20UL16: "^DYJetsToLL_M-50_HT-"      # dy_lo_ht (madgraphMLM HT-binned)
+  RunIISummer20UL17: "^DYJetsToLL_M-50_HT-"      # dy_lo_ht (madgraphMLM HT-binned)
   RunIISummer20UL18: "^DYJetsToLL_M-50_HT-"      # dy_lo_ht (madgraphMLM HT-binned)
+  Run3Summer22: "^DYto2L-4Jets_MLL-(50to120|120)_HT-"      # dy_lo_ht (madgraphMLM HT-binned, two m(ll) ranges)
+  Run3Summer22EE: "^DYto2L-4Jets_MLL-(50to120|120)_HT-"
+  Run3Summer23: "^DYto2L-4Jets_MLL-(50to120|120)_HT-"
+  Run3Summer23BPix: "^DYto2L-4Jets_MLL-(50to120|120)_HT-"
   RunIII2024Summer24: "^DYto2L-4Jets_Bin-HT-"    # dy_lo_ht (madgraphMLM HT-binned)
+  RunIII2025Summer25: "^DYto2L-4Jets_Bin-HT-"    # the 2024 MC
 
 # Signal NLO/LO k-factor vs generator-level m(lN), applied as k(m_lN)/<k>
 # (shape only: the signal cross sections in the configs are AN-19-083 LO x <k>).
@@ -470,13 +667,23 @@ signal_kfactor:
   Run3Summer23: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
   Run3Summer23BPix: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
   RunIII2024Summer24: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
+  RunIII2025Summer25: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json   # the 2024 MC
 
 # PDF set of each MC sample's LHEPdfWeight (first LHA ID, read from an original
 # NanoAOD file by scripts/pdf_sets.py; the skims drop the branch description).
 # Gates the ``pdf`` systematic family (wrcoffea/pdf_weights.py); eras absent
 # here cannot produce it.
 pdf_sets:
+  RunIISummer20UL16APV: data/pdf_sets/RunII/2016/RunIISummer20UL16APV.json
+  RunIISummer20UL16: data/pdf_sets/RunII/2016/RunIISummer20UL16.json
+  RunIISummer20UL17: data/pdf_sets/RunII/2017/RunIISummer20UL17.json
+  RunIISummer20UL18: data/pdf_sets/RunII/2018/RunIISummer20UL18.json
+  Run3Summer22: data/pdf_sets/Run3/2022/Run3Summer22.json
+  Run3Summer22EE: data/pdf_sets/Run3/2022/Run3Summer22EE.json
+  Run3Summer23: data/pdf_sets/Run3/2023/Run3Summer23.json
+  Run3Summer23BPix: data/pdf_sets/Run3/2023/Run3Summer23BPix.json
   RunIII2024Summer24: data/pdf_sets/Run3/2024/RunIII2024Summer24.json
+  RunIII2025Summer25: data/pdf_sets/Run3/2024/RunIII2024Summer24.json   # the 2024 MC
 
 # High-pT muon momentum (wrcoffea/muon_momentum.py, docs/muon_momentum.md): eras listed
 # get MuonScaRe below 200 GeV and the generalized-endpoint data correction + MC smearing
@@ -507,9 +714,40 @@ hem_veto:
 # (injected-lepton method), as hard-coded in HNWRAnalyzer::LSFSF.  Eras absent
 # here apply no LSF scale factor; Run 3 needs its own measurement.
 lsf_sf:
+  # AN-19-083 Table 60 (injected-lepton method); both UL16 eras take the 2016 values.
+  RunIISummer20UL16APV:
+    electron: {value: 1.04, err_up: 0.09, err_down: 0.08}
+    muon:     {value: 1.01, err_up: 0.06, err_down: 0.06}
+  RunIISummer20UL16:
+    electron: {value: 1.04, err_up: 0.09, err_down: 0.08}
+    muon:     {value: 1.01, err_up: 0.06, err_down: 0.06}
+  RunIISummer20UL17:
+    electron: {value: 1.02, err_up: 0.08, err_down: 0.08}
+    muon:     {value: 0.98, err_up: 0.07, err_down: 0.07}
   RunIISummer20UL18:
     electron: {value: 1.05, err_up: 0.07, err_down: 0.06}
     muon:     {value: 1.04, err_up: 0.06, err_down: 0.05}
+  # Run 3: PLACEHOLDER (Billy 2026-10-11) until a Run 3 measurement exists (injected-lepton or semileptonic-top
+  # tag-and-probe): unit value with a 10 % uncertainty, larger than any Run 2 year's, so the LsfSf nuisance exists in
+  # the fit. Nominal histograms are unchanged by it.
+  Run3Summer22:
+    electron: {value: 1.00, err_up: 0.10, err_down: 0.10}
+    muon:     {value: 1.00, err_up: 0.10, err_down: 0.10}
+  Run3Summer22EE:
+    electron: {value: 1.00, err_up: 0.10, err_down: 0.10}
+    muon:     {value: 1.00, err_up: 0.10, err_down: 0.10}
+  Run3Summer23:
+    electron: {value: 1.00, err_up: 0.10, err_down: 0.10}
+    muon:     {value: 1.00, err_up: 0.10, err_down: 0.10}
+  Run3Summer23BPix:
+    electron: {value: 1.00, err_up: 0.10, err_down: 0.10}
+    muon:     {value: 1.00, err_up: 0.10, err_down: 0.10}
+  RunIII2024Summer24:
+    electron: {value: 1.00, err_up: 0.10, err_down: 0.10}
+    muon:     {value: 1.00, err_up: 0.10, err_down: 0.10}
+  RunIII2025Summer25:
+    electron: {value: 1.00, err_up: 0.10, err_down: 0.10}
+    muon:     {value: 1.00, err_up: 0.10, err_down: 0.10}
 
 # Physics thresholds (single source of truth for analysis cuts)
 cuts:

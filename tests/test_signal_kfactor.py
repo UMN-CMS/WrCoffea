@@ -50,6 +50,10 @@ def _genpart(rows):
 class _Events:
     def __init__(self, gp):
         self.GenPart = gp
+        # NanoAOD L1 prefiring record (unit weights): build_event_weights reads it for the Run 2 UL eras
+        from types import SimpleNamespace
+        ones = ak.Array([1.0] * len(gp))
+        self.L1PreFiringWeight = SimpleNamespace(Nom=ones, Up=ones, Dn=ones)
 
     def __len__(self):
         return len(self.GenPart)

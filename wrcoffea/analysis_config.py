@@ -135,6 +135,10 @@ PDF_SETS = _cfg.get("pdf_sets") or {}
 # placeholder.  The payloads (data/muon_highpt/) hold numbers from CMS-internal
 # documents; docs/muon_momentum.md lists their sources.
 MUON_HIGHPT = _cfg.get("muon_highpt") or {}
+# era -> correction name in the muon TRIGGER payload (default NUM_HLT_DEN_HighPtLooseRelIsoProbes).
+MUON_HLT_CORRECTIONS = _cfg.get("muon_hlt_correction") or {}
+# eras whose MC gets the NanoAOD L1 prefiring weight (Run 2 UL).
+PREFIRING_ERAS = frozenset(_cfg.get("prefiring_eras") or [])
 # era -> {eta_max, phi_min, phi_max}: HEM 15/16 electron veto window; eras
 # absent here apply no veto.
 HEM_VETO = _cfg.get("hem_veto") or {}

@@ -497,6 +497,15 @@ def _make_integration_events(n_events=5, *,
         pu.nTrueInt = ak.Array([20.0] * n_events)
         ev.Pileup = pu
 
+    # NanoAOD L1 prefiring record (Run 2 UL): unit weights unless a test overrides them.
+    class L1PreFiringWeight:
+        pass
+    pf = L1PreFiringWeight()
+    pf.Nom = ak.Array([1.0] * n_events)
+    pf.Up = ak.Array([1.0] * n_events)
+    pf.Dn = ak.Array([1.0] * n_events)
+    ev.L1PreFiringWeight = pf
+
     ev.run = ak.Array([1] * n_events)
     ev.luminosityBlock = ak.Array([100] * n_events)
 
@@ -624,6 +633,50 @@ def _apply_sf_patches(func):
     for target, replacement in _SF_PATCHES.items():
         func = patch(target, new=replacement)(func)
     return func
+
+
+class TestPrefiringWeight:
+    """Run 2 UL MC carries the NanoAOD L1 prefiring weight (config.yaml prefiring_eras); Run 3 does not."""
+
+    @staticmethod
+    def _metadata(era):
+        return {"era": era, "datatype": "mc", "physics_group": "tt_tW", "sample": "TT", "xsec": 1.0,
+                "genEventSumw": 1.0}
+
+    @_apply_sf_patches
+    def test_ul_mc_gets_the_weight_and_its_variation(self):
+        from wrcoffea.systematics import NOMINAL
+        meta = self._metadata("RunIISummer20UL17")
+        events = _make_integration_events(n_events=3, metadata=meta)
+        events.L1PreFiringWeight.Nom = ak.Array([0.9, 0.8, 1.0])
+        events.L1PreFiringWeight.Up = ak.Array([0.85, 0.75, 1.0])
+        events.L1PreFiringWeight.Dn = ak.Array([0.95, 0.85, 1.0])
+        proc = WrAnalysis(mass_point=None, enabled_systs=["prefire"])
+        weights, syst = proc.build_event_weights(events, meta, is_mc=True)
+        base = np.asarray(weights.partial_weight(include=["event_weight"]))
+        np.testing.assert_allclose(np.asarray(syst[NOMINAL]), base * np.array([0.9, 0.8, 1.0]))
+        np.testing.assert_allclose(np.asarray(syst["L1PrefiringUp"]), base * np.array([0.85, 0.75, 1.0]))
+        np.testing.assert_allclose(np.asarray(syst["L1PrefiringDown"]), base * np.array([0.95, 0.85, 1.0]))
+
+    @_apply_sf_patches
+    def test_run3_mc_has_no_prefiring(self):
+        from wrcoffea.systematics import NOMINAL
+        meta = self._metadata("Run3Summer22")
+        events = _make_integration_events(n_events=2, metadata=meta)
+        events.L1PreFiringWeight.Nom = ak.Array([0.5, 0.5])        # would be visible if applied
+        proc = WrAnalysis(mass_point=None, enabled_systs=[])
+        weights, syst = proc.build_event_weights(events, meta, is_mc=True)
+        base = np.asarray(weights.partial_weight(include=["event_weight"]))
+        np.testing.assert_allclose(np.asarray(syst[NOMINAL]), base)
+        assert "L1PrefiringUp" not in syst
+
+    def test_missing_branches_are_an_error_for_a_prefiring_era(self):
+        from wrcoffea.analyzer import _l1_prefiring_weights
+
+        class Bare:
+            pass
+        with pytest.raises(RuntimeError, match="L1PreFiringWeight"):
+            _l1_prefiring_weights(Bare(), "RunIISummer20UL17")
 
 
 class TestProcessIntegration:
@@ -1495,3 +1548,56 @@ class TestBoostedSFCandidates:
             "wr_mumu_boosted_dy_cr", "wr_mumu_boosted_sr", "wr_ee_boosted_dy_cr",
             "wr_ee_boosted_sr", "wr_emu_boosted_flavor_cr", "wr_mue_boosted_flavor_cr",
         }
+
+
+class TestRun2EraTriggersAndFilters:
+    """UL16, UL16APV and UL17 use their own single-lepton trigger paths and MET-filter sets (AN-19-083 Table 1,
+    JME Run 2 UL recommendations); UL18 keeps its paths."""
+
+    @staticmethod
+    def _events_with_hlt(n, **paths):
+        class HLT:
+            pass
+        hlt = HLT()
+        for name, vals in paths.items():
+            setattr(hlt, name, ak.Array([bool(v) for v in vals]))
+
+        class Events:
+            pass
+        ev = Events()
+        ev.HLT = hlt
+        type(ev).__len__ = lambda self: n
+        return ev
+
+    @pytest.mark.parametrize("era,fired,expect_e,expect_mu", [
+        ("RunIISummer20UL16", {"Ele27_WPTight_Gsf": [1, 0, 0], "Photon175": [0, 1, 0], "TkMu50": [0, 0, 1]}, [1, 1, 0], [0, 0, 1]),
+        ("RunIISummer20UL16APV", {"Ele115_CaloIdVT_GsfTrkIdT": [1, 0, 0], "Mu50": [0, 1, 0]}, [1, 0, 0], [0, 1, 0]),
+        ("RunIISummer20UL17", {"Ele35_WPTight_Gsf": [1, 0, 0], "Photon200": [0, 1, 0], "OldMu100": [0, 0, 1]}, [1, 1, 0], [0, 0, 1]),
+        # 2017: no Ele115 (off for the first ~5 fb-1; Run 2 left it out)
+        ("RunIISummer20UL17", {"Ele115_CaloIdVT_GsfTrkIdT": [1, 1, 0], "Photon200": [0, 1, 0], "Mu50": [0, 0, 1]}, [0, 1, 0], [0, 0, 1]),
+        ("RunIISummer20UL18", {"Ele32_WPTight_Gsf": [1, 0, 0], "TkMu100": [0, 0, 1]}, [1, 0, 0], [0, 0, 1]),
+    ])
+    def test_run2_paths_per_era(self, era, fired, expect_e, expect_mu):
+        proc = WrAnalysis(mass_point=None)
+        ev = self._events_with_hlt(3, **fired)
+        e_trig, mu_trig, emu_trig = proc.build_trigger_masks(ev, era)
+        assert e_trig.tolist() == [bool(x) for x in expect_e]
+        assert mu_trig.tolist() == [bool(x) for x in expect_mu]
+        assert emu_trig.tolist() == mu_trig.tolist()
+
+    def test_ul18_paths_do_not_fire_in_2016(self):
+        proc = WrAnalysis(mass_point=None)
+        ev = self._events_with_hlt(2, Ele32_WPTight_Gsf=[1, 1], OldMu100=[1, 1])
+        e_trig, mu_trig, _ = proc.build_trigger_masks(ev, "RunIISummer20UL16")
+        assert e_trig.tolist() == [False, False] and mu_trig.tolist() == [False, False]
+
+    def test_ul16_ignores_ecal_bad_calib_and_ul17_requires_it(self):
+        proc = WrAnalysis(mass_point=None, region="resolved")
+        flags = {k: [True] * 3 for k in _COMMON_NOISE_FLAGS}
+        flags.update({"HBHENoiseFilter": [True] * 3, "HBHENoiseIsoFilter": [True, True, False],
+                      "ecalBadCalibFilter": [True, False, True]})
+        events = _make_noise_filter_events(flags)
+        assert ak.to_list(proc.apply_noise_filter(events, "RunIISummer20UL16").event) == [0, 1]
+        assert ak.to_list(proc.apply_noise_filter(events, "RunIISummer20UL16APV").event) == [0, 1]
+        assert ak.to_list(proc.apply_noise_filter(events, "RunIISummer20UL17").event) == [0]
+        assert ak.to_list(proc.apply_noise_filter(events, "RunIISummer20UL18").event) == [0]

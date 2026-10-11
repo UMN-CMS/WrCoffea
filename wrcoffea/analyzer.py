@@ -39,7 +39,7 @@ import logging
 from coffea.nanoevents.methods import vector
 from wrcoffea.analysis_config import (
     CUTS, DY_RESHAPE_JSONS, DY_ZPT_REWEIGHT_JSONS, ELECTRON_JSONS, HEM_VETO, JME_JSONS, LUMI_JSONS, LUMI_UNC, LUMIS,
-    DY_REWEIGHT_DATASETS, MUON_JSONS, PILEUP_JSONS, SIGNAL_KFACTOR_JSONS,
+    DY_REWEIGHT_DATASETS, MUON_JSONS, PILEUP_JSONS, PREFIRING_ERAS, SIGNAL_KFACTOR_JSONS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
@@ -91,6 +91,40 @@ _CORRECTIONSET_CACHE = {}
 
 # Warn-once cache (per worker process) to avoid log spam.
 _WARN_ONCE: set[str] = set()
+
+
+# Run 2 single-lepton trigger ORs per year (AN-19-083 Table 1; the UL16 eras share 2016).  Branch names
+# without the "HLT_" prefix, as NanoAOD stores them under events.HLT.
+# Run 2 single-lepton paths per year (AN-19-083 Table 1; SKFlat HNWRAnalyzer.C initializeAnalyzer).  2017 has no
+# Ele115: it was off for the first ~5 fb-1 and Run 2 left it out.  The Run 2 data were the SingleElectron and
+# SingleMuon primary datasets only (no SinglePhoton), which the UL16/UL16APV/UL17 data configs follow; the Photon
+# paths still count on those streams, as in Run 2.
+RUN2_TRIGGERS = {
+    "RunIISummer20UL16APV": {"e": ("Ele27_WPTight_Gsf", "Photon175", "Ele115_CaloIdVT_GsfTrkIdT"),
+                             "mu": ("Mu50", "TkMu50")},
+    "RunIISummer20UL16": {"e": ("Ele27_WPTight_Gsf", "Photon175", "Ele115_CaloIdVT_GsfTrkIdT"),
+                          "mu": ("Mu50", "TkMu50")},
+    "RunIISummer20UL17": {"e": ("Ele35_WPTight_Gsf", "Photon200"),
+                          "mu": ("Mu50", "OldMu100", "TkMu100")},
+    "RunIISummer20UL18": {"e": ("Ele32_WPTight_Gsf", "Photon200", "Ele115_CaloIdVT_GsfTrkIdT"),
+                          "mu": ("Mu50", "OldMu100", "TkMu100")},
+}
+
+
+def _l1_prefiring_weights(events, era):
+    """(nominal, up, down) L1 prefiring weights of the events, from the NanoAOD ``L1PreFiringWeight`` record
+    (``Nom``/``Up``/``Dn``; the flat ``L1PreFiringWeight_*`` branches when the schema did not group them)."""
+    import numpy as np
+
+    rec = getattr(events, "L1PreFiringWeight", None)
+    if rec is not None and hasattr(rec, "Nom"):
+        nom, up, dn = rec.Nom, rec.Up, rec.Dn
+    elif hasattr(events, "L1PreFiringWeight_Nom"):
+        nom, up, dn = events.L1PreFiringWeight_Nom, events.L1PreFiringWeight_Up, events.L1PreFiringWeight_Dn
+    else:
+        raise RuntimeError(f"era '{era}' is listed in config.yaml prefiring_eras but the events carry no "
+                           "L1PreFiringWeight branches")
+    return (np.asarray(nom, dtype=np.float64), np.asarray(up, dtype=np.float64), np.asarray(dn, dtype=np.float64))
 
 
 class WrAnalysis(processor.ProcessorABC):
@@ -279,8 +313,12 @@ class WrAnalysis(processor.ProcessorABC):
             if flags is not None and hasattr(flags, name):
                 mask = mask & getattr(flags, name)
 
-        if mc_campaign in ("RunIISummer20UL18", "Run2Autumn18"):
+        if mc_campaign in ("RunIISummer20UL17", "RunIISummer20UL18", "Run2Autumn18"):
             for name in ("HBHENoiseFilter", "HBHENoiseIsoFilter", "ecalBadCalibFilter"):
+                mask = mask & self._noise_flag(events, name, mc_campaign)
+        elif mc_campaign in ("RunIISummer20UL16APV", "RunIISummer20UL16"):
+            # JME Run 2 UL recommendation: the HBHE filters in every year, ecalBadCalibFilter only for 2017 and 2018
+            for name in ("HBHENoiseFilter", "HBHENoiseIsoFilter"):
                 mask = mask & self._noise_flag(events, name, mc_campaign)
         elif mc_campaign in ("Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix"):
             mask = mask & ~self.ecal_bad_calib_filter(events)
@@ -476,16 +514,22 @@ class WrAnalysis(processor.ProcessorABC):
                 return getattr(HLT, name)
             return ak.Array(np.zeros(n, dtype=bool))  # fallback
 
-        # Electrons by run period
+        def any_of(names):
+            out = hlt(names[0])
+            for name in names[1:]:
+                out = out | hlt(name)
+            return out
+
+        # Electrons by run period (Run 2: the per-year paths of AN-19-083 Table 1)
         if run == "RunII":
-            e_trig = hlt("Ele32_WPTight_Gsf") | hlt("Photon200") | hlt("Ele115_CaloIdVT_GsfTrkIdT")
+            e_trig = any_of(RUN2_TRIGGERS.get(mc_campaign, RUN2_TRIGGERS["RunIISummer20UL18"])["e"])
         else:  # Run3 or unknown
             e_trig = (hlt("Ele30_WPTight_Gsf") | hlt("Photon200")
                       | hlt("Ele115_CaloIdVT_GsfTrkIdT") | hlt("Ele50_CaloIdVT_GsfTrkIdT_PFJet165"))
 
         # Muons by run period
         if run == "RunII":
-            mu_trig = hlt("Mu50") | hlt("OldMu100") | hlt("TkMu100")
+            mu_trig = any_of(RUN2_TRIGGERS.get(mc_campaign, RUN2_TRIGGERS["RunIISummer20UL18"])["mu"])
         elif run == "Run3":
             mu_trig = hlt("Mu50") | hlt("HighPtTkMu100") | hlt("CascadeMu100")
         else:  # unknown era — OR all known muon triggers as safe fallback
@@ -1050,6 +1094,12 @@ class WrAnalysis(processor.ProcessorABC):
                 pu_nom, pu_up, pu_down = pileup_weight(events, era)
                 weights.add("pileup", pu_nom, weightUp=pu_up, weightDown=pu_down)
 
+            # L1 prefiring (Run 2 UL): the NanoAOD per-event weight, ECAL + muon
+            # in 2016/2017, muon only in 2018 (config.yaml prefiring_eras).
+            if era in PREFIRING_ERAS:
+                pf_nom, pf_up, pf_down = _l1_prefiring_weights(events, era)
+                weights.add("prefiring", pf_nom, weightUp=pf_up, weightDown=pf_down)
+
             # DY Z-pT reweighting (QCD NLO/LO x EW, ported from the Run 2
             # HNWRAnalyzer).  Non-trivial only for the DY sample the payload was
             # derived for; other MC (and other DY samples, e.g. NLO) gets the
@@ -1077,6 +1127,9 @@ class WrAnalysis(processor.ProcessorABC):
             if "Pileup" in self._producible_names(era, WEIGHT):
                 syst_weights["PileupUp"] = weights.weight(modifier="pileupUp")
                 syst_weights["PileupDown"] = weights.weight(modifier="pileupDown")
+            if "L1Prefiring" in self._producible_names(era, WEIGHT):
+                syst_weights["L1PrefiringUp"] = weights.weight(modifier="prefiringUp")
+                syst_weights["L1PrefiringDown"] = weights.weight(modifier="prefiringDown")
 
             # Theory weights (QCD scales, parton shower): normalized per-event
             # ratios, relative to the nominal like the DY variations below.

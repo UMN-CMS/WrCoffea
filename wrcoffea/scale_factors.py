@@ -8,10 +8,11 @@ import logging
 
 import awkward as ak
 import numpy as np
+from functools import lru_cache
 
 from wrcoffea.analysis_config import (
     AK8_MSOFTDROP_MODES, CUTS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS, LSF_SF,
-    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, JETVETO_MODES, MUON_HIGHPT, MUON_JSONS,
+    JETVETO_CORRECTION_NAMES, JETVETO_JSONS, JETVETO_MODES, MUON_HIGHPT, MUON_HLT_CORRECTIONS, MUON_JSONS,
     PILEUP_CORRECTION_NAMES, PILEUP_JSONS, JERC_JSONS
 )
 import vector
@@ -361,19 +362,93 @@ def _muon_trigger_sf_from_leading_sf(sf_corr, pt_jagged, flat_eta, hlt_pt, count
     return _leading("nominal"), _leading("systup"), _leading("systdown")
 
 
+@lru_cache(maxsize=None)
+def _correction_valtypes(path: str, name: str) -> frozenset:
+    """The keys of the ``scale_factors`` category of correction *name* in the JSON at *path* (empty if none)."""
+    import gzip
+    import json as _json
+    opener = gzip.open if str(path).endswith(".gz") else open
+    with opener(path, "rt") as fh:
+        doc = _json.load(fh)
+    for c in doc.get("corrections", []):
+        if c["name"] != name:
+            continue
+        keys: set = set()
+
+        def walk(node):
+            if isinstance(node, dict):
+                if node.get("nodetype") == "category":
+                    if node["input"] == "scale_factors":
+                        keys.update(k["key"] for k in node["content"])
+                    for k in node["content"]:
+                        walk(k["value"])
+                elif node.get("nodetype") in ("binning", "multibinning"):
+                    content = node["content"]
+                    for ch in (content if isinstance(content, list) else [content]):
+                        walk(ch)
+                elif node.get("nodetype") == "transform":
+                    walk(node["content"])
+
+        walk(c["data"])
+        return frozenset(keys)
+    return frozenset()
+
+
+def _muon_trigger_sf_from_valtype_efficiencies(corr, flat_eta, hlt_pt, counts):
+    """Event trigger SF from one POG ``muon_Z`` correction that holds the data and MC efficiencies of the
+    trigger OR as ``scale_factors`` values (``nominal_DATAeff``, ``nominal_MCeff``, ``systup_*``, ``systdown_*``;
+    CAT muon_Z of 2026-06-18 for 2022-2025).  Same dilepton OR formula as the two-correction form."""
+    hlt_eta = _muon_hlt_eta_input(corr, flat_eta)
+    pt = np.clip(hlt_pt, 52.001, 1e9)          # the muon_Z HLT tables start at 52 GeV
+
+    def _per_lepton(kind, sign):
+        """Per-lepton efficiency of *kind* ("DATA" / "MC"), shifted by *sign* x its stat (+) syst uncertainty.
+
+        muon_Z stores no shifted efficiencies (``systup_<kind>eff`` equals the nominal); the errors come as
+        ``stat_<kind>eff`` and ``syst_<kind>eff``, added in quadrature here.
+        """
+        eff = corr.evaluate(hlt_eta, pt, f"nominal_{kind}eff")
+        if sign:
+            err = np.hypot(corr.evaluate(hlt_eta, pt, f"stat_{kind}eff"), corr.evaluate(hlt_eta, pt, f"syst_{kind}eff"))
+            eff = np.clip(eff + sign * err, 0.0, 1.0)
+        return ak.unflatten(eff, counts)
+
+    def _event_eff(kind, sign=0):
+        return 1.0 - ak.prod(1.0 - _per_lepton(kind, sign), axis=1)
+
+    def _safe_ratio(num, den):
+        num_np = np.asarray(ak.fill_none(num, 0.0), dtype=np.float64)
+        den_np = np.asarray(ak.fill_none(den, 0.0), dtype=np.float64)
+        out = np.ones_like(num_np)
+        np.divide(num_np, den_np, out=out, where=den_np > 0)
+        return out
+
+    # data and MC moved coherently, as in the two-correction form (which evaluates "systup" on both)
+    nom = _safe_ratio(_event_eff("DATA"), _event_eff("MC"))
+    up = _safe_ratio(_event_eff("DATA", +1), _event_eff("MC", +1))
+    down = _safe_ratio(_event_eff("DATA", -1), _event_eff("MC", -1))
+    return nom, up, down
+
+
 def muon_trigger_sf(tight_muons, era):
     """Compute per-event muon trigger SF.
 
-    Two payload shapes are supported; the treatment is chosen per era from
-    what the configured ``TRIGGER`` JSON contains:
+    Three payload shapes are supported; the treatment is chosen per era from
+    what the configured ``TRIGGER`` JSON contains (``config.yaml``
+    ``muon_hlt_correction`` names the correction, default
+    ``NUM_HLT_DEN_HighPtLooseRelIsoProbes``):
 
-    1. Data and MC efficiencies (``<name>_DATAeff`` / ``<name>_MCeff``,
-       currently the 2024 high-pT HLT payload): the event efficiency is built
-       with the dilepton OR formula ``e(l1,l2) = 1 - (1-e(l1))(1-e(l2))`` and
-       ``SF = e_data / e_MC``.
-    2. Per-lepton scale factors only (2022/2023 high-pT HLT payloads and the
-       POG ``muon_HighPt`` files): the SF of the leading-pT tight muon is
-       applied once per event.
+    1. Data and MC efficiencies as separate corrections (``<name>_DATAeff`` /
+       ``<name>_MCeff``, the 2024 and 2025 high-pT HLT payloads): the event
+       efficiency is built with the dilepton OR formula
+       ``e(l1,l2) = 1 - (1-e(l1))(1-e(l2))`` and ``SF = e_data / e_MC``.
+    2. Data and MC efficiencies as ``scale_factors`` values of one correction
+       (the POG ``muon_Z`` trigger-OR entries of 2022-2025,
+       ``NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose``):
+       the same OR formula.
+    3. Per-lepton scale factors only (the Run 2 UL ``muon_HighPt`` files and
+       the 2022/2023 high-pT HLT payloads): the SF of the leading-pT tight
+       muon is applied once per event, as Run 2 did.
 
     Returns (nominal, up, down) arrays of shape (n_events,).
     Events with no tight muons get SF = 1.0.
@@ -399,13 +474,18 @@ def muon_trigger_sf(tight_muons, era):
         return ones, ones.copy(), ones.copy()
 
     hlt_pt = np.clip(flat_pt, 50.001, 1e9)
+    corr_name = MUON_HLT_CORRECTIONS.get(era, _MUON_HLT_CORRECTION)
 
-    data_key = f"{_MUON_HLT_CORRECTION}_DATAeff"
-    mc_key = f"{_MUON_HLT_CORRECTION}_MCeff"
+    data_key = f"{corr_name}_DATAeff"
+    mc_key = f"{corr_name}_MCeff"
     if _has_correction(ceval, data_key) and _has_correction(ceval, mc_key):
         return _muon_trigger_sf_from_efficiencies(
             ceval[data_key], ceval[mc_key], flat_eta, hlt_pt, counts
         )
+
+    valtypes = _correction_valtypes(str(MUON_JSONS[era]["TRIGGER"]), corr_name)
+    if {"nominal_DATAeff", "nominal_MCeff", "stat_DATAeff", "stat_MCeff", "syst_DATAeff", "syst_MCeff"} <= valtypes:
+        return _muon_trigger_sf_from_valtype_efficiencies(ceval[corr_name], flat_eta, hlt_pt, counts)
 
     key = f"muon_trig_sf_only::{era}"
     if key not in _WARN_ONCE:
@@ -415,7 +495,7 @@ def muon_trigger_sf(tight_muons, era):
             "applying the leading-muon per-lepton SF.", era
         )
     return _muon_trigger_sf_from_leading_sf(
-        ceval[_MUON_HLT_CORRECTION], tight_muons.pt, flat_eta, hlt_pt, counts
+        ceval[corr_name], tight_muons.pt, flat_eta, hlt_pt, counts
     )
 
 logger = logging.getLogger(__name__)
@@ -712,6 +792,26 @@ def electron_trigger_sf(tight_electrons, era):
 
     return trig_sf_nom, trig_sf_up, trig_sf_down
 
+# Flat HEEP ID scale factors, keyed by the EGM era key: (value, stat, syst) for the barrel (|eta_SC| < 1.4442) and
+# the endcaps.  Used when the era's electron payload has no HEEPID working point (every Run 2 UL file and the
+# 2022/2023 Run 3 files; 2024 has one); other eras fall back to 2018.
+# - Run 2 UL: HEEP V7.0 (EGM twiki EgammaUL2016To2018, "HEEP ID Scale Factor for UL", UL2016 updated 2023-03-03; saved
+#   as docs/pog_recommendations/egamma/CMS_EgammaUL2016To2018.pdf).  Both UL16 eras take "Full 2016".
+# - 2022/2023: the central EGM values, constant in pT (EGM twiki EgammSFandSSRun3, "HEEP ID SFs for 2022" (pT > 80
+#   GeV) and "... for 2023" (pT > 35 GeV), saved as docs/pog_recommendations/egamma/CMS_EgammSFandSSRun3.pdf pp. 7 and
+#   14; the same values as AN-25-107 Table 6). The single quoted uncertainty is carried as syst.
+HEEP_V7_FLAT_SF = {
+    "2016preVFP": {"barrel": (0.985, 0.001, 0.004), "endcap": (0.990, 0.003, 0.007)},
+    "2016postVFP": {"barrel": (0.985, 0.001, 0.004), "endcap": (0.990, 0.003, 0.007)},
+    "2017": {"barrel": (0.979, 0.001, 0.005), "endcap": (0.987, 0.002, 0.010)},
+    "2018": {"barrel": (0.973, 0.001, 0.004), "endcap": (0.980, 0.002, 0.011)},
+    "2022Re-recoBCD": {"barrel": (1.007, 0.0, 0.009), "endcap": (1.019, 0.0, 0.015)},
+    "2022Re-recoE+PromptFG": {"barrel": (0.997, 0.0, 0.008), "endcap": (0.997, 0.0, 0.013)},
+    "2023PromptC": {"barrel": (1.006, 0.0, 0.004), "endcap": (0.988, 0.0, 0.005)},
+    "2023PromptD": {"barrel": (1.009, 0.0, 0.005), "endcap": (0.988, 0.0, 0.004)},
+}
+
+
 def electron_id_sf(tight_electrons, era):
     """Compute per-event HEEP electron ID scale factor using JSON POG payloads.
 
@@ -803,11 +903,12 @@ def electron_id_sf(tight_electrons, era):
             _WARN_ONCE.add(key)
             logger.warning(
                 "Electron JSON for era '%s' has no HEEPID working point; "
-                "falling back to flat UL2018 HEEP V7.0 SFs.", era
+                "using the flat HEEP SFs of %s.", era, sf_era_key if sf_era_key in HEEP_V7_FLAT_SF else "2018"
             )
         abs_sc_eta = np.abs(flat_sc_eta)
-        barrel_sf, barrel_unc = 0.973, np.sqrt(0.001**2 + 0.004**2)
-        endcap_sf, endcap_unc = 0.980, np.sqrt(0.002**2 + 0.011**2)
+        heep = HEEP_V7_FLAT_SF.get(sf_era_key, HEEP_V7_FLAT_SF["2018"])
+        barrel_sf, barrel_unc = heep["barrel"][0], np.sqrt(heep["barrel"][1]**2 + heep["barrel"][2]**2)
+        endcap_sf, endcap_unc = heep["endcap"][0], np.sqrt(heep["endcap"][1]**2 + heep["endcap"][2]**2)
         is_barrel = abs_sc_eta < 1.4442
         sf_nom = np.where(is_barrel, barrel_sf, endcap_sf)
         sf_unc = np.where(is_barrel, barrel_unc, endcap_unc)

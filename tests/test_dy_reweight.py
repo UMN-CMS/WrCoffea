@@ -9,6 +9,7 @@ payload, the identity behaviour for non-DY datasets, and the wiring into
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from unittest.mock import patch
 
 import awkward as ak
@@ -31,6 +32,7 @@ from wrcoffea.systematics import NOMINAL, expected_labels, systematics_for, vali
 
 UL18 = "RunIISummer20UL18"
 RUN3 = "Run3Summer22"
+UNMAPPED = "Run3Summer99"       # no era is left without a payload; a made-up one stands in for "unconfigured"
 
 FROM_HARD = 1 << 8
 
@@ -61,6 +63,10 @@ class _Events:
     def __init__(self, genpart, n=None):
         self.GenPart = genpart
         self._n = len(genpart) if n is None else n
+        # NanoAOD L1 prefiring record (unit weights): build_event_weights reads it for the Run 2 UL eras
+        from types import SimpleNamespace
+        ones = ak.Array([1.0] * self._n)
+        self.L1PreFiringWeight = SimpleNamespace(Nom=ones, Up=ones, Dn=ones)
 
     def __len__(self):
         return self._n
@@ -137,11 +143,17 @@ def raw_payload():
 
 class TestEvaluate:
     def test_payload_provenance_and_shape(self, raw_payload):
+        """The mapped UL18 payload is our own AN-19-083-style derivation (since 2026-10-11) in the Run 2 bins; the
+        converted Run 2 file next to it keeps the SKFlat provenance."""
         prov = raw_payload["provenance"]
-        assert prov["source_branch"] == "HNWR/Run2Legacy_v4"
-        assert prov["source_commit"] == "06f274c754cff941c5e406b8f8d50bfe650e20a0"
+        assert prov["era"] == "RunIISummer20UL18" and "AN-19-083" in prov["method"]
         assert raw_payload["qcd"]["edges"][0] == 0.0 and raw_payload["qcd"]["edges"][-1] == 8000.0
+        assert len(raw_payload["qcd"]["edges"]) == 29                                   # GetZPtReweight.C binning
         assert raw_payload["ew"]["edges"][0] == 30.0 and raw_payload["ew"]["edges"][-1] == 6500.0
+        run2 = json.loads(Path("data/reweights/RunII/2018/RunIISummer20UL18/dy_zpt_reweight_run2legacy_v4_2018.json").read_text())
+        assert run2["provenance"]["source_branch"] == "HNWR/Run2Legacy_v4"
+        assert run2["provenance"]["source_commit"] == "06f274c754cff941c5e406b8f8d50bfe650e20a0"
+        assert run2["qcd"]["edges"] == raw_payload["qcd"]["edges"] and run2["ew"]["edges"] == raw_payload["ew"]["edges"]
 
     def test_nominal_is_qcd_times_ew(self, payload):
         pt = np.array([55.0])          # QCD bin [50,60) = 11, EW bin [50,60) = 2
@@ -177,9 +189,10 @@ class TestEvaluate:
         assert v["DYZptQcdAlphaS"][1][0] == pytest.approx(q["alphas_down"][iq] * e["central"][ie])
         assert v["DYZptEw1"][0][0] == pytest.approx(q["central"][iq] * (e["central"][ie] + e["e1_err"][ie]))
         assert v["DYZptEw3"][1][0] == pytest.approx(q["central"][iq] * (e["central"][ie] - e["e3_err"][ie]))
-        # The high-pT EW correction is a sizeable suppression and the QCD
-        # ratio falls below one above ~250 GeV, as in the Run 2 inputs.
-        assert out["nominal"][0] < 1.0
+        # The EW correction (the 1705.04664 table, copied into every payload) is a suppression at 300 GeV;
+        # the QCD ratio there depends on the derivation (Run 2's file: 0.97; our UL18 one: ~1.3).
+        assert e["central"][ie] < 1.0
+        assert out["nominal"][0] == pytest.approx(q["central"][iq] * e["central"][ie])
 
     def test_missing_gen_z_keeps_weight_one(self, payload):
         out = evaluate(np.array([300.0, 300.0]), np.array([True, False]), payload)
@@ -199,12 +212,15 @@ class TestDyZptWeight:
         return _Events(_genpart(rows))
 
     def test_identity_for_non_dy_and_unconfigured_era(self):
+        """Non-DY samples and eras without a payload get the identity; every analysis era has a payload since
+        2026-10-11 (Run 3 included), so the unconfigured case is a made-up era."""
         ev = self._dy_events()
-        for era, is_dy in ((UL18, False), (RUN3, True), (RUN3, False)):
+        for era, is_dy in ((UL18, False), (RUN3, False), (UNMAPPED, True), (UNMAPPED, False)):
             out = dy_zpt_weight(ev, era, is_dy=is_dy)
             assert not out["applied"]
             np.testing.assert_array_equal(out["nominal"], 1.0)
             assert set(out["variations"]) == set(SOURCE_NAMES)
+        assert dy_zpt_weight(ev, RUN3, is_dy=True)["applied"]
 
     def test_applied_for_dy_on_ul18(self):
         ev = self._dy_events()
@@ -233,12 +249,13 @@ class TestRegistry:
         sources = systematics_for(UL18, ["dyzpt"])
         assert [s.name for s in sources] == list(SOURCE_NAMES)
         assert all(s.kind == "weight" for s in sources)
-        assert all(s.available(UL18) and not s.available(RUN3) for s in sources)
+        assert all(s.available(UL18) and s.available(RUN3) and not s.available(UNMAPPED) for s in sources)
 
-    def test_run3_cannot_produce_it(self):
+    def test_unmapped_era_cannot_produce_it(self):
         with pytest.raises(ValueError, match="Cannot produce"):
-            validate_requested(RUN3, ["dyzpt"])
-        assert expected_labels(RUN3, ["dyzpt"], "wr_ee_resolved_sr", is_mc=True) == []
+            validate_requested(UNMAPPED, ["dyzpt"])
+        assert expected_labels(UNMAPPED, ["dyzpt"], "wr_ee_resolved_sr", is_mc=True) == []
+        assert expected_labels(RUN3, ["dyzpt"], "wr_ee_resolved_sr", is_mc=True) != []       # mapped since 2026-10-11
 
     def test_labels_expected_in_every_region_for_ul18(self):
         labels = expected_labels(UL18, ["dyzpt"], "wr_mumu_boosted_sr", is_mc=True)
