@@ -463,12 +463,16 @@ class WrAnalysis(processor.ProcessorABC):
 
         ak4_mask = ak4_pteta_mask & ak4_id_mask
         ak4_jets = events.Jet[ak4_mask]
+        # NanoAOD orders jets by its own corrected pT; after our JEC and JER (and in every JES/JER pass)
+        # the order differs, so sort: j1 and j2 must be the two leading jets.
+        ak4_jets = ak4_jets[ak.argsort(ak4_jets.pt, axis=1, ascending=False)]
 
         # ---------- AK8 ----------
         ak8_pteta_mask = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])
         ak8_extra_sel = (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"])
         ak8_mask = ak8_pteta_mask & ak8_extra_sel
         ak8_jets = events.FatJet[ak8_mask]
+        ak8_jets = ak8_jets[ak.argsort(ak8_jets.pt, axis=1, ascending=False)]
 
         masks = {
             "ak4_pteta": ak4_pteta_mask,

@@ -50,8 +50,9 @@ Applied to data and MC unless stated.
 
 ## Objects
 
-Jets are corrected with the era's JEC (and JER smearing on MC) before anything else; electrons and
-muons get their scale and smearing corrections ([corrections.md](corrections.md)).
+Jets are corrected with the era's JEC (and JER smearing on MC) before anything else, then ordered
+by their corrected pT (j1, j2 are the two leading jets of that order); electrons and muons get their
+scale and smearing corrections ([corrections.md](corrections.md)).
 
 | Object | Definition |
 | --- | --- |

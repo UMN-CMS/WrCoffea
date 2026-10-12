@@ -478,6 +478,11 @@ electron_sf_era_keys:
   RunIII2024Summer24: "2024Prompt"
   RunIII2025Summer25: "2025Prompt"
 
+# Era key of the electron TRIGGER payload where it differs from electron_sf_era_keys: an era that
+# evaluates another era's trigger file uses that file's key.
+electron_hlt_era_keys:
+  RunIII2025Summer25: "2024Prompt"   # the 2024 electronHlt.json.gz (placeholder, see electron_hlt_paths)
+
 # Per-era electron Reco SF configuration
 electron_reco_config:
   RunIISummer20UL16APV:

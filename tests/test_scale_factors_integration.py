@@ -1105,14 +1105,20 @@ def _make_jec_events(jet_counts=(2, 1, 3, 2)):
             idx_name: ak.Array([list(range(n)) for n in jet_counts]),
         })
 
-    gen = ak.zip({"pt": ak.Array([[100.0, 80.0, 70.0]] * n_events)})
+    jets, fatjets = coll("genJetIdx"), coll("genJetAK8Idx")
+
+    def gen_of(c):
+        # Gen jet i sits on jet i (dR = 0) with a pT within the JER resolution.
+        return ak.zip({"pt": c.pt * 0.97, "eta": c.eta, "phi": c.phi})
+
     return ak.zip({
-        "Jet": coll("genJetIdx"),
-        "FatJet": coll("genJetAK8Idx"),
-        "GenJet": gen,
-        "GenJetAK8": gen,
+        "Jet": jets,
+        "FatJet": fatjets,
+        "GenJet": gen_of(jets),
+        "GenJetAK8": gen_of(fatjets),
         "Rho": ak.zip({"fixedGridRhoFastjetAll": ak.Array([20.0] * n_events)}),
         "event": ak.Array(list(range(n_events))),
+        "luminosityBlock": ak.Array([1] * n_events),
         # The 2024 data residual correction is binned in run number.
         "run": ak.Array([380000] * n_events),
     }, depth_limit=1)
@@ -1308,3 +1314,128 @@ def test_heep_flat_sf_per_year(era, barrel, endcap):
     assert nom[0] == pytest.approx(barrel, abs=1e-4)
     assert nom[1] == pytest.approx(endcap, abs=1e-4)
     assert np.all(up > nom) and np.all(down < nom)
+
+
+# ---------------------------------------------------------------------------
+# Tests: every era's lepton SF payloads evaluate (both eta signs)
+# ---------------------------------------------------------------------------
+
+from wrcoffea.analysis_config import ELECTRON_JSONS as _ELECTRON_JSONS, MUON_JSONS as _MUON_JSONS
+
+
+@pytest.mark.parametrize("era", sorted(_MUON_JSONS))
+def test_muon_sfs_evaluate_in_every_era(era):
+    """The 2025 muon_HighPt payload is binned in |eta|, the others in signed eta: both must evaluate."""
+    pytest.importorskip("correctionlib")
+    muons = _make_tight_leptons([[300.0, 150.0], [800.0], []], [[-1.2, 0.8], [-2.1], []])
+    for out in (sf.muon_sf(muons, era), sf.muon_sf_loose(muons, era)):
+        for nom, up, down in out.values():
+            assert len(nom) == 3 and np.all(np.isfinite(nom)) and np.all(nom > 0), era
+    nom, up, down = sf.muon_trigger_sf(muons, era)
+    assert np.all(np.isfinite(nom)) and np.all(nom > 0), era
+
+
+@pytest.mark.parametrize("era", sorted(e for e, payloads in _ELECTRON_JSONS.items() if "TRIGGER" in payloads))
+def test_electron_trigger_sf_evaluates_in_every_era(era):
+    """Every era's trigger payload knows the era key it is evaluated with (2025 borrows the 2024 file)."""
+    pytest.importorskip("correctionlib")
+    electrons = _make_tight_leptons([[300.0, 150.0], [800.0], []], [[-1.2, 0.8], [-2.1], []],
+                                    [[0.01, -0.01], [0.0], []])
+    nom, up, down = sf.electron_trigger_sf(electrons, era)
+    assert len(nom) == 3 and np.all(np.isfinite(nom)) and np.all(nom > 0), era
+    assert nom[2] == 1.0
+
+
+# ---------------------------------------------------------------------------
+# Tests: per-object random numbers (electron smearing, stochastic JER)
+# ---------------------------------------------------------------------------
+
+def _events_with_objects(phis_per_event):
+    n = len(phis_per_event)
+    return ak.zip({
+        "event": ak.Array(np.arange(1, n + 1, dtype=np.int64) * 7919),
+        "luminosityBlock": ak.Array(np.full(n, 42, dtype=np.int64)),
+    }), ak.zip({"phi": ak.Array(phis_per_event)})
+
+
+class TestObjectNormalDraws:
+    """The draws of two objects of one event must be independent (they were a hash of the event number
+    and the float bits of phi, which gave objects with |phi| in the same power-of-two range nearly
+    the same draw)."""
+
+    def test_two_objects_in_one_event_are_uncorrelated(self):
+        pytest.importorskip("correctionlib")
+        rng = np.random.default_rng(3)
+        n = 20000
+        # |phi| in [1, 2) for both objects: the worst case of the old hash.
+        phi1 = rng.uniform(1.0, 2.0, n) * rng.choice([-1, 1], n)
+        phi2 = rng.uniform(1.0, 2.0, n) * rng.choice([-1, 1], n)
+        events, objs = _events_with_objects(np.stack([phi1, phi2], axis=1).tolist())
+        z = sf.object_normal_draws(events, objs, salt=11).reshape(n, 2)
+        assert abs(np.corrcoef(z[:, 0], z[:, 1])[0, 1]) < 0.05
+        assert abs(z.mean()) < 0.05 and abs(z.std() - 1.0) < 0.05
+
+    def test_deterministic_and_salted(self):
+        pytest.importorskip("correctionlib")
+        events, objs = _events_with_objects([[0.3, -2.9], [1.1]])
+        a = sf.object_normal_draws(events, objs, salt=11)
+        np.testing.assert_array_equal(a, sf.object_normal_draws(events, objs, salt=11))
+        assert not np.allclose(a, sf.object_normal_draws(events, objs, salt=12))
+
+
+# ---------------------------------------------------------------------------
+# Tests: JER hybrid smearing follows the JME matching criteria
+# ---------------------------------------------------------------------------
+
+class TestJerMatching:
+    ERA = "RunIII2024Summer24"
+
+    @pytest.fixture(autouse=True)
+    def _real_correctionlib(self):
+        pytest.importorskip("correctionlib")
+
+    def _ceval(self):
+        import correctionlib
+        from wrcoffea.analysis_config import JERC_JSONS
+        cfg = JERC_JSONS[self.ERA]["JERC_AK4"]
+        return correctionlib.CorrectionSet.from_file(cfg["json"]), cfg["JR_tag_MC"], cfg["algo"]
+
+    def _smear(self, pt, genpt, matched, phi=(0.7,)):
+        ceval, tag, algo = self._ceval()
+        n = len(pt)
+        jets = ak.Array([[{"eta": 0.5, "phi": phi[i % len(phi)]}] for i in range(n)])
+        events = ak.zip({"event": ak.Array(np.arange(1, n + 1, dtype=np.int64)),
+                         "luminosityBlock": ak.Array(np.ones(n, dtype=np.int64)),
+                         "Rho": ak.zip({"fixedGridRhoFastjetAll": ak.Array(np.full(n, 20.0))})}, depth_limit=1)
+        wrap = lambda v: ak.Array([[x] for x in v])
+        out, _ = sf._get_smeared_kinematics(jets, wrap(pt), wrap(pt), wrap(genpt), wrap(matched),
+                                            events, ceval, tag, algo, sys_var="nom")
+        return np.asarray(ak.flatten(out))
+
+    def test_far_gen_pt_is_smeared_stochastically(self):
+        """A jet whose gen pT is far outside 3 sigma_JER is not scaled towards it (it was: 50 -> negative)."""
+        matched_far = self._smear([50.0], [500.0], [True])
+        unmatched = self._smear([50.0], [0.0], [False])
+        np.testing.assert_allclose(matched_far, unmatched)
+        assert matched_far[0] > 0
+
+    def test_close_gen_pt_uses_the_scaling_method(self):
+        out = self._smear([100.0], [98.0], [True])
+        ceval, tag, algo = self._ceval()
+        sf_nom = float(np.asarray(ak.flatten(sf._jer_scale_factor(ceval, tag, algo, ak.Array([[0.5]]),
+                                                                   ak.Array([[100.0]]), "nom")))[0])
+        np.testing.assert_allclose(out[0], 100.0 * (1 + (sf_nom - 1) * 2.0 / 100.0), rtol=1e-9)
+
+    def test_gen_match_needs_delta_r_below_half_the_cone(self):
+        jets = ak.Array([[{"eta": 0.5, "phi": 0.7}, {"eta": 0.5, "phi": 0.7}]])
+        gen = ak.Array([[{"pt": 90.0, "eta": 0.55, "phi": 0.72}, {"pt": 80.0, "eta": 0.5, "phi": 1.0}]])
+        genpt, matched = sf._gen_jet_match(jets, ak.Array([[0, 1]]), gen, max_dr=0.2)
+        assert ak.to_list(matched) == [[True, False]]
+        assert ak.to_list(genpt) == [[90.0, 0.0]]
+
+    def test_gen_match_with_no_gen_jets(self):
+        jets = ak.Array([[{"eta": 0.5, "phi": 0.7}], []])
+        gen = ak.Array([[], []], with_name=None)
+        gen = ak.zip({"pt": ak.Array([[], []]), "eta": ak.Array([[], []]), "phi": ak.Array([[], []])})
+        genpt, matched = sf._gen_jet_match(jets, ak.Array([[0], []]), gen, max_dr=0.2)
+        assert ak.to_list(matched) == [[False], []]

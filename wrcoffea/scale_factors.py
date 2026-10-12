@@ -11,13 +11,13 @@ import numpy as np
 from functools import lru_cache
 
 from wrcoffea.analysis_config import (
-    AK8_MSOFTDROP_MODES, CUTS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG, ELECTRON_SF_ERA_KEYS, LSF_SF,
+    AK8_MSOFTDROP_MODES, CUTS, ELECTRON_HLT_ERA_KEYS, ELECTRON_HLT_PATHS, ELECTRON_JSONS, ELECTRON_RECO_CONFIG,
+    ELECTRON_SF_ERA_KEYS, LSF_SF,
     JETVETO_CORRECTION_NAMES, JETVETO_JSONS, JETVETO_MODES, MUON_HIGHPT, MUON_HLT_CORRECTIONS, MUON_JSONS,
     PILEUP_CORRECTION_NAMES, PILEUP_JSONS, JERC_JSONS
 )
 import vector
 vector.register_awkward()
-from scipy.special import ndtri
 logger = logging.getLogger(__name__)
 from wrcoffea.MuonScaRe import pt_resol, pt_scale, pt_resol_var, pt_scale_var
 # Cache correctionlib payloads per worker process (avoid re-reading JSON every chunk).
@@ -241,28 +241,27 @@ def muon_sf(tight_muons, era, is_loose=False):
     # Compute momentum p = pt * cosh(eta) for RECO.
     flat_p = flat_pt * np.cosh(flat_eta)
 
-    # Clip inputs to valid bin edges (signed eta).
-    reco_eta = np.clip(flat_eta, -2.399, 2.399)
+    # Clip inputs to valid bin edges; eta in each correction's convention (_muon_eta_input).
     reco_p = np.clip(flat_p, 50.001, 1e9)
-    idiso_eta = np.clip(flat_eta, -2.399, 2.399)
     idiso_pt = np.clip(flat_pt, 50.001, 1e9)
 
-    def _eval_component(corr, eta, pt_or_p):
+    def _eval_component(corr, pt_or_p):
+        eta = _muon_eta_input(corr, flat_eta)
         nom = corr.evaluate(eta, pt_or_p, "nominal")
         up = corr.evaluate(eta, pt_or_p, "systup")
         down = corr.evaluate(eta, pt_or_p, "systdown")
         return _unflatten_and_product(nom, up, down, counts)
 
     # RECO SF (uses momentum p, not pT)
-    reco = _eval_component(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_eta, reco_p)
+    reco = _eval_component(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_p)
     # ID SF
-    id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
+    id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_pt)
     # ISO SF
     if is_loose:
         # Loose muons carry no ISO requirement: per-event identity SF.
         iso = (np.ones(n_events), np.ones(n_events), np.ones(n_events))
     else:
-        iso = _eval_component(ceval["NUM_probe_LooseRelTkIso_DEN_HighPtProbes"], idiso_eta, idiso_pt)
+        iso = _eval_component(ceval["NUM_probe_LooseRelTkIso_DEN_HighPtProbes"], idiso_pt)
 
     return {"reco": reco, "id": id_sf, "iso": iso}
 
@@ -287,24 +286,33 @@ def muon_sf_loose(loose_muons, era):
 
     flat_p = flat_pt * np.cosh(flat_eta)
 
-    reco_eta = np.clip(flat_eta, -2.399, 2.399)
     reco_p = np.clip(flat_p, 50.001, 1e9)
-    idiso_eta = np.clip(flat_eta, -2.399, 2.399)
     idiso_pt = np.clip(flat_pt, 50.001, 1e9)
 
-    def _eval_component(corr, eta, pt_or_p):
+    def _eval_component(corr, pt_or_p):
+        eta = _muon_eta_input(corr, flat_eta)
         nom = corr.evaluate(eta, pt_or_p, "nominal")
         up = corr.evaluate(eta, pt_or_p, "systup")
         down = corr.evaluate(eta, pt_or_p, "systdown")
         return _unflatten_and_product(nom, up, down, counts)
 
-    reco = _eval_component(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_eta, reco_p)
-    id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_eta, idiso_pt)
+    reco = _eval_component(ceval["NUM_GlobalMuons_DEN_TrackerMuonProbes"], reco_p)
+    id_sf = _eval_component(ceval["NUM_HighPtID_DEN_GlobalMuonProbes"], idiso_pt)
 
     return {"reco": reco, "id": id_sf}
 
 
 _MUON_HLT_CORRECTION = "NUM_HLT_DEN_HighPtLooseRelIsoProbes"
+
+
+def _muon_eta_input(corr, flat_eta):
+    """Eta in the convention a ``muon_HighPt`` reco/ID/iso correction is binned in: signed ``eta``
+    (UL, 2022 to 2024) or ``abseta`` (the 2025 payload), inside the |eta| < 2.4 acceptance."""
+    inputs = getattr(corr, "inputs", None) or []
+    first_input = getattr(inputs[0], "name", "eta") if len(inputs) else "eta"
+    if first_input == "abseta":
+        return np.clip(np.abs(flat_eta), 0.0, 2.399)
+    return np.clip(flat_eta, -2.399, 2.399)
 
 
 def _muon_hlt_eta_input(corr, flat_eta):
@@ -724,7 +732,8 @@ def electron_trigger_sf(tight_electrons, era):
             logger.info("No electron trigger SF JSON configured for era '%s'; using SF=1.", era)
         return ones, ones.copy(), ones.copy()
 
-    sf_era_key = ELECTRON_SF_ERA_KEYS.get(era)
+    # The trigger payload's own era key: an era that borrows another era's file (2025) uses that key.
+    sf_era_key = ELECTRON_HLT_ERA_KEYS.get(era, ELECTRON_SF_ERA_KEYS.get(era))
     if sf_era_key is None:
         logger.warning("No electron trigger SF era key for '%s'; returning SF=1.", era)
         return ones, ones.copy(), ones.copy()
@@ -1096,6 +1105,41 @@ def electron_reco_sf(tight_electrons, era):
 
 logger = logging.getLogger(__name__)
 
+# Salts of the per-object draws, distinct from each other and from the high-pT muon smearing's
+# (muon_momentum.HIGHPT_SALT), so that no two corrections share random numbers.
+ELECTRON_SMEAR_SALT = 11
+JER_SALT_AK4 = 4
+JER_SALT_AK8 = 8
+
+
+@lru_cache(maxsize=None)
+def _object_normal_rng():
+    """correctionlib's counter-based hashprng: a standard-normal draw of (event, lumi, phi, salt)."""
+    from correctionlib import schemav2 as cs
+    corr = cs.Correction(
+        name="object_normal_rng", version=1,
+        inputs=[cs.Variable(name="evt", type="int"), cs.Variable(name="lumi", type="int"),
+                cs.Variable(name="phi", type="real"), cs.Variable(name="salt", type="int")],
+        output=cs.Variable(name="r", type="real"),
+        data=cs.HashPRNG(nodetype="hashprng", inputs=["evt", "lumi", "phi", "salt"], distribution="stdnormal"),
+    )
+    return cs.CorrectionSet(schema_version=2, corrections=[corr]).to_evaluator()["object_normal_rng"]
+
+
+def object_normal_draws(events, objects, salt):
+    """One standard-normal draw per object, flat in object order: a deterministic function of the
+    event number, the luminosity block, the object's phi and ``salt``.  The same object gets the same
+    draw in the nominal and in every variation (its phi does not change), and the objects of one event
+    get independent draws.  The random numbers used until 2026-10-12, a hash of the event number and the
+    float bits of phi, gave objects with |phi| in the same power-of-two range nearly the same draw."""
+    counts = np.asarray(ak.num(objects), dtype=np.int64)
+    evt = np.repeat(np.asarray(events.event, dtype=np.int64), counts)
+    lumi = np.repeat(np.asarray(events.luminosityBlock, dtype=np.int64), counts)
+    phi = np.asarray(ak.flatten(objects.phi), dtype=np.float64)
+    salts = np.full(len(phi), salt, dtype=np.int64)
+    return np.asarray(_object_normal_rng().evaluate(evt, lumi, phi, salts), dtype=np.float64)
+
+
 def apply_electron_scale_smearing(events, era, is_mc):
     """
     Apply Et-dependent Scale and Smearing corrections to electrons.
@@ -1171,24 +1215,9 @@ def apply_electron_scale_smearing(events, era, is_mc):
         # Evaluate nominal smearing width
         smear = smear_and_syst_evaluator.evaluate("smear", flat_pt, flat_r9, flat_sc_eta)
         
-        # 1. Broadcast event numbers to match electrons, then flatten
-        flat_event = np.asarray(ak.flatten(ak.broadcast_arrays(events.event, electrons.pt)[0]), dtype=np.uint64)
-        
-        # 2. Extract phi as a 32-bit float, then view it as an integer for bitwise operations.
-        # This distinguishes multiple electrons within the exact same event.
-        flat_phi = np.asarray(ak.flatten(electrons.phi), dtype=np.float32).view(np.uint32)
-        
-        # 3. Fast Vectorized Hash: Multiply event by a large prime and XOR with electron phi
-        # 2654435761 is a standard prime used in integer hashing
-        hash_val = (flat_event * np.uint64(2654435761)) ^ flat_phi
-        
-        # 4. Map the hash to a uniform distribution between (0, 1)
-        # We clip it slightly away from 0 and 1 to prevent infinity when converting to Gaussian
-        uniform_random = (hash_val % np.uint64(2**31 - 1)) / float(2**31 - 1)
-        uniform_random = np.clip(uniform_random, 1e-8, 1.0 - 1e-8)
-        
-        # 5. Transform uniform to Standard Normal Gaussian N(0, 1)
-        random_numbers = ndtri(uniform_random)
+        # One standard-normal draw per electron, shared by the nominal and the smearing variations,
+        # independent between the electrons of an event (object_normal_draws).
+        random_numbers = object_normal_draws(events, electrons, ELECTRON_SMEAR_SALT)
         
         # Apply nominal smearing
         smearing_nom = 1.0 + smear * random_numbers
@@ -1377,6 +1406,25 @@ def _jer_scale_factor(ceval, tag, algo, eta, pt, sys_var):
     return nominal + unc_val if sys_var == "up" else nominal - unc_val
 
 
+# Smallest energy a jet is smeared to (GeV), as in coffea's jetmet_tools.
+_MIN_JET_ENERGY = 1e-2
+
+
+def _gen_jet_match(jets, gen_idx, genjets, max_dr):
+    """(gen pT, matched) of each jet: matched when the NanoAOD gen-jet index is valid and the gen jet
+    lies within ``max_dr`` = R/2 of the jet (0.2 for AK4, 0.4 for AK8; JME JER recipe).  The second
+    JME condition, |pT - pT_gen| < 3 sigma_JER pT, depends on the pT being smeared and is applied in
+    _get_smeared_kinematics.  Unmatched jets get a gen pT of 0."""
+    valid = (gen_idx >= 0) & (gen_idx < ak.num(genjets.pt))
+    safe_idx = ak.where(valid, gen_idx, ak.zeros_like(gen_idx))
+    gen = ak.pad_none(genjets, 1, axis=1)[safe_idx]
+    dphi = (jets.phi - gen.phi + np.pi) % (2 * np.pi) - np.pi
+    dr = np.sqrt((jets.eta - gen.eta) ** 2 + dphi ** 2)
+    matched = valid & ak.fill_none(dr < max_dr, False)
+    genpt = ak.where(matched, ak.fill_none(gen.pt, 0.0), 0.0)
+    return genpt, matched
+
+
 def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, events, ceval, tag, algo, sys_var="nom"):
     """Returns smeared pt and mass without modifying the original jet collection"""
     if ak.sum(ak.num(jets)) == 0:
@@ -1393,30 +1441,22 @@ def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, ev
     sigma = res.evaluate(jets.eta, pt_to_smear, rho)
     sf_val = _jer_scale_factor(ceval, tag, algo, jets.eta, pt_to_smear, sys_var)
 
+    # JME hybrid method: the scaling method for a jet matched to a gen jet (dR < R/2, _gen_jet_match)
+    # whose pT is within 3 sigma_JER of the gen pT, the stochastic method otherwise.
+    matched = matched & (np.abs(pt_to_smear - genpt) < 3.0 * sigma * pt_to_smear)
     cjer_match = 1 + (sf_val - 1) * (pt_to_smear - genpt) / pt_to_smear
 
+    # One standard-normal draw per jet: the same jet gets the same draw in the nominal and in every
+    # JES/JER variation, and the jets of an event get independent draws (object_normal_draws).
     counts = ak.num(jets, axis=1)
-    # Broadcast event IDs to match the number of jets
-    flat_event = np.asarray(ak.flatten(ak.broadcast_arrays(events.event, jets.pt)[0]), dtype=np.uint64)
-    # Use phi to distinguish jets within the same event
-    flat_phi = np.asarray(ak.flatten(jets.phi), dtype=np.float32).view(np.uint32)
-
-    # 2. Vectorized Hash (Deterministic "Randomness")
-    # Using the same prime you used for electrons: 2654435761
-    hash_val = (flat_event * np.uint64(2654435761)) ^ flat_phi
-    
-    # 3. Map to Standard Normal N(0, 1)
-    uniform_random = (hash_val % np.uint64(2**31 - 1)) / float(2**31 - 1)
-    uniform_random = np.clip(uniform_random, 1e-8, 1.0 - 1e-8)
-    rand_flat = ndtri(uniform_random)
-    
-    # 4. Unflatten to match jet structure
-    rand = ak.unflatten(rand_flat, counts)
-    # rand = np.random.normal(0, 1, size=int(ak.sum(counts)))
-    # rand = ak.unflatten(rand, counts)
+    salt = JER_SALT_AK8 if algo.upper().startswith("AK8") else JER_SALT_AK4
+    rand = ak.unflatten(object_normal_draws(events, jets, salt), counts)
     cjer_unmatch = 1 + rand * sigma * np.sqrt(np.maximum(sf_val**2 - 1, 0))
 
     cjer = ak.where(matched, cjer_match, cjer_unmatch)
+    # As coffea's jer_smear: a jet is never smeared below an energy of _MIN_JET_ENERGY.
+    min_pt = _MIN_JET_ENERGY / np.cosh(jets.eta)
+    cjer = ak.where(pt_to_smear * cjer < min_pt, min_pt / pt_to_smear, cjer)
 
     return pt_to_smear * cjer, mass_to_smear * cjer
 
@@ -1714,11 +1754,7 @@ def apply_jet_corrections(events, era, isMC, variations=()):
 
     if isMC:
         # --- AK4 GEN MATCHING ---
-        gen_idx = jets.genJetIdx
-        ngenjet = ak.num(events.GenJet.pt)
-        valid_match = (gen_idx >= 0) & (gen_idx < ngenjet)
-        safe_idx = ak.where(valid_match, gen_idx, ak.zeros_like(gen_idx))
-        genpt = ak.where(valid_match, ak.pad_none(events.GenJet.pt, 1, axis=1)[safe_idx], 0)
+        genpt, valid_match = _gen_jet_match(jets, jets.genJetIdx, events.GenJet, max_dr=0.2)
         
         # Save baseline JEC-only kinematics
         pt_jec_ak4, mass_jec_ak4 = jets.pt, jets.mass
@@ -1733,11 +1769,7 @@ def apply_jet_corrections(events, era, isMC, variations=()):
         jets = ak.with_field(jets, mass_nom_ak4, "mass")
 
         # --- AK8 GEN MATCHING & SMEARING ---
-        gen_idx8 = fatjets.genJetAK8Idx
-        ngenjet8 = ak.num(events.GenJetAK8.pt)
-        valid_match8 = (gen_idx8 >= 0) & (gen_idx8 < ngenjet8)
-        safe_idx8 = ak.where(valid_match8, gen_idx8, ak.zeros_like(gen_idx8))
-        genpt8 = ak.where(valid_match8, ak.pad_none(events.GenJetAK8.pt, 1, axis=1)[safe_idx8], 0)
+        genpt8, valid_match8 = _gen_jet_match(fatjets, fatjets.genJetAK8Idx, events.GenJetAK8, max_dr=0.4)
 
         pt_jec_ak8, mass_jec_ak8 = fatjets.pt, fatjets.mass
 

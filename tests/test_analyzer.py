@@ -225,6 +225,14 @@ class TestSelectJets:
         ak4, ak8, masks = proc.select_jets(ev, "RunIISummer20UL18")
         assert ak.num(ak4, axis=1).tolist() == [0]
 
+    def test_ak4_jets_sorted_by_pt(self):
+        """After JEC and JER the NanoAOD order is not the pT order: the selected jets are re-sorted, so
+        j1 and j2 (m_lljj, the dR cuts, the DY reshape) are the two leading jets."""
+        proc = WrAnalysis(mass_point=None)
+        ev = _mock_events(n_jets=3, jet_pts=[80.0, 250.0, 120.0])
+        ak4, ak8, masks = proc.select_jets(ev, "RunIISummer20UL18")
+        assert ak.to_list(ak4.pt) == [[250.0, 120.0, 80.0]]
+
     def test_ak8_jets_empty_by_default(self):
         proc = WrAnalysis(mass_point=None)
         ev = _mock_events(n_jets=2, n_fatjets=0)

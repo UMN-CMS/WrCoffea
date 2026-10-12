@@ -91,6 +91,7 @@ PILEUP_CORRECTION_NAMES = _cfg["pileup_correction_names"]
 
 ELECTRON_JSONS = _cfg["electron_jsons"]
 ELECTRON_SF_ERA_KEYS = _cfg["electron_sf_era_keys"]
+ELECTRON_HLT_ERA_KEYS = _cfg.get("electron_hlt_era_keys", {})
 # era -> Path name evaluated in the electron TRIGGER payload.
 ELECTRON_HLT_PATHS = _cfg["electron_hlt_paths"]
 ELECTRON_RECO_CONFIG = _cfg["electron_reco_config"]

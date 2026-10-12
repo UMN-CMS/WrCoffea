@@ -43,6 +43,15 @@ CAT repackaging (installed 2026-10-11; values identical to the old files except 
 resolution, ≤ 3 %). The JME recommendation and the veto-map screenshots are referenced in
 `docs/pog_recommendations/` (not tracked).
 
+JER smearing on MC follows the JME hybrid method: a jet matched to a generator jet (ΔR < R/2, i.e.
+0.2 for AK4 and 0.4 for AK8, and |pT − pT_gen| < 3 σ_JER pT) is scaled by its JER scale factor
+towards the generator pT; any other jet is smeared stochastically by a Gaussian of width
+σ_JER √(SF² − 1); no jet is smeared below an energy of 10 MeV. The JER up/down variations use the
+same matching and random numbers as the nominal. The random numbers of the stochastic JER and of the
+Run 3 electron smearing are drawn per object from correctionlib's `hashprng` of (event, luminosity
+block, φ, a salt per correction), so they are reproducible and independent between the objects of
+an event (`object_normal_draws` in `wrcoffea/scale_factors.py`; since 2026-10-12).
+
 ### Pileup
 
 `puWeights.json.gz` per era with the golden-JSON profile: `Collisions16_UltraLegacy_goldenJSON`,
