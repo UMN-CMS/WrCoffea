@@ -322,7 +322,8 @@ def _reread_part(sc: dict, rep: dict) -> None:
 def validate_campaign(args) -> int:
     plan = Plan.load(args.plan_dir)
     keys = plan.select(eras=args.era or None, datasets=args.dataset or None,
-                       physics_groups=args.physics_group or None, datatype=args.datatype)
+                       physics_groups=args.physics_group or None, datatype=args.datatype,
+                       exclude=getattr(args, "exclude", None))
     out_root = Path(args.out).expanduser()
     dbs = None
     reports = []

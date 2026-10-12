@@ -664,6 +664,9 @@ def main(argv=None) -> int:
     p.add_argument("--local", action="store_true", help="reference the local parts instead of the remote copies")
     _add_selection_args(p)
     p.add_argument("--fileset-dir", default=str(REPO_ROOT / "data" / "filesets"))
+    p.add_argument("--allow-missing", action="store_true",
+                   help="write a family's fileset even when some of its selected datasets are unfinished "
+                        "(they are left out and listed); without it such a family is not written and the exit code is 1")
     p.set_defaults(func=cmd_fileset)
 
     p = sub.add_parser("unskimmed-fileset",

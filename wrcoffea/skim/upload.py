@@ -103,7 +103,8 @@ def finished_parts(plan: Plan, key: str, out_root: Path, *, allow_bad: bool = Fa
 def upload_campaign(args) -> int:
     plan = Plan.load(args.plan_dir)
     keys = plan.select(eras=args.era or None, datasets=args.dataset or None,
-                       physics_groups=args.physics_group or None, datatype=args.datatype)
+                       physics_groups=args.physics_group or None, datatype=args.datatype,
+                       exclude=getattr(args, "exclude", None))
     out_root = Path(args.out).expanduser()
     remote_root = args.remote.rstrip("/")
     jobs: list[tuple[str, str, str | None]] = []
@@ -255,38 +256,88 @@ def combine_extension_sumw(fileset: dict) -> list[str]:
     return notes
 
 
+def _entry_selected(dkey: str, meta: dict, ds: DatasetPlan | None, *, datasets=None, physics_groups=None,
+                    datatype=None, exclude=None) -> bool:
+    """The ``--dataset/--physics-group/--datatype/--exclude`` filters of the other subcommands (``Plan.select``),
+    applied to one config entry; the plan's dataset decides when it exists, the config entry otherwise."""
+    kind = ds.datatype if ds is not None else meta.get("datatype")
+    group = ds.physics_group if ds is not None else meta.get("physics_group", "")
+    if exclude and any(s in dkey for s in exclude):
+        return False
+    if physics_groups and str(group).lower() not in [g.lower() for g in physics_groups]:
+        return False
+    if datatype and kind != datatype:
+        return False
+    if datasets and not any(s in dkey for s in datasets):
+        return False
+    return True
+
+
+def _group_progress(plan: Plan, key: str, out_root: Path) -> str:
+    """``"3/5 groups done"`` (or the reason a finished-looking dataset is not final)."""
+    ds = plan.datasets[key]
+    n_done = sum(1 for gid in range(len(ds.groups))
+                 if (st := load_group_status(out_root / ds.out_dir, gid)) is not None and st.status == "done")
+    if n_done == len(ds.groups):
+        return f"{n_done}/{len(ds.groups)} groups done, transient bad inputs to redo"
+    return f"{n_done}/{len(ds.groups)} groups done"
+
+
 def write_filesets(args) -> int:
+    """Write one fileset per config family of every selected era.
+
+    The selection flags (``--dataset``, ``--physics-group``, ``--datatype``, ``--exclude``) pick config
+    entries as ``Plan.select`` picks datasets.  Without them each family file is rewritten from the
+    campaign; with them only the selected entries of an existing family file are replaced or added,
+    and its other entries are kept.  A family whose selected datasets are not all finished is NOT
+    written (exit code 1) and every missing dataset is listed, unless ``--allow-missing`` is given;
+    a family with nothing finished is skipped with a warning.  Optional config entries the plan left
+    out (``plan --include-optional``) are not counted as missing.
+    """
     plan = Plan.load(args.plan_dir)
     out_root = Path(args.out).expanduser()
     remote_root = None if args.local else args.remote.rstrip("/")
     fileset_dir = Path(args.fileset_dir)
+    config_root = Path(getattr(args, "config_root", None) or Path(__file__).resolve().parents[2] / "data" / "configs")
+    allow_missing = bool(getattr(args, "allow_missing", False))
+    sel = {"datasets": args.dataset or None, "physics_groups": getattr(args, "physics_group", None) or None,
+           "datatype": getattr(args, "datatype", None), "exclude": getattr(args, "exclude", None) or None}
+    narrowed = any(v for v in sel.values())
     aliases = _mc_alias()
     eras = args.era or sorted({d.era for d in plan.datasets.values()} | set(aliases))
-    n_written = 0
+    n_written, refused, empty = 0, [], []
     for era in eras:
         sub = ERA_SUBDIRS.get(era)
         if sub is None:
             logger.warning("unknown era %s; skipped", era)
             continue
-        cfg_dir = Path(__file__).resolve().parents[2] / "data" / "configs" / sub
+        cfg_dir = config_root / sub
         configs = [(era, p) for p in sorted(cfg_dir.glob("*.json")) if "archived" not in p.parts]
         # A data-only era borrows the MC configs (and skims) of its alias era.
         src_era = aliases.get(era)
         if src_era:
-            src_dir = Path(__file__).resolve().parents[2] / "data" / "configs" / ERA_SUBDIRS[src_era]
+            src_dir = config_root / ERA_SUBDIRS[src_era]
             configs += [(src_era, p) for p in sorted(src_dir.glob("*.json"))
                         if "archived" not in p.parts and not p.name.endswith("_data.json")]
         for cfg_era, cfg in configs:
             family = cfg.stem[len(cfg_era) + 1:] if cfg.stem.startswith(cfg_era + "_") else cfg.stem
+            out = fileset_dir / sub / "skimmed" / f"{era}_{family}_fileset.json"
             fileset: dict = {}
-            missing = []
+            missing: list[str] = []
+            n_selected = 0
             for das, meta, _ in load_config_entries([cfg], include_optional=True):
                 dkey = dataset_key_for(das, meta)
                 ds = plan.datasets.get(dkey)
-                if ds is None or ds.era != cfg_era:
-                    missing.append(dkey)
+                if ds is not None and ds.era != cfg_era:
+                    ds = None
+                if not _entry_selected(dkey, meta, ds, **sel):
                     continue
-                if args.dataset and not any(s in dkey for s in args.dataset):
+                n_selected += 1
+                if ds is None:
+                    if meta.get("optional"):
+                        logger.info("%s: optional %s is not in the plan; left out", cfg.name, dkey)
+                    else:
+                        missing.append(f"{dkey} (not in the plan)")
                     continue
                 targets = [(das, ds)]
                 if ds.scan:
@@ -301,7 +352,7 @@ def write_filesets(args) -> int:
                 for das_t, ds_t in targets:
                     parts = finished_parts(plan, ds_t.key, out_root, allow_bad=False)
                     if parts is None:
-                        missing.append(ds_t.key)
+                        missing.append(f"{ds_t.key} ({_group_progress(plan, ds_t.key, out_root)})")
                         continue
                     if any(e.get("metadata", {}).get("sample") == ds_t.key for e in fileset.values()):
                         continue  # data sub-eras share one dataset
@@ -320,15 +371,39 @@ def write_filesets(args) -> int:
                             if any(d.era == era for d in plan.datasets.values()) else meta_out.get("year")
                         meta_out["skims_from_era"] = cfg_era
                     fileset[das_t] = {"files": files, "metadata": meta_out}
-            if not fileset:
-                logger.warning("%s: no finished datasets; fileset not written", cfg.name)
+            if not n_selected:
                 continue
+            if not fileset:
+                empty.append(out.name)
+                logger.warning("%s: none of the %d selected dataset(s) is finished; %s not written",
+                               cfg.name, n_selected, out.name)
+                continue
+            if missing:
+                listing = "\n    ".join(missing)
+                if not allow_missing:
+                    refused.append(out.name)
+                    logger.error("%s: %d of the selected dataset(s) are not finished; %s NOT written "
+                                 "(--allow-missing writes it without them):\n    %s",
+                                 cfg.name, len(missing), out.name, listing)
+                    continue
+                logger.warning("%s: written WITHOUT %d unfinished dataset(s) (--allow-missing):\n    %s",
+                               out.name, len(missing), listing)
+            if narrowed and out.is_file():
+                merged = json.loads(out.read_text())
+                kept = len([k for k in merged if k not in fileset])
+                merged.update(fileset)
+                fileset = merged
+                logger.info("%s: %d selected entr(ies) replaced or added, %d other entr(ies) kept",
+                            out.name, len(fileset) - kept, kept)
             for note in combine_extension_sumw(fileset):
                 logger.info("%s: %s", cfg.name, note)
-            out = fileset_dir / sub / "skimmed" / f"{era}_{family}_fileset.json"
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(json.dumps(fileset, indent=2, sort_keys=True) + "\n")
+            tmp = out.with_suffix(out.suffix + ".tmp")
+            tmp.write_text(json.dumps(fileset, indent=2, sort_keys=True) + "\n")
+            tmp.replace(out)
             n_written += 1
-            print(f"wrote {out} ({len(fileset)} datasets{'; missing: ' + ', '.join(missing[:5]) if missing else ''})")
-    print(f"{n_written} fileset(s) written")
-    return 0
+            print(f"wrote {out} ({len(fileset)} datasets" + (f"; {len(missing)} unfinished left out" if missing else "") + ")")
+    print(f"{n_written} fileset(s) written"
+          + (f"; {len(refused)} refused because datasets are unfinished: {', '.join(refused)}" if refused else "")
+          + (f"; {len(empty)} with nothing finished: {', '.join(empty)}" if empty else ""))
+    return 1 if refused else 0
