@@ -105,53 +105,85 @@ all survive.
 - Parts and sidecars are written as `.partial` files and renamed only when
   complete.
 
-## Workflow
+## Workflow: skimming the 2025 data at the LPC from a fresh clone
+
+The commands below are what a new person runs on a cmslpc login node to skim every 2025 data
+dataset. Replace `<you>` by your username and `<remote>` by the xrootd storage the jobs write to
+(this analysis uses `root://cmsxrootd.hep.wisc.edu//store/user/<you>/WRAnalyzer/skims_v2`; FNAL EOS,
+`root://cmseos.fnal.gov//store/user/<you>/...`, works the same way). Every `skim.py` command runs
+inside the coffea container; only the Condor submission and `condor_q` run on the host.
 
 ```bash
-# 1. Plan: resolve configs through DBS, sample branch layouts, group files into jobs
-#    (defaults: zstd:19 compression, 2 GB parts; see "Output format study")
-python3 bin/skim.py plan --campaign v2 --plan-dir plans/v2 --era RunIII2024Summer24
+# 0. Clone under nobackup (the plan, the job files and the mirrored statuses live there too)
+cd ~/nobackup && git clone --recursive git@github.com:UMN-CMS/WrCoffea.git && cd WrCoffea && git switch billy_dev
 
-# 2. Run locally, dataset by dataset (3 workers, each prefetching the next file)
-python3 bin/skim.py run --plan-dir plans/v2 --dataset TTto2L2Nu --workers 3 \
-    --out ~/work/skims_v2 --scratch ~/work/skim_scratch
+# 1. A proxy on a shared path: the Condor jobs read it
+voms-proxy-init --rfc --voms cms -valid 192:00 --out ~/nobackup/x509up
+export X509_USER_PROXY=~/nobackup/x509up
+export SKIM_PLAN=~/nobackup/skims_v2/plans/v2_RunIII2025Summer25 SKIM_OUT=~/nobackup/skims_v2 SKIM_PROXY=~/nobackup/x509up
+REMOTE=root://cmsxrootd.hep.wisc.edu//store/user/<you>/WRAnalyzer/skims_v2
 
-# 3. Progress and problems
-python3 bin/skim.py status --plan-dir plans/v2 --out ~/work/skims_v2 -v
+# 2. The container holds coffea, uproot and the XRootD bindings; open a shell in it for steps 3, 4, 7, 8 and 9
+IMG=/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-almalinux9-noml:2026.9.0-py3.12
+apptainer exec -B /cvmfs -B /uscms_data -B /uscms/home -B /uscms/homes $IMG bash
 
-# 4. Validate (re-reads every part, checks DBS counts, Runs sums, golden-JSON coverage)
-python3 bin/skim.py validate --plan-dir plans/v2 --out ~/work/skims_v2 --report plans/v2/validation.json
+# 3. The datasets: data/configs/Run3/2025/RunIII2025Summer25/RunIII2025Summer25_data.json lists the DAS paths
+#    (EGamma0/1 and Muon0/1 per period). Compare with DAS before planning and add new periods or a reprocessing
+#    by hand (docs/inputs.md); the golden JSON is data/lumis/Run3/2025/RunIII2025Summer25/Cert_...Golden.json.
+python3 bin/skim.py plan --campaign v2 --plan-dir $SKIM_PLAN --era RunIII2025Summer25     # DBS through the proxy
 
-# 5. Analyzer closure on a dataset whose raw inputs were kept (--keep-inputs)
-python3 scripts/skim_closure.py --plan-dir plans/v2 --dataset TTto2L2Nu --out ~/work/skims_v2 \
-    --inputs-dir ~/work/skim_scratch/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8 --sample tt_tW
+# 4. (optional) one group locally, to see the tooling work before submitting everything
+python3 bin/skim.py run --plan-dir $SKIM_PLAN --dataset Muon0_Run2025C --workers 2 --out $SKIM_OUT --scratch ~/nobackup/skim_scratch
 
-# 6. Upload to Wisconsin (checksummed, resumable) and write the analyzer filesets
-python3 bin/skim.py upload  --plan-dir plans/v2 --out ~/work/skims_v2
-python3 bin/skim.py fileset --plan-dir plans/v2 --out ~/work/skims_v2 --era RunIII2024Summer24
-# 7. Unskimmed filesets (the original NanoAOD files, for --unskimmed runs; needs only a proxy)
-python3 bin/skim.py unskimmed-fileset --era RunIII2024Summer24   # or --all
+# 5. Submit one Condor job per group (on the HOST, not in the container): writes parts straight to <remote>
+bin/lpc_condor.sh --jobs-dir ~/nobackup/skimjobs/v2_2025 --era RunIII2025Summer25 --remote $REMOTE \
+    --cpus 2 --decompression-threads 2 --submit
+
+# 6. Watch; rerunning the same command later submits only what is still pending (that is the retry)
+condor_q; ls ~/nobackup/skimjobs/v2_2025/logs/
+
+# 7. Bring the statuses and sidecars back, look at them, classify inputs no server can serve
+python3 bin/skim.py mirror --plan-dir $SKIM_PLAN --out $SKIM_OUT --remote $REMOTE
+python3 bin/skim.py status --plan-dir $SKIM_PLAN --out $SKIM_OUT -v
+python3 bin/skim.py bad-files --plan-dir $SKIM_PLAN --out $SKIM_OUT --classify      # then step 5 again if anything is transient
+
+# 8. Validate against DBS and the golden JSON; writes the processed-lumisection masks of every stream
+python3 bin/skim.py validate --plan-dir $SKIM_PLAN --out $SKIM_OUT --skip-reread --remote $REMOTE --remote-lumis \
+    --report $SKIM_PLAN/validation.json            # add --accept-bad-files once corrupt/unavailable inputs are the only problem
+
+# 9. The analyzer fileset: data/filesets/Run3/2025/RunIII2025Summer25/skimmed/RunIII2025Summer25_data_fileset.json
+python3 bin/skim.py fileset --plan-dir $SKIM_PLAN --out $SKIM_OUT --era RunIII2025Summer25 --remote $REMOTE
 ```
 
-Steps 2 and 6 can also run on the LPC; most groups of the 2022-2024 and UL18
-campaigns did.
+Then:
 
-- `skim.py condor` submits one job per pending group.
-- Each job runs `skim.py group` and then `skim.py ship`, which copies the
-  parts to Wisconsin.
-- `skim.py mirror` brings the sidecars and statuses back to a local root,
-  where `status`, `validate` and `fileset` work as usual.
+- **Luminosity.** Make the per-lumisection brilcalc table of the 2025 golden JSON and run
+  `scripts/processed_lumi.py` on the masks of step 8 (recipe in [luminosity.md](luminosity.md));
+  write the number into `wrcoffea/config.yaml` (`lumis`) and `WR_Plotter/data/lumi.yaml`, and copy
+  the masks and the result into `data/lumis/Run3/2025/RunIII2025Summer25/processed_skims_v2/`.
+- **MC for 2025.** 2025 is data-only and uses the 2024 MC (`mc_alias` in `config.yaml`). `skim.py
+  fileset --era RunIII2025Summer25` also writes the 2025 MC filesets, with the era and year
+  rewritten, when the 2024 campaign (its plan and sidecars) is in the same `--plan-dir` / `--out`;
+  a fresh clone does not have them, so run that step where the 2024 campaign root lives.
+- **Commit** the fileset, the lumi files and the config, push, and run the data from any machine:
+  `python3 bin/run_analysis.py RunIII2025Summer25 data --dir <tag>`.
+- **Unskimmed filesets** need no skims: `python3 bin/skim.py unskimmed-fileset --era RunIII2025Summer25`
+  (a proxy is enough).
 
-See [Running on Condor at the LPC](#running-on-condor-at-the-lpc).
-`skim.py group --dataset KEY --gid N` processes a single group (the unit of a
-Condor job); the plan directory is the only input it needs.
+Names to know: a job processes one *group* (a slice of a dataset, ~60 GB of data input or 30 GB
+of MC); `skim.py group --dataset KEY --gid N` is what the job runs, followed by `skim.py ship`,
+which copies the parts (adler32-verified), the sidecars and the group status to the remote tree.
 
-Config entries flagged `"optional": true` (the low-mass `MLL-10to50` DY
-companions, about 1.5 billion events in 2024 alone and outside every analysis
-selection) are left out of plans unless `plan --include-optional` is given.
-A data-only era listed under `mc_alias` in `wrcoffea/config.yaml` (2025 reuses
-the 2024 MC, as PdmV recommends) gets its MC filesets written from the alias
-era's skims with the era and year rewritten.
+**Laptop variant** (how the 2022 to 2024 and UL campaigns were partly run): the same `plan`, then
+`skim.py run --plan-dir ... --out ~/work/skims_v2 --scratch ~/work/skim_scratch --workers 3`
+dataset by dataset, `validate` without `--skip-reread` (every part is re-read), `skim.py upload
+--plan-dir ... --out ~/work/skims_v2` to copy the parts to the remote, and `fileset`. The closure
+test `scripts/skim_closure.py --plan-dir ... --dataset <key> --out ... --inputs-dir <kept inputs>
+--sample <group>` compares the analyzer on a skimmed dataset with its raw inputs (`--keep-inputs`).
+
+Config entries flagged `"optional": true` (the low-mass `MLL-10to50` DY companions, about 1.5
+billion events in 2024 alone and outside every analysis selection) are left out of plans unless
+`plan --include-optional` is given.
 
 ### Stopping and resuming
 
@@ -484,13 +516,14 @@ skims' final home is Wisconsin anyway. Statuses and sidecars store part names
 relative to the dataset directory (older absolute records still load), so the
 remote tree has exactly the layout of a local campaign root.
 
-Setup (once per code change, from the laptop): rsync `bin/skim.py`,
-`wrcoffea/` and `data/lumis` to `~/nobackup/WrCoffea_skim_v2/` on the LPC and
-the plan to `~/nobackup/skims_v2/plans/`; rsync the laptop root's JSON files
-(`--include='*/' --include='*.json' --exclude='*'`) to `~/nobackup/skims_v2/`
-so the LPC knows which groups the laptop already finished. Jobs need a valid
-proxy on the LPC (`voms-proxy-init`, or copy `~/.x509up_proxy` to
-`/uscms/homes/b/bjackson/x509up_u24705`).
+Setup: a clone of the repository under `~/nobackup` on the LPC (the workflow above), a proxy on a
+shared path, and the environment variables the wrapper reads: `SKIM_PLAN` (the plan directory),
+`SKIM_OUT` (the campaign root that holds the mirrored statuses), `SKIM_PROXY` (the proxy file the
+jobs use) and `SKIM_IMAGE` (the container; the default is the coffea almalinux9 image on cvmfs).
+When developing on a laptop instead, rsync `bin/skim.py`, `wrcoffea/`, `data/configs` and
+`data/lumis` to the LPC clone and the laptop root's JSON files
+(`--include='*/' --include='*.json' --exclude='*'`) to `SKIM_OUT`, so the LPC knows which groups
+the laptop already finished.
 
 On the login node, `bin/lpc_condor.sh` does the two halves in the right
 places: Condor only exists on the host and the skim tooling only runs inside

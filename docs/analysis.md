@@ -174,6 +174,8 @@ for the Run 2 eras only. Operational details: [run_analysis.md](run_analysis.md#
 
 ## Systematics
 
+What is finished and what remains, per Run: [systematics_status.md](systematics_status.md).
+
 Every source is registered in `wrcoffea/systematics.py` with its family, its kind (weight, shape,
 normalization or members), the regions it can affect and the eras that have its inputs; a family
 an era cannot produce is an error, never a silent copy, and the coverage contract refuses partial
@@ -207,8 +209,10 @@ What each era can produce (2026-10-11; from the registry and the payloads of
 | `ps` | yes: the UL filesets carry PSSumw estimated from a few million unselected events of every original sample (`scripts/estimate_ps_sums.py`, 2026-10-11; exact sums come with the next skim, which derives them from the events) | yes | yes | yes |
 
 Samples without generator weights (the Pythia 8 WW, WZ, ZZ) get their nominal for `scale` and
-`pdf`, with a warning. The plotter's band and the systematics tables take every source present in
-the files ([plotting.md](plotting.md)).
+`pdf`, with a warning; so does a dataset whose fileset records why it has no dataset-level means
+(`PSSumw_source.status`, e.g. original files unreachable for the UL estimate). Missing means without
+such a record are an error. The plotter's band and the systematics tables take every source present
+in the files ([plotting.md](plotting.md)).
 
 ## Open items
 

@@ -46,6 +46,7 @@ Run 2 only).
 | [analysis.md](docs/analysis.md) | What does the analysis do: filters, objects, triggers, regions, weights, blinding, systematics, open items? |
 | [run_analysis.md](docs/run_analysis.md) | How do I run the analyzer: modes, flags, outputs, systematics production? |
 | [corrections.md](docs/corrections.md) | Which correction payload does each era use, where it comes from, what is a placeholder? |
+| [systematics_status.md](docs/systematics_status.md) | Which systematic uncertainties are finished for Run 2 and Run 3, and which are still placeholders or missing? |
 | [luminosity.md](docs/luminosity.md) | Golden JSONs, the brilcalc recipe, the processed luminosity of every era, the uncertainties. |
 | [inputs.md](docs/inputs.md) | Dataset configs, how cross sections are built, skimmed and unskimmed filesets. |
 | [skimming.md](docs/skimming.md) | The skim campaign: selection, branch policy, workflow, verification, Condor at the LPC. |
