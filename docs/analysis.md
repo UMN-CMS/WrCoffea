@@ -140,10 +140,15 @@ region it is multiplied by the lepton scale factors that enter that region and b
 Trigger SFs: electrons, one SF for the OR (Run 3: the EGM Ele30 TightID SF as a proxy; UL: the
 Run 2 HEEP trigger-OR efficiency); muons, the per-leg data/MC efficiency OR for 2022 to 2025 and
 the leading muon's SF alone in the UL eras (two SFs are never multiplied). The muon variation of
-the efficiency OR follows the Run 2 analysis (SKFlat `MCCorrection::MuonTrigger_SF`): every muon's
-data efficiency moves up by its error while its MC efficiency moves down, and the reverse, so the
-two errors add in the ratio (decided 2026-10-12; shifting both the same way, as before, cancelled
-them to about 0.01 %). Cutflows use the base weight without the per-region lepton SFs.
+the efficiency OR: in 2024 and 2025 it follows the Run 2 analysis (SKFlat
+`MCCorrection::MuonTrigger_SF`), every muon's data efficiency moving up by its error while its MC
+efficiency moves down, and the reverse, so the two errors add in the ratio; in 2022 and 2023, whose
+`muon_Z` payloads carry no efficiency-level systematic, every muon's data efficiency moves by the
+relative uncertainty of the POG per-muon SF (its statistical error and the tag-and-probe fit
+variations in quadrature) with the MC efficiency kept nominal. Both since 2026-10-12; before, both
+efficiencies moved the same way, which cancelled the errors (0.01 to 0.04 % of the resolved and
+0.13 to 0.23 % of the boosted yields in 2023). Cutflows use the base weight without the per-region
+lepton SFs.
 
 ### Drell-Yan modelling
 
@@ -203,7 +208,7 @@ templates. Variations are written as `syst_<label lower>_<region>` folders.
 | `lsf` | LsfSf | weight | the LSF scale factor (boosted SR and flavour CRs) |
 | `jer`, `jes` | JER, JES (the `Total` source) | shape | jet energy resolution and scale; the selection and the masses are recomputed |
 | `elescale`, `elesmear` | EleScale, EleSmear | shape | electron energy scale and resolution (Run 3) |
-| `muscale`, `musmear` | MuScale, MuSmear | shape | muon momentum scale and resolution (2024: the high-pT recipe; other eras a placeholder, see open items) |
+| `muscale`, `musmear` | MuScale, MuSmear | shape | muon momentum scale and resolution (2022 to 2024: the high-pT recipe; UL and 2025: a scale placeholder and no `musmear`, see open items) |
 | `dyzpt` | DYZptQcdScale, DYZptQcdPdf, DYZptQcdAlphaS, DYZptEw1, DYZptEw2, DYZptEw3 | weight | the Z-pT reweight's QCD and EW uncertainties (DY only) |
 | `dyreshape` | DYReshapeStat, DYReshapeChannel | weight | the reshape's statistical and ee-vs-μμ uncertainties (DY only) |
 | `scale` | ScaleMuR, ScaleMuF, ScaleMuRF | weight | QCD renormalization and factorization scales from `LHEScaleWeight`, each normalized to the dataset's mean so only acceptance and shape move; the plotter takes the envelope |
@@ -216,7 +221,8 @@ What each era can produce (2026-10-12; from the registry and the payloads of
 | Family | UL16APV, UL16, UL17, UL18 | 2022, 2022EE, 2023, 2023BPix | 2024 | 2025 |
 | --- | --- | --- | --- | --- |
 | `lumi`, `pileup`, `sf`, `jer`, `jes`, `dyzpt`, `lsf`, `scale`, `pdf` | yes | yes | yes | yes |
-| `muscale`, `musmear` | placeholder (TuneP, flat 5 %/TeV scale, smearing = nominal) | placeholder | yes (the high-pT recipe) | placeholder |
+| `muscale` | placeholder (TuneP, a 5 %/TeV × pT shift of both charges) | yes (the high-pT recipe) | yes | placeholder |
+| `musmear` | no (no high-pT muon payload: the variation would be a copy of the nominal) | yes | yes | no |
 | `prefire` | yes | no (no prefiring in Run 3) | no | no |
 | `elescale`, `elesmear` | no (no scale-and-smearing payload; UL NanoAODv9 MC has no scale uncertainty branch) | yes | yes | yes |
 | `dyreshape` | yes | yes | yes | not yet (no 2025 reshape) |
@@ -234,9 +240,10 @@ in the files ([WR_Plotter/docs/plotting.md](../WR_Plotter/docs/plotting.md)).
 Decisions and measurements still outstanding, with the date they were last looked at.
 
 - **Muon momentum at high pT.** The Muon POG Run 3 recipe (MuonScaRe below 200 GeV, the
-  generalized-endpoint correction on data and extra smearing on MC above) is applied to 2024 only;
-  UL, 2022 and 2023 keep the TuneP momentum with a flat 5 %/TeV scale uncertainty and no smearing
-  (2026-10-10).
+  generalized-endpoint correction on data and extra smearing on MC above) is applied to 2022, 2023
+  and 2024 (2022/2023 since 2026-10-12, from the POG's Run 3 tables); UL and 2025 keep the TuneP
+  momentum with a 5 %/TeV × pT scale shift and no resolution variation. UL needs the Run 2 GE maps and
+  a Rochester-type correction below 200 GeV; 2025 has no POG recipe yet (2026-10-12).
 - **Muon reco SF above 1.5 TeV.** The POG high-pT reco SF has an open-ended last bin (p > 1.5 TeV,
   2024 p > 0.9 TeV) whose barrel values range from 0.68 (2023BPix) to 1.02 (2022) with large errors,
   and high-mass signal muons land there. Options: clip to the last measured bin, clip with the

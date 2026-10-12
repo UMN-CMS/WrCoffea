@@ -91,6 +91,17 @@ class TestRegistry:
         with pytest.raises(ValueError, match="Cannot produce"):
             validate_requested(UL18, [family])
 
+    @pytest.mark.parametrize("era", [UL18, "RunIII2025Summer25"])
+    def test_musmear_needs_a_high_pt_muon_payload(self, era):
+        """Without a muon_highpt payload the smearing variation would be a copy of the nominal: refused."""
+        with pytest.raises(ValueError, match="Cannot produce"):
+            validate_requested(era, ["musmear"])
+        assert {s.name for s in validate_requested(era, ["muscale"])} == {"MuScale"}
+
+    @pytest.mark.parametrize("era", ["Run3Summer22", "Run3Summer23BPix", "RunIII2024Summer24"])
+    def test_musmear_in_the_high_pt_muon_eras(self, era):
+        assert {s.name for s in validate_requested(era, ["musmear"])} == {"MuSmear"}
+
     def test_ul18_produces_jet_shapes(self):
         """UL18 has JRV2 and Total in its JERC payloads; jer/jes are available."""
         names = {s.name for s in validate_requested(UL18, ["jer", "jes"])}
@@ -115,7 +126,7 @@ class TestRegistry:
         with self._without_electron_trigger_payload():
             with pytest.raises(ValueError, match="ElectronTrigSf.*--omit-systs ElectronTrigSf"):
                 validate_requested(UL18, ["sf"])
-            sources = validate_requested(UL18, ["lumi", "pileup", "sf", "muscale", "musmear"],
+            sources = validate_requested(UL18, ["lumi", "pileup", "sf", "muscale"],
                                          omitted=["ElectronTrigSf"])
             names = {s.name for s in sources}
             assert "ElectronTrigSf" not in names and "MuonTrigSf" in names

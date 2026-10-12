@@ -102,7 +102,8 @@ always gets nominal only). The families, their sources, and what each era can pr
 [analysis.md, Systematics](analysis.md#systematics). Rules the production enforces:
 
 - A family or source the era cannot produce is an error at start-up, never a silent skip
-  (UL `elescale`/`elesmear`, Run 3 `prefire`). A deliberate omission of one source is recorded
+  (UL `elescale`/`elesmear`, Run 3 `prefire`, `musmear` outside the eras with a high-pT muon
+  payload: UL and 2025). A deliberate omission of one source is recorded
   with `--omit-systs <Source>` and listed in the manifest.
 - `scale` and `ps` need the dataset-level weight means in the fileset (`LHEScaleSumw`, `PSSumw`).
   A dataset without them is an error when its first chunk is processed, not at start-up, unless the

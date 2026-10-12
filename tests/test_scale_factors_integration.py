@@ -418,7 +418,7 @@ class TestMuonScaleFactors:
         assert down[1] == pytest.approx((1 - 0.12 ** 2) / (1 - 0.18 ** 2))
 
     def test_muon_trigger_sf_muonz_or_efficiencies(self):
-        """2022-2025 (since 2026-10-11): the POG muon_Z entry of our trigger OR carries the data and MC efficiencies
+        """2022/2023 (since 2026-10-11): the POG muon_Z entry of our trigger OR carries the data and MC efficiencies
         as scale_factors values, and the per-leg OR formula is used (real payload, no mocks)."""
         import correctionlib
         from wrcoffea.analysis_config import MUON_HLT_CORRECTIONS, MUON_JSONS
@@ -436,20 +436,23 @@ class TestMuonScaleFactors:
         assert nom[0] == pytest.approx(e_d / e_m, rel=1e-9)
         assert nom[1] == pytest.approx(eff("nominal_DATAeff", 1.0, 300.0) / eff("nominal_MCeff", 1.0, 300.0), rel=1e-9)
         assert 0.97 < nom[0] < 1.01
-        # variations as Run 2: each leg's data efficiency moved by its stat (+) syst error one way while the MC
-        # efficiency moves the other way, so the errors add in the ratio
-        def shifted(kind, sign, eta, pt):
-            err = np.hypot(eff(f"stat_{kind}eff", eta, pt), eff(f"syst_{kind}eff", eta, pt))
-            return min(max(eff(f"nominal_{kind}eff", eta, pt) + sign * err, 0.0), 1.0)
-        def event(kind, sign):
-            return 1 - (1 - shifted(kind, sign, 0.3, 60.0)) * (1 - shifted(kind, sign, -2.0, 55.0))
-        assert up[0] == pytest.approx(event("DATA", +1) / event("MC", -1), rel=1e-9)
-        assert down[0] == pytest.approx(event("DATA", -1) / event("MC", +1), rel=1e-9)
+        # variation (since 2026-10-12): each leg's data efficiency moves by the relative uncertainty of the POG
+        # per-muon SF, stat (+) the tag-and-probe fit systematics in quadrature, with the MC efficiency nominal
+        fit = ("AltBkg", "AltSig", "massBin", "massRange", "tagIso")
+        def rel(eta, pt):
+            err = np.sqrt(eff("stat", eta, pt) ** 2 + sum(eff(k, eta, pt) ** 2 for k in fit))
+            return err / eff("nominal", eta, pt)
+        def shifted(sign, eta, pt):
+            return min(max(eff("nominal_DATAeff", eta, pt) * (1 + sign * rel(eta, pt)), 0.0), 1.0)
+        def event(sign):
+            return 1 - (1 - shifted(sign, 0.3, 60.0)) * (1 - shifted(sign, -2.0, 55.0))
+        assert up[0] == pytest.approx(event(+1) / e_m, rel=1e-9)
+        assert down[0] == pytest.approx(event(-1) / e_m, rel=1e-9)
         assert up[0] > nom[0] > down[0]
-        # the same-direction shift would nearly cancel: the Run 2 convention is at least as large as either error
-        rel_d = abs(event("DATA", +1) / event("DATA", 0) - 1)
-        rel_m = abs(event("MC", -1) / event("MC", 0) - 1)
-        assert up[0] / nom[0] - 1 >= max(rel_d, rel_m) * 0.999
+        # one muon carries exactly the POG SF uncertainty; the OR of two dilutes it
+        assert up[1] / nom[1] - 1 == pytest.approx(rel(1.0, 300.0), rel=1e-6)
+        assert down[1] / nom[1] - 1 == pytest.approx(-rel(1.0, 300.0), rel=1e-6)
+        assert up[0] / nom[0] - 1 < max(rel(0.3, 60.0), rel(-2.0, 55.0))
         # the leading-muon SF of the same entry would differ: the OR formula is in use
         assert nom[0] != pytest.approx(corr.evaluate(0.3, 60.0, "nominal"), rel=1e-4)
 

@@ -63,6 +63,7 @@ from wrcoffea.analysis_config import (
     JERC_JSONS,
     LSF_SF,
     LUMI_UNC,
+    MUON_HIGHPT,
     MUON_JSONS,
     PDF_SETS,
     PILEUP_JSONS,
@@ -322,8 +323,8 @@ _MUON_TUNEP_NOTE = (
     "Eras in config.yaml muon_highpt (wrcoffea/muon_momentum.py): below 200 GeV the MuonScaRe "
     "statistical scale / resolution variations, above 200 GeV the GE kappa uncertainty on q/pT "
     "(scale) and the extra MC smearing +- the POG resolution systematic (resolution). Other eras: "
-    "TuneP placeholder, flat "
-    "5%/TeV scale and smear == nominal, not fit for use."
+    "TuneP placeholder, a 5 %/TeV x pT scale shift (both charges the same way), no resolution "
+    "variation (musmear is refused there)."
 )
 
 _THEORY_NOTE = (
@@ -365,7 +366,8 @@ _STATIC_SOURCES: dict[str, list[Systematic]] = {
                             objects=("Electron",), field_source="smear")],
     "muscale": [Systematic("MuScale", "muscale", SHAPE, objects=("Muon",),
                            field_source="scale", note=_MUON_TUNEP_NOTE)],
-    "musmear": [Systematic("MuSmear", "musmear", SHAPE, objects=("Muon",),
+    # Without a muon_highpt payload the TuneP placeholder has no resolution variation (it would be a nominal copy).
+    "musmear": [Systematic("MuSmear", "musmear", SHAPE, objects=("Muon",), available_in=lambda e: e in MUON_HIGHPT,
                            field_source="smear", note=_MUON_TUNEP_NOTE)],
     "dyzpt": _dyzpt_sources(),
     "lsf": [Systematic("LsfSf", "lsf", WEIGHT, regions=_uses_lsf, available_in=lambda e: e in LSF_SF,

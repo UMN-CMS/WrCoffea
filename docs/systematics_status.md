@@ -16,7 +16,7 @@ production yet). The final sets are `--dir 20261011_systs` in every era.
 | Luminosity (`lumi`) | yes | yes | normtag_PHYSICS luminosity of the skimmed lumisections; uncertainties from the LUM POG tables (2024 and 2025 preliminary). Era correlations: see Remaining. |
 | Pileup (`pileup`) | yes | yes | golden-JSON profiles per era |
 | Muon reco, ID, isolation SFs (`sf`) | yes | yes | POG high-pT payloads; last-bin treatment above 1.5 TeV: see Remaining |
-| Muon trigger SF (`sf`) | yes | yes | UL: the leading muon's SF with its payload uncertainty, not the per-muon efficiency OR of Run 2 (Remaining, #106); 2022/2023: per-leg efficiency OR from the POG `muon_Z` entry of our exact OR; 2024: per-leg OR from the high-pT HLT file. Run 3 variation as Run 2 (data up with MC down) since 2026-10-12; the Run 3 sets made before that date carry a variation of about 0.01 % |
+| Muon trigger SF (`sf`) | yes | yes | UL: the leading muon's SF with its payload uncertainty, not the per-muon efficiency OR of Run 2 (Remaining, #106); 2022/2023: per-leg efficiency OR from the POG `muon_Z` entry of our exact OR, varied by the POG per-muon SF uncertainty (stat and fit variations) on the data efficiency; 2024: per-leg OR from the high-pT HLT file, varied as Run 2 (data up with MC down). Both since 2026-10-12; the Run 3 sets made before carry 0.01 to 0.2 % |
 | Electron reco SF (`sf`) | yes | yes | EGM payloads; Run 3 clipped at 500 GeV (see Remaining) |
 | Electron HEEP ID SF (`sf`) | yes | yes | UL: flat per year; 2022/2023: the central EGM flat values; 2024: the HEEPID working point, clipped at 1 TeV |
 | Electron trigger SF (`sf`) | yes | proxy | UL: the Run 2 HEEP trigger-OR efficiencies; Run 3: the Ele30 TightID SF stands in for the OR (Remaining, #94) |
@@ -24,7 +24,7 @@ production yet). The final sets are `--dir 20261011_systs` in every era.
 | LSF SF (`lsf`) | yes | placeholder | UL: AN-19-083 Table 60 per year; Run 3: 1.00 ± 0.10 (Remaining, #95) |
 | JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out |
 | Electron energy scale and smearing (`elescale`, `elesmear`) | no | yes | UL NanoAODv9 MC carries no scale uncertainty (Remaining, #96) |
-| Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder | 2024 yes; 2022/2023 placeholder | the high-pT recipe is applied to 2024 only; elsewhere a flat 5 %/TeV scale and no smearing (Remaining, #91) |
+| Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder (`musmear` refused) | yes | the high-pT recipe in 2022 to 2024 (2022/2023 since 2026-10-12, POG Run 3 tables); UL and 2025: a 5 %/TeV × pT scale placeholder, no resolution variation (Remaining, #91) |
 | DY Z-pT reweight, 6 nuisances (`dyzpt`) | yes | yes | own derivations, AN-19-083 recipe, 2026-10-11; one payload per UL era, 2022+2023 together, 2024 alone; the Run 3 DY CR closure is still to be documented (Remaining, #101) |
 | DY jet-pT reshape, 2 nuisances (`dyreshape`) | yes | yes | per UL era; per Run 3 data-taking year; none for 2025 yet; Run 3 closure: Remaining, #101 |
 | QCD scales μR, μF (`scale`) | yes | yes | normalized per dataset; the plotter takes the envelope |
@@ -44,7 +44,7 @@ a Run 3 MC file counts only when it was written after that change.
 | --- | --- | --- | --- | --- |
 | Electron trigger-OR scale factor | done | proxy (Ele30 TightID) | a tag-and-probe measurement of the OR per era, a correctionlib file, the `ElectronTrigSf` variation rebuilt from its uncertainties | #94 |
 | LSF scale factor | done | placeholder 1.00 ± 0.10 | a Run 3 measurement (semileptonic-top tag-and-probe, as in Run 2) | #95 |
-| Muon momentum calibration at high pT | placeholder | 2024 done; 2022/2023 placeholder | payloads for the other eras (UL: Run 2 generalized-endpoint maps; 2022/2023: the POG maps) | #91 |
+| Muon momentum calibration at high pT | placeholder | done (2025 placeholder) | UL: the Run 2 GE maps of the POG page and a Rochester-type correction below 200 GeV; 2025: a POG recipe | #91 |
 | Electron energy scale and smearing variations | missing | done | a prescription for UL (data scale uncertainty mirrored onto MC plus the MC smearing, or EgammaPostRecoTools) | #96 |
 | Muon reco SF above the last measured bin (p > 1.5 TeV; 2024 > 0.9 TeV) | open | open | a treatment: clip, clip with the spread as a systematic, or a common high-p value | #92 |
 | Electron SFs above the measured range (reco > 500 GeV, HEEP ID > 1 TeV, clipped) | not affected (flat SFs) | open | a high-pT prescription (freeze point and uncertainty) | #93 |

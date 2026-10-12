@@ -79,8 +79,8 @@ SFs to 500 GeV and HEEP ID SFs to 1 TeV instead of using it (open item in analys
 | Correction | UL16APV, UL16, UL17, UL18 | 2022, 2022EE, 2023, 2023BPix | 2024 | 2025 |
 | --- | --- | --- | --- | --- |
 | reco, ID, isolation SFs | `muon_HighPt.json.gz` (global-muon reco vs \|η\| and p, HighPt ID, loose tracker isolation) | same | same | 2025 file |
-| trigger SF | the leading muon's SF from `muon_HighPt.json.gz` (`NUM_HLT_DEN_HighPtLooseRelIsoProbes`); two SFs are never multiplied | per-leg data/MC efficiency OR from `muon_Z.json.gz`, entry `NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose` (our exact OR with the HighPt ID and loose tk-iso denominator; variation as Run 2: data efficiency up with MC efficiency down and the reverse, since 2026-10-12) | per-leg efficiency OR from `ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json` | per-leg OR from the 2025 high-pT file |
-| momentum | TuneP; **placeholder** uncertainties (flat 5 %/TeV scale, no smearing) | same placeholder | `data/muon_highpt/Run3/2024/RunIII2024Summer24.json`: MuonScaRe (`muon_scalesmearing.json.gz`) below 200 GeV, the generalized-endpoint correction on data and extra smearing on MC above ([studies/muon_momentum.md](studies/muon_momentum.md)) | placeholder (no 2025 payload yet) |
+| trigger SF | the leading muon's SF from `muon_HighPt.json.gz` (`NUM_HLT_DEN_HighPtLooseRelIsoProbes`); two SFs are never multiplied | per-leg data/MC efficiency OR from `muon_Z.json.gz`, entry `NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose` (our exact OR with the HighPt ID and loose tk-iso denominator; variation since 2026-10-12: each muon's data efficiency moved by the POG per-muon SF uncertainty, `stat` and the fit variations `AltBkg`, `AltSig`, `massBin`, `massRange`, `tagIso` in quadrature, MC efficiency nominal, as the payload's efficiency-level `syst_*eff` are zero) | per-leg efficiency OR from `ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json` | per-leg OR from the 2025 high-pT file |
+| momentum | TuneP; **placeholder** scale uncertainty (5 %/TeV × pT), no resolution variation (`musmear` refused) | `data/muon_highpt/Run3/<year>/<era>.json` (since 2026-10-12): MuonScaRe below 200 GeV; above, the GE κ maps of the Muon POG Run 3 tables on data and the POG's MC smearing, barrel / endcap 0 / 5 % (2022), 5 / 10 % (2022EE, 2023), 0 / 15 % (2023BPix) | `data/muon_highpt/Run3/2024/RunIII2024Summer24.json`: MuonScaRe (`muon_scalesmearing.json.gz`) below 200 GeV, the generalized-endpoint correction on data and extra smearing on MC above ([studies/muon_momentum.md](studies/muon_momentum.md)) | placeholder as UL (no 2025 recipe yet) |
 | loose muon (boosted partner) | reco and ID SFs, no isolation | same | same | same |
 
 The reco SF's last bin is open-ended (p > 1.5 TeV; 2024 p > 0.9 TeV) with era-dependent central
@@ -118,7 +118,7 @@ ones for comparison.
 | LSF SF 1.00 ± 0.10 | Run 3 | a Run 3 measurement |
 | Electron trigger SF = Ele30 TightID proxy | Run 3 | a tag-and-probe measurement of the OR |
 | Electron trigger SF = the 2024 file | 2025 | a 2025 EGM HLT payload |
-| TuneP momentum with flat 5 %/TeV scale, no smearing | UL, 2022, 2023, 2025 | the high-pT recipe payloads of those eras |
+| TuneP momentum with a 5 %/TeV × pT scale shift, no resolution variation | UL, 2025 | the high-pT recipe payloads of those eras |
 | EGM 1 ± 20 % above 500 GeV (reco) / 1 TeV (HEEP), clipped away | Run 3 | a decision on the high-pT treatment |
 | No electron scale/smearing variations | UL | a prescription (see analysis.md) |
 | Parton-shower weight means (PSSumw) estimated from the original files (`scripts/estimate_ps_sums.py`) | UL | a reskim with the event-derived PSSumw |

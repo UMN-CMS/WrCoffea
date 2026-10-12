@@ -405,23 +405,35 @@ def _correction_valtypes(path: str, name: str) -> frozenset:
     return frozenset()
 
 
-def _muon_trigger_sf_from_valtype_efficiencies(corr, flat_eta, hlt_pt, counts):
+# The tag-and-probe fit variations a muon_Z correction stores at SF level; with the SF's stat, in quadrature,
+# they make the POG's per-muon SF uncertainty.
+_MUON_Z_FIT_KEYS = ("AltBkg", "AltSig", "massBin", "massRange", "tagIso")
+
+
+def _muon_trigger_sf_from_valtype_efficiencies(corr, flat_eta, hlt_pt, counts, valtypes=frozenset()):
     """Event trigger SF from one POG ``muon_Z`` correction that holds the data and MC efficiencies of the
-    trigger OR as ``scale_factors`` values (``nominal_DATAeff``, ``nominal_MCeff``, ``systup_*``, ``systdown_*``;
-    CAT muon_Z of 2026-06-18 for 2022-2025).  Same dilepton OR formula as the two-correction form."""
+    trigger OR as ``scale_factors`` values (``nominal_DATAeff``, ``nominal_MCeff``; CAT muon_Z of 2026-06-18,
+    2022 and 2023).  Same dilepton OR formula as the two-correction form.
+
+    Variation (since 2026-10-12): each muon's data efficiency moves by the relative uncertainty of the POG
+    per-muon SF, its ``stat`` and the tag-and-probe fit variations (``_MUON_Z_FIT_KEYS``) in quadrature, with
+    the MC efficiency kept nominal; the OR then dilutes it per event.  The efficiency-level errors are not used:
+    ``syst_DATAeff`` / ``syst_MCeff`` are zero in these payloads, and the SF-level ``syst`` key is not always
+    the quadrature of its own components (zero in some bins where they are not)."""
     hlt_eta = _muon_hlt_eta_input(corr, flat_eta)
     pt = np.clip(hlt_pt, 52.001, 1e9)          # the muon_Z HLT tables start at 52 GeV
 
-    def _per_lepton(kind, sign):
-        """Per-lepton efficiency of *kind* ("DATA" / "MC"), shifted by *sign* x its stat (+) syst uncertainty.
+    sf_nom = corr.evaluate(hlt_eta, pt, "nominal")
+    err2 = corr.evaluate(hlt_eta, pt, "stat") ** 2
+    for key in _MUON_Z_FIT_KEYS:
+        if key in valtypes:
+            err2 = err2 + corr.evaluate(hlt_eta, pt, key) ** 2
+    rel_err = np.divide(np.sqrt(err2), sf_nom, out=np.zeros_like(sf_nom, dtype=np.float64), where=sf_nom > 0)
 
-        muon_Z stores no shifted efficiencies (``systup_<kind>eff`` equals the nominal); the errors come as
-        ``stat_<kind>eff`` and ``syst_<kind>eff``, added in quadrature here.
-        """
+    def _per_lepton(kind, sign=0):
         eff = corr.evaluate(hlt_eta, pt, f"nominal_{kind}eff")
         if sign:
-            err = np.hypot(corr.evaluate(hlt_eta, pt, f"stat_{kind}eff"), corr.evaluate(hlt_eta, pt, f"syst_{kind}eff"))
-            eff = np.clip(eff + sign * err, 0.0, 1.0)
+            eff = np.clip(eff * (1.0 + sign * rel_err), 0.0, 1.0)
         return ak.unflatten(eff, counts)
 
     def _event_eff(kind, sign=0):
@@ -434,11 +446,10 @@ def _muon_trigger_sf_from_valtype_efficiencies(corr, flat_eta, hlt_pt, counts):
         np.divide(num_np, den_np, out=out, where=den_np > 0)
         return out
 
-    # Variation as the Run 2 analysis (SKFlat MCCorrection::MuonTrigger_SF): data up with MC down, and the
-    # reverse, so the two errors add in the ratio (the same-direction shift used until 2026-10-12 cancelled them)
-    nom = _safe_ratio(_event_eff("DATA"), _event_eff("MC"))
-    up = _safe_ratio(_event_eff("DATA", +1), _event_eff("MC", -1))
-    down = _safe_ratio(_event_eff("DATA", -1), _event_eff("MC", +1))
+    eff_mc = _event_eff("MC")
+    nom = _safe_ratio(_event_eff("DATA"), eff_mc)
+    up = _safe_ratio(_event_eff("DATA", +1), eff_mc)
+    down = _safe_ratio(_event_eff("DATA", -1), eff_mc)
     return nom, up, down
 
 
@@ -504,8 +515,8 @@ def muon_trigger_sf(tight_muons, era):
         )
 
     valtypes = _correction_valtypes(str(MUON_JSONS[era]["TRIGGER"]), corr_name)
-    if {"nominal_DATAeff", "nominal_MCeff", "stat_DATAeff", "stat_MCeff", "syst_DATAeff", "syst_MCeff"} <= valtypes:
-        return _muon_trigger_sf_from_valtype_efficiencies(ceval[corr_name], flat_eta, hlt_pt, counts)
+    if {"nominal", "stat", "nominal_DATAeff", "nominal_MCeff"} <= valtypes:
+        return _muon_trigger_sf_from_valtype_efficiencies(ceval[corr_name], flat_eta, hlt_pt, counts, valtypes)
 
     key = f"muon_trig_sf_only::{era}"
     if key not in _WARN_ONCE:
