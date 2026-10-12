@@ -255,3 +255,20 @@ def test_prepare_jobs_avoids_hosts_and_sets_runtime_limit(tmp_path, monkeypatch)
     jdl = (tmp_path / "j" / "submit.jdl").read_text()
     assert '&& (TARGET.Machine =!= "cmswn2230.fnal.gov") && (TARGET.Machine =!= "cmswn2245.fnal.gov")' in jdl
     assert "> 10800)" in jdl and "longer than 3 h" in jdl
+
+
+def test_prepare_jobs_sets_the_rucio_account_of_the_jobs(tmp_path, monkeypatch):
+    """The jobs' Rucio fallback authenticates as the submitter's account, not skim.py's default (Billy's)."""
+    plan, key = _local_plan(tmp_path, n_files=1, group_bytes=1)
+    monkeypatch.setattr(condor, "inflight_groups", lambda *a: set())
+    repo = tmp_path / "repo"
+    (repo / "bin").mkdir(parents=True)
+    (repo / "wrcoffea").mkdir()
+    (repo / "bin" / "skim.py").write_text("")
+    (repo / "wrcoffea" / "__init__.py").write_text("")
+    condor.prepare_jobs(plan, [key], out_root=tmp_path / "out", remote="root://x//r", jobs_dir=tmp_path / "a",
+                        repo_root=repo, proxy="/p", rucio_account="someone")
+    assert 'environment             = "RUCIO_ACCOUNT=someone"' in (tmp_path / "a" / "submit.jdl").read_text()
+    condor.prepare_jobs(plan, [key], out_root=tmp_path / "out", remote="root://x//r", jobs_dir=tmp_path / "b",
+                        repo_root=repo, proxy="/p")
+    assert "environment" not in (tmp_path / "b" / "submit.jdl").read_text()

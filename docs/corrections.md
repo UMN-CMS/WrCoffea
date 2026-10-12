@@ -26,16 +26,23 @@ Era columns: the four UL eras, then 2022, 2022EE, 2023, 2023BPix, 2024, 2025.
 
 | Era | JEC (MC / data) | JER | Jet veto map | Veto rule | Jet ID |
 | --- | --- | --- | --- | --- | --- |
-| UL16APV | Summer19UL16APV_V7 | Summer20UL16APV_JRV5 | Summer19UL16_V1 | drop the jet | `jetId >= 6` |
-| UL16 | Summer19UL16_V7 | Summer20UL16_JRV5 | Summer19UL16_V1 | drop the jet | `jetId >= 6` |
-| UL17 | Summer19UL17_V5 | Summer19UL17_JRV4 | Summer19UL17_V1 | drop the jet | `jetId >= 6` |
-| UL18 | Summer19UL18_V5 | Summer19UL18_JRV3 | Summer19UL18_V1 | drop the jet | `jetId >= 6` |
-| 2022 | Summer22_22Sep2023_V4 | Summer22_22Sep2023_JRV2 | Summer22_23Sep2023_RunCD_V1 | reject the event | `jetId >= 6` |
-| 2022EE | Summer22EE_22Sep2023_V4 | Summer22EE_22Sep2023_JRV2 | Summer22EE_23Sep2023_RunEFG_V1 | reject the event | `jetId >= 6` |
-| 2023 | Summer23Prompt23_V4 | Summer23Prompt23_RunCv1234_JRV3 | Summer23Prompt23_RunC_V1 | reject the event | `jetId >= 6` |
-| 2023BPix | Summer23BPixPrompt23_V4 | Summer23BPixPrompt23_RunD_JRV3 | Summer23BPixPrompt23_RunD_V1 | reject the event | `jetId >= 6` |
+| UL16APV | Summer19UL16APV_V7 | Summer20UL16APV_JRV5 | Summer19UL16_V1 | drop the jet | `jetId` lepton-veto bit |
+| UL16 | Summer19UL16_V7 | Summer20UL16_JRV5 | Summer19UL16_V1 | drop the jet | `jetId` lepton-veto bit |
+| UL17 | Summer19UL17_V5 | Summer19UL17_JRV4 | Summer19UL17_V1 | drop the jet | `jetId` lepton-veto bit |
+| UL18 | Summer19UL18_V5 | Summer19UL18_JRV3 | Summer19UL18_V1 | drop the jet | `jetId` lepton-veto bit |
+| 2022 | Summer22_22Sep2023_V4 | Summer22_22Sep2023_JRV2 | Summer22_23Sep2023_RunCD_V1 | reject the event | JME repair of the v12 `jetId` |
+| 2022EE | Summer22EE_22Sep2023_V4 | Summer22EE_22Sep2023_JRV2 | Summer22EE_23Sep2023_RunEFG_V1 | reject the event | JME repair of the v12 `jetId` |
+| 2023 | Summer23Prompt23_V4 | Summer23Prompt23_RunCv1234_JRV3 | Summer23Prompt23_RunC_V1 | reject the event | JME repair of the v12 `jetId` |
+| 2023BPix | Summer23BPixPrompt23_V4 | Summer23BPixPrompt23_RunD_JRV3 | Summer23BPixPrompt23_RunD_V1 | reject the event | JME repair of the v12 `jetId` |
 | 2024 | Summer24Prompt24_V5 | Summer24Prompt24_JRV2 | Summer24Prompt24_RunBCDEFGHI_V1 | reject the event | `jetid.json.gz` |
-| 2025 | Summer24Prompt25_V3 | Summer24Prompt25_JRV2 | Summer24Prompt25_RunCDEFG_V1 | reject the event | `jetId >= 6` |
+| 2025 | Summer24Prompt25_V3 | Summer24Prompt25_JRV2 | Summer24Prompt25_RunCDEFG_V1 | reject the event | `jetid.json.gz` (NanoAODv15 has no `Jet_jetId`) |
+
+Jet ID (JME Jet ID page, 2026-10-12): AK4 tight with lepton veto, AK8 tight. NanoAODv15 (2024,
+2025) has no `jetId` and uses the CAT `jetid.json.gz`. NanoAODv12 (2022, 2023) stores a wrong
+lepton-veto bit; the JME repair starts from the Tight bit, adds neHEF < 0.99 for 2.7 < |η| ≤ 3.0
+and neEmEF < 0.4 above, and builds the lepton veto as muEF < 0.8 and chEmEF < 0.8 for |η| ≤ 2.7
+(`ak4_tight_lepton_veto_from_bits` in `analyzer.py`; since 2026-10-12, before: the stored bit; 0.025 %
+of the selected 2023 jets differ). UL (NanoAODv9) uses the stored bits.
 
 AK4 is CHS in UL and Puppi in Run 3, AK8 is Puppi everywhere; the JES uncertainty source is `Total`
 (`CMS_scale_j_Total`), the UL18 file also ships the regrouped sources. The UL JERC files are the
@@ -86,8 +93,8 @@ SFs to 500 GeV and HEEP ID SFs to 1 TeV instead of using it (open item in analys
 The reco SF's last bin is open-ended (p > 1.5 TeV; 2024 p > 0.9 TeV) with era-dependent central
 values; see the open items in analysis.md. Every 2022, 2023 and 2024 muon file is the CAT release of
 2026-06-18 (the 2022/2023 scale-smearing parameters were re-derived by the POG on 2026-04-28); the 2025
-files come from the era's own CAT campaign, `Run3-25Prompt-Summer24-NanoAODv15`, installed on
-2026-10-11.
+files come from the era's own CAT campaign, `Run3-25Prompt-Summer24-NanoAODv15` (2025 data with the
+Summer24 MC), its release of 2026-04-28.
 
 ### Other event-level corrections
 

@@ -92,6 +92,26 @@ _CORRECTIONSET_CACHE = {}
 # Warn-once cache (per worker process) to avoid log spam.
 _WARN_ONCE: set[str] = set()
 
+# NanoAODv12 (2022/2023) stores a wrong Jet_jetId lepton-veto bit.  The JME Jet ID page's repair: start from the
+# Tight bit, add the forward cuts to Tight, and build the lepton veto for |eta| <= 2.7 from the energy fractions.
+NANOAOD_V12_ERAS = ("Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix")
+
+
+def ak4_tight_lepton_veto_from_bits(jets, era):
+    """AK4 Tight-with-lepton-veto ID for the eras whose NanoAOD has ``Jet_jetId`` (UL v9 and 2022/2023 v12).
+
+    v9: the lepton-veto bit (``jetId & 4``).  v12: the JME repair of the Tight bit (``jetId & 2``)."""
+    if era not in NANOAOD_V12_ERAS:
+        # coffea's Jet.isTightLeptonVeto is that bit
+        return jets.isTightLeptonVeto if hasattr(jets, "isTightLeptonVeto") else (jets.jetId & 4) != 0
+    abseta = np.abs(jets.eta)
+    tight = ((jets.jetId & 2) != 0) & (
+        (abseta <= 2.7)
+        | ((abseta <= 3.0) & (jets.neHEF < 0.99))
+        | ((abseta > 3.0) & (jets.neEmEF < 0.4))
+    )
+    return tight & ((abseta > 2.7) | ((jets.muEF < 0.8) & (jets.chEmEF < 0.8)))
+
 
 # Run 2 single-lepton trigger ORs per year (AN-19-083 Table 1; the UL16 eras share 2016).  Branch names
 # without the "HLT_" prefix, as NanoAOD stores them under events.HLT.
@@ -330,6 +350,10 @@ class WrAnalysis(processor.ProcessorABC):
             mask = mask & ~self.ecal_bad_calib_filter(events)
         elif mc_campaign == "RunIII2024Summer24":
             mask = mask & self._noise_flag(events, "ecalBadCalibFilter", mc_campaign)
+        elif mc_campaign == "RunIII2025Summer25":
+            # JME Run 3 noise-filter list (2026-10-12): ecalBadCalibFilter for 2025-2026 is "under review", so only
+            # the common filters apply.
+            pass
         else:
             logger.warning(f"No known Era {mc_campaign}. Noise filters are not applied.")
         return events[mask]
@@ -429,9 +453,9 @@ class WrAnalysis(processor.ProcessorABC):
     def select_jets(self, events, era):
         """Select AK4 and AK8 jets and return (collections, per-object masks).
 
-        For eras with a JME JSON configured, AK4 PUPPI TightLeptonVeto is
-        evaluated via correctionlib.  If the required NanoAOD fields are
-        missing, fall back to ``Jet.jetId >= 6`` and warn once per worker.
+        For eras with a JME JSON configured (NanoAODv15), AK4 PUPPI TightLeptonVeto is
+        evaluated via correctionlib.  The other eras use ``Jet_jetId`` through
+        ``ak4_tight_lepton_veto_from_bits`` (the JME repair for NanoAODv12).
         """
         # ---------- AK4 ----------
         ak4_pteta_mask = (events.Jet.pt > CUTS["ak4_pt_min"]) & (np.abs(events.Jet.eta) < CUTS["ak4_eta_max"])
@@ -453,13 +477,7 @@ class WrAnalysis(processor.ProcessorABC):
                     )
                 ak4_id_mask = events.Jet.jetId >= 6
         else:
-            # For eras without jetid.json (the NanoAODv12 eras)
-            # Use isTightLeptonVeto if available, otherwise use jetId >= 6
-            if hasattr(events.Jet, 'isTightLeptonVeto'):
-                ak4_id_mask = events.Jet.isTightLeptonVeto
-            else:
-                # NanoAODv12 and earlier: use jetId integer flag (6 = TightLeptonVeto)
-                ak4_id_mask = events.Jet.jetId >= 6
+            ak4_id_mask = ak4_tight_lepton_veto_from_bits(events.Jet, era)
 
         ak4_mask = ak4_pteta_mask & ak4_id_mask
         ak4_jets = events.Jet[ak4_mask]
@@ -1862,10 +1880,7 @@ class WrAnalysis(processor.ProcessorABC):
 
                 ak4_id_mask = events.Jet.jetId >= 6
         else:
-            if hasattr(events.Jet, 'isTightLeptonVeto'):
-                ak4_id_mask = events.Jet.isTightLeptonVeto
-            else:
-                ak4_id_mask = events.Jet.jetId >= 6
+            ak4_id_mask = ak4_tight_lepton_veto_from_bits(events.Jet, mc_campaign)
         # Jet veto maps (JME recommendation): Run 3 rejects the whole event, Run 2
         # drops only the vetoed jets and keeps the event.  The two runs differ on
         # purpose; `jetveto_mode` in config.yaml picks the rule per era.

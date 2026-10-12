@@ -267,7 +267,11 @@ def cmd_condor(args) -> int:
                            max_hours=args.max_hours, avoid_hosts=tuple(args.avoid_hosts or ()),
                            max_groups=args.max_groups, force=args.force,
                            retry_bad=not args.keep_bad, skip_inflight=not args.ignore_queue,
+                           rucio_account=args.rucio_account,
                            inflight_text=Path(args.inflight_file).read_text() if args.inflight_file else None)
+    if not args.rucio_account:
+        logger.warning("no --rucio-account / RUCIO_ACCOUNT: the jobs' Rucio fallback uses skim.py group's default "
+                       "account (wijackso), which only works for Billy's proxy")
     print(f"{summary['groups']} job(s) for {summary['datasets']} dataset(s), {summary['input_files']} input files, "
           f"{summary['input_gb']} GB to read; {summary['skipped_inflight']} group(s) already queued/running skipped")
     print(f"submission written to {summary['jobs_dir']}")
@@ -472,6 +476,14 @@ def cmd_split_scan(args) -> int:
     return 0
 
 
+def cmd_alias_filesets(args) -> int:
+    """MC filesets of a data-only era from the committed ones of its alias era (no campaign root needed)."""
+    from wrcoffea.skim.upload import alias_filesets
+    for path in alias_filesets(args.era, args.fileset_dir):
+        print(f"wrote {path}")
+    return 0
+
+
 def cmd_fileset(args) -> int:
     from wrcoffea.skim.upload import write_filesets
     return write_filesets(args)
@@ -577,6 +589,8 @@ def main(argv=None) -> int:
     p.add_argument("--jobs-dir", required=True, help="where to write the submission (JDL, wrapper, code tarball, plan slices)")
     _add_selection_args(p)
     p.add_argument("--proxy", default=None, help="x509 proxy file for the jobs (default: $X509_USER_PROXY)")
+    p.add_argument("--rucio-account", default=os.environ.get("RUCIO_ACCOUNT"),
+                   help="Rucio account set in the jobs' environment for their replica lookup (default: $RUCIO_ACCOUNT)")
     p.add_argument("--image", default=None, help="apptainer image (default: the coffea almalinux9 image on cvmfs)")
     p.add_argument("--cpus", type=int, default=1)
     p.add_argument("--memory-mb", type=int, default=4000)
@@ -614,7 +628,8 @@ def main(argv=None) -> int:
     p.add_argument("--classify", action="store_true")
     p.add_argument("--mark-corrupt", nargs="+", metavar="LFN", help="record these inputs as corrupt in their group statuses (skipped from then on)")
     p.add_argument("--reason", default=None, help="text stored with --mark-corrupt")
-    p.add_argument("--rucio-account", default="wijackso")
+    p.add_argument("--rucio-account", default=os.environ.get("RUCIO_ACCOUNT", "wijackso"),
+                   help="Rucio account (default: $RUCIO_ACCOUNT, else Billy's)")
     p.set_defaults(func=cmd_bad_files)
     p = sub.add_parser("status", help="progress summary")
     p.add_argument("--plan-dir", required=True)
@@ -668,6 +683,12 @@ def main(argv=None) -> int:
                    help="write a family's fileset even when some of its selected datasets are unfinished "
                         "(they are left out and listed); without it such a family is not written and the exit code is 1")
     p.set_defaults(func=cmd_fileset)
+
+    p = sub.add_parser("alias-filesets",
+                       help="the MC filesets of a data-only era (mc_alias) from the committed skimmed filesets of its alias era")
+    p.add_argument("--era", required=True, help="the data-only era, e.g. RunIII2025Summer25")
+    p.add_argument("--fileset-dir", default=str(REPO_ROOT / "data" / "filesets"))
+    p.set_defaults(func=cmd_alias_filesets)
 
     p = sub.add_parser("unskimmed-fileset",
                        help="write the unskimmed filesets (original NanoAOD files via DBS) of an era, one per config family")

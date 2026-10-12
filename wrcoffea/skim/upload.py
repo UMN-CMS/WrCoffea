@@ -283,6 +283,47 @@ def _group_progress(plan: Plan, key: str, out_root: Path) -> str:
     return f"{n_done}/{len(ds.groups)} groups done"
 
 
+def alias_filesets(era: str, fileset_dir: str | Path) -> list[Path]:
+    """The MC filesets of a data-only era from the committed skimmed filesets of the era it borrows its MC from.
+
+    A data-only era (``mc_alias`` in config.yaml, e.g. 2025 -> 2024) is analysed with the alias era's MC. Every
+    non-data skimmed fileset of the alias era is copied to ``<era>_<family>_fileset.json`` with each entry's ``era``
+    and ``year`` set to the data-only era's and ``skims_from_era`` naming the alias era, the entries ``skim.py
+    fileset`` writes for borrowed MC from a campaign root.  It needs neither the plan nor the sidecars, so it works in
+    a fresh clone; rerun it whenever the alias era's filesets change.
+    """
+    from wrcoffea.era_utils import get_era_details
+    src = _mc_alias().get(era)
+    if not src:
+        raise ValueError(f"{era} has no mc_alias in config.yaml: it is not a data-only era")
+    _, year, _ = get_era_details(era)
+    src_dir = Path(fileset_dir) / ERA_SUBDIRS[src] / "skimmed"
+    dst_dir = Path(fileset_dir) / ERA_SUBDIRS[era] / "skimmed"
+    written = []
+    for path in sorted(src_dir.glob(f"{src}_*_fileset.json")):
+        family = path.name[len(src) + 1:-len("_fileset.json")]
+        if family == "data":
+            continue
+        fileset = json.loads(path.read_text())
+        for das, entry in fileset.items():
+            meta = entry.get("metadata", {})
+            if meta.get("datatype") == "data":
+                raise ValueError(f"{path.name}: {das} is data; only MC is borrowed")
+            meta["era"] = era
+            meta["year"] = str(year)
+            meta["skims_from_era"] = src
+        out = dst_dir / f"{era}_{family}_fileset.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        tmp = out.with_suffix(out.suffix + ".tmp")
+        tmp.write_text(json.dumps(fileset, indent=2, sort_keys=True) + "\n")
+        tmp.replace(out)
+        written.append(out)
+        logger.info("wrote %s (%d datasets, from %s)", out, len(fileset), path.name)
+    if not written:
+        raise FileNotFoundError(f"no {src} MC filesets in {src_dir}")
+    return written
+
+
 def write_filesets(args) -> int:
     """Write one fileset per config family of every selected era.
 

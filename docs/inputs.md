@@ -176,7 +176,9 @@ repository: they sit in the campaign root, `--out` (the default is Billy's).
   skimmed fileset of UL16APV, UL16, UL17, UL18 and 2022 to 2024 points at skims_v2; 2025 has no skims yet.
 - **Data-only eras**: for `RunIII2025Summer25` (`mc_alias` in `config.yaml`) `skim.py fileset`
   writes the MC filesets from the 2024 configs and skims, with the era rewritten and
-  `skims_from_era` recording the source.
+  `skims_from_era` recording the source. Without the 2024 campaign root (a fresh clone),
+  `skim.py alias-filesets --era RunIII2025Summer25` writes the same from the committed 2024
+  filesets.
 
 ## Unskimmed filesets
 

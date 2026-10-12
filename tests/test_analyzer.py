@@ -240,6 +240,37 @@ class TestSelectJets:
         assert ak.num(ak8, axis=1).tolist() == [0]
 
 
+class TestJetIdFromBits:
+    """AK4 Tight-with-lepton-veto from Jet_jetId: the bit in UL (v9), the JME repair in 2022/2023 (v12)."""
+
+    @staticmethod
+    def _jets(eta, jet_id, mu_ef=0.0, ch_em_ef=0.0, ne_hef=0.0, ne_em_ef=0.0):
+        n = len(eta)
+        full = lambda v: [v] * n if np.isscalar(v) else list(v)
+        return ak.zip({"eta": [list(eta)], "jetId": [full(jet_id)], "muEF": [full(mu_ef)],
+                       "chEmEF": [full(ch_em_ef)], "neHEF": [full(ne_hef)], "neEmEF": [full(ne_em_ef)]})
+
+    def test_ul_uses_the_lepton_veto_bit(self):
+        from wrcoffea.analyzer import ak4_tight_lepton_veto_from_bits
+        jets = self._jets([0.0, 0.0, 0.0, 0.0], [2, 4, 6, 7])
+        assert ak.to_list(ak4_tight_lepton_veto_from_bits(jets, "RunIISummer20UL18")) == [[False, True, True, True]]
+
+    def test_v12_lepton_veto_from_the_fractions(self):
+        """The stored v12 lepton-veto bit is ignored: Tight bit plus muEF, chEmEF < 0.8 for |eta| <= 2.7."""
+        from wrcoffea.analyzer import ak4_tight_lepton_veto_from_bits
+        jets = self._jets([0.0, 0.0, 1.0, 2.0, 0.5], [2, 6, 6, 6, 4],
+                          mu_ef=[0.1, 0.9, 0.1, 0.1, 0.1], ch_em_ef=[0.1, 0.1, 0.85, 0.1, 0.1])
+        assert ak.to_list(ak4_tight_lepton_veto_from_bits(jets, "Run3Summer23")) == [[True, False, False, True, False]]
+
+    def test_v12_forward_repair(self):
+        """2.7 < |eta| <= 3.0 needs neHEF < 0.99, |eta| > 3.0 needs neEmEF < 0.4; no fraction cuts on leptons there."""
+        from wrcoffea.analyzer import ak4_tight_lepton_veto_from_bits
+        jets = self._jets([2.8, -2.9, 3.5, -4.0, 2.8], 2, mu_ef=0.9,
+                          ne_hef=[0.5, 0.995, 0.5, 0.5, 0.5], ne_em_ef=[0.9, 0.1, 0.3, 0.45, 0.9])
+        for era in ("Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix"):
+            assert ak.to_list(ak4_tight_lepton_veto_from_bits(jets, era)) == [[True, False, True, False, True]]
+
+
 class TestTriggerMasks:
     """Test build_trigger_masks for different eras."""
 
@@ -441,6 +472,10 @@ def _make_integration_events(n_events=5, *,
             "phi": ak.Array([np.array([3.0 + 0.5 * i for i in range(n_jets)], dtype=np.float64)] * n_events),
             "mass": ak.Array([np.array([10.0] * n_jets, dtype=np.float64)] * n_events),
             "isTightLeptonVeto": ak.Array([np.ones(n_jets, dtype=np.bool_)] * n_events),
+            # the NanoAODv12 (2022/2023) jet ID reads the Tight bit and the energy fractions
+            "jetId": ak.Array([np.full(n_jets, 6, dtype=np.int32)] * n_events),
+            **{f: ak.Array([np.zeros(n_jets, dtype=np.float64)] * n_events)
+               for f in ("muEF", "chEmEF", "neHEF", "neEmEF")},
             "charge": ak.Array([np.zeros(n_jets, dtype=np.int32)] * n_events),
             # process() computes raw pT inline: pt * (1 - rawFactor).
             "rawFactor": ak.Array([np.zeros(n_jets, dtype=np.float64)] * n_events),
@@ -452,6 +487,8 @@ def _make_integration_events(n_events=5, *,
             "phi": _typed_empty_jagged(n_events, np.float64),
             "mass": _typed_empty_jagged(n_events, np.float64),
             "isTightLeptonVeto": _typed_empty_jagged(n_events, np.bool_),
+            "jetId": _typed_empty_jagged(n_events, np.int32),
+            **{f: _typed_empty_jagged(n_events, np.float64) for f in ("muEF", "chEmEF", "neHEF", "neEmEF")},
             "charge": _typed_empty_jagged(n_events, np.int32),
             "rawFactor": _typed_empty_jagged(n_events, np.float64),
         }
@@ -1440,6 +1477,15 @@ class TestNoiseFilter:
         out = WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIII2024Summer24")
 
         assert ak.to_list(out.event) == [0]
+
+    def test_2025_applies_the_common_flags_only(self, caplog):
+        """JME: ecalBadCalibFilter for 2025-2026 is under review; it is neither required nor applied."""
+        flags = self._flags(3, goodVertices=[True, False, True])
+        events = _make_noise_filter_events(flags)
+        with caplog.at_level("WARNING", logger="wrcoffea.analyzer"):
+            out = WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIII2025Summer25")
+        assert ak.to_list(out.event) == [0, 2]
+        assert "No known Era" not in caplog.text
 
     def test_missing_required_flag_is_an_error(self):
         flags = self._flags(2, ecalBadCalibFilter=[True, True])

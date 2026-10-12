@@ -32,8 +32,8 @@ Applied to data and MC unless stated.
   `analyzer.py`): goodVertices, globalSuperTightHalo2016Filter, EcalDeadCellTriggerPrimitiveFilter,
   BadPFMuonFilter, eeBadScFilter, plus BadPFMuonDzFilter and hfNoisyHitsFilter where the branch
   exists; Run 2 UL adds HBHENoiseFilter and HBHENoiseIsoFilter in every year and ecalBadCalibFilter
-  for 2017 and 2018; 2024 adds ecalBadCalibFilter. 2025 has no era-specific list yet: it gets the
-  common flags only (the log says "Noise filters are not applied", but the common ones are). For 2022
+  for 2017 and 2018; 2024 adds ecalBadCalibFilter. 2025 gets the common flags only: the JME Run 3
+  list gives ecalBadCalibFilter for 2025 and 2026 as "under review" (2026-10-12). For 2022
   and 2023 the NanoAOD ecalBadCalibFilter is not used; instead the JME recipe for runs 362433 to
   367144 rejects an event with PuppiMET > 100 GeV and a jet (pT > 50 GeV, −0.5 < η < −0.1,
   −2.1 < φ < −1.8, neutral or charged EM fraction > 0.9) back to back with it, Δφ > 2.9
@@ -60,7 +60,7 @@ scale and smearing corrections ([corrections.md](corrections.md)).
 | tight muon | TuneP pT > 53 GeV, \|η\| < 2.4, `highPtId == 2` (global high-pT ID), `tkRelIso < 0.1` |
 | loose electron (boosted partner) | the cut-based Loose working point from the VID bitmap with the isolation bits ignored (a HEEP electron that fails it is not a loose electron; 0.5 to 1 % of HEEP electrons in 2024 signal and tt̄); the extra-tight-lepton veto counts the HEEP electrons among these |
 | loose muon (boosted partner) | `highPtId == 2`, no isolation requirement |
-| AK4 jet | pT > 40 GeV, \|η\| < 2.4, tight ID with lepton veto (2024: the correctionlib `jetid.json`; other eras `jetId >= 6`); CHS in UL, Puppi in Run 3 |
+| AK4 jet | pT > 40 GeV, \|η\| < 2.4, tight ID with lepton veto (2024 and 2025: the correctionlib `jetid.json`, NanoAODv15 having no `jetId` branch; 2022 and 2023: the JME repair of the NanoAODv12 `jetId`, whose lepton-veto bit is wrong: the Tight bit with muEF < 0.8 and chEmEF < 0.8 for \|η\| ≤ 2.7, since 2026-10-12; UL: the lepton-veto bit); CHS in UL, Puppi in Run 3. The jet veto maps use the same ID |
 | AK8 jet | pT > 200 GeV, \|η\| < 2.4, tight ID, soft-drop mass > 40 GeV; the SR and flavour-CR jet also needs `lsf3 > 0.75` |
 
 Notes on the AK8 jet. The soft-drop mass cut uses NanoAOD's JEC-corrected `msoftdrop` by default.

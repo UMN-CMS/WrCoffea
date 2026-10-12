@@ -60,7 +60,7 @@ periodic_hold_reason    = "running longer than {max_hours} h (overloaded node?);
 periodic_release        = (HoldReasonCode == 3) && (NumJobStarts < 4)
 use_x509userproxy       = true
 x509userproxy           = {proxy}
-request_cpus            = {cpus}
+{environment}request_cpus            = {cpus}
 request_memory          = {memory_mb}
 request_disk            = {disk_kb}
 should_transfer_files   = YES
@@ -168,11 +168,13 @@ def prepare_jobs(plan: Plan, keys: list[str], *, out_root: str | Path, remote: s
                  memory_mb: int = 4000, disk_gb: float = 20.0, streams: int = 4, decompression_threads: int = 1,
                  max_hours: float = 8.0, avoid_hosts: tuple[str, ...] = (), max_groups: int | None = None,
                  force: bool = False, retry_bad: bool = True, skip_inflight: bool = True,
-                 inflight_text: str | None = None) -> dict:
+                 rucio_account: str | None = None, inflight_text: str | None = None) -> dict:
     """Write a complete Condor submission for the pending groups of *keys*.
 
     *out_root* is where the campaign's statuses are read from (a local or mounted copy of the remote
     tree, kept current with ``skim.py mirror``); *remote* is the xrootd URL the jobs write to.
+    *rucio_account* is set as ``RUCIO_ACCOUNT`` in the jobs' environment, the account their Rucio
+    replica lookup (the fallback when no redirector serves a file) authenticates as.
     """
     jobs_dir = Path(jobs_dir)
     (jobs_dir / "logs").mkdir(parents=True, exist_ok=True)
@@ -194,7 +196,9 @@ def prepare_jobs(plan: Plan, keys: list[str], *, out_root: str | Path, remote: s
     (jobs_dir / "submit.jdl").write_text(JDL.format(remote=remote, streams=streams, threads=decompression_threads,
                                                     image=image, proxy=proxy, cpus=cpus, memory_mb=memory_mb,
                                                     disk_kb=int(disk_gb * 1e6), avoid=avoid,
-                                                    max_hours=f"{max_hours:g}", max_seconds=int(max_hours * 3600)))
+                                                    max_hours=f"{max_hours:g}", max_seconds=int(max_hours * 3600),
+                                                    environment=(f'environment             = "RUCIO_ACCOUNT={rucio_account}"\n'
+                                                                 if rucio_account else "")))
     n_files = sum(len(plan.datasets[k].groups[g]) for k, g in todo)
     gb = sum(sum(plan.datasets[k].file_by_lfn()[l]["size"] for l in plan.datasets[k].groups[g]) for k, g in todo) / 1e9
     summary = {"jobs_dir": str(jobs_dir), "groups": len(todo), "datasets": len({k for k, _ in todo}),

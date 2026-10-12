@@ -137,3 +137,29 @@ def test_upload_honours_exclude(campaign, capsys):
     assert "from 1 dataset(s) to upload; 1 incomplete dataset(s) skipped" in capsys.readouterr().out
     upload_campaign(_sel_args(campaign, exclude=["TTtest2"], **base))
     assert "from 1 dataset(s) to upload; 0 incomplete dataset(s) skipped" in capsys.readouterr().out
+
+
+def test_alias_filesets_from_the_committed_alias_era_filesets(tmp_path):
+    """2025 (data-only, mc_alias 2024): its MC filesets are the 2024 ones with era/year rewritten, no campaign needed."""
+    import json as _json
+    from wrcoffea.skim.upload import alias_filesets
+    from wrcoffea.skim.plan import ERA_SUBDIRS
+    src = tmp_path / ERA_SUBDIRS["RunIII2024Summer24"] / "skimmed"
+    src.mkdir(parents=True)
+    mc = {"/DY/x/NANOAODSIM": {"files": {"root://h//a.root": "Events"},
+                                "metadata": {"era": "RunIII2024Summer24", "year": "2024", "run": "Run3",
+                                             "datatype": "mc", "sample": "DY", "xsec": 1.0, "genEventSumw": 2.0}}}
+    data = {"/Muon0/x/NANOAOD": {"files": {}, "metadata": {"era": "RunIII2024Summer24", "datatype": "data"}}}
+    (src / "RunIII2024Summer24_mc_dy_lo_ht_fileset.json").write_text(_json.dumps(mc))
+    (src / "RunIII2024Summer24_signal_fileset.json").write_text(_json.dumps(mc))
+    (src / "RunIII2024Summer24_data_fileset.json").write_text(_json.dumps(data))
+    written = alias_filesets("RunIII2025Summer25", tmp_path)
+    assert sorted(p.name for p in written) == ["RunIII2025Summer25_mc_dy_lo_ht_fileset.json",
+                                               "RunIII2025Summer25_signal_fileset.json"]
+    out = _json.loads(written[0].read_text())
+    meta = out["/DY/x/NANOAODSIM"]["metadata"]
+    assert (meta["era"], meta["year"], meta["skims_from_era"]) == ("RunIII2025Summer25", "2025", "RunIII2024Summer24")
+    assert out["/DY/x/NANOAODSIM"]["files"] == mc["/DY/x/NANOAODSIM"]["files"]
+    assert meta["xsec"] == 1.0 and meta["genEventSumw"] == 2.0
+    with pytest.raises(ValueError, match="not a data-only era"):
+        alias_filesets("RunIII2024Summer24", tmp_path)

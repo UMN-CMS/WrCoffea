@@ -107,9 +107,12 @@ all survive.
 ## Workflow: skimming the 2025 data at the LPC from a fresh clone
 
 The commands below are what a new person runs on a cmslpc login node to skim every 2025 data
-dataset. Replace `<you>` by your username and `<remote>` by the xrootd storage the jobs write to
-(this analysis uses `root://cmsxrootd.hep.wisc.edu//store/user/<you>/WRAnalyzer/skims_v2`; FNAL EOS,
-`root://cmseos.fnal.gov//store/user/<you>/...`, works the same way). Every `skim.py` command runs
+dataset. Replace `<you>` by your username and `<remote>` by the xrootd storage the jobs write to:
+your FNAL EOS area, `root://cmseos.fnal.gov//store/user/<you>/WRAnalyzer/skims_v2` (the default EOS
+quota is 2 TB; the 2025 data skims take about 0.2 TB), or a Wisconsin area if you have one
+(`root://cmsxrootd.hep.wisc.edu//store/user/<you>/...`, where this analysis's skims live). The whole
+workflow, from a fresh clone with the jobs writing to EOS through an analyzer run on the result, was
+run on one 2025 dataset (Muon0_Run2025B) on 2026-10-12. Every `skim.py` command runs
 inside the coffea container; only the Condor submission and `condor_q` run on the host.
 
 ```bash
@@ -123,8 +126,8 @@ cd ~/nobackup && git clone --recursive --branch billy_dev git@github.com:UMN-CMS
 voms-proxy-init --rfc --voms cms -valid 192:00 --out ~/nobackup/x509up
 export X509_USER_PROXY=~/nobackup/x509up
 export SKIM_PLAN=~/nobackup/skims_v2/plans/v2_RunIII2025Summer25 SKIM_OUT=~/nobackup/skims_v2 SKIM_PROXY=~/nobackup/x509up
-export REMOTE=root://cmsxrootd.hep.wisc.edu//store/user/<you>/WRAnalyzer/skims_v2   # exported: steps 7-9 read it in the container
-export RUCIO_ACCOUNT=<your Rucio account>   # read by skim.py run/group; the default is Billy's (wijackso)
+export REMOTE=root://cmseos.fnal.gov//store/user/<you>/WRAnalyzer/skims_v2   # exported: steps 7-9 read it in the container
+export RUCIO_ACCOUNT=<your Rucio account>   # usually your CERN username; run, group, bad-files and the Condor jobs use it
 
 # 2. The container holds coffea, uproot and the XRootD bindings; open a shell in it for steps 3, 4, 7, 8 and 9
 IMG=/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-almalinux9-noml:2026.9.0-py3.12
@@ -133,6 +136,8 @@ apptainer exec -B /cvmfs -B /uscms_data -B /uscms/home -B /uscms/homes $IMG bash
 # 3. The datasets: data/configs/Run3/2025/RunIII2025Summer25/RunIII2025Summer25_data.json lists the DAS paths
 #    (EGamma0/1 and Muon0/1 per period). Compare with DAS before planning and add new periods or a reprocessing
 #    by hand (docs/inputs.md); the golden JSON is data/lumis/Run3/2025/RunIII2025Summer25/Cert_...Golden.json.
+#    The plan takes a few minutes (2026-10-12: 24 datasets, 20,183 files, 12.4 TB, 222 groups). If the login node
+#    reboots under it, rerun it (a branch cache under ~/.cache/wrcoffea makes the rerun faster); use nohup for long plans.
 python3 bin/skim.py plan --campaign v2 --plan-dir $SKIM_PLAN --era RunIII2025Summer25     # DBS through the proxy
 
 # 4. (optional) one group locally, to see the tooling work before submitting everything. Write it to a test root,
@@ -141,7 +146,9 @@ python3 bin/skim.py plan --campaign v2 --plan-dir $SKIM_PLAN --era RunIII2025Sum
 python3 bin/skim.py run --plan-dir $SKIM_PLAN --dataset Muon0_Run2025C --limit-groups 1 --workers 1 \
     --out ~/nobackup/skim_test --scratch ~/nobackup/skim_scratch
 
-# 5. Submit one Condor job per group (on the HOST, not in the container): writes parts straight to <remote>
+# 5. Submit one Condor job per group (on the HOST, not in the container): writes parts straight to <remote>.
+#    Use a new --jobs-dir for every batch while earlier jobs are still queued: the command rewrites groups.txt, the
+#    plan slices and the code tarball that queued jobs read when they start.
 bin/lpc_condor.sh --jobs-dir ~/nobackup/skimjobs/v2_2025 --era RunIII2025Summer25 --remote $REMOTE \
     --cpus 2 --decompression-threads 2 --submit
 
@@ -173,10 +180,11 @@ Then:
   `WR_Plotter/data/lumi.yaml` (the plotter has no 2025 entry yet; see
   [adding_a_new_era.md](adding_a_new_era.md#7-wr_plotter-for-plotting)), and copy
   the masks and the result into `data/lumis/Run3/2025/RunIII2025Summer25/processed_skims_v2/`.
-- **MC for 2025.** 2025 is data-only and uses the 2024 MC (`mc_alias` in `config.yaml`). `skim.py
-  fileset --era RunIII2025Summer25` also writes the 2025 MC filesets, with the era and year
-  rewritten, when the 2024 campaign (its plan and sidecars) is in the same `--plan-dir` / `--out`;
-  a fresh clone does not have them, so run that step where the 2024 campaign root lives.
+- **MC for 2025.** 2025 is data-only and uses the 2024 MC (`mc_alias` in `config.yaml`). The 2025 MC
+  filesets are in the repository (`data/filesets/Run3/2025/RunIII2025Summer25/skimmed/`): the
+  committed 2024 ones with the era and year rewritten, written by
+  `python3 bin/skim.py alias-filesets --era RunIII2025Summer25`, which needs no campaign root. Rerun
+  it whenever the 2024 filesets change.
 - **Commit** the fileset, the lumi files and the config, push, and run the data from any machine:
   `python3 bin/run_analysis.py RunIII2025Summer25 data --dir <tag>`.
 - **Unskimmed filesets** need no skims: `python3 bin/skim.py unskimmed-fileset --era RunIII2025Summer25`
@@ -206,10 +214,9 @@ dataset by dataset, `validate` without `--skip-reread` (every part is re-read), 
 
 - `--remote` (`condor`, `mirror`, `upload`, `fileset`) defaults to his Wisconsin area
   (`/store/user/wijackso/WRAnalyzer/skims_v2`): always pass `--remote`.
-- `--rucio-account` defaults to `wijackso`. `run` and `group` read `RUCIO_ACCOUNT` first;
-  `bad-files` does not, so pass `--rucio-account` there. The Condor jobs get no `RUCIO_ACCOUNT`
-  and use the default; their Rucio replica lookup is a best-effort fallback after the
-  redirectors, so a wrong account only costs that fallback.
+- `--rucio-account` defaults to `wijackso`. `run`, `group`, `bad-files` and `condor` read
+  `RUCIO_ACCOUNT` first, and `condor` sets it in the jobs' environment (the account their Rucio
+  replica lookup, the fallback after the redirectors, authenticates as): export it (step 1).
 - `--out` and `--scratch` default to his laptop layout (`skim.py run --help` prints them).
 - `bin/lpc_condor.sh` defaults `SKIM_PROXY` to his proxy file and `SKIM_PLAN` / `SKIM_OUT` to his
   LPC layout: export all three (step 1 above).

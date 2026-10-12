@@ -97,9 +97,11 @@ lumi_jsons:
 
 # JSON POG payloads — JME
 jme_jsons:
-  # NanoAODv12 eras (Run3Summer22, Run3Summer22EE, Run3Summer23, Run3Summer23BPix)
-  # removed - these eras use Jet.jetId >= 6 instead (see analyzer.py)
+  # Not mapped: UL (NanoAODv9) and 2022/2023 (NanoAODv12) use Jet_jetId, the v12 eras with the JME repair
+  # (analyzer.py: ak4_tight_lepton_veto_from_bits).
   RunIII2024Summer24: data/jsonpog/JME/Run3/RunIII2024Summer24/jetid.json.gz
+  # 2025 (2026-10-12): NanoAODv15 like 2024, so no Jet_jetId branch; its CAT jet ID file
+  RunIII2025Summer25: data/jsonpog/JME/Run3/RunIII2025Summer25/jetid.json.gz
 
 jetveto_jsons:
   RunIISummer20UL16APV: data/jsonpog/JME/RunII/RunIISummer20UL16APV/jetvetomaps.json.gz

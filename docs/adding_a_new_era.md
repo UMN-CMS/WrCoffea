@@ -64,7 +64,8 @@ Every file a key maps must exist: a missing file is an error, never an identity.
 
 - `jetveto_jsons`, `jetveto_correction_names`: the jet veto map and the correction name inside it.
 - `jetveto_mode`: `event` (the Run 3 default) or `jet` (the UL eras).
-- `jme_jsons`: the correctionlib jet ID (`jetid.json.gz`), mapped for 2024; other eras use the
+- `jme_jsons`: the correctionlib jet ID (`jetid.json.gz`), mapped for 2024 and 2025 (required for NanoAODv15, which has
+  no `Jet_jetId`); other eras use the
   NanoAOD jet ID branches.
 - `muon_jsons`: RECO (reco, ID and isolation SFs), TRIGGER and ScaleNSmear payloads.
 - `muon_hlt_correction`: the correction name in the muon TRIGGER payload when it is not the
