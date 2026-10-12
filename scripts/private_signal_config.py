@@ -29,7 +29,7 @@ Example (the 2024 production)::
     python3 scripts/private_signal_config.py \\
         --dir root://cmsxrootd.hep.wisc.edu//store/user/kalpana/WRAnalyzer/SignalSamples/Run3/RunIII2024Summer24 \\
         --run Run3 --year 2024 --era RunIII2024Summer24 \\
-        --reference data/configs/Run3/2024/RunIII2024Summer24/archived/RunIII2024Summer24_signal_placeholder_Run3Summer23BPix.json \\
+        --reference data/configs/Run3/2023/Run3Summer23BPix/Run3Summer23BPix_signal.json \\
         --out data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_signal.json \\
         --report private_signal_report.json
 """

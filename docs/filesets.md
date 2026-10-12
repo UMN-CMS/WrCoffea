@@ -38,7 +38,7 @@ Every active skimmed fileset (2022-2024, UL18) points at skims_v2.
 
 ### Earlier skims (skims_v1)
 
-The filesets of the skims made before October 2026 are kept under `skimmed/archived/skims_v1/` for reference. Pass one with `--fileset` to run on those files; nothing writes new ones.
+The filesets of the skims made before October 2026 were removed from the tree on 2026-10-11; they are in the git history (up to commit 41d2e54), and the v1 skims themselves still sit at Wisconsin under `WRAnalyzer/skims/`. Nothing runs on them any more.
 
 ## Config Files
 
