@@ -1,5 +1,6 @@
 """Tests for bin/run_analysis.py helpers."""
 
+import logging
 import os
 import sys
 from types import SimpleNamespace
@@ -284,6 +285,17 @@ def test_validate_dy_lo_ht_accepted_for_ul18():
     """--dy lo_ht should be accepted for RunIISummer20UL18."""
     # Should not raise
     run_analysis.validate_arguments(_dy_args("RunIISummer20UL18", "lo_ht"), [])
+
+
+def test_validate_dy_nlo_ptll_warns(caplog):
+    """--dy nlo_ptll runs, with a warning that the unstitched samples are no DY prediction."""
+    with caplog.at_level(logging.WARNING):
+        run_analysis.validate_arguments(_dy_args("RunIII2024Summer24", "nlo_ptll"), [])
+    assert "--dy nlo_ptll" in caplog.text and "unstitched" in caplog.text
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        run_analysis.validate_arguments(_dy_args("RunIII2024Summer24", "nlo_inc"), [])
+    assert "nlo_ptll" not in caplog.text
 
 
 def _unblind_args(era, unblind=True):

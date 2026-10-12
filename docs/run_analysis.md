@@ -138,7 +138,7 @@ always gets nominal only). The families, their sources, and what each era can pr
 | `--preflight-only` | Validate the fileset path, schema and selection, then exit. |
 | `--mass WR<wr>_N<n>` | The signal point (required for `Signal`). |
 | `--signal-points default`, `all` or `POINT ...`, `--mwr-range MIN MAX` | Signal points of a composite mode. |
-| `--dy VARIANT` | DY variant (`dy_variants` per era in `config.yaml`); default `lo_ht`. |
+| `--dy VARIANT` | DY variant (`dy_variants` per era in `config.yaml`); default `lo_ht`. `nlo_ptll` runs with a warning but is not a DY prediction: its pT(ll) slices are added unstitched (the comment in `validate_arguments`). |
 | `--region resolved`, `boosted` or `both` | Topologies to fill (default both). |
 | `--unblind` | Fill the data signal regions and full cutflows (Run 2 only). |
 | `--no-dy-zpt-reweight`, `--no-dy-reshape`, `--no-signal-kfactor` | Switch a correction off (`--no-dy-zpt-reweight` implies `--no-dy-reshape`; incompatible with the corresponding `--systs` family). |

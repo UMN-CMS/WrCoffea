@@ -172,6 +172,18 @@ def validate_arguments(args, sig_points):
             f"--dy {args.dy} is not available for {args.era}. "
             f"Valid choices: {DY_VARIANTS.get(args.era, [])}"
         )
+    # nlo_ptll is not a DY prediction: it runs, but do not compare it with data or the other
+    # DY samples.  Run 3: the four DYto2L-2Jets PTLL-100/200/400/600 samples are open-ended
+    # (generator pT(ll) > 100, > 200, > 400, > 600 GeV; LHE_Vpt of the 2024 skims checked
+    # 2026-10-12) and the fileset adds them unstitched, so pT(ll) > 200 GeV is counted twice,
+    # > 400 three times, > 600 four times, and pT(ll) < 100 GeV is missing.  UL: the
+    # LHEFilterPtZ-0To50 sample is not a 0-50 GeV slice (UL17 header 1504 pb against the
+    # inclusive sample's 5917 pb below 50 GeV), so the six slices do not rebuild the spectrum
+    # either.  Usable only after stitching on LHE_Vpt (Run 3) and a check of every UL slice.
+    if args.dy == "nlo_ptll":
+        logging.warning("--dy nlo_ptll: the pT(ll)-binned DY samples are added unstitched (Run 3: "
+                        "open-ended slices, pT(ll) > 200 GeV counted 2-4 times, nothing below 100 GeV; "
+                        "UL: the 0To50 slice is not a slice). Not a DY prediction; see run_analysis.py.")
 
     # Systematics: every requested family must be producible for this era,
     # and every requested observable must be a booked histogram.
