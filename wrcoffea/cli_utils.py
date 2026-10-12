@@ -347,7 +347,7 @@ def load_and_select_fileset(
     if not filepath.exists():
         raise FileNotFoundError(
             f"Fileset JSON not found: {filepath}. "
-            "Create filesets first (see docs/filesets.md), or check --unskimmed and era/sample names."
+            "Create filesets first (see docs/inputs.md), or check --unskimmed and era/sample names."
         )
 
     preprocessed_fileset = load_json(str(filepath))
@@ -393,7 +393,7 @@ def load_composite_fileset(
             if not fp.exists():
                 raise FileNotFoundError(
                     f"Fileset JSON not found: {fp}. "
-                    "Create filesets first (see docs/filesets.md), or check --unskimmed and era/sample names."
+                    "Create filesets first (see docs/inputs.md), or check --unskimmed and era/sample names."
                 )
             raw = load_json(str(fp))
             validate_fileset_schema(raw, filepath=str(fp))

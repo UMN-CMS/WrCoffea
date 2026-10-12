@@ -10,7 +10,7 @@ All muons use the TuneP transverse momentum, `Muon_pt * Muon_tunepRelPt`, and th
 charge where NanoAOD has it. The regime is chosen on that pT before any correction:
 
 | | data | MC | `muscale` | `musmear` |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | pT below the threshold (200 GeV) | MuonScaRe scale | MuonScaRe scale + smearing | MuonScaRe stat. variation | MuonScaRe stat. variation |
 | pT above the threshold | GE: q/pT -> q/pT - kappa(eta, phi) | p -> p (1 + N(0, sigma(p, abs(eta)) f)), f = sqrt((1 + x)^2 - 1) | q/pT -/+ kappa uncertainty | smearing fraction x +- syst |
 
@@ -62,7 +62,7 @@ Documents:
 - **[POG]** Muon POG "Muon correction recommendations" (muon-wiki.docs.cern.ch, CERN login).
 
 | Payload entry | Taken from | How to check |
-|---|---|---|
+| --- | --- | --- |
 | `ge_kappa.kappa`, `kappa_unc` | [talk] slide 11, "1. Single muon (phi modulation): results", panel "2024". Identical to [AN] Fig. 24, p. 38 | all 60 cells, value and uncertainty, against `show_muon_highpt.py`. The numbers are in the PDF text layer (`pdftotext -bbox-layout -f 11 -l 11`); each value has its "± unc" directly below it |
 | `ge_kappa.eta_edges`, `phi_edges` | [talk] slide 11 axes | the slide 10 example fits land in the same cells |
 | sign convention: kappa is the data bias, data corrected by q/pT - kappa | [talk] slide 9 (the bias as an additive constant on q/pT, injected in MC to match data); slide 10 (template shifted by kappa); slide 17 (applied to data); [POG] High pT: Momentum Scale (method description; Run 3: correct the pT with the GE values) | the forward 2022EFG cells of slide 11 agree in sign with the [POG] 2022 postEE table |

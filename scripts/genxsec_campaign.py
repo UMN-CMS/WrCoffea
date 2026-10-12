@@ -147,7 +147,7 @@ def campaign_family(era: str | None) -> tuple[str, ...] | None:
     return next((f for f in CAMPAIGN_FAMILIES if era in f), None)
 
 
-SIGNAL_NORM = "direct"      # "direct": sigma_NLO / sigma_LO(sample) of the point (payload direct_k, docs/signal_kfactor.md
+SIGNAL_NORM = "direct"      # "direct": sigma_NLO / sigma_LO(sample) of the point (payload direct_k, docs/studies/signal_kfactor.md
                             # option 2, decided 2026-10-10); "average": LO x <k> of the shared curve (Run 2)
 SIGNAL_PAYLOAD = None       # --signal-payload: a payload used for every era instead of config.yaml's (dry runs before the
                             # config change)
@@ -156,7 +156,7 @@ SIGNAL_PAYLOAD = None       # --signal-payload: a payload used for every era ins
 def signal_average_k(era: str | None, primary: str, payload_path: str | None = None) -> tuple[float, str] | None:
     """(k, description) for an official WR signal sample in *era*, or None (no payload / not official signal):
     the payload's <k> of the point and channel (SIGNAL_NORM "average", the Run 2 LO x <k> convention) or its
-    direct per-point sigma_NLO / sigma_LO ("direct"; docs/signal_kfactor.md)."""
+    direct per-point sigma_NLO / sigma_LO ("direct"; docs/studies/signal_kfactor.md)."""
     m = OFFICIAL_SIGNAL_RE.match(primary)
     if not m or not era:
         return None
@@ -835,7 +835,7 @@ def _sig(v: float, n: int = 5) -> float:
 # Perturbative order of the cross section a config entry actually uses ("order" key, right after "xsec")
 # ----------------------------------------------------------------------------
 
-# Vocabulary (documented in docs/dataset_configs.md):
+# Vocabulary (documented in docs/inputs.md):
 #   LO, NLO, NNLO                 the value is a generator or reference cross section at that order
 #   NLO+NNLL, NNLO+NNLL           fixed order plus resummation (tW "approximate NNLO"; ttbar)
 #   LO x k(NLO), LO x k(NNLO)     a LO generator value scaled by an inclusive NLO/LO or NNLO/LO k-factor
@@ -844,7 +844,7 @@ def _sig(v: float, n: int = 5) -> float:
 ORDERS = ("LO", "NLO", "NNLO", "NLO+NNLL", "NNLO+NNLL", "LO x k(NLO)", "LO x k(NNLO)", "NLO x k(NNLO)", "unknown")
 
 # Run 2 UL entries whose committed values predate the GenXSecAnalyzer campaign (no xsec_source): the order of
-# each value as documented in docs/configs/run2_ul_dataset_report.md (source column) and AN-19-083 Tables 6-8.
+# each value as documented in docs/studies/run2_ul_dataset_report.md (source column) and AN-19-083 Tables 6-8.
 # First match wins; patterns are on the primary dataset name.
 UL_ORDER_RULES = [
     (r"^DYJetsToLL_M-50_TuneCP5_13TeV-(madgraphMLM|amcatnloFXFX)", "NNLO"),   # 6077.22 pb, FEWZ NNLO

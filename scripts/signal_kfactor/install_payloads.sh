@@ -32,7 +32,7 @@ for src, dst in (("payload_13_merged.json", f"data/reweights/RunII/2018/RunIISum
     p["provenance"]["note"] = ("direct_k: the point's c x sigma_NLO / sigma_LO(official card) (config normalisation, "
                                "genxsec_campaign.py --signal-norm direct); point_curves: its own NLO/LO m_lN ratio (the analyzer's "
                                "k(m_lN)); averages: <k> of each sample and channel over its generated events (average_k.py); "
-                               "kfactor: the shared curve of all points (fallback). docs/signal_kfactor.md")
+                               "kfactor: the shared curve of all points (fallback). docs/studies/signal_kfactor.md")
     out = REPO / dst
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(p, indent=1) + "\n")

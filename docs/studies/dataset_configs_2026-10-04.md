@@ -60,7 +60,7 @@ on MiniAOD files copied to the Mac first; about one minute per file.
 
 - Cross sections marked `null` or `VERIFY` in the configs: UL18 and the Run 3
   eras were settled by the GenXSecAnalyzer campaign (written 2026-10-10;
-  `docs/dataset_configs.md`, `run2_ul_dataset_report.md`). UL16, UL16APV and
+  `docs/inputs.md`, `run2_ul_dataset_report.md`). UL16, UL16APV and
   UL17 still carry the 2026-10-04 drafts with 233-236 `null` values each (the
   amcatnloFXFX DY mass bins, the `DYJetsToLL_{0,1,2}J_MLL_*` bins,
   `DY{1-4}JetsToLL_M-10to50`, the official signal points): GenXSecAnalyzer runs
@@ -70,4 +70,4 @@ on MiniAOD files copied to the Mac first; about one minute per file.
   per-flavour mass bins in Run 3; stitching of the binned families against the
   inclusive samples is not implemented downstream.
 
-The meaning of every key in the config JSONs (including `xsec`, `order` and `xsec_source`) is documented in [`docs/dataset_configs.md`](../dataset_configs.md).
+The meaning of every key in the config JSONs (including `xsec`, `order` and `xsec_source`) is documented in [`docs/inputs.md`](../inputs.md).

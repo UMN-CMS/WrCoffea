@@ -323,12 +323,12 @@ def write_payload(curve: dict, energy: str, path: Path, points: list[dict],
                                        "LO(2.9.18) / LO(sample, GenXSecAnalyzer) over the points shared with the official "
                                        "grid, so that sigma(sample) x <k> = sigma_NLO; c is the Breit-Wigner truncation of the samples' decay chain "
                        "(bwcutoff = 15 keeps 97.9 % of the resonance), not a MadGraph-version effect (2.6.5 and 2.9.18 agree "
-                       "to 0.1 %): docs/signal_kfactor.md",
+                       "to 0.1 %): docs/studies/signal_kfactor.md",
                        "script": "scripts/signal_kfactor/run_points.sh + kfactor_analysis.py"},
         "variable": "gen_mln",
         "kfactor": {"edges": e.tolist(), "values": k.tolist(), "mln_min": float(e[first])},
         "averages": {},
-        # per-point normalisation alternative to LO x <k>: sigma_NLO / sigma_LO(sample) directly (see docs/signal_kfactor.md)
+        # per-point normalisation alternative to LO x <k>: sigma_NLO / sigma_LO(sample) directly (see docs/studies/signal_kfactor.md)
         "direct_k": direct_k_table(points, curve.get("lo_norm_factor", 1.0), interpolate_to),
         # the shape correction of each point from its own NLO/LO m_lN ratio (integrates to direct_k by construction)
         "point_curves": point_curves(points, curve.get("lo_norm_factor", 1.0)),

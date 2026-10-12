@@ -6,7 +6,7 @@ Generated from DBS; xsec/genEventSumw copied from the current WrCoffea signal co
 ## Run3Summer22_signal.json (200 datasets)
 
 | DAS path | xsec [pb] | genEventSumw | files | events | GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `/WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | 0.1668 | 70000.0 | 8 | 70,000 | 0 |
 | `/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | 0.1592 | 67300.0 | 21 | 67,300 | 0 |
 | `/WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | 0.1477 | 70000.0 | 11 | 70,000 | 0 |
@@ -213,7 +213,7 @@ Total: 13,820,511 events, 60 GB
 ## Run3Summer22EE_signal.json (200 datasets)
 
 | DAS path | xsec [pb] | genEventSumw | files | events | GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `/WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | 0.1668 | 209330.0 | 36 | 209,330 | 1 |
 | `/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | 0.1592 | 209309.0 | 40 | 209,309 | 1 |
 | `/WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | 0.1477 | 210000.0 | 34 | 210,000 | 1 |
@@ -420,7 +420,7 @@ Total: 41,736,317 events, 156 GB
 ## Run3Summer23_signal.json (200 datasets)
 
 | DAS path | xsec [pb] | genEventSumw | files | events | GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `/WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM` | 0.1668 | 70000.0 | 11 | 70,000 | 0 |
 | `/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM` | 0.1592 | 70000.0 | 9 | 70,000 | 0 |
 | `/WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM` | 0.1477 | 70000.0 | 8 | 70,000 | 0 |
@@ -627,7 +627,7 @@ Total: 13,863,000 events, 53 GB
 ## Run3Summer23BPix_signal.json (200 datasets)
 
 | DAS path | xsec [pb] | genEventSumw | files | events | GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `/WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | 0.1668 | 35000.0 | 7 | 35,000 | 0 |
 | `/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | 0.1592 | 35000.0 | 6 | 35,000 | 0 |
 | `/WRtoNEltoElElJJ_MWR2000_N500_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | 0.1477 | 35000.0 | 1 | 35,000 | 0 |
@@ -834,7 +834,7 @@ Total: 6,999,000 events, 28 GB
 ## RunIII2024Summer24_signal.json (200 datasets)
 
 | DAS path | xsec [pb] | genEventSumw | files | events | GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `/WRtoNEltoElElJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | 0.1668 | 35000.0 | 7 | 35,000 | 0 |
 | `/WRtoNMutoMuMuJJ_MWR2000_N100_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | 0.1674 | 35000.0 | 2 | 35,000 | 0 |
 | `/WRtoNEltoElElJJ_MWR2000_N300_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | 0.1592 | 35000.0 | 6 | 35,000 | 0 |

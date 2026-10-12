@@ -653,7 +653,7 @@ dy_reweight_datasets:
 # AN-19-083 Appendix A).  Disable with --no-signal-kfactor.  Eras absent here
 # apply no k-factor reweighting.
 signal_kfactor:
-  # 2026-10-10: our own derivation (docs/signal_kfactor.md): per-point curves and direct NLO/LO from MG5_aMC fixed-order
+  # 2026-10-10: our own derivation (docs/studies/signal_kfactor.md): per-point curves and direct NLO/LO from MG5_aMC fixed-order
   # runs at 13 TeV; the Run 2 payload signal_kfactor_run2legacy_v4_2018.json stays for reference.
   RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json
   # The other UL eras share the 13 TeV gridpacks, so the same per-point curves and generator-level averages apply.
@@ -685,11 +685,11 @@ pdf_sets:
   RunIII2024Summer24: data/pdf_sets/Run3/2024/RunIII2024Summer24.json
   RunIII2025Summer25: data/pdf_sets/Run3/2024/RunIII2024Summer24.json   # the 2024 MC
 
-# High-pT muon momentum (wrcoffea/muon_momentum.py, docs/muon_momentum.md): eras listed
+# High-pT muon momentum (wrcoffea/muon_momentum.py, docs/studies/muon_momentum.md): eras listed
 # get MuonScaRe below 200 GeV and the generalized-endpoint data correction + MC smearing
 # above; the others keep the TuneP placeholder (flat 5 %/TeV scale, no smearing).  The
 # payloads (data/muon_highpt/) hold numbers from CMS-internal documents;
-# docs/muon_momentum.md lists their sources.
+# docs/studies/muon_momentum.md lists their sources.
 # RunIII2024Summer24 switched on 2026-10-10 ~12:00 CDT, without a rerun: 2024 histogram
 # sets made before then have uncorrected muons (final full 2024 rerun pending).
 muon_highpt:

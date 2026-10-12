@@ -22,7 +22,7 @@ Looser than every analysis cut (`wrcoffea/config.yaml`), so the skims survive
 threshold changes and systematic shifts of object momenta:
 
 | Cut | Value |
-|-----|-------|
+| --- | --- |
 | Lepton pT min, both flavours | 45 GeV |
 | Lepton eta max | 2.5 |
 | Leading lepton pT min | 52 GeV |
@@ -129,6 +129,8 @@ python3 scripts/skim_closure.py --plan-dir plans/v2 --dataset TTto2L2Nu --out ~/
 # 6. Upload to Wisconsin (checksummed, resumable) and write the analyzer filesets
 python3 bin/skim.py upload  --plan-dir plans/v2 --out ~/work/skims_v2
 python3 bin/skim.py fileset --plan-dir plans/v2 --out ~/work/skims_v2 --era RunIII2024Summer24
+# 7. Unskimmed filesets (the original NanoAOD files, for --unskimmed runs; needs only a proxy)
+python3 bin/skim.py unskimmed-fileset --era RunIII2024Summer24   # or --all
 ```
 
 Steps 2 and 6 can also run on the LPC; most groups of the 2022-2024 and UL18
@@ -298,7 +300,7 @@ the default signal fileset.
 The configs' cross sections are measured, not copied, by
 `scripts/genxsec_campaign.py`. The normalisation rules that turn a generator
 number into the `xsec` the analyzer uses are documented with the config keys
-in [`docs/dataset_configs.md`](dataset_configs.md) ("How `xsec` is built"):
+in [`docs/inputs.md`](inputs.md) ("How `xsec` is built"):
 
 - the NNLO references for DY, W+jets, ttbar, tW, t-channel and the dibosons;
 - the branching fractions;
@@ -338,68 +340,10 @@ This section covers only the tool.
 
 ## Luminosity of the skimmed data
 
-`validate` writes `<dataset>_processed_lumis.json` next to the parts of every
-data stream: the lumisections actually present in the skims, which are
-exactly the ones DBS lists for the dataset's files. MC must be normalised to
-the luminosity of these lumisections (intersected with the golden JSON the
-analyzer applies), not to the golden JSON's total: some certified
-lumisections, and occasionally whole runs, exist in no file of the official
-datasets. `scripts/processed_lumi.py` computes it from one per-lumisection
-`brilcalc` table of the golden JSON (recipe in the script, about 3 minutes on
-a cmslpc node) and the masks. Run 3 splits each primary dataset in two halves
-(Muon0/Muon1, EGamma0/EGamma1) that share every lumisection and hold about
-half of its events each, so a channel's luminosity is the mean of its two
-halves' processed luminosities, which is exact in expectation.
-
-2024 (normtag_PHYSICS, 2026-10-06): golden JSON 109.95 fb⁻¹ (C-I 109.82 plus
-2024B 0.13); in the skims mumu 109.675 and ee 109.722 fb⁻¹. The skims lack
-runs 386615-386617 (0.105 fb⁻¹, present only in `Run2024I-PromptReco-v1`, not
-in the `MINIv6NANOv15` reprocessing) and the lumisections missing from the
-datasets themselves (worst: Muon0 2024E, 1.9 % of that period's Muon0
-luminosity). `wrcoffea/config.yaml` and `WR_Plotter/data/lumi.yaml` use 109.70
-for 2024, within 0.02 % of both channels. The masks, the table summary and
-the result are kept in
-`data/lumis/Run3/2024/RunIII2024Summer24/processed_skims_v2/`.
-
-2023 (normtag_PHYSICS, 2026-10-07): golden JSON 28.281 fb⁻¹ (B 0.640, C
-17.964, D 9.677). In the skims: Run3Summer23 (2023B + C) ee 18.587 / mumu
-18.588, used as 18.59; Run3Summer23BPix (2023D) ee 9.673 / mumu 9.677, used as
-9.675. Masks and result in `data/lumis/Run3/2023/processed_skims_v2/`.
-
-2022 (normtag_PHYSICS, 2026-10-08): golden JSON 34.761 fb⁻¹ (B 0.097, C 5.022,
-D 2.967, E 5.806, F 17.783, G 3.086; every golden run is in some data stream).
-In the skims: Run3Summer22 (2022B + C + D) ee 8.082 / mumu 8.076, used as 8.08;
-Run3Summer22EE (E + F + G) ee 26.617 / mumu 26.669, used as 26.64 (EGamma 2022E
-lacks 0.88 % of its certified lumisections in the dataset itself). 2022C has
-both `SingleMuon` and `Muon` (disjoint run ranges), so the script takes the
-union of the two per lumisection. Masks and result in
-`data/lumis/Run3/2022/processed_skims_v2/`.
-
-UL18 (normtag_PHYSICS, 2026-10-09): golden JSON 59.561 fb⁻¹; in the skims ee
-59.500 / mumu 59.544 (2018A 13.96, B 7.02, C 6.87, D 31.65 / 31.69).
-
-- Certified lumisections that exist in no file of the dataset: SingleMuon
-  2018C 46 (0.18 %), EGamma 2018D 963 (0.76 %).
-- `wrcoffea/config.yaml` and `lumi.yaml` still use 59.83 fb⁻¹, the value
-  before the reskim. Switching to the processed value is an open decision.
-- The UL18 masks and result are not in `data/lumis/` yet.
-
-Run 2 (2026-10-10, "brilcalc for everything"): the same procedure gives
-UL18 e 59.500 / mumu 59.544 (golden JSON 59.561), used as 59.52, and UL17
-e 42.063 / mumu 42.016 (golden 42.068), used as 42.04. These differ from the
-published Run 2 luminosities (59.83 fb⁻¹ for 2018, 41.48 for 2017) because
-`brilcalc` is run with the current `normtag_PHYSICS.json` (December 2025,
-data tag 24v2), which recalibrated Run 2: 2018 moves down by 0.5 % and 2017
-up by 1.4 %. The normtag is applied even though the per-lumisection CSV that
-`--byls --output-style csv` writes says `Norm tag: None` and `source AVG` in
-its header: for a single run the CSV sum equals the `--normtag` summary
-exactly (run 297050: 0.106374 fb⁻¹ both ways, against 0.103287 without the
-normtag), and the 2017 golden-JSON total in summary mode with the normtag is
-the same 42.068. The 2016 table (both UL16 eras share the golden JSON) takes
-longer than 15 minutes and is streamed to the CSV, so wait for the `brilcalc`
-process to exit before copying it. Tables and results:
-`~/work/skims_v2/_lumi/golden<year>_byls_physics.csv` and
-`<era>_processed_lumi.json`.
+`validate --remote-lumis` writes `<dataset>_processed_lumis.json` next to the parts of every data
+stream: the lumisections actually present in the skims. The luminosity of an era is the brilcalc
+luminosity of the golden lumisections among them, computed by `scripts/processed_lumi.py`; the method,
+the recipe, the numbers and the per-era notes are in [luminosity.md](luminosity.md).
 
 ## Edge eras (2022B, 2023B, 2024B)
 
@@ -454,7 +398,7 @@ Payloads in the repo (updated 2026-10-07 from cvmfs `latest`; only
 jet ID files were identical):
 
 | era | before 2026-10-07 | now (= latest official) |
-|---|---|---|
+| --- | --- | --- |
 | Run3Summer22 | `Summer22_22Sep2023_RunCD_V3`, `JRV1` | `Summer22_22Sep2023_V4`, `JRV2` (2026-06-05) |
 | Run3Summer22EE | `Summer22EE_22Sep2023_RunE/F/G_V3`, `JRV1` | `Summer22EE_22Sep2023_V4`, `JRV2` (2026-06-05) |
 | Run3Summer23 | `Summer23Prompt23_V2`, `RunCv1234_JRV1` | `Summer23Prompt23_V4`, `RunCv1234_JRV3` (2026-07-15) |
@@ -484,7 +428,7 @@ sidecars. Skipped inputs are excluded consistently: the Runs-tree sums of a
 dataset cover exactly the processed files, so the normalisation stays right.
 
 | era | dataset | file | defect | events | handling |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | RunIII2024Summer24 | `DYto2L-4Jets_Bin-HT-100to400-MLL-50to120` | `0709bde6-7950-40d1-a10f-26facdbb06f1.root` | corrupt: checksum matches DBS, LZMA errors in several branches | 161,368 | skipped |
 | RunIII2024Summer24 | `DYto2Mu-2Jets_Bin-2J-MLL-50` | 51 files (`skim.py bad-files` lists them) | unavailable: valid in DBS, no replica in Rucio | 8,124,688 (2.8 %) | skipped |
 | Run3Summer22 | `WtoLNu-4Jets_MLNu-0to120_HT-40to100` | `18f2ea1a-97f7-490a-94a1-675992a6752a.root` | corrupt: checksum matches DBS, LZMA error | 53,991 | skipped |
@@ -600,57 +544,9 @@ lumi checks and the processed-lumi mask. Do not list directories at
 Wisconsin: a listing takes 30 s on a good day and times out on a busy one,
 while a stat or a small copy by name takes about a second.
 
-## Output format study (2026-10-04)
+## Output format and earlier skims
 
-Memory: a boolean-masked awkward chunk keeps the whole chunk's buffers (all
-branches) alive, so buffering masked chunks until the writer's flush grew to
-several GB per worker at low pass rates (the first LPC test job was held at
-4 GB). Since 2026-10-05 the selected events are packed (`ak.to_packed`)
-before buffering: peak memory for a 190k-event WW file went from 2.7 GB to
-0.65 GB with no growth across inputs.
-
-Measured on one million 2024 ttbar events with the 856 kept branches, local
-disk, one core; "read" is the analyzer-style read of the 112 columns the
-analysis touches in 250k-event chunks (about 37 % of the bytes).
-
-| Compression | bytes/event | write s per 1M events | read, k events/s |
-|---|---|---|---|
-| lz4:4 | 4700 | 40 | 857 |
-| zlib:1 (old skims) | 3077 | 86 | 216 |
-| zstd:3 | 3042 | 50 | 335 |
-| zlib:6 | 2962 | 474 | 313 |
-| zstd:9 | 2875 | 102 | 383 |
-| zstd:15 | 2804 | 492 | 421 |
-| **zstd:19** | **2304** | 1029 | 341 |
-| lzma:5 | 1918 | 1119 | 34 |
-| lzma:9 (NanoAOD) | 1904 | 1423 | 35 |
-
-Baskets of 10k and 50k events read equally fast; 200k-event baskets read 30 %
-slower. Splitting the same events into 1, 4 or 16 files changes nothing on
-local disk (0.06 s per open); over the WAN each open costs 0.5-2 s, so parts
-should hold roughly a million events.
-
-Conclusions: analysis runs that stream from Wisconsin are bandwidth bound,
-so bytes per event is what matters there; LZMA gives the smallest files but
-decompresses ten times slower, which would dominate local-disk runs with
-systematics. `zstd:19` keeps zstd decompression speed at 24 % below zstd:9
-in size and is the default; `lzma:9` is the choice if storage is the only
-concern. Parts are capped by size (2 GB, about 0.9 M MC events) rather than
-by event count: size is what transfers, opens and retries see, while the
-analyzer's chunking already bounds memory per task. One file per dataset was
-rejected because a single failed transfer or corrupt file would cost tens of
-GB and because uploads and validation are per part.
-
-## Earlier skims
-
-Skims made before October 2026 (the `skims/` tree at Wisconsin) were produced
-by the previous tooling:
-
-- 1209 branches at about 3.2 kB per event, ZLIB level 1;
-- no `LuminosityBlocks` tree;
-- `genEventSumw` taken from a separate DAS pass;
-- the UL18 ones without rho.
-
-No active fileset uses them any more. The filesets that pointed at them are
-kept under `data/filesets/<run>/<year>/<era>/skimmed/archived/skims_v1/` for
-reference.
+The compression and part-size study behind the defaults is in
+[studies/skim_output_format.md](studies/skim_output_format.md). The skims made before October 2026
+(`WRAnalyzer/skims/` at Wisconsin) are no longer used by any fileset; what they were is recorded in
+[history.md](history.md).

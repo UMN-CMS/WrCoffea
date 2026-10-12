@@ -66,7 +66,7 @@ def load_payload(path: str) -> dict:
         "values": np.asarray(kf["values"], dtype=np.float64),
         "mln_min": float(kf["mln_min"]),
         "averages": raw["averages"],
-        # k(m_lN) of each mass point from its own NLO/LO ratio (docs/signal_kfactor.md); a point without one uses
+        # k(m_lN) of each mass point from its own NLO/LO ratio (docs/studies/signal_kfactor.md); a point without one uses
         # the shared curve above
         "point_curves": {},
     }

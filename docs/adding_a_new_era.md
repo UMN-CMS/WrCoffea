@@ -157,19 +157,22 @@ data/configs/Run3/2023/Run3Summer23/
 └── ...
 ```
 
-See `docs/filesets.md` for the expected JSON schema.
+See `docs/inputs.md` for the expected JSON schema.
 
 ### 4b. Fileset JSONs
 
-The analyzer reads fileset JSONs at runtime (see `docs/filesets.md`):
+The analyzer reads fileset JSONs at runtime (see `docs/inputs.md`):
 
 ```bash
 # Skimmed filesets: written by the skim campaign once the era is skimmed (step 5)
 python3 bin/skim.py fileset --plan-dir plans/v2_Run3Summer23 --era Run3Summer23
 ```
 
-Unskimmed filesets (`unskimmed/`) are optional, only needed for `--unskimmed` runs, and are written by
-hand from the DAS file lists following an existing era's file.
+Unskimmed filesets (`unskimmed/`, for `--unskimmed` runs) come straight from the configs and DBS:
+
+```bash
+python3 bin/skim.py unskimmed-fileset --era Run3Summer23
+```
 
 The resulting fileset JSONs land under:
 
@@ -286,7 +289,7 @@ stages, their inputs and environments, and `LIMITS.md` the limit configurations.
 ## Quick-reference checklist
 
 | Step | File(s) | Required? |
-|------|---------|-----------|
+| --- | --- | --- |
 | ERA_MAPPING | `wrcoffea/era_utils.py` | Yes |
 | ERA_SUBDIRS | `wrcoffea/das_utils.py` and `wrcoffea/skim/plan.py` | Yes |
 | Lumi + cuts | `wrcoffea/config.yaml` (lumis, lumi_unc, default_mc_tag) | Yes |

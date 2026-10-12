@@ -34,7 +34,7 @@ cd $REL/src && eval "$(scram runtime -sh)" && cd $WORK
 # aMC@NLO looks PDF ids up in pdfsets.index, which the CMSSW_10_6 LHAPDF data directory lacks, and MG sets
 # LHAPDF_DATA_PATH itself from `lhapdf-config --datadir`: give MG a wrapper whose --datadir holds the sets and an index.
 # KF_LHAPDF_CONFIG=<lhapdf-config>: use that LHAPDF build instead of CMSSW's (MG 2.6.5's compiled PDF code needs an
-# LHAPDF whose own data directory holds pdfsets.index; a local 6.2.3 build does, docs/signal_kfactor.md)
+# LHAPDF whose own data directory holds pdfsets.index; a local 6.2.3 build does, docs/studies/signal_kfactor.md)
 LHAPDF_REAL=${KF_LHAPDF_CONFIG:-$(which lhapdf-config)}
 if [ -n "$KF_LHAPDF_CONFIG" ]; then
   export LD_LIBRARY_PATH=$($LHAPDF_REAL --libdir):$LD_LIBRARY_PATH PATH=$(dirname $LHAPDF_REAL):$PATH

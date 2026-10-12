@@ -64,7 +64,7 @@ def load_curve(path: str) -> dict:
 
 
 def curve_for(curves: dict, mass_point: str | None) -> dict:
-    """The mass point's own curve when the payload has one (option 2 of docs/signal_kfactor.md), else the shared one."""
+    """The mass point's own curve when the payload has one (option 2 of docs/studies/signal_kfactor.md), else the shared one."""
     return curves["point_curves"].get(mass_point, curves)
 
 

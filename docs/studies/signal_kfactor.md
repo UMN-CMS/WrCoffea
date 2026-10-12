@@ -52,7 +52,7 @@ sample. `c` is the ratio of our production-only LO (`p p > n2 mu`, official run_
 (GenXSecAnalyzer on the official production) at the points both share:
 
 | energy | shared points | c |
-|---|---|---|
+| --- | --- | --- |
 | 13 TeV | 105 | 1.0184 +- 0.0043 |
 | 13.6 TeV | 95 | 1.0182 +- 0.0082 |
 
@@ -77,7 +77,7 @@ factor, so that normalisation sits ~2 % below sigma_NLO x BR.
 MG 2.6.5 against 2.9.18, 13 TeV, official cards, req_acc_FO 0.002 / 100k LO events (2026-10-10):
 
 | point | sigma_NLO 2.6.5 [pb] | sigma_NLO 2.9.18 [pb] | ratio | sigma_LO(card) 2.6.5 [pb] | 2.9.18 [pb] | ratio |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | WR1000_N100 | 4.300 +- 0.006 | 4.312 +- 0.006 | 0.997 | 3.5547 +- 0.0018 | 3.5538 | 1.000 |
 | WR2000_N100 | 0.1886 +- 0.0003 | 0.1885 +- 0.0002 | 1.000 | 0.1473 +- 0.0001 | 0.1472 | 1.000 |
 | WR4000_N2100 | 1.146e-3 +- 1.4e-6 | 1.147e-3 +- 1.3e-6 | 0.999 | 8.238e-4 +- 3.6e-7 | 8.238e-4 | 1.000 |
@@ -89,7 +89,7 @@ Direct per-point k = c x sigma_NLO / sigma_LO (official card), scale band = 9-po
 (final campaign: 130 points at 13 TeV, 159 at 13.6 TeV):
 
 | point | 13 TeV | 13.6 TeV | Run 2 <k> (AN-19-083) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | WR1000_N100 | 1.236 (+1.7/-1.6 %) | 1.229 | 1.213 |
 | WR2000_N100 | 1.304 (+1.8/-2.4 %) | 1.297 | 1.291 |
 | WR2000_N1900 | 1.315 (+2.5/-2.9 %) | 1.310 | 1.314 |

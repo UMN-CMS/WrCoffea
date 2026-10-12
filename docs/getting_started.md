@@ -1,99 +1,93 @@
-# Getting Started
+# Getting started
 
-## Clone the Repository
+What this page answers: how to set up the environment on a laptop or at the FNAL LPC, get a grid
+proxy, run one sample and the tests. Verified on 2026-10-11.
 
-Clone with submodules to include the WR_Plotter:
+## Clone
+
 ```bash
 git clone --recursive git@github.com:UMN-CMS/WrCoffea.git
 cd WrCoffea
+git submodule update --init --recursive      # if the clone was made without --recursive
 ```
 
-If you already cloned without `--recursive`, initialize the submodule:
+The analyzer is on branch `billy_dev`, the plotter submodule on `billyDev`. Run every command
+from the repository root: `data/...` and `WR_Plotter/rootfiles/...` are resolved relative to it.
+
+## Environment
+
+Python 3.12 and coffea 2025.12.0, pinned in `pyproject.toml` to the versions of the
+`coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12` container, so laptop and LPC runs match.
+Python 3.14 does not work (no correctionlib wheel).
+
+**Laptop (local runs, plotting, derivations).**
+
 ```bash
-git submodule update --init --recursive
+python3.12 -m venv .venv                    # or: uv venv --python 3.12 .venv
+.venv/bin/pip install --upgrade pip setuptools
+.venv/bin/pip install -e ".[xrootd,test]"
 ```
 
-## Environment Setup
+`[xrootd]` builds the XRootD bindings needed to open `root://` URLs (a corrupted cached wheel
+shows as `ERROR: Wheel 'xrootd' ... is invalid`: `pip cache remove xrootd` and retry); `[test]`
+adds pytest. Everything in `WR_Plotter/bin/` runs with this same environment. The fits in
+`WR_Plotter/signal_fitting/` need ROOT and Combine; see `WR_Plotter/signal_fitting/README.md`.
 
-There are two ways to set up your environment depending on whether you need Condor submission. Both use **Python 3.12** and **coffea 2025.12.0** to ensure local and Condor environments match.
+**FNAL LPC.** The system Python is 3.9; use the CVMFS one for a local environment:
 
-### Option A: Local runs (no Condor)
-
-Requires Python 3.12 (available on FNAL LPC via CVMFS, since the system Python is 3.9). Create and activate a virtual environment, then install the package:
 ```bash
 /cvmfs/sft.cern.ch/lcg/releases/Python/3.12.11-531c6/x86_64-el9-gcc13-opt/bin/python3 -m venv --system-site-packages .venv
-source .venv/bin/activate
-pip install --upgrade pip setuptools
-pip install -e ".[xrootd]"
+source .venv/bin/activate && pip install -e .     # XRootD comes from the system site-packages
 ```
 
-> **Note:** The `--system-site-packages` flag is required so the venv can access XRootD Python bindings from CVMFS. If you already have a `.venv` without `wrcoffea` installed, activate it and run `pip install -e ".[xrootd]"`.
+For Condor (the analyzer at scale, and the skim campaigns) work inside the pinned coffea
+container, which creates its own `.env`:
 
-> **Note:** The `[xrootd]` extra installs the `xrootd`/`fsspec-xrootd` packages needed to open `root://` URLs. It is optional where XRootD bindings are already provided (CVMFS system site-packages, the coffea container) and is skipped in CI, where the tests run fully offline.
-
-> **Troubleshooting XRootD:** The `xrootd` package is built from source during installation. If installation fails with `ERROR: Wheel 'xrootd' ... is invalid`, a corrupted wheel is cached from a previous attempt. Clear it and retry:
-> ```bash
-> pip cache remove xrootd
-> pip install -e ".[xrootd]"
-> ```
-
-### Option B: Condor runs at FNAL LPC (recommended for production)
-
-Set up the lpcjobqueue Apptainer environment (one-time):
 ```bash
-curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh
-bash bootstrap.sh
+curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh && bash bootstrap.sh   # once
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12                                                 # every session
+pip install -e .                                                                                            # once per container tag
 ```
 
-Enter the container using a **pinned tag** (required before each Condor session):
+Never use the `:latest` tag: it can lag behind and mismatch the pinned versions. Details and the
+Condor flags: [condor.md](condor.md). Which machine does what: the laptop runs the analyzer,
+the plots, the fits and the derivations; the LPC runs the skim campaigns and large Condor
+productions.
+
+Check the environment:
+
 ```bash
-./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
+.venv/bin/python -c "import coffea, sys; print(coffea.__version__, sys.version.split()[0])"   # 2025.12.0 3.12.x
+.venv/bin/python -m pytest tests -q                                                           # ~800 tests, offline, about a minute
 ```
 
-> **Important:** Always use a pinned container tag instead of `:latest`. The `:latest` tag may lag behind and ship older coffea versions, causing version mismatches between the container's system packages and `pip install -e .` dependencies.
+## Grid proxy
 
-On first launch, the `.env` virtual environment is created automatically. Install the analysis package once:
-```bash
-pip install -e .
-```
+The skims stream from Wisconsin and DBS queries need a VOMS proxy:
 
-This is a one-time step — the `.env` venv persists between sessions, and editable mode picks up code changes automatically. You only need to re-run `pip install -e .` if:
-- You switch to a different container tag (which recreates `.env`)
-- You change dependencies in `pyproject.toml`
-
-To leave the container, type `exit`.
-
-### Verifying your environment
-
-After setup, confirm that versions match between local and container environments:
-```bash
-python -c "import coffea; print(coffea.__version__)"   # should print 2025.12.0
-python -c "import sys; print(sys.version)"              # should print 3.12.x
-```
-
-### Dependency Versions
-
-**Important:** Python package versions in `pyproject.toml` are pinned to **exactly match** the `coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12` container for reproducibility.
-
-If you switch to a different container version:
-1. Check installed versions in the new container:
-   ```bash
-   apptainer exec /cvmfs/unpacked.cern.ch/.../new-container python -c "import coffea; print(coffea.__version__)"
-   ```
-2. Update `pyproject.toml` to match the new container versions
-3. Recreate your local `.venv`:
-   ```bash
-   rm -rf .venv
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -e ".[xrootd]"
-   ```
-
-This ensures your local development environment matches the production container exactly.
-
-## Grid Proxy
-
-Authenticate for accessing grid resources (required for both local and Condor runs):
 ```bash
 voms-proxy-init --rfc --voms cms -valid 192:00
 ```
+
+The tools read `X509_USER_PROXY` (the proxy file) and `X509_CERT_DIR` (the CA certificates) when
+they are set, which is the way to keep a proxy at a fixed path on a laptop.
+
+## First run
+
+```bash
+.venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --maxfiles 1 --maxchunks 1 --dir smoke   # a minute
+.venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --dir mytag                              # the full sample
+cd WR_Plotter && ../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir mytag --local-plots
+```
+
+The smoke run writes `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/smoke/WRAnalyzer_DYJets.root`
+and its manifest. Its normalization is meaningless (one file, the full sum of weights): never read
+data/MC agreement from a smoke run; delete the `smoke` directory afterwards. Everything else about
+running: [run_analysis.md](run_analysis.md).
+
+## Where to read next
+
+- What the analysis does: [analysis.md](analysis.md).
+- Which corrections each era applies: [corrections.md](corrections.md).
+- Configs, cross sections and filesets: [inputs.md](inputs.md).
+- A new era: [adding_a_new_era.md](adding_a_new_era.md).

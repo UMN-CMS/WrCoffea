@@ -31,7 +31,7 @@ PdmV: *for some of the datasets in 2018 and also 2017, an even newer-than-UL ReR
 Because this analysis selects high-pT muons, the drafts use the GT36 datasets wherever they exist and are complete (SingleMuon 2017C-F, SingleMuon 2018A-D, EGamma 2018A-D; NOT 2017B, see below) and keep the standard datasets as the documented alternative (the committed UL18 config uses the standard ones, so the UL18 data draft now differs from it). Per-dataset comparison with the standard dataset it replaces (run lists compared from DBS `runs`):
 
 | GT36 (15Feb2022) dataset | DBS run range (n runs) | files / events / GB | standard dataset | std events | runs only in standard | runs only in GT36 | certified LS: std / GT36 / missing from GT36 (golden JSON) | decision |
-|---|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `/SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD` | 297047-299329 (104) | 52 / 102065936 / 76.4 | `/SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD` | 136300266 | 4: 297670, 297678, 298678, 299324 | 0:  | 24280 / 18142 / 6138 (25.28%; runs 297050, 297057, 297099, 297100, 297101, 297176...) | **standard kept in config (GT36 incomplete)** |
 | `/SingleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD` | 299368-302029 (189) | 94 / 165575653 / 132.8 | `/SingleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD` | 165652756 | 0:  | 0:  | 51575 / 51557 / 18 (0.03%; runs 300155, 300226, 300235) | GT36 in config |
 | `/SingleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD` | 302031-302663 (85) | 40 / 70274947 / 56.4 | `/SingleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD` | 70361660 | 0:  | 0:  | 27045 / 27010 / 35 (0.13%; runs 302131, 302526) | GT36 in config |
@@ -59,7 +59,7 @@ Nominal era boundaries (CMS run registry): 2016B 272007-275376 (ver1 = the small
 ### 1.1 RunIISummer20UL16APV - `RunIISummer20UL16APV_data.json` (18 datasets, 1305 M events, 1.11 TB)
 
 | DAS path | physics_group | status | DBS run range | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/SingleMuon/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD` | Muon | in config | 272760-273017 | 2 | 2789243 | 2.0 |
 | `/SingleElectron/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD` | EGamma | in config | 272760-273017 | 1 | 1422819 | 1.2 |
 | `/SinglePhoton/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD` | EGamma | in config | 272760-273017 | 10 | 13119462 | 8.5 |
@@ -82,7 +82,7 @@ Nominal era boundaries (CMS run registry): 2016B 272007-275376 (ver1 = the small
 ### 1.2 RunIISummer20UL16 - `RunIISummer20UL16_data.json` (9 datasets, 693 M events, 0.61 TB)
 
 | DAS path | physics_group | status | DBS run range | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/SingleMuon/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD` | Muon | in config | 278769-278808 | 5 | 8024195 | 6.3 |
 | `/SingleElectron/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD` | EGamma | in config | 278769-278808 | 5 | 8858206 | 7.8 |
 | `/SinglePhoton/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD` | EGamma | in config | 278769-278808 | 2 | 1860761 | 1.9 |
@@ -96,7 +96,7 @@ Nominal era boundaries (CMS run registry): 2016B 272007-275376 (ver1 = the small
 ### 1.3 RunIISummer20UL17 - `RunIISummer20UL17_data.json` (16 datasets, 1466 M events, 1.30 TB)
 
 | DAS path | physics_group | status | DBS run range | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD` | Muon | alternative, NOT used: 25% of certified lumi sections missing (6138 of 24280) - not used | 297047-299329 | 52 | 102065936 | 76.4 |
 | `/SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD` | Muon | in config | 297047-299329 | 79 | 136300266 | 102.1 |
 | `/SingleElectron/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD` | EGamma | in config | 297047-299329 | 32 | 60537490 | 50.7 |
@@ -121,7 +121,7 @@ Nominal era boundaries (CMS run registry): 2016B 272007-275376 (ver1 = the small
 ### 1.4 RunIISummer20UL18 - `RunIISummer20UL18_data.json` (8 datasets, 2378 M events, 2.30 TB)
 
 | DAS path | physics_group | status | DBS run range | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD` | Muon | in config (15Feb2022 re-reco) | 315257-316995 | 94 | 241596817 | 211.6 |
 | `/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD` | Muon | alternative, superseded by GT36 | 315257-316995 | 92 | 241608232 | 211.8 |
 | `/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD` | EGamma | in config (15Feb2022 re-reco) | 315257-316995 | 142 | 339013231 | 339.8 |
@@ -165,7 +165,7 @@ One row per unique dataset; the `families` column says which DY config(s) carry 
 ### 3.1 RunIISummer20UL16APV (105 unique MC datasets, 1547 M events, 2.40 TB)
 
 | DAS path | physics_group | families | xsec [pb] | xsec source | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 66 | 95170542 | 113.7 |
 | `/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 18610 | AN-19-083 Tab. 6-8 (labelled NLO); Latinos UL ref E | 19 | 25799525 | 21.0 |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM` | DYJets | nlo_inc,nlo_mll | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 62 | 90947213 | 116.6 |
@@ -275,7 +275,7 @@ One row per unique dataset; the `families` column says which DY config(s) carry 
 ### 3.2 RunIISummer20UL16 (100 unique MC datasets, 1500 M events, 2.31 TB)
 
 | DAS path | physics_group | families | xsec [pb] | xsec source | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 61 | 82448537 | 97.3 |
 | `/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 18610 | AN-19-083 Tab. 6-8 (labelled NLO); Latinos UL ref E | 34 | 22388550 | 18.0 |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM` | DYJets | nlo_inc,nlo_mll | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 41 | 71839442 | 91.2 |
@@ -380,7 +380,7 @@ One row per unique dataset; the `families` column says which DY config(s) carry 
 ### 3.3 RunIISummer20UL17 (106 unique MC datasets, 2887 M events, 4.79 TB)
 
 | DAS path | physics_group | families | xsec [pb] | xsec source | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 75 | 102863931 | 129.1 |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 113 | 100865609 | 126.8 |
 | `/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 18610 | AN-19-083 Tab. 6-8 (labelled NLO); Latinos UL ref E | 77 | 68480179 | 60.5 |
@@ -491,7 +491,7 @@ One row per unique dataset; the `families` column says which DY config(s) carry 
 ### 3.4 RunIISummer20UL18 (106 unique MC datasets, 3378 M events, 5.58 TB)
 
 | DAS path | physics_group | families | xsec [pb] | xsec source | num_file | num_event | size_GB |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 71 | 96233328 | 118.3 |
 | `/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1_ext1-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 6077.22 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | 118 | 101415750 | 124.8 |
 | `/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM` | DYJets | lo_inc,lo_njet | 18610 | AN-19-083 Tab. 6-8 (labelled NLO); Latinos UL ref E | 84 | 94452816 | 81.6 |
@@ -615,7 +615,7 @@ Comparison with the committed private UL18 grid (`WRtoNLtoLLJJ_MWR{M}_MN{N}`, 49
 **Cross sections for the official samples:** the private config values were verified to be exactly AN-19-083 LO x k(NLO/LO) from App. A Tab. 23-41 for all 490 points (parsed into `r2_an_signal_xsec.json`, 664 points, MWR 200-7000). The AN states the ee and mumu channels have identical cross sections, so for the 8 overlapping points the per-flavour draft entries carry **(private ee+mumu value)/2**; all other 97 points per flavour are `null` (XSDB/McM need SSO; GenXSecAnalyzer on one file per point is the fallback). Overlap values:
 
 | point | AN LO [pb] | k | private (ee+mumu) | per-flavour draft |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | MWR1000 N100 | 6.383 | 1.21 | 7.72343 | 3.86171 |
 | MWR1000 N900 | 0.4125 | 1.22 | 0.50325 | 0.251625 |
 | MWR2000 N100 | 0.2622 | 1.29 | 0.338238 | 0.169119 |
@@ -637,7 +637,7 @@ Per-point file summaries are in Appendix A.
 Values are 13 TeV and era-independent (same number in all four drafts). Sources: `UL18 config` = committed `RunIISummer20UL18_mc_dy_*.json`; `AN` = AN-19-083 Tab. 6/7/8 (scratchpad `an.txt` lines 358-500); `cmsdb` = uhh-cms/cmsdb `processes/ewk.py` + `processes/top.py` (fetched today); `Latinos` = latinos/LatinoAnalysis `NanoGardener/python/framework/samples/samplesCrossSections_UL.py` (branch UL_production; ref E = SM twiki, W = XSDB). The twikis themselves were not readable (SSO).
 
 | process (primary dataset) | draft xsec [pb] | total_unc | source used | disagreements / notes |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8` | 6077.22 | 14.78 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | UL18 config carries 2025.74 +-14.78 = 6077.22/3 (per-flavour value on a 3-flavour sample); corrected here |
 | `DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8` | 6077.22 | 14.78 | AN-19-083 Tab. 6-8 (NNLO); cmsdb 6077.22 +-14.78(pdf) | UL18 config carries 2025.74 +-14.78 = 6077.22/3; corrected here |
 | `DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8` | 18610 | 0 | AN-19-083 Tab. 6-8 (labelled NLO); Latinos UL ref E |  |
@@ -731,7 +731,7 @@ Unverified ballpark numbers (from memory of the 2016 SummaryTable1G25ns for the 
 ## 6. Version choices and alternatives
 
 | era | dataset chosen | other VALID standard-condition versions (not chosen) |
-|---|---|---|
+| --- | --- | --- |
 
 No chosen dataset has a second VALID standard-condition version, i.e. the table above is empty by construction (the only multi-version cases on DBS are different `_extN` tags, which are all kept).
 Primary datasets (with ext tag) whose `-vN` differs between eras (same physics, different production version): `DY1JetsToLL_M-10to50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `DY2JetsToLL_M-10to50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `DY3JetsToLL_M-10to50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `DY4JetsToLL_M-10to50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `DYJetsToLL_M-1000to1500_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-100to200_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-1500to2000_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-2000to3000_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-200to500_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-500to700_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v2, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `DYJetsToLL_M-700to800_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `DYJetsToLL_M-800to1000_TuneCP5_13TeV-amcatnloFXFX-pythia8` (RunIISummer20UL16: v2, RunIISummer20UL16APV: v1, RunIISummer20UL17: v1, RunIISummer20UL18: v1); `ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v1); `WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8_ext1` (RunIISummer20UL16APV: v2, RunIISummer20UL17: v3, RunIISummer20UL18: v2); `WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8_ext1` (RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v3, RunIISummer20UL18: v1); `WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8_ext1` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `WZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `ZZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v1, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v2, RunIISummer20UL17: v2, RunIISummer20UL18: v2); `ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8` (RunIISummer20UL16: v1, RunIISummer20UL16APV: v2, RunIISummer20UL17: v2, RunIISummer20UL18: v2).
@@ -769,7 +769,7 @@ All exist in the four standard campaigns unless noted. Listed so nothing is sile
 1. **Null cross sections** (need XSDB or McM with CERN SSO). NanoAOD McM prepids (UL18; walk `member_of_chain` -> the `wmLHEGEN` root request, whose `generator_parameters[-1].cross_section` is the GenXSecAnalyzer value):
 
 | primary dataset | McM NanoAODv9 prepid (UL18) |
-|---|---|
+| --- | --- |
 | `DY1JetsToLL_M-10to50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8` | HIG-RunIISummer20UL18NanoAODv9-00445 |
 | `DY1JetsToLL_M-10to50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8` | HIG-RunIISummer20UL18NanoAODv9-02329 |
 | `DY2JetsToLL_M-10to50_MatchEWPDG20_TuneCP5_13TeV-madgraphMLM-pythia8` | HIG-RunIISummer20UL18NanoAODv9-00446 |
@@ -825,7 +825,7 @@ All exist in the four standard campaigns unless noted. Listed so nothing is sile
 ### RunIISummer20UL16APV
 
 | MWR | N | ee DAS path | ee files/events/GB | mumu DAS path | mumu files/events/GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | 1000 | 100 | `/WRtoNEltoElElJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM` | 4/35000/0.1 | `/WRtoNMutoMuMuJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM` | 14/35000/0.1 |
 | 1000 | 300 | `/WRtoNEltoElElJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM` | 4/35000/0.1 | `/WRtoNMutoMuMuJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM` | 4/35000/0.1 |
 | 1000 | 500 | `/WRtoNEltoElElJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM` | 14/33162/0.1 | `/WRtoNMutoMuMuJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM` | 13/35000/0.1 |
@@ -935,7 +935,7 @@ All exist in the four standard campaigns unless noted. Listed so nothing is sile
 ### RunIISummer20UL16
 
 | MWR | N | ee DAS path | ee files/events/GB | mumu DAS path | mumu files/events/GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | 1000 | 100 | `/WRtoNEltoElElJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM` | 7/35000/0.1 | `/WRtoNMutoMuMuJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM` | 6/35000/0.1 |
 | 1000 | 300 | `/WRtoNEltoElElJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM` | 4/35000/0.1 | `/WRtoNMutoMuMuJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM` | 2/35000/0.1 |
 | 1000 | 500 | `/WRtoNEltoElElJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM` | 6/35000/0.1 | `/WRtoNMutoMuMuJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM` | 15/35000/0.1 |
@@ -1045,7 +1045,7 @@ All exist in the four standard campaigns unless noted. Listed so nothing is sile
 ### RunIISummer20UL17
 
 | MWR | N | ee DAS path | ee files/events/GB | mumu DAS path | mumu files/events/GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | 1000 | 100 | `/WRtoNEltoElElJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM` | 3/70000/0.2 | `/WRtoNMutoMuMuJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM` | 2/70000/0.1 |
 | 1000 | 300 | `/WRtoNEltoElElJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM` | 12/70000/0.2 | `/WRtoNMutoMuMuJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM` | 5/70000/0.2 |
 | 1000 | 500 | `/WRtoNEltoElElJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM` | 11/70000/0.2 | `/WRtoNMutoMuMuJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM` | 2/70000/0.2 |
@@ -1155,7 +1155,7 @@ All exist in the four standard campaigns unless noted. Listed so nothing is sile
 ### RunIISummer20UL18
 
 | MWR | N | ee DAS path | ee files/events/GB | mumu DAS path | mumu files/events/GB |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | 1000 | 100 | `/WRtoNEltoElElJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM` | 18/69000/0.2 | `/WRtoNMutoMuMuJJ_MWR1000_N100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM` | 19/68000/0.2 |
 | 1000 | 300 | `/WRtoNEltoElElJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM` | 5/70000/0.2 | `/WRtoNMutoMuMuJJ_MWR1000_N300_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM` | 14/70000/0.2 |
 | 1000 | 500 | `/WRtoNEltoElElJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM` | 17/68000/0.2 | `/WRtoNMutoMuMuJJ_MWR1000_N500_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM` | 13/69000/0.2 |
@@ -1320,7 +1320,7 @@ samples of the same campaign, both measured with GenXSecAnalyzer on UL18 MiniAOD
 section", i.e. after FxFx merging / MLM matching; both are three-flavour values):
 
 | sample | generator | cross section [pb] | events used |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8` | NLO, FxFx | 6415.0 ± 22.5 | 166,028 |
 | `DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8` | LO, MLM | 5350.0 ± 13.4 | 94,313 |
 
@@ -1359,7 +1359,7 @@ Their UL18 MiniAOD cannot be opened (tape only). The UL campaigns use the same 1
 the value measured on the UL17 MiniAOD (UL16 for one point), recorded as `xsec_source.copied_from`:
 
 | sample | measured on | LO [pb] | k_point | LO x k_point [pb] |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `WRtoNEltoElElJJ_MWR4000_N900` | RunIISummer20UL17 | 0.001369 | 1.4133 | 0.0019349 |
 | `WRtoNEltoElElJJ_MWR6000_N1500` | RunIISummer20UL17 | 6.029e-05 | 1.4381 | 8.6702e-05 |
 | `WRtoNEltoElElJJ_MWR6000_N700` | RunIISummer20UL17 | 9.104e-05 | 1.3973 | 0.00012721 |
@@ -1389,7 +1389,7 @@ Control points measured in both UL18 and UL17/UL16 agree within 0.2-1.2 % (UL17 
 precision of the gridpack's own integration (0.7 % for WR2000_N100 in its `results.dat`):
 
 | control sample | UL18 [pb] | other UL era [pb] | ratio |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `WRtoNEltoElElJJ_MWR2000_N100` | 0.1447 | 0.1464 (RunIISummer20UL17) | 1.0117 |
 | `WRtoNEltoElElJJ_MWR4000_N2100` | 0.0008077 | 0.0008133 (RunIISummer20UL17) | 1.0069 |
 | `WRtoNMutoMuMuJJ_MWR2000_N100` | 0.1445 | 0.145 (RunIISummer20UL17) | 1.0035 |

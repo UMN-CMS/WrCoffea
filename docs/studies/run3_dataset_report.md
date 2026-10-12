@@ -22,7 +22,7 @@ Generated 2026-10-04 from the CMS DBS REST API (`https://cmsweb.cern.ch/dbs/prod
 ## 2. Files written
 
 | file | content |
-|---|---|
+| --- | --- |
 | `configs_run3/<era>_data.json` (6 files: Run3Summer22, Run3Summer22EE, Run3Summer23, Run3Summer23BPix, RunIII2024Summer24, RunIII2025Summer25) | 5 / 6 / 16 / 8 / 32 / 32 datasets |
 | `configs_run3/<era>_mc_dy_lo_inc.json`, `_nlo_inc`, `_lo_ht`, `_nlo_mll`, `_nlo_njet`, `_nlo_ptll` (5 eras) | one DY family + the full background block (27 entries in 2022/2022EE incl. 6 ext1, 23 in 2023/2023BPix incl. 1 ext1, 22 in 2024) |
 | `configs_run3/<era>_mc_dy_lo_njet.json`, `_lo_ptll` (2022/2022EE/2023/2023BPix only) | new families; no 2024 equivalents on DAS |
@@ -43,7 +43,7 @@ The 2025 era name `RunIII2025Summer25` is a placeholder (no MC campaign exists y
 ## 4. PdmV recommendations and luminosities (July 2026 PPD tables, PdmVRun3Analysis)
 
 | era (config) | data | MC campaign | golden-JSON lumi [fb⁻¹] |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Run3Summer22 (2022 C, D) | `22Sep2023` NanoAODv12 (current) / `NanoAODv15-v1` (new) | `Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5` / `Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1` | C 5.02 + D 2.97 = 7.99 |
 | Run3Summer22EE (2022 E, F, G) | `22Sep2023` / `NanoAODv15-v1` | `Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6` / `Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1` | E 5.81 + F 17.78 + G 3.09 = 26.68 |
 | Run3Summer23 (2023 C v1–v4) | `22Sep2023_vN` / `NanoAODv15[_vN]-v1` | `Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14/v15` / `Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1` | C 17.96 |
@@ -62,7 +62,7 @@ All chosen data paths are VALID. Release/global tag come from DBS `outputconfigs
 ### Run3Summer22_data.json (5 datasets)
 
 | DAS path | physics_group | CMSSW release | global tag | files | events | GB | runs (DBS) |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_v2 | 35 | 20,162,441 | 17 |  |
 | `/Muon/Run2022C-22Sep2023-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_v2 | 124 | 138,427,345 | 114 |  |
 | `/Muon/Run2022D-22Sep2023-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_v2 | 82 | 75,468,381 | 62 |  |
@@ -74,7 +74,7 @@ Total: 586,882,314 events, 0.53 TB
 ### Run3Summer22EE_data.json (6 datasets)
 
 | DAS path | physics_group | CMSSW release | global tag | files | events | GB | runs (DBS) |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon/Run2022E-22Sep2023-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_v2 | 147 | 141,460,608 | 116 |  |
 | `/Muon/Run2022F-22Sep2023-v2/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 359 | 449,887,248 | 376 |  |
 | `/Muon/Run2022G-22Sep2023-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 88 | 76,689,396 | 64 |  |
@@ -87,7 +87,7 @@ Total: 1,357,872,656 events, 1.24 TB
 ### Run3Summer23_data.json (16 datasets)
 
 | DAS path | physics_group | CMSSW release | global tag | files | events | GB | runs (DBS) |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 90 | 54,715,896 | 44 |  |
 | `/Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 31 | 17,063,451 | 14 |  |
 | `/Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 42 | 20,015,377 | 16 |  |
@@ -110,7 +110,7 @@ Total: 995,202,657 events, 0.91 TB
 ### Run3Summer23BPix_data.json (8 datasets)
 
 | DAS path | physics_group | CMSSW release | global tag | files | events | GB | runs (DBS) |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 125 | 100,291,308 | 84 |  |
 | `/Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 32 | 21,462,916 | 18 |  |
 | `/Muon1/Run2023D-22Sep2023_v1-v1/NANOAOD` | Muon | CMSSW_13_0_13 | 130X_dataRun3_PromptAnalysis_v1 | 100 | 100,281,976 | 84 |  |
@@ -125,7 +125,7 @@ Total: 500,527,265 events, 0.46 TB
 ### RunIII2024Summer24_data.json (32 datasets)
 
 | DAS path | physics_group | CMSSW release | global tag | files | events | GB | runs (DBS) |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon0/Run2024C-MINIv6NANOv15-v1/NANOAOD` | Muon | CMSSW_15_0_2 | 150X_dataRun3_v2 | 103 | 97,505,587 | 135 |  |
 | `/Muon1/Run2024C-MINIv6NANOv15-v1/NANOAOD` | Muon | CMSSW_15_0_2 | 150X_dataRun3_v2 | 94 | 97,531,998 | 135 |  |
 | `/EGamma0/Run2024C-MINIv6NANOv15-v1/NANOAOD` | EGamma | CMSSW_15_0_2 | 150X_dataRun3_v2 | 167 | 157,351,226 | 251 |  |
@@ -164,7 +164,7 @@ Total: 8,581,067,654 events, 12.84 TB
 ### RunIII2025Summer25_data.json (32 datasets)
 
 | DAS path | physics_group | CMSSW release | global tag | files | events | GB | runs (DBS) |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon0/Run2025B-PromptReco-v1/NANOAOD` | Muon | CMSSW_15_0_5 | 150X_dataRun3_Prompt_v1 | 82 | 5,674,007 | 7 | 391548-392112 (68 runs) |
 | `/Muon0/Run2025C-PromptReco-v1/NANOAOD` | Muon | CMSSW_15_0_6, CMSSW_15_0_6_patch1 | 150X_dataRun3_Prompt_v1 | 677 | 261,592,099 | 372 | 392174-393087 (77 runs) |
 | `/Muon0/Run2025C-PromptReco-v2/NANOAOD` | Muon | CMSSW_15_0_7, CMSSW_15_0_8 | 150X_dataRun3_Prompt_v1 | 356 | 148,575,745 | 213 | 393111-393516 (37 runs) |
@@ -212,7 +212,7 @@ For each chosen dataset the other VALID, non-special NanoAOD processings of the 
 **Run3Summer22**
 
 | current (in draft) | events | release | other NanoAOD processings of the same PD/era (events, release) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD` | 20,162,441 | CMSSW_13_0_13 | `/SingleMuon/Run2022C-16Dec2023-v1/NANOAOD` (20,122,806, CMSSW_13_3_1_patch1)<br>`/SingleMuon/Run2022C-NanoAODv15-v1/NANOAOD` (20,162,441, CMSSW_15_0_15_patch4) |
 | `/Muon/Run2022C-22Sep2023-v1/NANOAOD` | 138,427,345 | CMSSW_13_0_13 | `/Muon/Run2022C-16Dec2023-v1/NANOAOD` (138,281,764, CMSSW_13_3_1_patch1)<br>`/Muon/Run2022C-NanoAODv15-v1/NANOAOD` (138,329,693, CMSSW_15_0_15_patch4) |
 | `/Muon/Run2022D-22Sep2023-v1/NANOAOD` | 75,468,381 | CMSSW_13_0_13 | `/Muon/Run2022D-16Dec2023-v1/NANOAOD` (75,336,535, CMSSW_13_3_1_patch1)<br>`/Muon/Run2022D-NanoAODv15-v1/NANOAOD` (75,440,027, CMSSW_15_0_15_patch4) |
@@ -222,7 +222,7 @@ For each chosen dataset the other VALID, non-special NanoAOD processings of the 
 **Run3Summer22EE**
 
 | current (in draft) | events | release | other NanoAOD processings of the same PD/era (events, release) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `/Muon/Run2022E-22Sep2023-v1/NANOAOD` | 141,460,608 | CMSSW_13_0_13 | `/Muon/Run2022E-16Dec2023-v1/NANOAOD` (141,480,973, CMSSW_13_3_1_patch1)<br>`/Muon/Run2022E-NanoAODv15-v1/NANOAOD` (141,480,973, CMSSW_15_0_15_patch4) |
 | `/Muon/Run2022F-22Sep2023-v2/NANOAOD` | 449,887,248 | CMSSW_13_0_13 | `/Muon/Run2022F-16Dec2023-v1/NANOAOD` (449,356,981, CMSSW_13_3_1_patch1)<br>`/Muon/Run2022F-19Dec2023-v1/NANOAOD` (449,188,966, CMSSW_13_0_17)<br>`/Muon/Run2022F-NanoAODv15-v1/NANOAOD` (449,185,088, CMSSW_15_0_15_patch4) |
 | `/Muon/Run2022G-22Sep2023-v1/NANOAOD` | 76,689,396 | CMSSW_13_0_13 | `/Muon/Run2022G-16Dec2023-v1/NANOAOD` (76,639,473, CMSSW_13_3_1_patch1)<br>`/Muon/Run2022G-19Dec2023-v2/NANOAOD` (76,479,102, CMSSW_13_0_17)<br>`/Muon/Run2022G-NanoAODv15-v1/NANOAOD` (76,689,396, CMSSW_15_0_15_patch4) |
@@ -233,7 +233,7 @@ For each chosen dataset the other VALID, non-special NanoAOD processings of the 
 **Run3Summer23**
 
 | current (in draft) | events | release | other NanoAOD processings of the same PD/era (events, release) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `/Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD` | 54,715,896 | CMSSW_13_0_13 | `/Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD` (17,063,451, CMSSW_13_0_13)<br>`/Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD` (20,015,377, CMSSW_13_0_13)<br>`/Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD` (138,943,783, CMSSW_13_0_13)<br>`/Muon0/Run2023C-24Jan2024_v1-v1/NANOAOD` (54,715,896, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v2-v1/NANOAOD` (17,039,517, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v3-v1/NANOAOD` (20,015,377, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v4-v1/NANOAOD` (138,943,783, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-NanoAODv15-v1/NANOAOD` (54,715,896, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v2-v1/NANOAOD` (17,063,451, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v3-v1/NANOAOD` (20,015,377, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v4-v1/NANOAOD` (138,943,783, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-PromptReco-v4/NANOAOD` (138,943,783, CMSSW_13_0_6,CMSSW_13_0_7,CMSSW_13_0_7_TOTEM) |
 | `/Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD` | 17,063,451 | CMSSW_13_0_13 | `/Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD` (54,715,896, CMSSW_13_0_13)<br>`/Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD` (20,015,377, CMSSW_13_0_13)<br>`/Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD` (138,943,783, CMSSW_13_0_13)<br>`/Muon0/Run2023C-24Jan2024_v1-v1/NANOAOD` (54,715,896, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v2-v1/NANOAOD` (17,039,517, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v3-v1/NANOAOD` (20,015,377, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v4-v1/NANOAOD` (138,943,783, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-NanoAODv15-v1/NANOAOD` (54,715,896, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v2-v1/NANOAOD` (17,063,451, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v3-v1/NANOAOD` (20,015,377, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v4-v1/NANOAOD` (138,943,783, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-PromptReco-v4/NANOAOD` (138,943,783, CMSSW_13_0_6,CMSSW_13_0_7,CMSSW_13_0_7_TOTEM) |
 | `/Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD` | 20,015,377 | CMSSW_13_0_13 | `/Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD` (54,715,896, CMSSW_13_0_13)<br>`/Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD` (17,063,451, CMSSW_13_0_13)<br>`/Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD` (138,943,783, CMSSW_13_0_13)<br>`/Muon0/Run2023C-24Jan2024_v1-v1/NANOAOD` (54,715,896, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v2-v1/NANOAOD` (17,039,517, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v3-v1/NANOAOD` (20,015,377, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-24Jan2024_v4-v1/NANOAOD` (138,943,783, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023C-NanoAODv15-v1/NANOAOD` (54,715,896, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v2-v1/NANOAOD` (17,063,451, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v3-v1/NANOAOD` (20,015,377, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-NanoAODv15_v4-v1/NANOAOD` (138,943,783, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023C-PromptReco-v4/NANOAOD` (138,943,783, CMSSW_13_0_6,CMSSW_13_0_7,CMSSW_13_0_7_TOTEM) |
@@ -254,7 +254,7 @@ For each chosen dataset the other VALID, non-special NanoAOD processings of the 
 **Run3Summer23BPix**
 
 | current (in draft) | events | release | other NanoAOD processings of the same PD/era (events, release) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `/Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD` | 100,291,308 | CMSSW_13_0_13 | `/Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD` (21,462,916, CMSSW_13_0_13)<br>`/Muon0/Run2023D-24Jan2024_v1-v1/NANOAOD` (100,078,297, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023D-24Jan2024_v2-v1/NANOAOD` (21,413,464, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023D-NanoAODv15-v1/NANOAOD` (100,211,533, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023D-NanoAODv15_v2-v1/NANOAOD` (21,462,916, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023D-PromptReco-v1/NANOAOD` (100,291,308, CMSSW_13_0_9)<br>`/Muon0/Run2023D-PromptReco-v2/NANOAOD` (21,462,916, CMSSW_13_0_10) |
 | `/Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD` | 21,462,916 | CMSSW_13_0_13 | `/Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD` (100,291,308, CMSSW_13_0_13)<br>`/Muon0/Run2023D-24Jan2024_v1-v1/NANOAOD` (100,078,297, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023D-24Jan2024_v2-v1/NANOAOD` (21,413,464, CMSSW_13_3_1_patch1)<br>`/Muon0/Run2023D-NanoAODv15-v1/NANOAOD` (100,211,533, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023D-NanoAODv15_v2-v1/NANOAOD` (21,462,916, CMSSW_15_0_15_patch4)<br>`/Muon0/Run2023D-PromptReco-v1/NANOAOD` (100,291,308, CMSSW_13_0_9)<br>`/Muon0/Run2023D-PromptReco-v2/NANOAOD` (21,462,916, CMSSW_13_0_10) |
 | `/Muon1/Run2023D-22Sep2023_v1-v1/NANOAOD` | 100,281,976 | CMSSW_13_0_13 | `/Muon1/Run2023D-22Sep2023_v2-v1/NANOAOD` (21,463,645, CMSSW_13_0_13)<br>`/Muon1/Run2023D-24Jan2024_v1-v1/NANOAOD` (100,281,976, CMSSW_13_3_1_patch1)<br>`/Muon1/Run2023D-24Jan2024_v2-v1/NANOAOD` (21,463,645, CMSSW_13_3_1_patch1)<br>`/Muon1/Run2023D-NanoAODv15-v1/NANOAOD` (100,281,976, CMSSW_15_0_15_patch4)<br>`/Muon1/Run2023D-NanoAODv15_v2-v1/NANOAOD` (21,463,645, CMSSW_15_0_15_patch4)<br>`/Muon1/Run2023D-PromptReco-v1/NANOAOD` (100,281,976, CMSSW_13_0_9)<br>`/Muon1/Run2023D-PromptReco-v2/NANOAOD` (21,463,645, CMSSW_13_0_10) |
@@ -267,7 +267,7 @@ For each chosen dataset the other VALID, non-special NanoAOD processings of the 
 **RunIII2024Summer24**
 
 | current (in draft) | events | release | other NanoAOD processings of the same PD/era (events, release) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `/Muon0/Run2024C-MINIv6NANOv15-v1/NANOAOD` | 97,505,587 | CMSSW_15_0_2 | `/Muon0/Run2024C-2024CDEReprocessing-v1/NANOAOD` (97,646,805, CMSSW_14_0_19_patch2)<br>`/Muon0/Run2024C-PromptReco-v1/NANOAOD` (99,560,627, CMSSW_14_0_5_patch1) |
 | `/Muon1/Run2024C-MINIv6NANOv15-v1/NANOAOD` | 97,531,998 | CMSSW_15_0_2 | `/Muon1/Run2024C-2024CDEReprocessing-v1/NANOAOD` (97,559,135, CMSSW_14_0_19_patch2)<br>`/Muon1/Run2024C-PromptReco-v1/NANOAOD` (99,546,845, CMSSW_14_0_5_patch1) |
 | `/EGamma0/Run2024C-MINIv6NANOv15-v1/NANOAOD` | 157,351,226 | CMSSW_15_0_2 | `/EGamma0/Run2024C-2024CDEReprocessing-v2/NANOAOD` (157,881,330, CMSSW_14_0_19_patch2)<br>`/EGamma0/Run2024C-PromptReco-v1/NANOAOD` (162,344,928, CMSSW_14_0_5_patch1) |
@@ -304,7 +304,7 @@ For each chosen dataset the other VALID, non-special NanoAOD processings of the 
 ### 5.3 Golden-JSON coverage of the edge eras (DBS `runs` ∩ golden JSON)
 
 | dataset | runs on DAS | golden runs contained | comment |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `/SingleMuon/Run2022B-22Sep2023-v1/NANOAOD` | 355100–355769 (74) | 19 (355374–355769) | 2022B is in `Cert_Collisions2022_355100_362760_Golden.json` but in no config (also `EGamma Run2022B-22Sep2023-v2`); Summer22 MC conditions are C/D |
 | `/SingleMuon/Run2022C-22Sep2023-v1/NANOAOD` | 355862–356386 (60) | 35 | early-2022C `SingleMuon` PD (before the `Muon` PD started at run 356426) – kept |
 | `/Muon0/Run2023B-22Sep2023-v1/NANOAOD` | 366403–367079 (56) | 21 (366727–367079) | 2023B (17.4 M events, pre-BPix) is golden but not in `Run3Summer23_data.json`; `NanoAODv15-v1` also exists |
@@ -336,7 +336,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_lo_inc.json** – DY block: DY LO inclusive (+ MLL-10to50 companion) (3 datasets, 293,704,970 events, 0.3 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 6340.2 | S1 | 389 | 72,999,340 | 94 | current |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v3/NANOAODSIM` | DYJets | 6340.2 | S1 | 509 | 73,925,935 | 96 | NEW |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 17380.0 | S2 | 1,473 | 146,779,695 | 127 | NEW |
@@ -344,7 +344,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_nlo_inc.json** – DY block: DY NLO inclusive (+ MLL-10to50 companion) (4 datasets, 333,044,796 events, 0.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v5/NANOAODSIM` | DYJets | 6340.2 | S1 | 525 | 93,826,598 | 130 | current |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 1,000 | 92,738,407 | 130 | NEW |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v4/NANOAODSIM` | DYJets | 20950.0 | S3 | 448 | 97,571,898 | 88 | NEW |
@@ -353,7 +353,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_lo_ht.json** – DY block: DY LO HT-binned (14 datasets, 128,607,280 events, 0.2 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 316.7 | S4 | 693 | 41,806,316 | 64 | current |
 | `/DYto2L-4Jets_MLL-50to120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 140.1 | S4 | 335 | 29,552,642 | 48 | NEW |
 | `/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 179.6 | S4 | 613 | 34,765,767 | 67 | current |
@@ -372,7 +372,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_nlo_mll.json** – DY block: DY NLO (powheg) MLL-binned (+ MLL-10to50) (20 datasets, 19,088,171 events, 0.0 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 2219 | S5 | 61 | 2,892,300 | 4 | archived |
 | `/DYto2E_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 21.65 | S5 | 30 | 1,497,870 | 2 | archived |
 | `/DYto2E_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 3.058 | S5 | 49 | 874,584 | 2 | archived |
@@ -397,7 +397,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_nlo_njet.json** – DY block: DY NLO jet-binned (3 datasets, 273,449,832 events, 0.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 5365 | S8 | 643 | 98,597,821 | 122 | archived |
 | `/DYto2L-2Jets_MLL-50_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 1015 | S8 | 546 | 97,156,305 | 147 | archived |
 | `/DYto2L-2Jets_MLL-50_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 382.8 | S8 | 721 | 77,695,706 | 141 | archived |
@@ -405,7 +405,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_nlo_ptll.json** – DY block: DY NLO pT(ll) nested thresholds (4 datasets, 152,286,172 events, 0.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 108.257 | S9 | 418 | 56,429,873 | 115 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 11.157 | S9 | 335 | 44,727,479 | 110 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | DYJets | 0.61601 | S9 | 424 | 41,629,822 | 114 | NEW |
@@ -414,7 +414,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_lo_njet.json** – DY block: DY LO jet-binned (new family) (4 datasets, 42,099,351 events, 0.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 973.1 | S10 | 137 | 15,216,450 | 22 | NEW |
 | `/DYto2L-4Jets_MLL-50_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 312.4 | S11 | 126 | 15,269,289 | 25 | NEW |
 | `/DYto2L-4Jets_MLL-50_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 93.93 | S12 | 155 | 8,842,997 | 16 | NEW |
@@ -423,7 +423,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22_mc_dy_lo_ptll.json** – DY block: DY LO pT(ll)-binned (new family) (5 datasets, 71,683,554 events, 0.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_PTLL-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 403.7 | S14 | 470 | 48,615,009 | 79 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 58.46 | S15 | 485 | 19,261,827 | 39 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM` | DYJets | 6.678 | S16 | 53 | 1,857,550 | 5 | NEW |
@@ -433,7 +433,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Non-DY backgrounds (identical block in every Run3Summer22_mc_dy_*.json)** (27 datasets, 295,479,908 events, 0.6 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | tt_tW | 96.978 | S19 | 67 | 23,778,148 | 54 | current |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2/NANOAODSIM` | tt_tW | 96.978 | S19 | 319 | 24,047,488 | 56 | NEW |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM` | tt_tW | 4.61475 | S20 | 21 | 2,369,680 | 5 | current |
@@ -465,7 +465,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Other versions of the chosen primaries in the same campaign (Run3Summer22)** – chosen version listed first, others with their DAS status and event count:
 
 | primary dataset | chosen | other versions |
-|---|---|---|
+| --- | --- | --- |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2022_realistic_v5-v3 | 130X_mcRun3_2022_realistic_v5-v2 [INVALID]; 130X_mcRun3_2022_realistic_v5_ext1-v2 [INVALID] |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2022_realistic_v5_ext1-v3 | 130X_mcRun3_2022_realistic_v5-v2 [INVALID]; 130X_mcRun3_2022_realistic_v5_ext1-v2 [INVALID] |
 | DYto2L-4Jets_MLL-50_madgraphMLM-pythia8 | 130X_mcRun3_2022_realistic_v5-v3 | 130X_mcRun3_2022_realistic_v5-v2 [INVALID]; 130X_mcRun3_2022_realistic_v5_ext1-v2 [INVALID] |
@@ -509,7 +509,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_lo_inc.json** – DY block: DY LO inclusive (+ MLL-10to50 companion) (3 datasets, 1,005,881,963 events, 1.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 6340.2 | S1 | 1,353 | 263,385,429 | 334 | current |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v3/NANOAODSIM` | DYJets | 6340.2 | S1 | 1,275 | 253,535,615 | 321 | NEW |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v4/NANOAODSIM` | DYJets | 17380.0 | S2 | 3,057 | 488,960,919 | 412 | NEW |
@@ -517,7 +517,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_nlo_inc.json** – DY block: DY NLO inclusive (+ MLL-10to50 companion) (4 datasets, 1,223,120,811 events, 1.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v5/NANOAODSIM` | DYJets | 6340.2 | S1 | 1,682 | 335,560,148 | 457 | current |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 1,533 | 353,554,978 | 480 | NEW |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v5/NANOAODSIM` | DYJets | 20950.0 | S3 | 1,573 | 355,091,803 | 314 | NEW |
@@ -526,7 +526,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_lo_ht.json** – DY block: DY LO HT-binned (14 datasets, 419,059,892 events, 0.8 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | DYJets | 316.7 | S4 | 1,371 | 125,345,985 | 187 | current |
 | `/DYto2L-4Jets_MLL-50to120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v4/NANOAODSIM` | DYJets | 140.1 | S4 | 982 | 94,595,270 | 151 | NEW |
 | `/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | DYJets | 179.6 | S4 | 1,276 | 124,757,918 | 235 | NEW |
@@ -545,7 +545,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_nlo_mll.json** – DY block: DY NLO (powheg) MLL-binned (+ MLL-10to50) (20 datasets, 66,529,653 events, 0.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | DYJets | 2219 | S5 | 98 | 10,403,118 | 15 | archived |
 | `/DYto2E_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | DYJets | 21.65 | S5 | 46 | 5,238,528 | 8 | archived |
 | `/DYto2E_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | DYJets | 3.058 | S5 | 33 | 3,147,891 | 5 | archived |
@@ -570,7 +570,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_nlo_njet.json** – DY block: DY NLO jet-binned (3 datasets, 966,220,922 events, 1.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 5365 | S8 | 2,083 | 345,496,261 | 422 | archived |
 | `/DYto2L-2Jets_MLL-50_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 1015 | S8 | 2,350 | 336,400,299 | 501 | archived |
 | `/DYto2L-2Jets_MLL-50_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 382.8 | S8 | 1,411 | 284,324,362 | 506 | archived |
@@ -578,7 +578,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_nlo_ptll.json** – DY block: DY NLO pT(ll) nested thresholds (4 datasets, 472,265,880 events, 1.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | DYJets | 108.257 | S9 | 1,451 | 155,924,254 | 314 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 11.157 | S9 | 833 | 142,202,452 | 345 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | DYJets | 0.61601 | S9 | 806 | 140,605,102 | 379 | NEW |
@@ -587,7 +587,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_lo_njet.json** – DY block: DY LO jet-binned (new family) (4 datasets, 138,927,656 events, 0.2 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 973.1 | S10 | 234 | 48,075,885 | 67 | NEW |
 | `/DYto2L-4Jets_MLL-50_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 312.4 | S11 | 317 | 52,871,956 | 84 | NEW |
 | `/DYto2L-4Jets_MLL-50_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 93.93 | S12 | 276 | 28,134,050 | 51 | NEW |
@@ -596,7 +596,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer22EE_mc_dy_lo_ptll.json** – DY block: DY LO pT(ll)-binned (new family) (5 datasets, 255,499,878 events, 0.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_PTLL-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v6/NANOAODSIM` | DYJets | 403.7 | S14 | 852 | 174,980,872 | 277 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 58.46 | S15 | 783 | 67,196,347 | 132 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | DYJets | 6.678 | S16 | 103 | 6,422,177 | 16 | NEW |
@@ -606,7 +606,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Non-DY backgrounds (identical block in every Run3Summer22EE_mc_dy_*.json)** (27 datasets, 997,910,097 events, 2.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | tt_tW | 96.978 | S19 | 137 | 84,809,345 | 190 | current |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2/NANOAODSIM` | tt_tW | 96.978 | S19 | 707 | 84,870,780 | 192 | NEW |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM` | tt_tW | 4.61475 | S20 | 51 | 8,129,084 | 16 | current |
@@ -638,7 +638,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Other versions of the chosen primaries in the same campaign (Run3Summer22EE)** – chosen version listed first, others with their DAS status and event count:
 
 | primary dataset | chosen | other versions |
-|---|---|---|
+| --- | --- | --- |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2022_realistic_postEE_v6-v3 | 130X_mcRun3_2022_realistic_postEE_v6-v2 [INVALID] |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2022_realistic_postEE_v6_ext1-v2 | 130X_mcRun3_2022_realistic_postEE_v6-v2 [INVALID] |
 | TTLNu-EWK_amcatnlo-pythia8 | 130X_mcRun3_2022_realistic_postEE_v6-v3 | 130X_mcRun3_2022_realistic_postEE_v6-v2 [INVALID] |
@@ -683,21 +683,21 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23_mc_dy_lo_inc.json** – DY block: DY LO inclusive (+ MLL-10to50 companion) (2 datasets, 393,793,612 events, 0.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 457 | 127,376,178 | 165 | current |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 17380.0 | S2 | 726 | 266,417,434 | 231 | NEW |
 
 **Run3Summer23_mc_dy_nlo_inc.json** – DY block: DY NLO inclusive (+ MLL-10to50 companion) (2 datasets, 400,279,035 events, 0.5 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 506 | 200,038,891 | 278 | current |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14_ext1-v4/NANOAODSIM` | DYJets | 20950.0 | S3 | 657 | 200,240,144 | 184 | NEW |
 
 **Run3Summer23_mc_dy_lo_ht.json** – DY block: DY LO HT-binned (14 datasets, 256,202,300 events, 0.5 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 316.7 | S4 | 529 | 76,207,428 | 115 | current |
 | `/DYto2L-4Jets_MLL-50to120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v3/NANOAODSIM` | DYJets | 140.1 | S4 | 537 | 57,235,953 | 93 | current |
 | `/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 179.6 | S4 | 726 | 77,606,305 | 150 | current |
@@ -716,7 +716,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23_mc_dy_nlo_mll.json** – DY block: DY NLO (powheg) MLL-binned (+ MLL-10to50) (20 datasets, 38,393,000 events, 0.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM` | DYJets | 2219 | S5 | 63 | 5,832,000 | 9 | archived |
 | `/DYto2E_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v3/NANOAODSIM` | DYJets | 21.65 | S5 | 29 | 2,991,000 | 5 | archived |
 | `/DYto2E_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM` | DYJets | 3.058 | S5 | 27 | 1,734,000 | 3 | archived |
@@ -741,7 +741,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23_mc_dy_nlo_njet.json** – DY block: DY NLO jet-binned (3 datasets, 530,969,087 events, 0.8 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 5365 | S8 | 663 | 201,186,460 | 251 | archived |
 | `/DYto2L-2Jets_MLL-50_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 1015 | S8 | 588 | 175,272,543 | 266 | NEW |
 | `/DYto2L-2Jets_MLL-50_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 382.8 | S8 | 476 | 154,510,084 | 281 | archived |
@@ -749,7 +749,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23_mc_dy_nlo_ptll.json** – DY block: DY NLO pT(ll) nested thresholds (4 datasets, 271,258,299 events, 0.7 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM` | DYJets | 108.257 | S9 | 815 | 95,212,367 | 198 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM` | DYJets | 11.157 | S9 | 398 | 80,677,175 | 201 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM` | DYJets | 0.61601 | S9 | 257 | 75,275,774 | 206 | NEW |
@@ -758,7 +758,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23_mc_dy_lo_njet.json** – DY block: DY LO jet-binned (new family) (4 datasets, 80,035,240 events, 0.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 973.1 | S10 | 127 | 29,630,439 | 42 | NEW |
 | `/DYto2L-4Jets_MLL-50_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 312.4 | S11 | 110 | 29,725,448 | 48 | NEW |
 | `/DYto2L-4Jets_MLL-50_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v4/NANOAODSIM` | DYJets | 93.93 | S12 | 134 | 15,297,076 | 28 | NEW |
@@ -767,7 +767,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23_mc_dy_lo_ptll.json** – DY block: DY LO pT(ll)-binned (new family) (5 datasets, 175,199,125 events, 0.3 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_PTLL-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM` | DYJets | 403.7 | S14 | 779 | 121,445,289 | 197 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM` | DYJets | 58.46 | S15 | 525 | 45,141,048 | 92 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM` | DYJets | 6.678 | S16 | 72 | 4,236,951 | 11 | NEW |
@@ -777,7 +777,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Non-DY backgrounds (identical block in every Run3Summer23_mc_dy_*.json)** (23 datasets, 363,908,328 events, 0.7 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM` | tt_tW | 96.978 | S19 | 198 | 48,203,000 | 111 | current |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM` | tt_tW | 4.61475 | S20 | 34 | 4,985,000 | 10 | current |
 | `/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v4/NANOAODSIM` | tt_tW | 4.61475 | S20 | 42 | 4,931,000 | 10 | current |
@@ -805,7 +805,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Other versions of the chosen primaries in the same campaign (Run3Summer23)** – chosen version listed first, others with their DAS status and event count:
 
 | primary dataset | chosen | other versions |
-|---|---|---|
+| --- | --- | --- |
 | TbarWplusto2L2Nu_powheg-pythia8 | 130X_mcRun3_2023_realistic_v15-v4 | 130X_mcRun3_2023_realistic_v15-v2 [INVALID] |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2023_realistic_v15-v3 | 130X_mcRun3_2023_realistic_v15-v2 [INVALID] |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2023_realistic_v15_ext1-v2 | 130X_mcRun3_2023_realistic_v15-v2 [INVALID] |
@@ -850,21 +850,21 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23BPix_mc_dy_lo_inc.json** – DY block: DY LO inclusive (+ MLL-10to50 companion) (2 datasets, 211,679,573 events, 0.2 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 6340.2 | S1 | 301 | 70,167,286 | 91 | current |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 17380.0 | S2 | 495 | 141,512,287 | 123 | NEW |
 
 **Run3Summer23BPix_mc_dy_nlo_inc.json** – DY block: DY NLO inclusive (+ MLL-10to50 companion) (2 datasets, 195,287,120 events, 0.2 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 6340.2 | S1 | 312 | 94,876,537 | 132 | current |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2_ext1-v4/NANOAODSIM` | DYJets | 20950.0 | S3 | 342 | 100,410,583 | 92 | NEW |
 
 **Run3Summer23BPix_mc_dy_lo_ht.json** – DY block: DY LO HT-binned (14 datasets, 139,211,476 events, 0.3 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v5/NANOAODSIM` | DYJets | 316.7 | S4 | 221 | 37,755,405 | 57 | NEW |
 | `/DYto2L-4Jets_MLL-50to120_HT-70to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v5/NANOAODSIM` | DYJets | 140.1 | S4 | 202 | 34,689,209 | 56 | NEW |
 | `/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM` | DYJets | 179.6 | S4 | 357 | 45,276,159 | 87 | current |
@@ -883,7 +883,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23BPix_mc_dy_nlo_mll.json** – DY block: DY NLO (powheg) MLL-binned (+ MLL-10to50) (20 datasets, 19,082,000 events, 0.0 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM` | DYJets | 2219 | S5 | 49 | 2,910,000 | 4 | archived |
 | `/DYto2E_MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM` | DYJets | 21.65 | S5 | 23 | 1,476,000 | 2 | archived |
 | `/DYto2E_MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM` | DYJets | 3.058 | S5 | 23 | 867,000 | 2 | archived |
@@ -908,7 +908,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23BPix_mc_dy_nlo_njet.json** – DY block: DY NLO jet-binned (3 datasets, 258,874,539 events, 0.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 5365 | S8 | 316 | 99,748,250 | 124 | archived |
 | `/DYto2L-2Jets_MLL-50_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 1015 | S8 | 312 | 86,282,834 | 131 | NEW |
 | `/DYto2L-2Jets_MLL-50_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v5/NANOAODSIM` | DYJets | 382.8 | S8 | 246 | 72,843,455 | 133 | NEW |
@@ -916,7 +916,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23BPix_mc_dy_nlo_ptll.json** – DY block: DY NLO pT(ll) nested thresholds (4 datasets, 124,801,372 events, 0.3 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | DYJets | 108.257 | S9 | 203 | 41,940,852 | 87 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | DYJets | 11.157 | S9 | 286 | 32,405,482 | 81 | NEW |
 | `/DYto2L-2Jets_MLL-50_PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | DYJets | 0.61601 | S9 | 244 | 40,272,138 | 111 | NEW |
@@ -925,7 +925,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23BPix_mc_dy_lo_njet.json** – DY block: DY LO jet-binned (new family) (4 datasets, 41,313,936 events, 0.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_1J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 973.1 | S10 | 67 | 15,289,548 | 22 | NEW |
 | `/DYto2L-4Jets_MLL-50_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 312.4 | S11 | 76 | 14,740,579 | 24 | NEW |
 | `/DYto2L-4Jets_MLL-50_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v4/NANOAODSIM` | DYJets | 93.93 | S12 | 71 | 8,393,375 | 16 | NEW |
@@ -934,7 +934,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Run3Summer23BPix_mc_dy_lo_ptll.json** – DY block: DY LO pT(ll)-binned (new family) (5 datasets, 72,425,913 events, 0.1 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_PTLL-40to100_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v3/NANOAODSIM` | DYJets | 403.7 | S14 | 345 | 46,919,628 | 76 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v3/NANOAODSIM` | DYJets | 58.46 | S15 | 271 | 21,393,032 | 44 | NEW |
 | `/DYto2L-4Jets_MLL-50_PTLL-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v3/NANOAODSIM` | DYJets | 6.678 | S16 | 31 | 2,135,466 | 5 | NEW |
@@ -944,7 +944,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Non-DY backgrounds (identical block in every Run3Summer23BPix_mc_dy_*.json)** (23 datasets, 194,106,124 events, 0.4 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM` | tt_tW | 96.978 | S19 | 150 | 24,649,000 | 57 | current |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM` | tt_tW | 4.61475 | S20 | 30 | 2,479,000 | 5 | current |
 | `/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM` | tt_tW | 4.61475 | S20 | 50 | 2,488,000 | 5 | current |
@@ -972,7 +972,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Other versions of the chosen primaries in the same campaign (Run3Summer23BPix)** – chosen version listed first, others with their DAS status and event count:
 
 | primary dataset | chosen | other versions |
-|---|---|---|
+| --- | --- | --- |
 | TbarWplusto2L2Nu_powheg-pythia8 | 130X_mcRun3_2023_realistic_postBPix_v6-v2 | 130X_mcRun3_2023_realistic_postBPix_v5-v2 [INVALID] |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2023_realistic_postBPix_v6-v3 | 130X_mcRun3_2023_realistic_postBPix_v6-v2 [INVALID] |
 | TTLL_MLL-50_amcatnlo-pythia8 | 130X_mcRun3_2023_realistic_postBPix_v6_ext1-v2 | 130X_mcRun3_2023_realistic_postBPix_v6-v2 [INVALID] |
@@ -1014,7 +1014,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **RunIII2024Summer24_mc_dy_lo_inc.json** – DY block: DY LO inclusive (+ MLL-10to50 companion) (4 datasets, 1,895,054,188 events, 2.8 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM` | DYJets | 2113.4 | S1 | 2,821 | 494,826,377 | 976 | current |
 | `/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM` | DYJets | 2113.4 | S1 | 3,194 | 530,955,854 | 866 | current |
 | `/DYto2E-4Jets_Bin-MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 5793.333333333333 | S2 | 2,425 | 403,551,955 | 473 | NEW |
@@ -1023,7 +1023,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **RunIII2024Summer24_mc_dy_nlo_inc.json** – DY block: DY NLO inclusive (+ MLL-10to50 companion) (4 datasets, 1,260,531,223 events, 2.2 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v4/NANOAODSIM` | DYJets | 2113.4 | S1 | 2,990 | 486,448,139 | 1017 | current |
 | `/DYto2Mu-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v6/NANOAODSIM` | DYJets | 2113.4 | S1 | 2,975 | 490,076,405 | 861 | current |
 | `/DYto2E-2Jets_Bin-MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 6983.333333333333 | S3 | 694 | 139,117,188 | 170 | NEW |
@@ -1032,7 +1032,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **RunIII2024Summer24_mc_dy_lo_ht.json** – DY block: DY LO HT-binned (14 datasets, 1,169,701,714 events, 2.8 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_Bin-HT-40to70-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 316.7 | S4 | 2,547 | 410,493,396 | 846 | NEW |
 | `/DYto2L-4Jets_Bin-HT-70to100-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 140.1 | S4 | 1,733 | 268,137,316 | 595 | NEW |
 | `/DYto2L-4Jets_Bin-HT-100to400-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 179.6 | S4 | 2,526 | 396,793,361 | 1043 | NEW |
@@ -1051,7 +1051,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **RunIII2024Summer24_mc_dy_nlo_mll.json** – DY block: DY NLO (powheg) MLL-binned (+ MLL-10to50) (20 datasets, 1,782,337,868 events, 2.9 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 2219 | S5 | 657 | 478,240,880 | 951 | archived |
 | `/DYto2E_Bin-MLL-120to200_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 21.65 | S5 | 110 | 48,821,981 | 105 | archived |
 | `/DYto2E_Bin-MLL-200to400_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 3.058 | S5 | 33 | 6,823,360 | 17 | archived |
@@ -1076,7 +1076,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **RunIII2024Summer24_mc_dy_nlo_njet.json** – DY block: DY NLO jet-binned (6 datasets, 2,256,404,917 events, 4.6 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2E-2Jets_Bin-0J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 5382 | S32 | 548 | 453,230,267 | 844 | archived |
 | `/DYto2E-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM` | DYJets | 972.3 | S32 | 2,108 | 338,867,940 | 773 | archived |
 | `/DYto2E-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 372.4 | S32 | 317 | 307,042,054 | 833 | archived |
@@ -1087,7 +1087,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **RunIII2024Summer24_mc_dy_nlo_ptll.json** – DY block: DY NLO pT(ll) nested thresholds (4 datasets, 766,372,865 events, 2.8 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_Bin-MLL-50-PTLL-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM` | DYJets | 108.257 | S9 | 1,443 | 186,947,219 | 540 | NEW |
 | `/DYto2L-2Jets_Bin-MLL-50-PTLL-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM` | DYJets | 11.157 | S9 | 343 | 289,689,475 | 1062 | NEW |
 | `/DYto2L-2Jets_Bin-MLL-50-PTLL-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | DYJets | 0.61601 | S9 | 276 | 194,875,038 | 813 | NEW |
@@ -1096,7 +1096,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Non-DY backgrounds (identical block in every RunIII2024Summer24_mc_dy_*.json)** (22 datasets, 2,193,511,961 events, 5.5 TB)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB | in current configs |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM` | tt_tW | 96.978 | S19 | 780 | 470,123,263 | 1492 | current |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | tt_tW | 4.61475 | S20 | 176 | 14,998,000 | 43 | current |
 | `/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | tt_tW | 4.61475 | S20 | 90 | 15,000,000 | 43 | current |
@@ -1123,7 +1123,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 **Other versions of the chosen primaries in the same campaign (RunIII2024Summer24)** – chosen version listed first, others with their DAS status and event count:
 
 | primary dataset | chosen | other versions |
-|---|---|---|
+| --- | --- | --- |
 | TTto2L2Nu_powheg-pythia8 | 150X_mcRun3_2024_realistic_v2-v3 | 150X_mcRun3_2024_realistic_v1-v2 [INVALID]; 150X_mcRun3_2024_realistic_v2-v2 [INVALID] |
 | TTtoLNu2Q_powheg-pythia8 | 150X_mcRun3_2024_realistic_v2-v2 | 150X_mcRun3_2024_realistic_v2_ext1-v2 [PRODUCTION] |
 | DYto2E-2Jets_Bin-MLL-50_amcatnloFXFX-pythia8 | 150X_mcRun3_2024_realistic_v2-v4 | 150X_mcRun3_2024_realistic_v1-v2 [INVALID] |
@@ -1142,7 +1142,7 @@ Columns: `src` = cross-section source code (legend at the end of this section); 
 ### Cross-section source legend
 
 | code | source |
-|---|---|
+| --- | --- |
 | S1 | existing WrCoffea configs (6340.2 = 3 x 2113.4/flavour, NNLO-type normalisation; XSDB GenXsecAnalyzer values: NLO 6688, LO 5467 [FLAF yaml]) |
 | S2 | XSDB value as recorded in cms-flaf/FLAF config/crossSections13p6TeV.yaml (DYto2L-4Jets_MLL-10to50, modifiedOn 2024-04-03; raw LO value, no k-factor) |
 | S3 | XSDB value as recorded in cms-flaf/FLAF config/crossSections13p6TeV.yaml (DYto2L-2Jets_MLL-10to50, modifiedOn 2023-03-26) |
@@ -1183,7 +1183,7 @@ The NanoAODv15 campaigns `Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v
 ### Run3Summer22: NanoAODv12 (current) vs NanoAODv15 availability
 
 | family / block | v12 datasets (events) | v15 datasets (events) | v15 status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | non-DY background | 22 processes / 27 datasets (295,479,908) | 17 processes / 17 datasets (158,094,554) | partial |
 | DY LO inclusive | 2 processes / 3 datasets (293,704,970) | 2 processes / 2 datasets (224,375,311) | complete |
 | DY NLO inclusive | 2 processes / 4 datasets (333,044,796) | 2 processes / 2 datasets (191,494,297) | complete |
@@ -1198,7 +1198,7 @@ The NanoAODv15 campaigns `Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v
 Process-level detail (Run3Summer22):
 
 | process | v12 dataset(s) | v12 events | v15 dataset(s) | v15 events |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | TTto2L2Nu | `Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2`<br>`Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2` | 23,778,148<br>24,047,488 | `TTto2L2Nu_powheg-pythia8 / Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2` | 23,802,613 |
 | TWminusto2L2Nu | `Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2`<br>`Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2` | 2,369,680<br>2,499,302 | `TWminusto2L2Nu_powheg-pythia8 / Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v1` | 2,387,056 |
 | TbarWplusto2L2Nu | `Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2`<br>`Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2` | 2,465,972<br>2,461,995 | `TbarWplusto2L2Nu_powheg-pythia8 / Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v1` | 2,327,688 |
@@ -1279,7 +1279,7 @@ Process-level detail (Run3Summer22):
 ### Run3Summer22EE: NanoAODv12 (current) vs NanoAODv15 availability
 
 | family / block | v12 datasets (events) | v15 datasets (events) | v15 status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | non-DY background | 22 processes / 27 datasets (997,910,097) | 17 processes / 17 datasets (582,472,371) | partial |
 | DY LO inclusive | 2 processes / 3 datasets (1,005,881,963) | 2 processes / 2 datasets (767,513,561) | complete |
 | DY NLO inclusive | 2 processes / 4 datasets (1,223,120,811) | 2 processes / 2 datasets (689,298,281) | complete |
@@ -1294,7 +1294,7 @@ Process-level detail (Run3Summer22):
 Process-level detail (Run3Summer22EE):
 
 | process | v12 dataset(s) | v12 events | v15 dataset(s) | v15 events |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | TTto2L2Nu | `Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2`<br>`Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2` | 84,809,345<br>84,870,780 | `TTto2L2Nu_powheg-pythia8 / Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v3` | 74,184,271 |
 | TWminusto2L2Nu | `Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2`<br>`Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2` | 8,129,084<br>8,466,410 | `TWminusto2L2Nu_powheg-pythia8 / Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1` | 8,065,364 |
 | TbarWplusto2L2Nu | `Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2`<br>`Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2` | 8,183,339<br>8,555,460 | `TbarWplusto2L2Nu_powheg-pythia8 / Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1` | 8,260,009 |
@@ -1375,7 +1375,7 @@ Process-level detail (Run3Summer22EE):
 ### Run3Summer23: NanoAODv12 (current) vs NanoAODv15 availability
 
 | family / block | v12 datasets (events) | v15 datasets (events) | v15 status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | non-DY background | 22 processes / 23 datasets (363,908,328) | 17 processes / 17 datasets (340,205,876) | partial |
 | DY LO inclusive | 2 processes / 2 datasets (393,793,612) | 2 processes / 2 datasets (419,713,927) | complete |
 | DY NLO inclusive | 2 processes / 2 datasets (400,279,035) | 2 processes / 2 datasets (408,153,677) | complete |
@@ -1390,7 +1390,7 @@ Process-level detail (Run3Summer22EE):
 Process-level detail (Run3Summer23):
 
 | process | v12 dataset(s) | v12 events | v15 dataset(s) | v15 events |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | TTto2L2Nu | `Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2` | 48,203,000 | `TTto2L2Nu_powheg-pythia8 / Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v2` | 48,104,000 |
 | TWminusto2L2Nu | `Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2` | 4,985,000 | `TWminusto2L2Nu_powheg-pythia8 / Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v1` | 4,985,000 |
 | TbarWplusto2L2Nu | `Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v4` | 4,931,000 | `TbarWplusto2L2Nu_powheg-pythia8 / Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v1` | 4,907,000 |
@@ -1471,7 +1471,7 @@ Process-level detail (Run3Summer23):
 ### Run3Summer23BPix: NanoAODv12 (current) vs NanoAODv15 availability
 
 | family / block | v12 datasets (events) | v15 datasets (events) | v15 status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | non-DY background | 22 processes / 23 datasets (194,106,124) | 17 processes / 17 datasets (158,456,336) | partial |
 | DY LO inclusive | 2 processes / 2 datasets (211,679,573) | 2 processes / 2 datasets (219,269,568) | complete |
 | DY NLO inclusive | 2 processes / 2 datasets (195,287,120) | 2 processes / 2 datasets (196,535,352) | complete |
@@ -1486,7 +1486,7 @@ Process-level detail (Run3Summer23):
 Process-level detail (Run3Summer23BPix):
 
 | process | v12 dataset(s) | v12 events | v15 dataset(s) | v15 events |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | TTto2L2Nu | `Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3` | 24,649,000 | `TTto2L2Nu_powheg-pythia8 / Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v2` | 24,556,000 |
 | TWminusto2L2Nu | `Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3` | 2,479,000 | `TWminusto2L2Nu_powheg-pythia8 / Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v1` | 2,479,000 |
 | TbarWplusto2L2Nu | `Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2` | 2,488,000 | `TbarWplusto2L2Nu_powheg-pythia8 / Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v1` | 2,488,000 |
@@ -1577,7 +1577,7 @@ Consequences for the `nanov15/` configs:
 ### nanov15/Run3Summer22_data.json (5 datasets)
 
 | NanoAODv15 DAS path | physics_group | release | global tag | files | events | GB | v12 (22Sep2023) events |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/SingleMuon/Run2022C-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 19 | 20,162,441 | 24 | 20,162,441 (`Run2022C-22Sep2023-v1`) |
 | `/Muon/Run2022C-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 112 | 138,329,693 | 166 | 138,427,345 (`Run2022C-22Sep2023-v1`) |
 | `/Muon/Run2022D-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 66 | 75,440,027 | 90 | 75,468,381 (`Run2022D-22Sep2023-v1`) |
@@ -1587,7 +1587,7 @@ Consequences for the `nanov15/` configs:
 ### nanov15/Run3Summer22EE_data.json (6 datasets)
 
 | NanoAODv15 DAS path | physics_group | release | global tag | files | events | GB | v12 (22Sep2023) events |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon/Run2022E-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 130 | 141,480,973 | 170 | 141,460,608 (`Run2022E-22Sep2023-v1`) |
 | `/Muon/Run2022F-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 349 | 449,185,088 | 557 | 449,887,248 (`Run2022F-22Sep2023-v2`) |
 | `/Muon/Run2022G-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 69 | 76,689,396 | 95 | 76,689,396 (`Run2022G-22Sep2023-v1`) |
@@ -1598,7 +1598,7 @@ Consequences for the `nanov15/` configs:
 ### nanov15/Run3Summer23_data.json (16 datasets)
 
 | NanoAODv15 DAS path | physics_group | release | global tag | files | events | GB | v12 (22Sep2023) events |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon0/Run2023C-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 66 | 54,715,896 | 68 | 54,715,896 (`Run2023C-22Sep2023_v1-v1`) |
 | `/Muon0/Run2023C-NanoAODv15_v2-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 18 | 17,063,451 | 21 | 17,063,451 (`Run2023C-22Sep2023_v2-v1`) |
 | `/Muon0/Run2023C-NanoAODv15_v3-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 29 | 20,015,377 | 25 | 20,015,377 (`Run2023C-22Sep2023_v3-v1`) |
@@ -1619,7 +1619,7 @@ Consequences for the `nanov15/` configs:
 ### nanov15/Run3Summer23BPix_data.json (8 datasets)
 
 | NanoAODv15 DAS path | physics_group | release | global tag | files | events | GB | v12 (22Sep2023) events |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `/Muon0/Run2023D-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 97 | 100,211,533 | 126 | 100,291,308 (`Run2023D-22Sep2023_v1-v1`) |
 | `/Muon0/Run2023D-NanoAODv15_v2-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 21 | 21,462,916 | 27 | 21,462,916 (`Run2023D-22Sep2023_v2-v1`) |
 | `/Muon1/Run2023D-NanoAODv15-v1/NANOAOD` | Muon | CMSSW_15_0_15_patch4 | 150X_dataRun3_v5 | 97 | 100,281,976 | 127 | 100,281,976 (`Run2023D-22Sep2023_v1-v1`) |
@@ -1637,21 +1637,21 @@ Consequences for the `nanov15/` configs:
 **nanov15/Run3Summer22_mc_dy_lo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 63 | 73,131,170 | 132 |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v1/NANOAODSIM` | DYJets | 17380.0 | S2 | 108 | 151,244,141 | 178 |
 
 **nanov15/Run3Summer22_mc_dy_nlo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 90 | 93,967,480 | 181 |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v1/NANOAODSIM` | DYJets | 20950.0 | S3 | 75 | 97,526,817 | 120 |
 
 **nanov15/Run3Summer22 non-DY background block** (17 datasets; missing in v15: TTLNu-EWK, WWW, WWZ, WZZ, ZZZ; t-channel = inclusive 4FS samples)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2/NANOAODSIM` | tt_tW | 96.978 | S4 | 32 | 23,802,613 | 77 |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 4 | 2,387,056 | 7 |
 | `/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 4 | 2,327,688 | 7 |
@@ -1676,21 +1676,21 @@ Consequences for the `nanov15/` configs:
 **nanov15/Run3Summer22EE_mc_dy_lo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 210 | 264,413,000 | 449 |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM` | DYJets | 17380.0 | S2 | 318 | 503,100,561 | 542 |
 
 **nanov15/Run3Summer22EE_mc_dy_nlo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 284 | 335,241,916 | 610 |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM` | DYJets | 20950.0 | S3 | 250 | 354,056,365 | 402 |
 
 **nanov15/Run3Summer22EE non-DY background block** (17 datasets; missing in v15: TTLNu-EWK, WWW, WWZ, WZZ, ZZZ; t-channel = inclusive 4FS samples)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v3/NANOAODSIM` | tt_tW | 96.978 | S4 | 108 | 74,184,271 | 231 |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 11 | 8,065,364 | 22 |
 | `/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 12 | 8,260,009 | 23 |
@@ -1715,21 +1715,21 @@ Consequences for the `nanov15/` configs:
 **nanov15/Run3Summer23_mc_dy_lo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v3/NANOAODSIM` | DYJets | 6340.2 | S1 | 124 | 127,692,949 | 223 |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v1/NANOAODSIM` | DYJets | 17380.0 | S2 | 190 | 292,020,978 | 326 |
 
 **nanov15/Run3Summer23_mc_dy_nlo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v1/NANOAODSIM` | DYJets | 6340.2 | S1 | 192 | 205,068,372 | 383 |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1_ext1-v1/NANOAODSIM` | DYJets | 20950.0 | S3 | 137 | 203,085,305 | 238 |
 
 **nanov15/Run3Summer23 non-DY background block** (17 datasets; missing in v15: TTLNu-EWK, WWW, WWZ, WZZ, ZZZ; t-channel = inclusive 4FS samples)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v2/NANOAODSIM` | tt_tW | 96.978 | S4 | 60 | 48,104,000 | 153 |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 6 | 4,985,000 | 14 |
 | `/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 6 | 4,907,000 | 14 |
@@ -1754,21 +1754,21 @@ Consequences for the `nanov15/` configs:
 **nanov15/Run3Summer23BPix_mc_dy_lo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v2/NANOAODSIM` | DYJets | 6340.2 | S1 | 59 | 70,099,933 | 122 |
 | `/DYto2L-4Jets_MLL-10to50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v1/NANOAODSIM` | DYJets | 17380.0 | S2 | 107 | 149,169,635 | 166 |
 
 **nanov15/Run3Summer23BPix_mc_dy_nlo_inc.json** – DY block (2 datasets)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v1/NANOAODSIM` | DYJets | 6340.2 | S1 | 86 | 95,217,757 | 178 |
 | `/DYto2L-2Jets_MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1_ext1-v1/NANOAODSIM` | DYJets | 20950.0 | S3 | 71 | 101,317,595 | 119 |
 
 **nanov15/Run3Summer23BPix non-DY background block** (17 datasets; missing in v15: TTLNu-EWK, WWW, WWZ, WZZ, ZZZ; t-channel = inclusive 4FS samples)
 
 | DAS path | physics_group | xsec [pb] | src | files | events | GB |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v2/NANOAODSIM` | tt_tW | 96.978 | S4 | 36 | 24,556,000 | 78 |
 | `/TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 3 | 2,479,000 | 7 |
 | `/TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v1/NANOAODSIM` | tt_tW | 4.61475 | S5 | 4 | 2,488,000 | 7 |
@@ -1788,7 +1788,7 @@ Consequences for the `nanov15/` configs:
 | `/ZZ_TuneCP5_13p6TeV_pythia8/Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v1/NANOAODSIM` | Other | 12.75 | S15 | 2 | 1,254,000 | 2 |
 
 | code | source (nanov15 tables) |
-|---|---|
+| --- | --- |
 | S1 | existing WrCoffea configs (6340.2 = 3 x 2113.4/flavour, NNLO-type normalisation; XSDB GenXsecAnalyzer values: NLO 6688, LO 5467 [FLAF yaml]) |
 | S2 | XSDB value as recorded in cms-flaf/FLAF config/crossSections13p6TeV.yaml (DYto2L-4Jets_MLL-10to50, modifiedOn 2024-04-03; raw LO value, no k-factor) |
 | S3 | XSDB value as recorded in cms-flaf/FLAF config/crossSections13p6TeV.yaml (DYto2L-2Jets_MLL-10to50, modifiedOn 2023-03-26) |
@@ -1810,7 +1810,7 @@ Consequences for the `nanov15/` configs:
 
 ### 8.1 DAS status audit of the 1230 distinct paths in the current configs (65 INVALID, all others VALID)
 | config file | DAS path (status) |
-|---|---|
+| --- | --- |
 | 2024/RunIII2024Summer24/archived/RunIII2024Summer24_mc_dy_nlo_ptll.json | `/DYto2L-2Jets_Bin-1J-MLL-50-PTLL-100to200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` (INVALID) |
 | 2024/RunIII2024Summer24/archived/RunIII2024Summer24_mc_dy_nlo_ptll.json | `/DYto2L-2Jets_Bin-1J-MLL-50-PTLL-200to400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` (INVALID) |
 | 2024/RunIII2024Summer24/archived/RunIII2024Summer24_mc_dy_nlo_ptll.json | `/DYto2L-2Jets_Bin-1J-MLL-50-PTLL-400to600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` (INVALID) |
@@ -1879,7 +1879,7 @@ Consequences for the `nanov15/` configs:
 
 ### 8.2 Current (non-archived) MC entries that are not in the drafts
 | current config | DAS path | status | events | why not in the drafts |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Run3Summer22EE_mc_dy_lo_ht.json | `/DYto2L-4Jets_MLL-120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM` | INVALID | 10,411,115 | superseded version (INVALID on DAS) |
 | Run3Summer22EE_mc_dy_lo_ht.json | `/DYto2L-4Jets_MLL-50to120_HT-100to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v1/NANOAODSIM` | INVALID | 142,936,007 | superseded version (INVALID on DAS) |
 | Run3Summer23BPix_mc_dy_lo_ht.json | `/DYto2L-4Jets_MLL-50to120_HT-40to70_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM` | INVALID | 36,265,983 | superseded version (INVALID on DAS) |
@@ -1949,7 +1949,7 @@ Consequences for the `nanov15/` configs:
 
 ### 8.3 HT×M(lν)-binned W+jets in RunIII2024Summer24 (available, not used – 2024-style equivalent of the 2022/2023 HT-binned W scheme)
 | DAS path | status | events |
-|---|---|---|
+| --- | --- | --- |
 | `/WtoLNu-4Jets_Bin-HT-100to400-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | VALID | 375,281,609 |
 | `/WtoLNu-4Jets_Bin-HT-100to400-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | VALID | 22,905,968 |
 | `/WtoLNu-4Jets_Bin-HT-1500to2500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM` | VALID | 15,480,230 |
@@ -1966,7 +1966,7 @@ Consequences for the `nanov15/` configs:
 ## 9. Signal
 
 | era | datasets | processed-dataset versions | events (min–max per point) | size |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Run3Summer22 | 200 (100 `WRtoNEltoElElJJ` + 100 `WRtoNMutoMuMuJJ`) | 195 × `v5-v2`, 4 × `v5-v3`, 1 × `v5-v4` | 13.82 M (42 k–70 k) | 60 GB |
 | Run3Summer22EE | 200 | 195 × `postEE_v6-v2`, 3 × `v6-v3`, 2 × `v6-v4` | 41.74 M (199 k–210 k) | 156 GB |
 | Run3Summer23 | 200 | 193 × `v15-v2`, 5 × `v15-v3`, 2 × `v15-v4` | 13.86 M (61 k–70 k) | 53 GB |
@@ -1984,7 +1984,7 @@ Consequences for the `nanov15/` configs:
 Public references (XSDB and the CMS twikis are not reachable, see §3): LHCPhysics `TtbarNNLO` (tt̄ 923.6 pb NNLO+NNLL, 13.6 TeV), LHCPhysics `SingleTopNNLORef` (t-channel t 145.0, t̄ 87.2 pb NNLO; s-channel 11.778 pb; tW 87.9 pb NLO+NNLL), `cms-flaf/FLAF config/crossSections13p6TeV.yaml` (XSDB values with retrieval dates), `uhh-cms/cmsdb` (`ewk.py`, `top.py`). BR(W→ℓν, 3 flavours) = 0.3259 (PDG 2019 0.1086 × 3).
 
 | process (drafts) | value used [pb] | reference | Δ / comment |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | TTto2L2Nu | 96.978 | 923.6 × 0.3259² = 98.09 (FLAF) | −1.1 % (configs use BR² = 0.105) |
 | TTtoLNu2Q | 404.537 | 923.6 × 2 × 0.6741 × 0.3259 = 405.8 | −0.3 % |
 | TWminusto2L2Nu / TbarWplusto2L2Nu | 4.61475 each | 87.9 × 0.4995 × 0.1062 = 4.663 / 87.9 × 0.5005 × 0.1062 = 4.672 (FLAF) | −1.0 % / −1.2 % |
@@ -2034,7 +2034,7 @@ Discrepancies to act on: (i) 2024 `nlo_njet` per-flavour values (×3); (ii) 5FS 
 
 VALID samples matching `DYto2L/E/Mu*` or `WtoLNu-4Jets[_Bin]-MLNu-*` in the era campaigns that are neither in the drafts nor systematic-variation copies. The powheg MiNNLO+photos mass-binned family (`DYto2E/Mu[_Bin]-MLL-{50to130,130to200,200to400,400to600,600to800,800to1000,1000to1500,1500to2000,2000to4000,4000to6000,6000to13600}_powhegMINNLO-pythia8-photos`, some bins still PRODUCTION) is a complete NNLO alternative to the NLO powheg MLL family in every era, but no public cross sections were found for it, so it is listed only.
 | era | kind | primary dataset (processed string) | events |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Run3Summer22 | EWK Z+2j (VBF-type) | `DYto2L-2Jets-EWK_MLL-50_madgraph-pythia8` (`130X_mcRun3_2022_realistic_v5-v2`) | 14,940,000 |
 | Run3Summer22 | EWK Z+2j (VBF-type) | `DYto2L-2Jets-EWK_MLL-50_madgraph-pythia8` (`130X_mcRun3_2022_realistic_v5-v2`) | 14,940,000 |
 | Run3Summer22 | H->mumu window sample | `DYto2Mu-2Jets_MLL-105To160_amcatnloFXFX-pythia8` (`130X_mcRun3_2022_realistic_v5-v2`) | 7,325,014 |

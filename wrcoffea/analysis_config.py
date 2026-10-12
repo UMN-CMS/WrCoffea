@@ -133,7 +133,7 @@ PDF_SETS = _cfg.get("pdf_sets") or {}
 # era -> JSON payload of the high-pT muon momentum corrections (GE kappa map,
 # MC smearing); eras listed get wrcoffea.muon_momentum, the others the TuneP
 # placeholder.  The payloads (data/muon_highpt/) hold numbers from CMS-internal
-# documents; docs/muon_momentum.md lists their sources.
+# documents; docs/studies/muon_momentum.md lists their sources.
 MUON_HIGHPT = _cfg.get("muon_highpt") or {}
 # era -> correction name in the muon TRIGGER payload (default NUM_HLT_DEN_HighPtLooseRelIsoProbes).
 MUON_HLT_CORRECTIONS = _cfg.get("muon_hlt_correction") or {}

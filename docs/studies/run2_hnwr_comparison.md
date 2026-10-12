@@ -18,7 +18,7 @@ differences are in [Measured comparison](#measured-comparison).
 ## Objects
 
 | Object | Run 2 HNWRAnalyzer (2018) | WrCoffea UL18 | WrCoffea 2024 | Status |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Electron kinematics | pT > 53, \|SC η\| < 2.4 (`SelectElectrons("HNWRLT", 53, 2.4)`) | pT > 53, \|η\| < 2.5, ECAL crack veto on SC η | as UL18 | **Differs**: η range 2.4 vs 2.5; Run 2 cuts on SC η |
 | Electron energy | MiniAOD EGM scale and smearing | already applied in UL NanoAOD | EGM `electronSS_EtDependent` applied in the analyzer | Same intent |
 | Electron tight | HEEP (`HNWRTight2018Prompt` for 2018) | `cutBased_HEEP` | as UL18 | Same |
@@ -35,7 +35,7 @@ differences are in [Measured comparison](#measured-comparison).
 ## Event selection
 
 | Step | Run 2 HNWRAnalyzer (2018) | WrCoffea UL18 | WrCoffea 2024 | Status |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | MET filters | goodVertices, globalSuperTightHalo2016, HBHENoise, HBHENoiseIso, EcalDeadCellTP, BadPFMuon, eeBadSc (data only), ecalBadCalibReduced (2017+) | Same set; eeBadSc also on MC; BadPFMuonDz and hfNoisyHits when present | common set + `ecalBadCalibFilter` + the optional ones | Same, negligible differences |
 | HEM 15/16 | drop events with a selected electron at η < −1.25, −1.62 < φ < −0.82 (data and MC, whole year, `isHEMVetoEvent`) | ported (`hem_veto`), on the two leptons each region is built from, electron η as in Run 2 | none (not needed) | Same for UL18 |
 | Triggers | e: Ele32_WPTight, Photon200, Ele115_CaloIdVT_GsfTrkIdT; μ: Mu50, OldMu100, TkMu100 | Same | e: Ele30_WPTight, Photon200, Ele115_CaloIdVT_GsfTrkIdT, Ele50_CaloIdVT_GsfTrkIdT_PFJet165; μ: Mu50, HighPtTkMu100, CascadeMu100 | Same for UL18 |
@@ -54,7 +54,7 @@ differences are in [Measured comparison](#measured-comparison).
 ## Samples and normalization
 
 | Item | Run 2 HNWRAnalyzer (2018) | WrCoffea UL18 | WrCoffea 2024 | Status |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Normalization | xsec × lumi × genWeight / ΣgenWeight, lumi 59.736 fb⁻¹ | same, 59.83 fb⁻¹ | same, 109.70 fb⁻¹ (processed lumi of the skims) | Same |
 | DY sample | LO madgraphMLM HT-binned `DYJetsToLL_M-50` | same (UL), `dy_lo_ht` | LO madgraphMLM `DYto2L-4Jets` binned in HT × MLL (HT > 40), `dy_lo_ht` | Same type |
 | DY cross sections | 2016 CUETP8M1 LO table × 1.23 in every year (SKFlat `CommonSampleInfo`) | bare UL18 LO (XSDB); Run 2 / ours per HT bin (70–100 … 2500+) = 1.49, 1.30, 1.31, 1.35, 1.34, 1.39, 1.43, 1.46. The reshape carries the normalization | LO × 1.16217 = MATRIX NNLO 6340.2 pb / LO MLM header since 2026-10-10 (before: LO × 1.223, normalized to the NLO FxFx inclusive 6671.5 pb; every measurement below used that) | **Differs** in where the normalization lives; the product is what matters |
@@ -66,7 +66,7 @@ differences are in [Measured comparison](#measured-comparison).
 ## Weights and corrections
 
 | Correction | Run 2 HNWRAnalyzer (2018) | WrCoffea UL18 | WrCoffea 2024 | Status |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Pileup | custom histogram in nPileUp, with an nPileUp ≥ 5 floor in 2018 | correctionlib on `Pileup.nTrueInt` (`Collisions18_UltraLegacy_goldenJSON`) | `Collisions24_BCDEFGHI_goldenJSON` | Same intent |
 | L1 prefiring | 2016/2017 only; `GetPrefireWeight` returns 1 for 2018 | none | none | Same |
 | Electron SFs | RECO and HEEP ID on tight electrons; HEEP trigger-OR efficiencies (`WREGammaTriggerEff.root`) combined per event with the OR formula | same components; the ported Run 2 HEEP efficiencies (`scripts/convert_run2_electron_trigger_sf.py`) | EGM `2024Prompt` RECO and HEEP ID (clipped to the last measured bin: 500 GeV RECO, 1 TeV ID); trigger SF from the EGM `HLT_SF_Ele30_TightID` proxy | Same for UL18 |
@@ -113,7 +113,7 @@ for 2024.
 Data/MC per region:
 
 | Region | Run 2 | UL18 | 2024 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Resolved DY CR, ee / μμ | 0.99 / 1.01 | 1.00 / 1.00 | 1.21 / 1.25 |
 | Resolved eμ CR (e / μ data) | 0.95 / 0.97 | 1.02 / 1.04 | 0.98 / 1.00 |
 | Boosted DY CR, ee / μμ | 1.04 / 0.96 | 1.04 / 0.97 | 1.04 / 0.96 |
@@ -151,7 +151,7 @@ and SinglePhoton primary datasets without overlap removal.  Run 2 used
 SingleElectron only (and, in 2017, no Ele115), which the configs now follow.
 
 | year | region | Run 2 /fb | ours /fb | ours/Run 2 |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 2016 | resolved DY CR ee / mumu | 270 / 422 | 287 / 402 | 1.06 / 0.95 |
 | 2016 | boosted DY CR ee / mumu | 31 / 31 | 32 / 36 | 1.00 / 1.16 |
 | 2016 | resolved e-mu CR | 24 | 25 | 1.04 |
@@ -215,7 +215,7 @@ variations from the NLO LHE weights, the Run 2 EW block copied.  Payloads
 for all four UL eras (UL18 switched from the converted Run 2 file).
 
 | generator Z pT [GeV] | UL16APV | UL16 | UL17 | UL18 | Run 2 2016 | Run 2 2017 | Run 2 2018 |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | 0-2 | 0.94 | 0.94 | 0.94 | 0.94 | 0.97 | 0.95 | 0.95 |
 | 20-30 | 1.09 | 1.11 | 1.09 | 1.09 | 1.05 | 1.10 | 1.09 |
 | 50-60 | 1.24 | 1.29 | 1.25 | 1.24 | 1.09 | 1.24 | 1.26 |
@@ -243,7 +243,7 @@ Run 2 values from `SKFlatAnalyzer/data/Run2Legacy_v4/<year>/HNWRDYReshape/DYResh
 (`Resolved_ratio_AllCh`, `Boosted_ratio_AllCh`).
 
 | year | resolved: ours (per era) | resolved: Run 2 | boosted: ours | boosted: Run 2 |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 2016 | UL16APV 1.31, 1.10, 0.95, 0.84, 0.72, 0.81, 0.75; UL16 1.48, 1.14, 0.95, 0.86, 0.72, 0.77, 0.64 | 1.41, 1.24, 1.09, 0.98, 0.84, 0.90, 0.76 | 0.85, 0.69, 0.50, 0.35, 0.12; 0.82, 0.82, 0.80, 0.59, 0.64 | 0.92, 0.86, 0.76, 0.57, 0.24 |
 | 2017 | 1.33, 1.13, 0.97, 0.87, 0.77, 0.68, 0.78 | 1.32, 1.23, 1.09, 1.00, 0.87, 0.79, 0.83 | 0.96, 0.88, 0.73, 0.67, 0.61 | 1.11, 1.14, 0.99, 0.85, 0.95 |
 | 2018 | 1.47, 1.18, 1.01, 0.90, 0.82, 0.75, 0.57 | 1.25, 1.13, 1.03, 0.95, 0.86, 0.85, 0.69 | 0.97, 0.82, 0.74, 0.48, 0.71 | 0.98, 0.92, 0.98, 0.63, 0.98 |
@@ -302,7 +302,7 @@ mapped in `config.yaml` (`dy_zpt_reweight: RunIII2024Summer24`).
   ee and μμ ratios agree within 2–3 %.
 
 | generator Z pT [GeV] | 0–2 | 2–4 | 10–20 | 20–30 | 30–100 | 100–200 | 200–350 | 350–500 | 500–1000 | 1000–2000 | 2000–8000 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2024 NLO/LO | 0.69 | 0.80 | 0.96–1.01 | 1.13 | 1.23–1.32 | 1.27–1.31 | 1.24–1.26 | 1.16 | 1.02 | 0.84 | 0.42 ± 0.16 |
 | Run 2 2018 | 0.95 | 0.94 | 0.92–0.97 | 1.09 | 1.22–1.28 | 1.14–1.26 | 0.97–1.10 | 0.86 | 0.70 | 0.46 | 0.28 |
 
@@ -327,13 +327,13 @@ backgrounds from `20261008_skims_v2` and the Z-pT-reweighted DY from
 `data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261008.json`.
 
 | leading AK4 pT [GeV] | 40–100 | 100–200 | 200–400 | 400–600 | 600–800 | 800–1000 | 1000–2000 |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | 2024 (ee+μμ) | 1.54 ± 0.03 | 1.26 | 1.05 | 0.92 | 0.84 | 0.74 ± 0.05 | 0.68 ± 0.07 |
 | 2024 ee / μμ | 1.54 / 1.53 | 1.24 / 1.28 | 1.02 / 1.06 | 0.90 / 0.94 | 0.85 / 0.84 | 0.66 / 0.79 | 0.66 / 0.69 |
 | Run 2 2018 | 1.25 | | | | | | 0.69 (> 1 TeV) |
 
 | DY-candidate AK8 pT [GeV] | 200–400 | 400–600 | 600–800 | 800–1000 | 1000–2000 |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | 2024 (ee+μμ) | 1.05 ± 0.02 | 0.91 | 0.82 | 0.71 ± 0.09 | 0.63 ± 0.14 |
 | 2024 ee / μμ | 1.09 / 1.01 | 0.93 / 0.88 | 0.87 / 0.79 | 0.78 / 0.66 | 0.78 / 0.54 |
 
@@ -358,7 +358,7 @@ NLO/LO agree within 2σ (Fig. 32).  The DY rate parameters then fit to 1.00 ±
 Exact 2018 values (`DYReshapeJetPt_2018.root`, errors stat + syst) next to 2024:
 
 | leading AK4 pT [GeV] | 40–100 | 100–200 | 200–400 | 400–600 | 600–800 | 800–1000 | 1000–2000 |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | Run 2 2018 Data/LO | 1.25 ± 0.11 | 1.13 | 1.03 | 0.95 | 0.86 | 0.85 | 0.69 ± 0.11 |
 | 2024 Data/LO (Z-pT on) | 1.54 ± 0.03 | 1.26 | 1.05 | 0.92 | 0.84 | 0.74 | 0.68 ± 0.07 |
 | 2024 NLO/LO (Z-pT on) | 1.31 ± 0.05 | 1.21 | 1.08 | 1.03 | 0.86 | 0.75 | 0.65 ± 0.09 |
@@ -411,7 +411,7 @@ DY rerun with both corrections, `20261008_dyzpt_reshape` (data and non-DY from
 `20261008_skims_v2`):
 
 | Region | uncorrected | Z-pT | Z-pT + reshape | Run 2 |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Resolved DY CR data/MC, ee / μμ | 1.21 / 1.25 | 1.05 / 1.09 | 0.98 / 1.01 | 0.99 / 1.01 |
 | Boosted DY CR data/MC, ee / μμ | 1.04 / 0.96 | 0.99 / 0.93 | 1.03 / 0.97 | 1.04 / 0.96 |
 | Resolved SR DY (MC), ee / μμ | 496 / 627 | 580 / 734 | 711 / 900 | — |

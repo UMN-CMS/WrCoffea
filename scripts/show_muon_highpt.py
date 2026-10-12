@@ -11,7 +11,7 @@ access to the documents can check every number by eye:
   figure, with sigma(p) at a few momenta;
 - the smearing fractions and every ``source`` / ``note`` field.
 
-Where each number comes from is listed in docs/muon_momentum.md.
+Where each number comes from is listed in docs/studies/muon_momentum.md.
 
     .venv/bin/python scripts/show_muon_highpt.py data/muon_highpt/Run3/2024/RunIII2024Summer24.json
 """
