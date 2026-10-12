@@ -1229,6 +1229,20 @@ class WrAnalysis(processor.ProcessorABC):
                 continue
             ratios = metadata.get(key)
             n_allowed = (9, 8) if family == "scale" else (4,)
+            explained = (metadata.get(f"{key}_source") or {}).get("status")
+            if not ratios and explained:
+                # The fileset says why no dataset-level means exist (e.g. scripts/estimate_ps_sums.py
+                # could not reach the original files): no normalized variation can be built, so the
+                # sample keeps its nominal for this family, with one warning per dataset.
+                key_w = f"theory_nominal::{family}::{sample}::no_sums"
+                if key_w not in _WARN_ONCE_ANALYZER:
+                    _WARN_ONCE_ANALYZER.add(key_w)
+                    logger.warning("--systs %s: dataset '%s' has no '%s' means (%s); its %s variations are "
+                                   "filled with the NOMINAL weight.", family, sample, key, explained, "/".join(names))
+                ones = np.ones(len(events), dtype=np.float64)
+                for name in names:
+                    out[name] = (ones, ones)
+                continue
             if not ratios or len(ratios) not in n_allowed:
                 raise ValueError(
                     f"--systs {family}: metadata of '{sample}' has no "

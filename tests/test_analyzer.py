@@ -1667,3 +1667,38 @@ class TestLumiMask:
         monkeypatch.setenv("LUMI_JSON", str(golden))
         out = WrAnalysis(mass_point=None).apply_lumi_mask(self._events(), "RunIII2024Summer24", is_data=True)
         assert ak.to_list(out.event) == [0]
+
+
+class TestTheoryWeightMeans:
+    """The dataset-level means that normalize the scale and PS variations: missing ones are an
+    error unless the fileset records why none exist, then the sample keeps its nominal."""
+
+    @staticmethod
+    def _events(n=5):
+        return ak.zip({"PSWeight": ak.Array(np.full((n, 4), 1.05)), "event": ak.Array(list(range(n)))}, depth_limit=1)
+
+    def test_missing_means_are_an_error(self):
+        proc = WrAnalysis(mass_point=None, enabled_systs=["ps"], region="both")
+        with pytest.raises(ValueError, match="PSSumw"):
+            proc._theory_variations(self._events(), {"sample": "X"}, "RunIISummer20UL16APV")
+
+    def test_explained_missing_means_give_the_nominal(self, caplog):
+        import logging
+        import wrcoffea.analyzer as analyzer_module
+        analyzer_module._WARN_ONCE_ANALYZER.clear()
+        proc = WrAnalysis(mass_point=None, enabled_systs=["ps"], region="both")
+        md = {"sample": "X", "PSSumw_source": {"status": "failed: could not open the original file"}}
+        with caplog.at_level(logging.WARNING, logger="wrcoffea.analyzer"):
+            out = proc._theory_variations(self._events(), md, "RunIISummer20UL16APV")
+        assert set(out) == {"PSISR", "PSFSR"}
+        for up, down in out.values():
+            np.testing.assert_array_equal(up, 1.0)
+            np.testing.assert_array_equal(down, 1.0)
+        assert "could not open the original file" in caplog.text
+
+    def test_means_present_are_used(self):
+        proc = WrAnalysis(mass_point=None, enabled_systs=["ps"], region="both")
+        md = {"sample": "X", "PSSumw": [1.05, 1.05, 1.05, 1.05]}
+        out = proc._theory_variations(self._events(), md, "RunIISummer20UL16APV")
+        for up, down in out.values():
+            np.testing.assert_allclose(up, 1.0)      # 1.05 / 1.05
