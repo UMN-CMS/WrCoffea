@@ -242,24 +242,33 @@ class WrAnalysis(processor.ProcessorABC):
             return events
 
         json_path = os.environ.get("LUMI_JSON") or LUMI_JSONS.get(mc_campaign)
-        if json_path:
-            try:
-                mask = LumiMask(json_path)
-                events = events[mask(events.run, events.luminosityBlock)]
-                if len(events) == 0:
-                    key = f"lumi_mask_empty::{mc_campaign}"
-                    if key not in _WARN_ONCE:
-                        _WARN_ONCE.add(key)
-                        logger.warning(f"All events removed by lumi mask for era '{mc_campaign}'.")
-            except OSError as e:
-                logger.warning(f"Failed to load lumi JSON '{json_path}': {e}")
-        else:
-            logger.warning(f"No lumi JSON found for era '{mc_campaign}'. Data left unmasked.")
-
+        if not json_path:
+            raise ValueError(f"No golden JSON configured for era '{mc_campaign}' (config.yaml lumi_jsons): "
+                             "data cannot be run without its certified-lumisection mask.")
+        try:
+            mask = LumiMask(json_path)
+        except OSError as e:
+            raise RuntimeError(f"Cannot read the golden JSON '{json_path}' for era '{mc_campaign}': {e}") from e
+        events = events[mask(events.run, events.luminosityBlock)]
+        if len(events) == 0:
+            key = f"lumi_mask_empty::{mc_campaign}"
+            if key not in _WARN_ONCE:
+                _WARN_ONCE.add(key)
+                logger.warning(f"All events removed by lumi mask for era '{mc_campaign}'.")
         return events
+    # JME Run 3 recommendation for the ECAL bad-calibration problem of runs 362433 to 367144 (late 2022 and
+    # early 2023): the NanoAOD ecalBadCalibFilter flag is not to be used there; instead an event is rejected
+    # when its PuppiMET exceeds 100 GeV and a jet with pT > 50 GeV in -0.5 < eta < -0.1, -2.1 < phi < -1.8
+    # with a neutral or charged EM fraction above 0.9 is back to back with it (dphi > 2.9).  The recipe is on
+    # PuppiMET; PF MET was used until 2026-10-11, when the skims did not carry PuppiMET (the two differ on a
+    # few events per million).  MC never has these run numbers, so only data is affected.
     def ecal_bad_calib_filter(self, events):
+        if "PuppiMET" not in events.fields:
+            raise ValueError("The 2022/2023 ECAL bad-calibration veto needs the PuppiMET collection "
+                             "(JME recipe for runs 362433 to 367144); the input has none.")
         run_mask = (events.run >= 362433) & (events.run <= 367144)
-        dphi = np.abs(events.Jet.phi - events.MET.phi) # to be replaced with Puppi MET in the next iteration of skims for 2022 and 2023
+        met = events.PuppiMET
+        dphi = np.abs(events.Jet.phi - met.phi)
         dphi = ak.where(dphi > np.pi, 2*np.pi - dphi, dphi)
         bad_jet = (
             (events.Jet.pt > 50) &
@@ -269,7 +278,7 @@ class WrAnalysis(processor.ProcessorABC):
             (dphi > 2.9)
         )
 
-        reject = (events.MET.pt > 100) & ak.any(bad_jet, axis=1) & run_mask
+        reject = (met.pt > 100) & ak.any(bad_jet, axis=1) & run_mask
         return reject
 
     # MET-filter flags required for every era (data, background MC, and signal).
@@ -284,26 +293,23 @@ class WrAnalysis(processor.ProcessorABC):
     _OPTIONAL_NOISE_FLAGS = ("BadPFMuonDzFilter", "hfNoisyHitsFilter")
 
     def _noise_flag(self, events, name, mc_campaign):
-        """Return ``events.Flag.<name>``, or an all-True mask (warn once) if absent."""
+        """Return ``events.Flag.<name>``; a required flag the input lacks stops the run."""
         flags = getattr(events, "Flag", None)
         if flags is not None and hasattr(flags, name):
             return getattr(flags, name)
-        key = f"noise_flag_missing::{mc_campaign}::{name}"
-        if key not in _WARN_ONCE:
-            _WARN_ONCE.add(key)
-            logger.warning(
-                "MET filter flag '%s' missing for era '%s'; treating it as passed.",
-                name, mc_campaign,
-            )
-        return ak.ones_like(events.event, dtype=bool)
+        raise ValueError(
+            f"MET filter flag '{name}' is required for era '{mc_campaign}' but the input has no "
+            f"Flag.{name}: the noise filters cannot be applied. Check the skim's branch policy or the era's "
+            "filter list in apply_noise_filter."
+        )
 
     def apply_noise_filter(self, events, mc_campaign):
         """Apply the recommended MET noise filters for the era.
 
         Applied to data, background MC, and signal alike (AN-19-083 Sec. 4
         requires all events to pass the MET filters).  Flags that only exist
-        in newer NanoAOD are applied when present; a missing required flag is
-        treated as passed and reported once per worker.
+        in newer NanoAOD are applied when present; a missing required flag
+        stops the run (an unfiltered sample would otherwise pass silently).
         """
         mask = ak.ones_like(events.event, dtype=bool)
         for name in self._COMMON_NOISE_FLAGS:

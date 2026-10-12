@@ -31,9 +31,12 @@ Applied to data and MC unless stated.
 - **Noise filters** (`_NOISE_FLAGS` in `analyzer.py`): goodVertices, globalSuperTightHalo2016Filter,
   BadPFMuonFilter, eeBadScFilter, plus BadPFMuonDzFilter and hfNoisyHitsFilter where the branch
   exists; Run 2 UL adds HBHENoiseFilter and HBHENoiseIsoFilter in every year and ecalBadCalibFilter
-  for 2017 and 2018; Run 3 adds ecalBadCalibFilter, and 2022/2023 a custom ECAL bad-calibration veto
-  for runs 362433 to 367144. A missing required flag or an unreadable golden JSON only warns at
-  present (open item R6).
+  for 2017 and 2018; 2024 adds ecalBadCalibFilter. For 2022 and 2023 the NanoAOD ecalBadCalibFilter
+  is not used; instead the JME recipe for runs 362433 to 367144 rejects an event with PuppiMET > 100 GeV
+  and a jet (pT > 50 GeV, −0.5 < η < −0.1, −2.1 < φ < −1.8, neutral or charged EM fraction > 0.9) back to
+  back with it, Δφ > 2.9 (`ecal_bad_calib_filter`; on PuppiMET since 2026-10-11, PF MET before, a
+  difference of a few events per million). A required flag the input lacks, or a missing or unreadable
+  golden JSON, stops the run (since 2026-10-11); the two optional flags are applied when present.
 - **Jet veto maps** (JME): a jet with pT > 15 GeV, EM fraction < 0.9 and the tight-lepton-veto ID in a
   vetoed cell. Run 3 rejects the **event** (the JME recommendation; 13 to 15 % of 2024 events). The
   UL eras drop only those **jets** and keep the event (`jetveto_mode: jet`), as the Run 2 analysis
@@ -201,7 +204,7 @@ What each era can produce (2026-10-11; from the registry and the payloads of
 | `prefire` | yes | no (no prefiring in Run 3) | no | no |
 | `elescale`, `elesmear` | no (no scale-and-smearing payload; UL NanoAODv9 MC has no scale uncertainty branch) | yes | yes | yes |
 | `dyreshape` | yes | yes | yes | not yet (no 2025 reshape) |
-| `ps` | registry yes; the 2026-10 skims carry no PSSumw (UL NanoAODv9 has none), so the current filesets refuse it; the skimmer derives it at the next skim | yes | yes | yes |
+| `ps` | yes: the UL filesets carry PSSumw estimated from a few million unselected events of every original sample (`scripts/estimate_ps_sums.py`, 2026-10-11; exact sums come with the next skim, which derives them from the events) | yes | yes | yes |
 
 Samples without generator weights (the Pythia 8 WW, WZ, ZZ) get their nominal for `scale` and
 `pdf`, with a warning. The plotter's band and the systematics tables take every source present in
@@ -230,12 +233,12 @@ Decisions and measurements still outstanding, with the date they were last looke
   identically zero (the MC scale systematics were not included in the UL productions, per the EGM
   twiki); options are the data scale uncertainty mirrored onto MC or EgammaPostRecoTools at MiniAOD
   level (2026-10-11).
-- **UL parton-shower family.** Needs PSSumw in the filesets: a reskim (the skimmer now derives it)
-  or an estimate from the original samples (2026-10-11).
+- **UL parton-shower means.** The UL filesets carry PSSumw estimated from a few million unselected
+  events per sample (statistical precision well below 0.1 %); the next UL skim replaces them by the
+  exact sums. A fileset regeneration drops the estimate until `scripts/estimate_ps_sums.py` is rerun
+  (2026-10-11).
 - **Soft-drop mass definition.** Corrected (default) versus the raw subjet mass Run 2 used, about
   9 % of the UL18 boosted DY CR (2026-10-10).
-- **Required inputs that fail softly.** An unreadable golden JSON or a missing required noise-filter
-  flag only warns (R6, 2026-09-07).
 - **Official signal samples have no N → ℓtb.** The official gridpacks' `jj` excludes the top and the N
   width counts only the generated channels, so for m_N above a few hundred GeV the samples put the
   full rate into ℓℓ + light jets while about a third should go to ℓtb; parked (2026-10-10).

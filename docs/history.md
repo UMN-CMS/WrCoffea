@@ -6,6 +6,15 @@ change in this repository; the commit is given where one commit carries it.
 
 ## 2026-10
 
+- **2026-10-11** A missing required noise-filter flag, and a missing or unreadable golden JSON, stop a
+  run instead of warning (review finding R6). The mass-point CSV is read only for runs that involve
+  Signal, so a data-only era without one (2025) runs. One `ERA_SUBDIRS` definition (`era_utils`)
+  replaces the two copies in `das_utils` and `skim.plan`. The UL filesets carry parton-shower weight
+  means estimated from original files (`scripts/estimate_ps_sums.py`), making `--systs ps` producible
+  for UL until a reskim provides the exact sums.
+- **2026-10-11** The 2022/2023 ECAL bad-calibration veto (runs 362433 to 367144) uses PuppiMET, as
+  the JME recipe prescribes; it had used PF MET while the first skims lacked PuppiMET. On the
+  skimmed 2022G and 2023C data the two reject the same events to within 3 to 8 per million.
 - **2026-10-11** The pre-rebuild config copies, the retired DY variant configs, the UL18
   standard-NanoAOD data and private-scan configs and the skims_v1 filesets were removed from the
   tree (`dbdd2d2`); they stay in the history. `scripts/full_fileset.py` went the same day: the

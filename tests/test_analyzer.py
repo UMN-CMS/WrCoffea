@@ -1,3 +1,4 @@
+import json
 """Unit tests for the WrAnalysis processor core logic.
 
 These tests use lightweight mock awkward arrays to exercise selection methods
@@ -1368,24 +1369,29 @@ _COMMON_NOISE_FLAGS = (
 )
 
 
-def _make_noise_filter_events(flag_values, *, run=1, met_pt=None, met_phi=None, jets=None):
-    """Awkward events with a ``Flag`` record plus the run/event/Jet/MET fields
+def _make_noise_filter_events(flag_values, *, run=1, met_pt=None, met_phi=None, jets=None,
+                              puppi_pt=None, puppi_phi=None, with_puppi=True):
+    """Awkward events with a ``Flag`` record plus the run/event/Jet/MET/PuppiMET fields
     that ``ecal_bad_calib_filter`` reads.  *flag_values* maps flag name to a
-    list of booleans (one per event)."""
+    list of booleans (one per event).  PuppiMET defaults to the PF MET values;
+    ``with_puppi=False`` leaves the collection out."""
     n = len(next(iter(flag_values.values())))
     if jets is None:
         jets = {"pt": [[10.0]] * n, "eta": [[0.0]] * n, "phi": [[0.0]] * n,
                 "neEmEF": [[0.0]] * n, "chEmEF": [[0.0]] * n}
-    return ak.zip({
+    met_pt = met_pt if met_pt is not None else [0.0] * n
+    met_phi = met_phi if met_phi is not None else [0.0] * n
+    fields = {
         "Flag": ak.zip({k: ak.Array(v) for k, v in flag_values.items()}),
         "run": ak.Array([run] * n),
         "event": ak.Array(list(range(n))),
         "Jet": ak.zip({k: ak.Array(v) for k, v in jets.items()}),
-        "MET": ak.zip({
-            "pt": ak.Array(met_pt if met_pt is not None else [0.0] * n),
-            "phi": ak.Array(met_phi if met_phi is not None else [0.0] * n),
-        }),
-    }, depth_limit=1)
+        "MET": ak.zip({"pt": ak.Array(met_pt), "phi": ak.Array(met_phi)}),
+    }
+    if with_puppi:
+        fields["PuppiMET"] = ak.zip({"pt": ak.Array(puppi_pt if puppi_pt is not None else met_pt),
+                                     "phi": ak.Array(puppi_phi if puppi_phi is not None else met_phi)})
+    return ak.zip(fields, depth_limit=1)
 
 
 class TestNoiseFilter:
@@ -1427,20 +1433,18 @@ class TestNoiseFilter:
 
         assert ak.to_list(out.event) == [0]
 
-    def test_missing_required_flag_passes_with_warning(self, caplog):
-        import logging
-        import wrcoffea.analyzer as analyzer_module
-
+    def test_missing_required_flag_is_an_error(self):
         flags = self._flags(2, ecalBadCalibFilter=[True, True])
         del flags["eeBadScFilter"]
         events = _make_noise_filter_events(flags)
-        analyzer_module._WARN_ONCE.clear()
+        with pytest.raises(ValueError, match="eeBadScFilter"):
+            WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIII2024Summer24")
 
-        with caplog.at_level(logging.WARNING, logger="wrcoffea.analyzer"):
-            out = WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIII2024Summer24")
-
-        assert ak.to_list(out.event) == [0, 1]
-        assert "eeBadScFilter" in caplog.text
+    def test_missing_era_specific_flag_is_an_error(self):
+        flags = self._flags(2, HBHENoiseFilter=[True, True], ecalBadCalibFilter=[True, True])   # no HBHENoiseIsoFilter
+        events = _make_noise_filter_events(flags)
+        with pytest.raises(ValueError, match="HBHENoiseIsoFilter"):
+            WrAnalysis(mass_point=None).apply_noise_filter(events, "RunIISummer20UL18")
 
     def test_run3_2022_applies_manual_ecal_veto(self):
         # Event 0: EM-dominated jet in the affected eta/phi window, back-to-back
@@ -1456,6 +1460,38 @@ class TestNoiseFilter:
         out = WrAnalysis(mass_point=None).apply_noise_filter(events, "Run3Summer22")
 
         assert ak.to_list(out.event) == [1]
+
+    def test_run3_ecal_veto_uses_puppimet_not_pf_met(self):
+        # Same bad jet in both events, in the run range.  Event 0: PF MET above the threshold but
+        # PuppiMET below it -> kept; event 1: PuppiMET above, PF MET below -> rejected.  Also the
+        # dphi is taken against the PuppiMET direction.
+        flags = self._flags(2)
+        jets = {"pt": [[80.0], [80.0]], "eta": [[-0.3], [-0.3]], "phi": [[-2.0], [-2.0]],
+                "neEmEF": [[0.95], [0.95]], "chEmEF": [[0.0], [0.0]]}
+        events = _make_noise_filter_events(
+            flags, run=363000, met_pt=[150.0, 50.0], met_phi=[1.2, 1.2], jets=jets,
+            puppi_pt=[50.0, 150.0], puppi_phi=[1.2, 1.2],
+        )
+        out = WrAnalysis(mass_point=None).apply_noise_filter(events, "Run3Summer23")
+        assert ak.to_list(out.event) == [0]
+        # PuppiMET pointing along the jet: no longer back to back -> kept
+        events = _make_noise_filter_events(
+            flags, run=363000, met_pt=[150.0, 150.0], met_phi=[1.2, 1.2], jets=jets,
+            puppi_pt=[150.0, 150.0], puppi_phi=[-2.0, 1.2],
+        )
+        assert ak.to_list(WrAnalysis(mass_point=None).apply_noise_filter(events, "Run3Summer22EE").event) == [0]
+
+    def test_run3_ecal_veto_without_puppimet_is_an_error(self):
+        flags = self._flags(1)
+        events = _make_noise_filter_events(flags, run=363000, met_pt=[150.0], with_puppi=False)
+        with pytest.raises(ValueError, match="PuppiMET"):
+            WrAnalysis(mass_point=None).apply_noise_filter(events, "Run3Summer22")
+
+    def test_run3_ecal_veto_only_in_its_run_range(self):
+        flags = self._flags(1)
+        jets = {"pt": [[80.0]], "eta": [[-0.3]], "phi": [[-2.0]], "neEmEF": [[0.95]], "chEmEF": [[0.0]]}
+        events = _make_noise_filter_events(flags, run=370000, met_pt=[150.0], met_phi=[1.2], jets=jets)
+        assert ak.to_list(WrAnalysis(mass_point=None).apply_noise_filter(events, "Run3Summer23BPix").event) == [0]
 
 
 # ---------------------------------------------------------------------------
@@ -1601,3 +1637,33 @@ class TestRun2EraTriggersAndFilters:
         assert ak.to_list(proc.apply_noise_filter(events, "RunIISummer20UL16APV").event) == [0, 1]
         assert ak.to_list(proc.apply_noise_filter(events, "RunIISummer20UL17").event) == [0]
         assert ak.to_list(proc.apply_noise_filter(events, "RunIISummer20UL18").event) == [0]
+
+
+class TestLumiMask:
+    """The golden JSON is applied to data; a missing or unreadable one stops the run."""
+
+    @staticmethod
+    def _events():
+        return ak.zip({"run": ak.Array([1, 2]), "luminosityBlock": ak.Array([1, 1]), "event": ak.Array([0, 1])}, depth_limit=1)
+
+    def test_mc_is_untouched(self, monkeypatch):
+        monkeypatch.delenv("LUMI_JSON", raising=False)
+        out = WrAnalysis(mass_point=None).apply_lumi_mask(self._events(), "NoSuchEra", is_data=False)
+        assert ak.to_list(out.event) == [0, 1]
+
+    def test_no_golden_json_configured_is_an_error(self, monkeypatch):
+        monkeypatch.delenv("LUMI_JSON", raising=False)
+        with pytest.raises(ValueError, match="No golden JSON"):
+            WrAnalysis(mass_point=None).apply_lumi_mask(self._events(), "NoSuchEra", is_data=True)
+
+    def test_unreadable_golden_json_is_an_error(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("LUMI_JSON", str(tmp_path / "missing.json"))
+        with pytest.raises(RuntimeError, match="Cannot read the golden JSON"):
+            WrAnalysis(mass_point=None).apply_lumi_mask(self._events(), "RunIII2024Summer24", is_data=True)
+
+    def test_golden_json_is_applied(self, monkeypatch, tmp_path):
+        golden = tmp_path / "golden.json"
+        golden.write_text(json.dumps({"1": [[1, 1]]}))
+        monkeypatch.setenv("LUMI_JSON", str(golden))
+        out = WrAnalysis(mass_point=None).apply_lumi_mask(self._events(), "RunIII2024Summer24", is_data=True)
+        assert ak.to_list(out.event) == [0]
