@@ -8,17 +8,15 @@ The Run 2 WR analysis code is
 [jedori0228/SKFlatAnalyzer](https://github.com/jedori0228/SKFlatAnalyzer),
 branch `HNWR/Run2Legacy_v4` (commit `06f274c`, "final", 2022-05-13):
 `Analyzers/src/HNWRAnalyzer.C` plus the object IDs in `DataFormats/src`.
-That branch produced the `HNWRAnalyzer_SkimTree_LRSMHighPt_*` files under
-`WR_Plotter/signal_fitting/run2_results/` (the `ReweightedQCDErrorEWCorr` and
-`Reshaped` suffixes are the two DY corrections described below).  Run 2 ran on
+That branch produced the `HNWRAnalyzer_SkimTree_LRSMHighPt_*` files (the
+`ReweightedQCDErrorEWCorr` and `Reshaped` suffixes are the two DY corrections
+described below).  Run 2 ran on
 the pre-UL 2018 samples (its sample table has 11.5 M events of
 `DYJetsToLL_M-50_HT-100to200`; UL18 has 26.2 M).
 
 The UL18 column is what matters for a Run 2 closure.  In the 2024 column,
 differences that are era updates (triggers, POG payloads) are noted but not
-treated as discrepancies; "as UL18" means the same code path.  The script that
-measures the differences in yields is described in
-[Measured comparison](#measured-comparison).
+treated as discrepancies; "as UL18" means the same code path.
 
 ## Objects
 
@@ -106,15 +104,6 @@ they are mapped; the UL eras have no `elescale` / `elesmear`
 mass scale, b-tagging (no b-tag regions).  In 2024 `muscale` and `musmear`
 follow the Muon POG recipe ([muon_momentum.md](muon_momentum.md)); UL18 keeps
 the TuneP placeholder (flat 5 %/TeV scale, smearing equal to nominal).
-
-## Measured comparison
-
-`WR_Plotter/signal_fitting/run2_results/compare_legacy_new.py` reads the Run 2
-files and any WrCoffea sets (`label=[<era>/]<dir>`), scales every set to the
-Run 2 luminosity and writes yields, closure and cutflow tables plus per-variable
-plots.  It masks Run 3 signal-region data and the ee/μμ data cutflow rows from
-m(ll) > 200 on, whatever the file holds.  Run it on the current productions for
-numbers; dated results are not kept on this page.
 
 ## The ported DY Z-pT reweighting
 

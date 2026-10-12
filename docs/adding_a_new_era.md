@@ -267,13 +267,6 @@ and normally need no change.
 
 ---
 
-## 8. Limits
-
-Limit setting lives in `WR_Plotter/signal_fitting/`: its `README.md` maps the
-stages, their inputs and environments, and `LIMITS.md` the limit configurations.
-
----
-
 ## Quick-reference checklist
 
 | Step | File(s) | Required? |
@@ -294,5 +287,4 @@ stages, their inputs and environments, and `LIMITS.md` the limit configurations.
 | Fileset JSONs | `data/configs/` + `data/filesets/` | Yes |
 | Signal mass CSV | `data/signal_points/<era>_mass_points.csv` | Yes (signal) |
 | WR_Plotter | `WR_Plotter/data/lumi.yaml` (+ `plot_settings/` only for era-specific ranges) | For plotting |
-| Limits | `WR_Plotter/signal_fitting/` (`README.md`, `LIMITS.md`) | For limits |
 | Tests | `python -m pytest tests/ -v` | Recommended |

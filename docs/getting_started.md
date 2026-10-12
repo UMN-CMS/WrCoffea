@@ -31,8 +31,7 @@ python3.12 -m venv .venv                    # or: uv venv --python 3.12 .venv
 
 `[xrootd]` builds the XRootD bindings needed to open `root://` URLs (a corrupted cached wheel
 shows as `ERROR: Wheel 'xrootd' ... is invalid`: `pip cache remove xrootd` and retry); `[test]`
-adds pytest. Everything in `WR_Plotter/bin/` runs with this same environment. The fits in
-`WR_Plotter/signal_fitting/` need ROOT and Combine; see `WR_Plotter/signal_fitting/README.md`.
+adds pytest. Everything in `WR_Plotter/bin/` runs with this same environment.
 
 **FNAL LPC.** The system Python is 3.9; use the CVMFS one for a local environment:
 

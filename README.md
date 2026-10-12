@@ -31,7 +31,7 @@ Composite modes (`all`, `bkg`, `data`, `mc`, `signal`), eras, systematics and ev
 | `bin/` | `run_analysis.py` (the analyzer), `skim.py` (skims and filesets), `lpc_condor.sh` |
 | `wrcoffea/` | the package: `analyzer.py`, `regions.py`, `systematics.py`, `scale_factors.py`, `config.yaml`, `skim/` |
 | `data/` | dataset configs, filesets, correction payloads (`jsonpog/`, `reweights/`), golden JSONs and luminosities, PDF sets, signal mass points |
-| `WR_Plotter/` | submodule: stack plots, cutflows, systematics tables, `signal_fitting/` (shapes, fits, Combine limits) |
+| `WR_Plotter/` | submodule: stack plots, cutflows, systematics tables |
 | `scripts/` | derivations and campaigns: cross sections, DY Z-pT reweight and jet-pT reshape, luminosity, PDF sets, payload conversions |
 | `tests/` | pytest, fully offline |
 
