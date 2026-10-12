@@ -1,0 +1,122 @@
+{
+  "era": "Run3Summer23BPix",
+  "written": "2026-10-12",
+  "threshold_gev": 200.0,
+  "ge_kappa": {
+    "description": "Generalized-endpoint additive q/pT bias in DATA relative to MC (q/pT_meas = q/pT_true + kappa), TuneP pT; corrected on data above the threshold as q/pT -> q/pT - kappa (the Run 3 recommendation of the [POG] page: apply the GE biases as a correction).",
+    "source": "[POG] High pT: Momentum Scale, Run 3 tab, '2023 postBPix kappa_b maps in (phi, eta)'.",
+    "units": "1/TeV",
+    "eta_edges": [
+      -2.4,
+      -2.1,
+      -1.2,
+      0.0,
+      1.2,
+      2.1,
+      2.4
+    ],
+    "phi_edges": [
+      -3.141592653589793,
+      -1.0471975511965976,
+      1.0471975511965976,
+      3.141592653589793
+    ],
+    "kappa": [
+      [
+        -0.25,
+        -0.05,
+        0.24
+      ],
+      [
+        0.07,
+        0.0,
+        0.09
+      ],
+      [
+        0.02,
+        0.05,
+        -0.01
+      ],
+      [
+        -0.02,
+        -0.05,
+        0.03
+      ],
+      [
+        0.08,
+        -0.17,
+        0.04
+      ],
+      [
+        0.12,
+        -0.33,
+        -0.2
+      ]
+    ],
+    "kappa_unc": [
+      [
+        0.08,
+        0.08,
+        0.09
+      ],
+      [
+        0.05,
+        0.05,
+        0.05
+      ],
+      [
+        0.04,
+        0.03,
+        0.03
+      ],
+      [
+        0.04,
+        0.04,
+        0.04
+      ],
+      [
+        0.06,
+        0.05,
+        0.06
+      ],
+      [
+        0.09,
+        0.09,
+        0.07
+      ]
+    ],
+    "layout": "kappa[i][j]: i = eta bin (ascending, signed eta), j = phi bin (ascending from -pi). On the [POG] page the rows are the phi bins (-180 to -60, -60 to 60, 60 to 180 degrees) and the columns the eta bins; the uncertainty is the number in parentheses."
+  },
+  "mc_smearing": {
+    "description": "MC p -> p * (1 + N(0, sigma(p, |eta|) * f)), f = sqrt((1 + x)^2 - 1), above the threshold. Nominal x = extra_smear (barrel |eta| < eta_split, endcap above); MuSmear up/down use x = extra_smear +- syst.",
+    "sigma_source": "[POG] High pT: Momentum Resolution, Run 3 tab, '2023 postBPix': the two sigma(p, eta) formulas.",
+    "extra_smear_source": "[POG] High pT: Momentum Resolution, Run 3 tab, '2023 postBPix': the width factor 0.568 for forward muons only, f = sqrt((1 + x)^2 - 1).",
+    "syst_source": "[POG] High pT: Momentum Resolution: a 10 % shift for barrel and endcap muons, all data-taking periods.",
+    "p_units": "GeV",
+    "eta_split": 1.2,
+    "sigma_barrel": [
+      0.0118,
+      6.14e-05,
+      -3.12e-08,
+      5.74e-12
+    ],
+    "sigma_endcap": [
+      0.0141,
+      5.38e-05,
+      -2e-08,
+      3.42e-12
+    ],
+    "extra_smear": {
+      "barrel": 0.0,
+      "endcap": 0.15
+    },
+    "syst": 0.1,
+    "sigma_p_max_gev": 2500.0,
+    "sigma_p_max_note": "Above 2.5 TeV sigma is held at its 2.5 TeV value (our choice, as for 2024; the cubic grows quickly beyond the momenta of the Z-based fits)."
+  },
+  "documents": {
+    "POG": "Muon POG 'Muon correction recommendations' (muon-wiki.docs.cern.ch), as read on 2026-10-12.",
+    "talk": "'HighPt Muon Resolution Measurement for 2022 and 2023', Muon POG, indico event 1413281, contribution 5984719 (linked from the [POG] page, High pT: Momentum Resolution, Run 3).",
+    "how_to_check": "scripts/show_muon_highpt.py prints this file in the page's orientation (phi rows, eta columns)."
+  }
+}

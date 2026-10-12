@@ -107,6 +107,21 @@ def smear_factor(x: float) -> float:
     return float(np.sqrt((1.0 + x) ** 2 - 1.0))
 
 
+def smear_factors(x) -> np.ndarray:
+    """``smear_factor`` for an array of smearing fractions (0 where x <= 0)."""
+    x = np.asarray(x, dtype=np.float64)
+    return np.sqrt(np.clip((1.0 + x) ** 2 - 1.0, 0.0, None)) * (x > 0)
+
+
+def region_value(value, abseta, eta_split: float) -> np.ndarray:
+    """A smearing number per muon: one value for all, or ``{"barrel": b, "endcap": e}`` split at |eta| = eta_split
+    (the 2022/2023 POG recipe smears barrel and endcap MC by different fractions)."""
+    abseta = np.asarray(abseta, dtype=np.float64)
+    if isinstance(value, dict):
+        return np.where(abseta < eta_split, float(value["barrel"]), float(value["endcap"]))
+    return np.full(abseta.shape, float(value))
+
+
 def resolution(p, abseta, cfg: dict) -> np.ndarray:
     """sigma(p, |eta|) of the high-pT smearing (cubic in p, frozen above sigma_p_max_gev)."""
     m = cfg["mc_smearing"]
@@ -200,15 +215,17 @@ def correct_muons(events, era: str, is_mc: bool) -> dict:
     kappa, kappa_unc = kappa_lookup(f_eta, f_phi, cfg)
     if is_mc:
         m = cfg["mc_smearing"]
-        x_nom, x_syst = float(m["extra_smear"]), float(m["syst"])
+        abseta = np.abs(f_eta)
+        x_nom = region_value(m["extra_smear"], abseta, float(m["eta_split"]))
+        x_syst = region_value(m["syst"], abseta, float(m["eta_split"]))
         evt = np.repeat(np.asarray(events.event, dtype=np.int64), np.asarray(counts))
         lumi = np.repeat(np.asarray(events.luminosityBlock, dtype=np.int64), np.asarray(counts))
         r = _normal_rng().evaluate(evt, lumi, f_phi, np.full(len(f_phi), HIGHPT_SALT, dtype=np.int64))
         sigma = resolution(f_pt0 * np.cosh(f_eta), np.abs(f_eta), cfg)
         high = {
-            "pt": f_pt0 * (1.0 + r * sigma * smear_factor(x_nom)),
-            "pt_smear_up": f_pt0 * (1.0 + r * sigma * smear_factor(x_nom + x_syst)),
-            "pt_smear_down": f_pt0 * (1.0 + r * sigma * smear_factor(max(x_nom - x_syst, 0.0))),
+            "pt": f_pt0 * (1.0 + r * sigma * smear_factors(x_nom)),
+            "pt_smear_up": f_pt0 * (1.0 + r * sigma * smear_factors(x_nom + x_syst)),
+            "pt_smear_down": f_pt0 * (1.0 + r * sigma * smear_factors(np.maximum(x_nom - x_syst, 0.0))),
         }
         # The data correction's uncertainty, carried by MC: kappa +- unc in data
         # is equivalent to q/pT -/+ unc in MC.

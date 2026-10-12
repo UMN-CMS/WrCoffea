@@ -1,8 +1,9 @@
 # High-pT muon momentum corrections (Muon POG Run 3 recipe)
 
 `wrcoffea/muon_momentum.py`, switched on per era by `config.yaml` `muon_highpt`
-(`era -> payload JSON`). Eras not listed keep the old TuneP placeholder in
-`scale_factors.apply_muon_scale_smearing` (flat 5 %/TeV scale, no smearing).
+(`era -> payload JSON`): 2022, 2022EE, 2023, 2023BPix (since 2026-10-12) and 2024. Eras not listed (UL,
+2025) keep the old TuneP placeholder in `scale_factors.apply_muon_scale_smearing`: a 5 %/TeV × pT scale
+shift of both charges and no resolution variation (`musmear` is refused there).
 
 ## What it does
 
@@ -84,11 +85,24 @@ Documents:
 - A curvature shift that would flip the charge (pT above about 1/abs(kappa)) leaves that muon unchanged. In practice
   this affects only mismeasured TuneP tracks.
 
+## 2022 and 2023 (Run3Summer22, Run3Summer22EE, Run3Summer23, Run3Summer23BPix)
+
+Payloads `data/muon_highpt/Run3/2022/` and `Run3/2023/`, written 2026-10-12 from the [POG] page alone:
+
+| Payload entry | Taken from |
+| --- | --- |
+| `ge_kappa.kappa`, `kappa_unc` | [POG] High pT: Momentum Scale, Run 3 tab, the four "kappa_b maps in (phi, eta)" tables (3 phi × 6 eta bins; value and the uncertainty in parentheses). The tables have phi rows and eta columns; the payload stores kappa[eta][phi]. |
+| `mc_smearing.sigma_barrel`, `sigma_endcap` | [POG] High pT: Momentum Resolution, Run 3 tab, the era's two sigma(p, eta) formulas. |
+| `mc_smearing.extra_smear` | Same section: the width factor per region, f = sqrt((1 + x)^2 - 1), so barrel / endcap x = 0 / 0.05 (2022), 0.05 / 0.10 (2022EE, 2023), 0 / 0.15 (2023BPix). A barrel x of 0 leaves the barrel MC unsmeared. |
+| `mc_smearing.syst` | Same section: a 10 % shift for barrel and endcap, all periods. |
+
+Our choices: sigma is held at its 2.5 TeV value above 2.5 TeV, as for 2024; MuonScaRe below 200 GeV uses the era's
+central `muon_scalesmearing.json.gz`. [talk] slide 11 also shows newer, finer GE maps for 2022 and 2023 (the ones
+used for 2024); the [POG] page's own 2022/2023 tables, its recommendation for those eras, are used instead.
+
 ## Other eras
 
-Not configured.
-
-- 2022 and 2023 have both the [POG] GE tables and the newer maps on [talk] slide 11, plus the central [POG] sigma(p)
-  parametrisations.
+- UL: the [POG] page has Run 2 GE tables and sigma(p) parametrisations, but below 200 GeV UL would need a
+  Rochester-type correction, which is not in the repository.
 - 2025 would need its own payload: EXO-25-021 uses 2024 MC with a larger smearing ([AN] l. 573-577), with no MUO
-  approval statement for it.
+  approval statement for it; the [POG] lists the 2025 recipe as work in progress.

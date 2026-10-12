@@ -146,3 +146,64 @@ def test_listed_era_dispatches_to_the_new_recipe(payload, monkeypatch):
     ev = _events([1000.0], [0.5], [0.5], [1])
     out = sf.apply_muon_scale_smearing(ev, ERA, False)
     assert ak.to_numpy(ak.flatten(out["pt"]))[0] == pytest.approx(1000 / 1.1)
+
+
+# ---------------------------------------------------------------------------
+# 2022/2023 payloads (Muon POG Run 3 tables) and barrel/endcap smearing fractions
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("era,eta,phi,kappa,unc", [
+    ("Run3Summer22", -2.3, -2.0, -0.16, 0.10),      # POG table: row -180..-60 deg, column -2.4..-2.1
+    ("Run3Summer22EE", 2.2, 0.0, -0.48, 0.05),      # row -60..60, column 2.1..2.4
+    ("Run3Summer23", 0.5, -0.5, 0.030, 0.027),      # row -60..60, column 0..1.2
+    ("Run3Summer23BPix", 2.2, 2.0, -0.20, 0.07),    # row 60..180, column 2.1..2.4
+])
+def test_2022_2023_kappa_maps_follow_the_pog_tables(era, eta, phi, kappa, unc):
+    """The POG tables have phi rows and eta columns; the payloads store kappa[eta][phi]."""
+    mm.highpt_config.cache_clear()
+    try:
+        cfg = mm.highpt_config(era)
+    finally:
+        mm.highpt_config.cache_clear()
+    k, u = mm.kappa_lookup(np.array([eta]), np.array([phi]), cfg)
+    assert k[0] == pytest.approx(kappa) and u[0] == pytest.approx(unc)
+
+
+@pytest.mark.parametrize("era,barrel,endcap", [
+    ("Run3Summer22", 0.0, 0.05), ("Run3Summer22EE", 0.05, 0.10),
+    ("Run3Summer23", 0.05, 0.10), ("Run3Summer23BPix", 0.0, 0.15),
+])
+def test_2022_2023_smearing_fractions(era, barrel, endcap):
+    mm.highpt_config.cache_clear()
+    try:
+        m = mm.highpt_config(era)["mc_smearing"]
+    finally:
+        mm.highpt_config.cache_clear()
+    assert m["extra_smear"] == {"barrel": barrel, "endcap": endcap}
+    assert m["syst"] == 0.1
+
+
+@pytest.fixture
+def region_payload(payload, tmp_path, monkeypatch):
+    """The synthetic payload with a smearing fraction per region (0 in the barrel), as in 2022 and 2023BPix."""
+    cfg = json.loads(json.dumps(payload))
+    cfg["mc_smearing"]["extra_smear"] = {"barrel": 0.0, "endcap": 0.15}
+    cfg["mc_smearing"]["syst"] = 0.1
+    path = tmp_path / "highpt_regions.json"
+    path.write_text(json.dumps(cfg))
+    monkeypatch.setitem(mm.MUON_HIGHPT, ERA, str(path))
+    mm.highpt_config.cache_clear()
+    yield cfg
+    mm.highpt_config.cache_clear()
+
+
+def test_smearing_fraction_per_region(region_payload):
+    """A barrel fraction of 0 leaves the barrel MC unsmeared (MuSmear down too) while MuSmear up smears it by 10 %;
+    the endcap uses its own fraction."""
+    ev = _events([500.0, 500.0], [0.3, 1.8], [0.2, 0.2], [1, -1])
+    out = mm.correct_muons(ev, ERA, is_mc=True)
+    nom, up, down = (ak.to_numpy(ak.flatten(out[k])) for k in ("pt", "pt_smear_up", "pt_smear_down"))
+    assert nom[0] == 500.0 and down[0] == 500.0 and up[0] != 500.0
+    assert nom[1] != 500.0
+    np.testing.assert_allclose((up[1] - 500.0) / (nom[1] - 500.0), mm.smear_factor(0.25) / mm.smear_factor(0.15))
+    np.testing.assert_allclose((down[1] - 500.0) / (nom[1] - 500.0), mm.smear_factor(0.05) / mm.smear_factor(0.15))

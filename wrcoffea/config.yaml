@@ -698,6 +698,11 @@ pdf_sets:
 # RunIII2024Summer24 switched on 2026-10-10 ~12:00 CDT, without a rerun: 2024 histogram
 # sets made before then have uncorrected muons (final full 2024 rerun pending).
 muon_highpt:
+  # 2022/2023 (2026-10-12): the Muon POG Run 3 tables (GE kappa maps, barrel/endcap MC smearing).
+  Run3Summer22: data/muon_highpt/Run3/2022/Run3Summer22.json
+  Run3Summer22EE: data/muon_highpt/Run3/2022/Run3Summer22EE.json
+  Run3Summer23: data/muon_highpt/Run3/2023/Run3Summer23.json
+  Run3Summer23BPix: data/muon_highpt/Run3/2023/Run3Summer23BPix.json
   RunIII2024Summer24: data/muon_highpt/Run3/2024/RunIII2024Summer24.json
 
 # HEM 15/16 veto (2018 only).  Ported from the Run 2 HNWRAnalyzer

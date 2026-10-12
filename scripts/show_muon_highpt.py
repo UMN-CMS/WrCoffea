@@ -54,8 +54,10 @@ def show(path: str) -> None:
         sig = lambda p: sum(ci * min(p, pmax) ** i for i, ci in enumerate(c))  # noqa: E731
         print(f"  {region}: p0 {c[0]:.6g}  p1 {c[1]:.6g}  p2 {c[2]:.6g}  p3 {c[3]:.6g}   sigma at "
               + ", ".join(f"{p / 1000:g} TeV {sig(p):.4f}" for p in (200, 1000, 2500, 4000)))
-    print(f"  extra smearing x = {m['extra_smear']} (f = {math.sqrt((1 + m['extra_smear']) ** 2 - 1):.3f}), "
-          f"MuSmear x +- {m['syst']}")
+    xs = m["extra_smear"] if isinstance(m["extra_smear"], dict) else {"all muons": m["extra_smear"]}
+    for region, x in xs.items():
+        f = math.sqrt((1 + x) ** 2 - 1) if x > 0 else 0.0
+        print(f"  extra smearing, {region}: x = {x} (f = {f:.3f}), MuSmear x +- {m['syst']}")
 
 
 def main(argv=None) -> int:
