@@ -261,6 +261,14 @@ def normalize_by_sumw(hists_dict):
 # Cluster context managers
 # ---------------------------------------------------------------------------
 
+# The data/ subdirectories the Condor workers read. wrcoffea/analysis_config.py
+# resolves every data/... path of config.yaml against the package's own location,
+# which on a worker is the job sandbox: Condor transfers each subdirectory there
+# flat ("<subdir>/") and _CondorWorkerSetup links it back as data/<subdir>.
+# tests/test_run_analysis.py checks that config.yaml uses no other subdirectory.
+CONDOR_DATA_DIRS = ("lumis", "jsonpog", "reweights", "pdf_sets", "muon_highpt")
+
+
 @contextmanager
 def _condor_cluster(*, n_workers, wait_timeout_s):
     """Set up LPCCondorCluster, yield client, clean up on exit."""
@@ -269,16 +277,18 @@ def _condor_cluster(*, n_workers, wait_timeout_s):
 
     class _CondorWorkerSetup(WorkerPlugin):
         """Runs on every worker (including late arrivals) to fix paths."""
+        data_dirs = CONDOR_DATA_DIRS
+
         def setup(self, worker):
             import sys, os
             for p in (".", "wrcoffea"):
                 if os.path.isdir(p) and p not in sys.path:
                     sys.path.insert(0, p)
-            # Condor transfers "data/lumis" and "data/jsonpog" as flat
-            # dirs ("lumis/", "jsonpog/") but config references them
-            # under "data/...".  Recreate the expected structure.
+            # Condor transfers each data/<subdir> as a flat "<subdir>/" but
+            # the config references them under "data/...".  Recreate the
+            # expected structure.
             os.makedirs("data", exist_ok=True)
-            for subdir in ("lumis", "jsonpog"):
+            for subdir in self.data_dirs:
                 src = os.path.abspath(subdir)
                 dst = os.path.join("data", subdir)
                 if os.path.isdir(src) and not os.path.exists(dst):
@@ -293,8 +303,7 @@ def _condor_cluster(*, n_workers, wait_timeout_s):
         transfer_input_files=[
             str(repo_root / "wrcoffea"),
             str(repo_root / "bin"),
-            str(repo_root / "data" / "lumis"),
-            str(repo_root / "data" / "jsonpog"),
+            *(str(repo_root / "data" / subdir) for subdir in CONDOR_DATA_DIRS),
         ],
         log_directory=log_dir,
     )

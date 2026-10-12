@@ -523,3 +523,100 @@ def test_validate_signal_points_only_for_composites_with_signal():
     sig = _dy_args("RunIII2024Summer24", None)
     sig.sample, sig.signal_points, sig.mwr_range = "signal", ["all"], [1000, 6000]
     run_analysis.validate_arguments(sig, [])
+
+
+# ---------------------------------------------------------------------------
+# Condor workers: the files they read must be shipped to them
+# ---------------------------------------------------------------------------
+
+def _config_data_paths():
+    """Every ``data/...`` string value of wrcoffea/config.yaml, as written there."""
+    import yaml
+    from wrcoffea.analysis_config import REPO_ROOT
+
+    with open(REPO_ROOT / "wrcoffea" / "config.yaml", encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    found = []
+
+    def walk(node):
+        if isinstance(node, dict):
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+        elif isinstance(node, str) and node.startswith("data/"):
+            found.append(node)
+
+    walk(cfg)
+    return found
+
+
+def test_condor_ships_every_data_dir_the_config_uses():
+    """A data/ subdirectory of config.yaml missing from CONDOR_DATA_DIRS fails on every Condor worker.
+
+    data/reweights (DY Z-pT, reshape, signal k-factor), data/pdf_sets and data/muon_highpt were
+    not shipped until 2026-10-12, so DY, signal and 2024 runs with --condor could not open them.
+    """
+    paths = _config_data_paths()
+    assert paths
+    used = {p.split("/")[1] for p in paths}
+    assert used <= set(run_analysis.CONDOR_DATA_DIRS), sorted(used - set(run_analysis.CONDOR_DATA_DIRS))
+
+
+def test_condor_worker_sandbox_resolves_every_config_path(monkeypatch, tmp_path):
+    """Build the cluster with a fake lpcjobqueue, then replay a worker: Condor puts each transferred
+    directory flat in the sandbox, the pickled worker plugin links the data ones back under data/,
+    and every config.yaml data path that exists in the repository must exist in the sandbox."""
+    import types
+    import cloudpickle
+    import dask.distributed
+    from wrcoffea.analysis_config import REPO_ROOT
+
+    captured = {}
+
+    class FakeCluster:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+        def scale(self, n):
+            pass
+
+        def close(self):
+            pass
+
+    class FakeClient:
+        def __init__(self, cluster):
+            pass
+
+        def register_plugin(self, plugin, name=None):
+            captured["plugin"] = plugin
+
+        def scheduler_info(self):
+            return {"workers": {}}
+
+        def close(self):
+            pass
+
+    monkeypatch.setitem(sys.modules, "lpcjobqueue", types.SimpleNamespace(LPCCondorCluster=FakeCluster))
+    monkeypatch.setattr(dask.distributed, "Client", FakeClient)
+    monkeypatch.setattr(run_analysis, "_wait_for_workers_or_raise", lambda *a, **k: None)
+    monkeypatch.setenv("USER", "tester")
+    with run_analysis._condor_cluster(n_workers=1, wait_timeout_s=1):
+        pass
+
+    shipped = [os.path.realpath(p) for p in captured["transfer_input_files"]]
+    for subdir in run_analysis.CONDOR_DATA_DIRS:
+        assert os.path.realpath(REPO_ROOT / "data" / subdir) in shipped
+
+    sandbox = tmp_path / "sandbox"
+    sandbox.mkdir()
+    for path in shipped:
+        os.symlink(path, sandbox / os.path.basename(path))
+    monkeypatch.chdir(sandbox)
+    monkeypatch.setattr(sys, "path", list(sys.path))   # setup() prepends "." and "wrcoffea"
+    plugin = cloudpickle.loads(cloudpickle.dumps(captured["plugin"]))
+    plugin.setup(worker=None)
+
+    missing = [p for p in _config_data_paths() if (REPO_ROOT / p).exists() and not (sandbox / p).exists()]
+    assert not missing, missing
