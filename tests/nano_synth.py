@@ -102,8 +102,11 @@ def _write_tree(f, name: str, data: dict) -> None:
 
 def write_nano_file(path, n: int = 2000, seed: int = 0, *, is_data: bool = False, run: int = 1,
                     lumi_start: int = 1, sumw: float | None = None, extra_hlt: tuple[str, ...] = (),
-                    drop: tuple[str, ...] = (), n_runs_entries: int = 1, compression=None) -> dict:
-    """Write a synthetic NanoAOD-like file (TTrees); returns the event dict."""
+                    drop: tuple[str, ...] = (), n_runs_entries: int = 1, compression=None,
+                    runs_drop: tuple[str, ...] = ()) -> dict:
+    """Write a synthetic NanoAOD-like file (TTrees); returns the event dict.
+
+    *runs_drop* leaves Runs branches out (``("PSSumw",)`` mimics UL NanoAODv9)."""
     ev = make_events(n, seed, run=run, lumi_start=lumi_start, is_data=is_data, extra_hlt=extra_hlt, drop=drop)
     kw = {"compression": compression} if compression is not None else {}
     with uproot.recreate(str(path), **kw) as f:
@@ -117,12 +120,15 @@ def write_nano_file(path, n: int = 2000, seed: int = 0, *, is_data: bool = False
             w = ev["genWeight"].astype(np.float64)
             total = float(w.sum()) if sumw is None else float(sumw)
             per = np.full(n_runs_entries, total / n_runs_entries)
-            _write_tree(f, "Runs", {
+            runs = {
                 "run": np.full(n_runs_entries, run, np.uint32),
                 "genEventCount": np.full(n_runs_entries, n // n_runs_entries, np.int64),
                 "genEventSumw": per,
                 "genEventSumw2": np.full(n_runs_entries, float((w * w).sum()) / n_runs_entries),
                 "LHEScaleSumw": ak.Array([np.linspace(0.9, 1.1, 9).astype(np.float32)] * n_runs_entries),
                 "PSSumw": ak.Array([np.array([1.0, 1.01, 0.99, 1.0], np.float32)] * n_runs_entries),
-            })
+            }
+            for name in runs_drop:
+                runs.pop(name, None)
+            _write_tree(f, "Runs", runs)
     return ev

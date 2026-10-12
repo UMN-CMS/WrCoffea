@@ -149,6 +149,25 @@ def _weighted_mean_jagged(name: str, arr: ak.Array, sumw: np.ndarray | None) -> 
     return (mat * w).sum(axis=0) / w.sum()
 
 
+def pad_ratio_branches(tables: Sequence[Mapping[str, ak.Array]]) -> list[dict[str, ak.Array]]:
+    """Give every plain MC Runs table the ratio branches (``PSSumw``, ...) that some of them carry.
+
+    A branch derived from the events (:mod:`wrcoffea.skim.weight_sums`) is missing from an input that
+    had no events to derive it from; it gets empty vectors, which :func:`collapse_runs` already reads
+    as "no such weights in this input" (the mean is taken over the other inputs, with a warning when
+    the input had events).  Scan tables and data tables are returned unchanged.
+    """
+    tables = [dict(t) for t in tables if t]
+    if not tables or any(is_scan_runs(t) for t in tables):
+        return tables
+    present = {name for t in tables for name in t if name in RATIO_RUNS_BRANCHES}
+    for t in tables:
+        n = len(next(iter(t.values())))
+        for name in present - set(t):
+            t[name] = ak.unflatten(np.zeros(0, dtype=np.float32), np.zeros(n, dtype=np.int64))
+    return tables
+
+
 def is_mc_runs(arrays: Mapping[str, ak.Array]) -> bool:
     return any(k in SUMMED_RUNS_BRANCHES for k in arrays)
 

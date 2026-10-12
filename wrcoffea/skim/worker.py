@@ -46,6 +46,8 @@ from wrcoffea.skim.plan import Plan, DatasetPlan, code_version
 from wrcoffea.skim.recount import recount_mask, IdDigest, ids_digest
 from wrcoffea.skim.schema import OutputSchema, build_schema, branch_types_of_tree, load_policy
 from wrcoffea.skim.selection import skim_mask, selection_branches, EVENT_ID_BRANCHES
+from wrcoffea.skim.runs import per_model_branch
+from wrcoffea.skim.weight_sums import EventWeightSums, add_derived_runs_columns, derivable
 from wrcoffea.skim.writer import PartWriter, InputRecord, PartRecord
 
 logger = logging.getLogger(__name__)
@@ -379,6 +381,15 @@ def skim_input(local_path: str, rec: InputRecord, writer: PartWriter, schema: Ou
             writer.end_input(runs, lumis)
             return rec
         sel_names = selection_branches(keys) + list(EVENT_ID_BRANCHES)
+        # Theory-weight sums the input's Runs tree lacks (PSSumw in UL NanoAODv9) are accumulated from
+        # every event, before the selection, and written as Runs branches (wrcoffea.skim.weight_sums).
+        # Scan samples keep per-model sums and are left alone.
+        runs_keys = list(fin["Runs"].keys()) if "Runs" in fin else []
+        derive = ([] if is_data or scan or any(per_model_branch(k) for k in runs_keys)
+                  else derivable(runs_keys, keys))
+        sums = EventWeightSums(derive) if derive else None
+        if sums is not None:
+            sel_names = sel_names + [b for b in sums.branches if b not in sel_names]
         gen_models = sorted(k for k in keys if k.startswith("GenModel_")) if scan else []
         if gen_models:
             sel_names = sel_names + gen_models + (["genWeight"] if "genWeight" in keys else [])
@@ -391,6 +402,8 @@ def skim_input(local_path: str, rec: InputRecord, writer: PartWriter, schema: Ou
         for start in range(0, n_in, chunk_entries):
             stop = min(start + chunk_entries, n_in)
             sel = tree.arrays(sel_names, entry_start=start, entry_stop=stop)
+            if sums is not None:
+                sums.add(sel)
             if gen_models:
                 w = np.asarray(ak.to_numpy(sel["genWeight"]), dtype=np.float64) if "genWeight" in keys else np.ones(stop - start)
                 for m in gen_models:
@@ -423,6 +436,9 @@ def skim_input(local_path: str, rec: InputRecord, writer: PartWriter, schema: Ou
         if gen_models:
             rec.scan_counts, rec.scan_sumw, rec.scan_sumw2 = counts, sumw, sumw2
         runs = _runs_table(fin)
+        if sums is not None and runs:
+            runs = add_derived_runs_columns(runs, sums)
+            rec.derived_runs_branches = list(sums.names)
         lumis = _lumi_table(fin) if is_data else None
     if executor is not None:
         executor.shutdown(wait=False)

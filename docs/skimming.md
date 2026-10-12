@@ -86,6 +86,16 @@ all survive.
   `genEventSumw2`, `genEventCount` summed; `LHEScaleSumw`, `LHEPdfSumw`,
   `PSSumw` combined as the `genEventSumw`-weighted mean, because NanoAOD stores
   them as ratios) and to one entry per run for data.
+- A ratio branch the input's `Runs` tree lacks is derived from the events
+  (`wrcoffea/skim/weight_sums.py`, since 2026-10-11): UL NanoAODv9 has no
+  `PSSumw`, so the worker sums `genWeight * PSWeight` over every event of the
+  input, before the selection, and writes the ratio to `sum(genWeight)` as the
+  input's `PSSumw` row(s); the collapse, the sidecar (`derived_runs_branches`
+  of the input), the upload metadata and the fileset then treat it like a
+  native branch, and the analyzer's `--systs ps` works for the era. Native
+  branches are never recomputed; an empty input contributes empty vectors;
+  scan samples (per-model sums) are left alone. The same applies to
+  `LHEScaleSumw` / `LHEPdfSumw` should a production lack them.
 - Data parts carry a merged `LuminosityBlocks` tree, so the processed
   luminosity can be recomputed and the golden-JSON coverage checked.
 - Events of one input are contiguous inside a part; the sidecar records the

@@ -26,7 +26,8 @@ import numpy as np
 import uproot
 
 from wrcoffea.skim.fetch import adler32_of
-from wrcoffea.skim.runs import collapse_runs, collapse_scan_runs, concat_runs, is_scan_runs, merge_lumiblocks, pad_scan_runs
+from wrcoffea.skim.runs import (collapse_runs, collapse_scan_runs, concat_runs, is_scan_runs, merge_lumiblocks,
+                                pad_ratio_branches, pad_scan_runs)
 from wrcoffea.skim.schema import OutputSchema, BranchSpec
 
 logger = logging.getLogger(__name__)
@@ -72,6 +73,8 @@ class InputRecord:
     recount_digest: str = ""
     filled_branches: list[str] = field(default_factory=list)
     extra_branches: list[str] = field(default_factory=list)
+    # Runs branches computed from the events because the input's Runs tree lacks them (PSSumw in UL)
+    derived_runs_branches: list[str] = field(default_factory=list)
     gen_sumw: float | None = None
     gen_count: int | None = None
     n_lumis: int | None = None
@@ -303,7 +306,8 @@ class PartWriter:
             # multi-model scan inputs: per-model branches that differ from file to file
             collapsed = collapse_scan_runs(concat_runs(pad_scan_runs(self._runs_tables)))
         else:
-            collapsed = collapse_runs(concat_runs(self._runs_tables))
+            # ratio branches derived from the events are absent from empty inputs: pad them
+            collapsed = collapse_runs(concat_runs(pad_ratio_branches(self._runs_tables)))
         types = {}
         for name, arr in collapsed.items():
             if arr.ndim > 1:
