@@ -477,6 +477,29 @@ def cmd_fileset(args) -> int:
     return write_filesets(args)
 
 
+def cmd_unskimmed_fileset(args) -> int:
+    """Unskimmed filesets (the original NanoAOD files) of one or more eras, from the configs and DBS."""
+    from wrcoffea.skim.catalog import DBSClient
+    from wrcoffea.skim.unskimmed import eras_with_configs, write_era_filesets
+    eras = list(args.era or [])
+    if args.all:
+        eras = eras_with_configs(args.config_root)
+    if not eras:
+        logger.error("give --era ERA [ERA ...] or --all")
+        return 2
+    dbs = None if args.dry_run else DBSClient()
+    rc = 0
+    for era in eras:
+        try:
+            write_era_filesets(era, config_root=args.config_root, out_root=args.fileset_dir, dbs=dbs,
+                               families=args.family, redirector=args.redirector, runs=args.runs_sums,
+                               workers=args.workers, dry_run=args.dry_run)
+        except (FileNotFoundError, ValueError, RuntimeError) as exc:
+            logger.error("%s: %s", era, exc)
+            rc = 1
+    return rc
+
+
 # ---------------------------------------------------------------------------
 # argument parsing
 # ---------------------------------------------------------------------------
@@ -642,6 +665,21 @@ def main(argv=None) -> int:
     _add_selection_args(p)
     p.add_argument("--fileset-dir", default=str(REPO_ROOT / "data" / "filesets"))
     p.set_defaults(func=cmd_fileset)
+
+    p = sub.add_parser("unskimmed-fileset",
+                       help="write the unskimmed filesets (original NanoAOD files via DBS) of an era, one per config family")
+    p.add_argument("--era", nargs="+", metavar="ERA", help="era(s), e.g. RunIII2024Summer24")
+    p.add_argument("--all", action="store_true", help="every era that has configs")
+    p.add_argument("--family", nargs="+", metavar="FAMILY",
+                   help="config families to write (data, signal, mc_dy_lo_ht, ...); default: all but signal_scan")
+    p.add_argument("--redirector", default="root://cmsxrootd.fnal.gov/", help="XRootD redirector prefix for the LFNs")
+    p.add_argument("--runs-sums", action="store_true",
+                   help="also read every file's Runs tree for genEventSumw and the theory-weight sums (slow)")
+    p.add_argument("--workers", type=int, default=16, help="parallel Runs-tree reads with --runs-sums")
+    p.add_argument("--config-root", default=str(REPO_ROOT / "data" / "configs"))
+    p.add_argument("--fileset-dir", default=str(REPO_ROOT / "data" / "filesets"))
+    p.add_argument("--dry-run", action="store_true", help="list the configs and output paths without querying DBS")
+    p.set_defaults(func=cmd_unskimmed_fileset)
 
     p = sub.add_parser("cuts", help="print the selection and branch policy")
     p.set_defaults(func=cmd_cuts)
