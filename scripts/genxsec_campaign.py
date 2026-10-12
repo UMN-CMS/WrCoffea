@@ -827,6 +827,16 @@ def _config_files(eras: list[str] | None) -> list[Path]:
     return cfgs
 
 
+def _same_apart_from_date(current: dict, fields: dict) -> bool:
+    """True when *fields* would only rewrite the ``xsec_source.date`` of *current*."""
+    def strip(d):
+        src = d.get("xsec_source")
+        return {k: v for k, v in d.items() if k != "xsec_source"}, ({k: v for k, v in src.items() if k != "date"} if isinstance(src, dict) else src)
+    cur_fields, cur_src = strip({k: current.get(k) for k in fields})
+    new_fields, new_src = strip(fields)
+    return cur_fields == new_fields and cur_src == new_src
+
+
 def _sig(v: float, n: int = 5) -> float:
     return float(f"{v:.{n}g}")
 
@@ -969,6 +979,43 @@ def cmd_annotate_order(args) -> int:
     return 0
 
 
+def other_flavour_primary(primary: str) -> str | None:
+    """The official signal sample of the same mass point in the other lepton flavour, else None."""
+    if "NEltoElElJJ" in primary:
+        return primary.replace("NEltoElElJJ", "NMutoMuMuJJ")
+    if "NMutoMuMuJJ" in primary:
+        return primary.replace("NMutoMuMuJJ", "NEltoElElJJ")
+    return None
+
+
+def signal_donor(primary: str, era: str | None, donors: dict[str, list[dict]]) -> tuple[dict | None, str | None]:
+    """A measured campaign result to stand in for an official signal sample never read in *era*.
+
+    First the same primary dataset in the nearest sibling era (the UL campaigns share the 13 TeV
+    gridpack), then the other lepton flavour of the same mass point (same gridpack parameters;
+    electron and muon generator values agree to about 1 %), this era first.  Returns the donor
+    result and the note recorded as ``xsec_source.copied_from``.
+    """
+    fam = campaign_family(era)
+    if not fam:
+        return None, None
+    cands = sorted((x for x in donors.get(primary, []) if x["era"] != era and x["era"] in fam),
+                   key=lambda x: abs(fam.index(x["era"]) - fam.index(era)))
+    if cands:
+        d = cands[0]
+        return d, (f"{d['era']}: the generator value was measured on the {d['era']} MiniAOD of the same primary "
+                   f"dataset (the {era} MiniAOD could not be read; the UL campaigns share the 13 TeV gridpack)")
+    other = other_flavour_primary(primary)
+    cands = sorted((x for x in donors.get(other or "", []) if x["era"] in fam),
+                   key=lambda x: (x["era"] != era, abs(fam.index(x["era"]) - fam.index(era))))
+    if cands:
+        d = cands[0]
+        return d, (f"{d['primary']} ({d['era']}): the other-flavour sample of the same mass point (same gridpack "
+                   f"parameters; electron and muon generator values agree to about 1 %); this sample's MiniAOD could "
+                   f"not be read in any UL era")
+    return None, None
+
+
 def cmd_apply(args) -> int:
     """Write the decided cross sections into the config JSONs (dry run unless --write)."""
     global SIGNAL_NORM, SIGNAL_PAYLOAD
@@ -992,14 +1039,12 @@ def cmd_apply(args) -> int:
         if args.era and not args.any_era and not set(e.get("eras") or []) & set(args.era):
             continue          # measured for another campaign
         copied_from = None
-        fam = campaign_family(e.get("era"))
-        if e.get("xsec_gen") is None and fam:
-            # nearest sibling era first (UL18 takes UL17, then UL16, then UL16APV)
-            cands = sorted((x for x in donors.get(e["primary"], []) if x["era"] != e["era"] and x["era"] in fam),
-                           key=lambda x: abs(fam.index(x["era"]) - fam.index(e["era"])))
-            if cands:
-                copied_from = cands[0]["era"]
-                e = {**cands[0], "era": e["era"], "eras": e.get("eras"), "das": e.get("das"), "miniaod": e.get("miniaod")}
+        if e.get("xsec_gen") is None:
+            donor, note = signal_donor(e.get("primary", ""), e.get("era"), donors)
+            if donor is not None:
+                copied_from = note
+                e = {**donor, "primary": e["primary"], "era": e["era"], "eras": e.get("eras"), "das": e.get("das"),
+                     "miniaod": e.get("miniaod")}
         d = classify(e, results)
         new = proposed_xsec(e, d, args.normalize)
         if new is None:
@@ -1013,9 +1058,7 @@ def cmd_apply(args) -> int:
                   "normalize": args.normalize, "release": e.get("release"), "events_run": e.get("events_run"),
                   "tool": "GenXSecAnalyzer", "date": today}
         if copied_from:
-            source["copied_from"] = (f"{copied_from}: the generator value was measured on the {copied_from} MiniAOD of the "
-                                     f"same primary dataset (the {e['era']} MiniAOD could not be read; the UL campaigns "
-                                     "share the 13 TeV gridpack)")
+            source["copied_from"] = copied_from
         hits = 0
         for cp in _config_files(args.era):
             cfg = json.loads(cp.read_text())
@@ -1050,6 +1093,25 @@ def cmd_apply(args) -> int:
             src = meta.get("xsec_source") if isinstance(meta.get("xsec_source"), dict) else {}
             if src.get("tool") == "GenXSecAnalyzer" and src.get("status") != "not measured" and src.get("generator"):
                 continue        # measured: handled above (or filtered out on purpose)
+            # No campaign result for this (primary, era) at all: a sibling-era or other-flavour measurement
+            # goes through the same normalization as a measured entry.
+            donor, note = signal_donor(primary, meta.get("era"), donors)
+            if donor is not None:
+                e = {**donor, "primary": primary, "era": meta.get("era"), "eras": [meta.get("era")], "das": das, "miniaod": None}
+                d = classify(e, results)
+                new = proposed_xsec(e, d, args.normalize)
+                if new is not None:
+                    k = d["kfactor"] if args.normalize == "reference" else 1.0
+                    unc = e.get("xsec_gen_unc")
+                    upd[das] = {"xsec": _sig(new), "total_uncertainty": _sig(unc * d["factor"] * k, 4) if unc else meta.get("total_uncertainty"),
+                                "xsec_source": {"generator": e["xsec_gen"], "generator_unc": unc, "header": d["header"],
+                                                "factor": _sig(d["factor"], 6), "factor_reason": d["factor_reason"],
+                                                "kfactor": _sig(k, 6), "reference": d.get("reference"),
+                                                "reference_source": d.get("reference_source", ""), "normalize": args.normalize,
+                                                "release": e.get("release"), "events_run": e.get("events_run"),
+                                                "tool": "GenXSecAnalyzer", "date": today, "copied_from": note}}
+                    rows.append((primary, meta.get("era"), meta.get("xsec"), _sig(new), d["factor"], k, cp.name))
+                    continue
             base = how = None
             if src.get("header") == "LHE" and src.get("generator"):
                 base, how = float(src["generator"]), "LHE header of the private production (LO)"
@@ -1085,13 +1147,21 @@ def cmd_apply(args) -> int:
     plan.write_text(f"# Cross-section update plan ({'written' if args.write else 'dry run'}, normalize = {args.normalize}, {today})\n\n"
                     + "\n".join(lines) + "\n\n## Skipped\n\n" + "\n".join(f"- `{p}`: {why}" for p, why in skipped) + "\n")
     n_big = sum(1 for _, _, old, new, _, _, _ in rows if old and abs(new / old - 1) > 0.05)
-    print(f"{len(rows)} config entries would change ({n_big} by more than 5 %), {len(skipped)} samples skipped; plan: {plan}")
+    # an entry whose values are already in the config keeps its record (and its date) untouched
+    unchanged = {cp: {das for das, fields in upd.items() if _same_apart_from_date(json.loads(cp.read_text()).get(das, {}), fields)}
+                 for cp, upd in changes.items()}
+    n_same = sum(len(v) for v in unchanged.values())
+    print(f"{len(rows) - n_same} config entries would change ({n_big} by more than 5 %; {n_same} already hold these values), "
+          f"{len(skipped)} samples skipped; plan: {plan}")
     for p, why in skipped:
         print(f"  skipped {p[:60]}: {why[:120]}")
     if not args.write:
         print("dry run: rerun with --write to modify the configs")
         return 0
     for cp, upd in changes.items():
+        upd = {das: fields for das, fields in upd.items() if das not in unchanged[cp]}
+        if not upd:
+            continue
         text = cp.read_text()
         cfg = json.loads(text)
         for das, fields in upd.items():
@@ -1099,7 +1169,7 @@ def cmd_apply(args) -> int:
             cfg[das] = with_order(cfg[das], xsec_order(das, cfg[das]))
         indent = len(text.splitlines()[1]) - len(text.splitlines()[1].lstrip()) if len(text.splitlines()) > 1 else 1
         cp.write_text(json.dumps(cfg, indent=indent or 1) + "\n")
-        print(f"updated {cp.relative_to(REPO)}: {len(upd)} entries")
+        print(f"updated {cp.relative_to(REPO)}: {len(upd)} entries ({len(unchanged[cp])} unchanged, left as they are)")
     print("remember: existing plans keep the old metadata until `bin/skim.py refresh-metadata --plan-dir ...` is run")
     return 0
 

@@ -6,6 +6,13 @@ change in this repository; the commit is given where one commit carries it.
 
 ## 2026-10
 
+- **2026-10-12** The last three official UL signal datasets without a cross section (UL16APV e WR6000_N2100,
+  UL16 e WR4000_N1700, UL16 mu WR6000_N1700: MiniAOD on tape in their own era, no measurement in any era's
+  results) take the generator value measured on the same primary dataset in the nearest sibling UL era, as
+  the 24 UL18 points did on 2026-10-10 (`xsec_source.copied_from`); `scripts/genxsec_campaign.py apply`
+  now finds that donor itself, with the other-flavour sample of the same mass point as the fallback, and
+  no longer rewrites the date of entries whose values it leaves unchanged. The three points were missing
+  from every UL16 and UL16APV histogram set made before this date.
 - **2026-10-11** A missing required noise-filter flag, and a missing or unreadable golden JSON, stop a
   run instead of warning (review finding R6). The mass-point CSV is read only for runs that involve
   Signal, so a data-only era without one (2025) runs. One `ERA_SUBDIRS` definition (`era_utils`)

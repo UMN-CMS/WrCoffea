@@ -1398,6 +1398,14 @@ precision of the gridpack's own integration (0.7 % for WR2000_N100 in its `resul
 | `WRtoNMutoMuMuJJ_MWR6000_N100` | 0.0001648 | 0.0001652 (RunIISummer20UL17) | 1.0024 |
 | `WRtoNMutoMuMuJJ_MWR6000_N5900` | 2.433e-07 | 2.444e-07 (RunIISummer20UL17) | 1.0045 |
 
+The same rule filled the last three entries without a value on 2026-10-12 (their MiniAOD is on tape in their own
+era and no era's results held a measurement of them): UL16APV `WRtoNEltoElElJJ_MWR6000_N2100` from UL16
+(4.862e-05 pb LO, 7.0367e-05 with k_point), UL16 `WRtoNEltoElElJJ_MWR4000_N1700` from UL17 (0.001024, 0.0014505)
+and UL16 `WRtoNMutoMuMuJJ_MWR6000_N1700` from UL17 (5.528e-05, 7.9785e-05). `scripts/genxsec_campaign.py apply`
+finds the donor itself: the same primary dataset in the nearest sibling UL era first, then the other-flavour
+sample of the same mass point (the two flavours' generator values agree to about 1 %, see the control table of
+the UL18 campaign above).
+
 ### Official UL grid vs the private (Run 2) grid
 
 At the 8 shared points the official per-flavour LO x <k> is above the AN-19-083 value (the private config value / 2):

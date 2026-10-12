@@ -85,6 +85,7 @@ Event IDs repeat across the merged jobs (every job wrote run 1, lumi 1), which n
 | `reference`, `reference_source` | The reference cross section the k-factor is computed from, and its order and source. |
 | `normalize` | `reference` (scaled to the reference, the convention) or `generator` (generator × factor). |
 | `status`, `kept_value`, `reason` | No GenXSecAnalyzer value (MiniAOD on tape only): the earlier config value was kept. |
+| `copied_from` | Official signal whose MiniAOD could not be read in this era: the generator value measured on the same primary dataset in the nearest sibling UL era (the UL campaigns share the 13 TeV gridpacks), or, failing that, on the other-flavour sample of the same mass point (same gridpack parameters; the two flavours' values agree to about 1 %). The note names the donor; `generator`, `release` and `events_run` are the donor's. |
 | `jobs`, `compared_to` | Private samples: the cross section is the per-event `LHEWeight_originalXWGTUP` times the events of each generator job, averaged over the complete jobs; `compared_to` is the same point in a reference config. |
 
 ## How `xsec` is built

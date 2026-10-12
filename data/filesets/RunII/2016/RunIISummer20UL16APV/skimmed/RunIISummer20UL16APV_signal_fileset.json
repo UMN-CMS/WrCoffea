@@ -6808,17 +6808,33 @@
    "genEventCount": 34299,
    "genEventSumw": 34299.0,
    "nevts": 32235,
-   "order": "unknown",
+   "order": "LO x k(NLO)",
    "physics_group": "Signal",
    "run": "RunII",
    "sample": "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8",
    "skim_campaign": "v2",
-   "total_uncertainty": 0.0,
-   "xsec": null,
+   "total_uncertainty": 1.644e-07,
+   "xsec": 7.0367e-05,
+   "xsec_source": {
+    "copied_from": "RunIISummer20UL16: the generator value was measured on the RunIISummer20UL16 MiniAOD of the same primary dataset (the RunIISummer20UL16APV MiniAOD could not be read; the UL campaigns share the 13 TeV gridpack)",
+    "date": "2026-10-12",
+    "events_run": 1874,
+    "factor": 1.0,
+    "factor_reason": "MG5_aMC generates the full WR -> l N -> l l q q chain; the header is the cross section of the sample",
+    "generator": 4.862e-05,
+    "generator_unc": 1.136e-07,
+    "header": "includes decay",
+    "kfactor": 1.44729,
+    "normalize": "reference",
+    "reference": 7.036723979999999e-05,
+    "reference_source": "LO x k(NLO): direct per-point sigma_NLO / sigma_LO = 1.44729 (AN-19-083 App. A method; data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json direct_k (direct))",
+    "release": "CMSSW_10_6_30",
+    "tool": "GenXSecAnalyzer"
+   },
    "year": "2016",
    "PSSumw_source": {
-    "status": "failed: could not open /store/mc/RunIISummer20UL16NanoAODAPVv9/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v2/120000/01149390-6BAC-9140-84B9-6768A637E663.root through root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v2/120000/01149390-6BAC-9140-84B9-6768A637E663.root, root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL16NanoAODAPVv9/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v2/120000/01149390-6BAC-9140-84B9-6768A637E663.root, root://xrootd-cms.infn.it//store/mc/RunIISummer20UL16NanoAODAPVv9/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v2/120000/01149390-6BAC-9140-84B9-6768A637E663.root: Failed to open file: [ERROR] Server responded with an error: [3011] No servers are available to read the file.\n",
-    "date": "2026-10-11"
+    "status": "failed: could not open /store/mc/RunIISummer20UL16NanoAODAPVv9/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v2/120000/01149390-6BAC-9140-84B9-6768A637E663.root through root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODAPVv9/WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v2/120000/01149390-6BAC-9140-84B9-6768A637E663.root: Failed to open file: [ERROR] Server responded with an error: [3011] No servers are available to read the file.\n",
+    "date": "2026-10-12"
    }
   }
  },

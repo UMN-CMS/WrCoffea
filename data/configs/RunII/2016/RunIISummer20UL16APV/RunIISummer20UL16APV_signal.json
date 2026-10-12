@@ -2436,10 +2436,26 @@
     "era": "RunIISummer20UL16APV",
     "dataset": "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8",
     "physics_group": "Signal",
-    "xsec": null,
-    "order": "unknown",
-    "total_uncertainty": 0.0,
-    "datatype": "mc"
+    "xsec": 7.0367e-05,
+    "order": "LO x k(NLO)",
+    "total_uncertainty": 1.644e-07,
+    "datatype": "mc",
+    "xsec_source": {
+      "generator": 4.862e-05,
+      "generator_unc": 1.136e-07,
+      "header": "includes decay",
+      "factor": 1.0,
+      "factor_reason": "MG5_aMC generates the full WR -> l N -> l l q q chain; the header is the cross section of the sample",
+      "kfactor": 1.44729,
+      "reference": 7.036723979999999e-05,
+      "reference_source": "LO x k(NLO): direct per-point sigma_NLO / sigma_LO = 1.44729 (AN-19-083 App. A method; data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json direct_k (direct))",
+      "normalize": "reference",
+      "release": "CMSSW_10_6_30",
+      "events_run": 1874,
+      "tool": "GenXSecAnalyzer",
+      "date": "2026-10-12",
+      "copied_from": "RunIISummer20UL16: the generator value was measured on the RunIISummer20UL16 MiniAOD of the same primary dataset (the RunIISummer20UL16APV MiniAOD could not be read; the UL campaigns share the 13 TeV gridpack)"
+    }
   },
   "/WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM": {
     "das_name": "/WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM",

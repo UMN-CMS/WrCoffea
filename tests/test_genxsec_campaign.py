@@ -487,3 +487,49 @@ def test_inclusive_dibosons_are_scaled_to_the_nnlo_reference(primary, gen, ref):
 def test_tribosons_get_no_diboson_reference(primary):
     assert gx.process_of(primary) == (None, "")
     assert gx.reference_for(primary, "13p6TeV") is None
+
+
+# ---------------------------------------------------------------------------
+# official signal points whose MiniAOD cannot be read in their era: donors (2026-10-12)
+
+E_6000_2100 = "WRtoNEltoElElJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8"
+
+
+def test_other_flavour_primary():
+    assert gx.other_flavour_primary(E_6000_2100) == "WRtoNMutoMuMuJJ_MWR6000_N2100_TuneCP5_13TeV_madgraph-pythia8"
+    assert gx.other_flavour_primary("WRtoNMutoMuMuJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8") == \
+        "WRtoNEltoElElJJ_MWR4000_N1700_TuneCP5_13TeV_madgraph-pythia8"
+    assert gx.other_flavour_primary("TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8") is None
+
+
+def test_signal_donor_takes_the_nearest_sibling_era_then_the_other_flavour():
+    mu = gx.other_flavour_primary(E_6000_2100)
+    donors = {E_6000_2100: [{"primary": E_6000_2100, "era": "RunIISummer20UL18", "xsec_gen": 4.89e-05},
+                            {"primary": E_6000_2100, "era": "RunIISummer20UL17", "xsec_gen": 4.834e-05},
+                            {"primary": E_6000_2100, "era": "RunIISummer20UL16", "xsec_gen": 4.862e-05}],
+              mu: [{"primary": mu, "era": "RunIISummer20UL16APV", "xsec_gen": 4.9e-05},
+                   {"primary": mu, "era": "RunIISummer20UL18", "xsec_gen": 4.95e-05}]}
+    d, note = gx.signal_donor(E_6000_2100, "RunIISummer20UL16APV", donors)
+    assert d["era"] == "RunIISummer20UL16" and d["xsec_gen"] == 4.862e-05
+    assert note.startswith("RunIISummer20UL16:") and "same primary dataset" in note
+    # the era's own measurement is never its own donor; UL17's nearest sibling is UL16 or UL18, not UL16APV
+    d, _ = gx.signal_donor(E_6000_2100, "RunIISummer20UL17", donors)
+    assert d["era"] in ("RunIISummer20UL16", "RunIISummer20UL18")
+    # no sibling-era measurement of the primary: the other flavour, this era first
+    d, note = gx.signal_donor(E_6000_2100, "RunIISummer20UL16APV", {mu: donors[mu]})
+    assert d["primary"] == mu and d["era"] == "RunIISummer20UL16APV" and "other-flavour sample" in note
+    # a Run 3 era never takes a 13 TeV donor; a background sample has none
+    assert gx.signal_donor(E_6000_2100, "Run3Summer22", donors) == (None, None)
+    assert gx.signal_donor("TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8", "RunIISummer20UL16APV", donors) == (None, None)
+    assert gx.signal_donor(E_6000_2100, None, donors) == (None, None)
+
+
+def test_apply_leaves_entries_that_already_hold_the_values_untouched():
+    current = {"xsec": 1.0, "order": "LO", "total_uncertainty": 0.1,
+               "xsec_source": {"generator": 1.0, "kfactor": 1.0, "date": "2026-10-10"}}
+    fields = {"xsec": 1.0, "total_uncertainty": 0.1, "xsec_source": {"generator": 1.0, "kfactor": 1.0, "date": "2026-10-12"}}
+    assert gx._same_apart_from_date(current, fields)
+    assert not gx._same_apart_from_date(current, {**fields, "xsec": 1.1})
+    assert not gx._same_apart_from_date(current, {**fields, "xsec_source": {**fields["xsec_source"], "kfactor": 1.2}})
+    assert not gx._same_apart_from_date({**current, "xsec_source": None}, fields)
+    assert not gx._same_apart_from_date({"xsec": None, "order": "unknown", "total_uncertainty": 0.0}, fields)
