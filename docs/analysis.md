@@ -130,8 +130,11 @@ region it is multiplied by the lepton scale factors that enter that region and b
 
 Trigger SFs: electrons, one SF for the OR (Run 3: the EGM Ele30 TightID SF as a proxy; UL: the
 Run 2 HEEP trigger-OR efficiency); muons, the per-leg data/MC efficiency OR for 2022 to 2025 and
-the leading muon's SF alone in the UL eras (two SFs are never multiplied). Cutflows use the base
-weight without the per-region lepton SFs.
+the leading muon's SF alone in the UL eras (two SFs are never multiplied). The muon variation of
+the efficiency OR follows the Run 2 analysis (SKFlat `MCCorrection::MuonTrigger_SF`): every muon's
+data efficiency moves up by its error while its MC efficiency moves down, and the reverse, so the
+two errors add in the ratio (decided 2026-10-12; shifting both the same way, as before, cancelled
+them to about 0.01 %). Cutflows use the base weight without the per-region lepton SFs.
 
 ### Drell-Yan modelling
 

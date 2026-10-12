@@ -16,7 +16,7 @@ production yet). The final sets are `--dir 20261011_systs` in every era.
 | Luminosity (`lumi`) | yes | yes | normtag_PHYSICS luminosity of the skimmed lumisections; uncertainties from the LUM POG tables (2024 and 2025 preliminary). Era correlations: see Remaining. |
 | Pileup (`pileup`) | yes | yes | golden-JSON profiles per era |
 | Muon reco, ID, isolation SFs (`sf`) | yes | yes | POG high-pT payloads; last-bin treatment above 1.5 TeV: see Remaining |
-| Muon trigger SF (`sf`) | yes | yes | UL: the leading muon's SF; 2022/2023: per-leg efficiency OR from the POG `muon_Z` entry of our exact OR; 2024: per-leg OR from the high-pT HLT file |
+| Muon trigger SF (`sf`) | yes | yes | UL: the leading muon's SF with its payload uncertainty; 2022/2023: per-leg efficiency OR from the POG `muon_Z` entry of our exact OR; 2024: per-leg OR from the high-pT HLT file. Run 3 variation as Run 2 (data up with MC down) since 2026-10-12; the Run 3 sets made before that date carry a variation of about 0.01 % |
 | Electron reco SF (`sf`) | yes | yes | EGM payloads; Run 3 clipped at 500 GeV (see Remaining) |
 | Electron HEEP ID SF (`sf`) | yes | yes | UL: flat per year; 2022/2023: the central EGM flat values; 2024: the HEEPID working point, clipped at 1 TeV |
 | Electron trigger SF (`sf`) | yes | proxy | UL: the Run 2 HEEP trigger-OR efficiencies; Run 3: the Ele30 TightID SF stands in for the OR (Remaining, #94) |

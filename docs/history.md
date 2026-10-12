@@ -6,6 +6,11 @@ change in this repository; the commit is given where one commit carries it.
 
 ## 2026-10
 
+- **2026-10-12** The muon trigger SF variation of the efficiency-OR eras (2022 to 2025) follows the Run 2
+  analysis: each muon's data efficiency moves up by its error while its MC efficiency moves down, and the
+  reverse for "down". Until then both moved the same way, which cancelled the errors in the ratio and left
+  a variation of about 0.01 % of the yield (UL18, with the leading muon's payload uncertainty: 0.5 to 0.8 %).
+  The Run 3 MC of the 20261011_systs production was remade; the nominal weights did not change.
 - **2026-10-12** The last three official UL signal datasets without a cross section (UL16APV e WR6000_N2100,
   UL16 e WR4000_N1700, UL16 mu WR6000_N1700: MiniAOD on tape in their own era, no measurement in any era's
   results) take the generator value measured on the same primary dataset in the nearest sibling UL era, as

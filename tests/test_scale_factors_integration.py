@@ -395,6 +395,28 @@ class TestMuonScaleFactors:
         assert nom[1] == pytest.approx(0.9 / 0.8, rel=1e-9)
         assert not corrections["NUM_HLT_DEN_HighPtLooseRelIsoProbes"].evaluate.called
 
+    def test_muon_trigger_sf_efficiency_payload_variation_is_anticorrelated(self):
+        """Up = data efficiency up with MC efficiency down (the Run 2 convention), down the reverse."""
+        tight_muons = _make_tight_leptons([[100.0], [100.0, 80.0]], [[0.5], [0.5, -0.5]])
+
+        def eff(nominal, err):
+            def evaluate(eta, pt, variation):
+                v = {"nominal": nominal, "systup": nominal + err, "systdown": nominal - err}[variation]
+                return np.full(len(np.atleast_1d(pt)), v, dtype=np.float64)
+            return evaluate
+
+        corrections = {
+            "NUM_HLT_DEN_HighPtLooseRelIsoProbes_DATAeff": self._make_corr(eff(0.90, 0.02)),
+            "NUM_HLT_DEN_HighPtLooseRelIsoProbes_MCeff": self._make_corr(eff(0.80, 0.02)),
+        }
+        with self._patch_trigger_cset(corrections):
+            nom, up, down = sf.muon_trigger_sf(tight_muons, "RunIII2024Summer24")
+        assert nom[0] == pytest.approx(0.90 / 0.80)
+        assert up[0] == pytest.approx(0.92 / 0.78) and down[0] == pytest.approx(0.88 / 0.82)
+        # two muons: the OR of the shifted per-leg efficiencies
+        assert up[1] == pytest.approx((1 - 0.08 ** 2) / (1 - 0.22 ** 2))
+        assert down[1] == pytest.approx((1 - 0.12 ** 2) / (1 - 0.18 ** 2))
+
     def test_muon_trigger_sf_muonz_or_efficiencies(self):
         """2022-2025 (since 2026-10-11): the POG muon_Z entry of our trigger OR carries the data and MC efficiencies
         as scale_factors values, and the per-leg OR formula is used (real payload, no mocks)."""
@@ -414,8 +436,20 @@ class TestMuonScaleFactors:
         assert nom[0] == pytest.approx(e_d / e_m, rel=1e-9)
         assert nom[1] == pytest.approx(eff("nominal_DATAeff", 1.0, 300.0) / eff("nominal_MCeff", 1.0, 300.0), rel=1e-9)
         assert 0.97 < nom[0] < 1.01
-        # variations: each leg's efficiency moved by its stat (+) syst error, data and MC together
-        assert up[0] != nom[0] and down[0] != nom[0] and (up[0] - nom[0]) * (down[0] - nom[0]) < 0
+        # variations as Run 2: each leg's data efficiency moved by its stat (+) syst error one way while the MC
+        # efficiency moves the other way, so the errors add in the ratio
+        def shifted(kind, sign, eta, pt):
+            err = np.hypot(eff(f"stat_{kind}eff", eta, pt), eff(f"syst_{kind}eff", eta, pt))
+            return min(max(eff(f"nominal_{kind}eff", eta, pt) + sign * err, 0.0), 1.0)
+        def event(kind, sign):
+            return 1 - (1 - shifted(kind, sign, 0.3, 60.0)) * (1 - shifted(kind, sign, -2.0, 55.0))
+        assert up[0] == pytest.approx(event("DATA", +1) / event("MC", -1), rel=1e-9)
+        assert down[0] == pytest.approx(event("DATA", -1) / event("MC", +1), rel=1e-9)
+        assert up[0] > nom[0] > down[0]
+        # the same-direction shift would nearly cancel: the Run 2 convention is at least as large as either error
+        rel_d = abs(event("DATA", +1) / event("DATA", 0) - 1)
+        rel_m = abs(event("MC", -1) / event("MC", 0) - 1)
+        assert up[0] / nom[0] - 1 >= max(rel_d, rel_m) * 0.999
         # the leading-muon SF of the same entry would differ: the OR formula is in use
         assert nom[0] != pytest.approx(corr.evaluate(0.3, 60.0, "nominal"), rel=1e-4)
 

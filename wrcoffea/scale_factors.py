@@ -339,9 +339,12 @@ def _muon_trigger_sf_from_efficiencies(data_eff_corr, mc_eff_corr, flat_eta, hlt
         np.divide(num_np, den_np, out=out, where=den_np > 0)
         return out
 
+    # Variation as the Run 2 analysis (SKFlat MCCorrection::MuonTrigger_SF): the data efficiency moved up
+    # while the MC efficiency moves down, and the reverse, so the two errors add in the ratio.  Moving both
+    # the same way (as this code did until 2026-10-12) cancels them and left the variation at ~0.01 %.
     nom = _safe_ratio(_event_eff(data_eff_corr, "nominal"), _event_eff(mc_eff_corr, "nominal"))
-    up = _safe_ratio(_event_eff(data_eff_corr, "systup"), _event_eff(mc_eff_corr, "systup"))
-    down = _safe_ratio(_event_eff(data_eff_corr, "systdown"), _event_eff(mc_eff_corr, "systdown"))
+    up = _safe_ratio(_event_eff(data_eff_corr, "systup"), _event_eff(mc_eff_corr, "systdown"))
+    down = _safe_ratio(_event_eff(data_eff_corr, "systdown"), _event_eff(mc_eff_corr, "systup"))
     return nom, up, down
 
 
@@ -423,10 +426,11 @@ def _muon_trigger_sf_from_valtype_efficiencies(corr, flat_eta, hlt_pt, counts):
         np.divide(num_np, den_np, out=out, where=den_np > 0)
         return out
 
-    # data and MC moved coherently, as in the two-correction form (which evaluates "systup" on both)
+    # Variation as the Run 2 analysis (SKFlat MCCorrection::MuonTrigger_SF): data up with MC down, and the
+    # reverse, so the two errors add in the ratio (the same-direction shift used until 2026-10-12 cancelled them)
     nom = _safe_ratio(_event_eff("DATA"), _event_eff("MC"))
-    up = _safe_ratio(_event_eff("DATA", +1), _event_eff("MC", +1))
-    down = _safe_ratio(_event_eff("DATA", -1), _event_eff("MC", -1))
+    up = _safe_ratio(_event_eff("DATA", +1), _event_eff("MC", -1))
+    down = _safe_ratio(_event_eff("DATA", -1), _event_eff("MC", +1))
     return nom, up, down
 
 
@@ -449,6 +453,14 @@ def muon_trigger_sf(tight_muons, era):
     3. Per-lepton scale factors only (the Run 2 UL ``muon_HighPt`` files and
        the 2022/2023 high-pT HLT payloads): the SF of the leading-pT tight
        muon is applied once per event, as Run 2 did.
+
+    The up/down variation of forms 1 and 2 follows the Run 2 analysis
+    (SKFlat ``MCCorrection::MuonTrigger_SF``, AN-19-083 Sec. 2.4.1): every
+    muon's data efficiency is moved up by its error while its MC efficiency is
+    moved down, and the reverse for "down", so the two errors add in the
+    ratio.  Form 3 uses the payload's own systup/systdown of the leading muon.
+    Decided 2026-10-12 (the same-direction shift used before cancelled the
+    errors and left a ~0.01 % variation).
 
     Returns (nominal, up, down) arrays of shape (n_events,).
     Events with no tight muons get SF = 1.0.
