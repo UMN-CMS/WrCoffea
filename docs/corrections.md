@@ -75,8 +75,10 @@ SFs to 500 GeV and HEEP ID SFs to 1 TeV instead of using it (open item in analys
 | loose muon (boosted partner) | reco and ID SFs, no isolation | same | same | same |
 
 The reco SF's last bin is open-ended (p > 1.5 TeV; 2024 p > 0.9 TeV) with era-dependent central
-values; see the open items in analysis.md. Every Run 3 muon file is the CAT release of 2026-06-18
-(the 2022/2023 scale-smearing parameters were re-derived by the POG on 2026-04-28).
+values; see the open items in analysis.md. Every 2022, 2023 and 2024 muon file is the CAT release of
+2026-06-18 (the 2022/2023 scale-smearing parameters were re-derived by the POG on 2026-04-28); the 2025
+files come from the era's own CAT campaign, `Run3-25Prompt-Summer24-NanoAODv15`, installed on
+2026-10-11.
 
 ### Other event-level corrections
 

@@ -80,9 +80,13 @@ The masks and the results are in the repository under
   lumisections count (0.03 to 0.1 % below the golden totals).
 - Uncertainties: Run 2 from the 2026 LUM POG Run 2 table (UL18 0.84 %), Run 3 from
   LumiRecommendationsRun3 r39 (2022 1.4 %, 2023 1.3 %, 2024 1.6 % preliminary, 2025 5 %
-  preliminary). They enter as the `lumi` systematic family, uncorrelated between eras; the
-  correlated components the LUM POG gives for 2022 to 2024 belong in the datacards and are not
-  implemented yet.
+  preliminary). They enter as the `lumi` systematic family: each era's files carry its own
+  `Lumi` up/down variation, under the same name in every era. The plotter adds an era
+  combination's variations era by era, so the bands of `--era 2022`, `2023` and `Run3` treat
+  the luminosity as fully correlated between the eras (about 1.5 % for `Run3`, against about
+  1.1 % uncorrelated between the years); within 2022 and within 2023 that is correct, across
+  years it is conservative. The correlated and uncorrelated components the LUM POG gives for
+  2022 to 2024 belong in the datacards and are not implemented yet (#105).
 - 2025 is data-only (2024 MC through `mc_alias`) and has no skims: 110.63 fb⁻¹ is provisional.
 
 ## Per-era notes

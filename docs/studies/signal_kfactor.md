@@ -19,8 +19,10 @@ Everything here is reproducible with `scripts/signal_kfactor/` (first derivation
   `config.yaml: signal_kfactor`). Points without a run use the nearest run point's shape scaled to their `k_point`.
 
 Run 2 (AN-19-083) normalised with `LO x <k>` of one shared curve instead (`--signal-norm average`). With one curve
-summed over all points, the integrated `<k>` of a sample is 2-12 % above the point's direct ratio at high mass
-(the neighbouring points' far tails, where `k` is 1.6-1.75, leak into its resonance core), while the direct ratios
+summed over all points, the integrated `<k>` of a point is 2-19 % above its direct NLO/LO ratio for
+m_WR = 1-8 TeV, for most points 3-6 % at 13.6 TeV and 4-12 % at 13 TeV, the most at m_WR = 5 and 7 TeV and at
+m_N close to m_WR (the neighbouring points' far tails, where `k` is 1.6-1.75, leak into its resonance core;
+from the `<k> integ` and `NLO/LO` columns of `kfactor_analysis.py`), while the direct ratios
 reproduce Run 2's published `<k>` within 1-3 %; hence option 2.
 
 ## Derivation (one campaign per centre-of-mass energy)
@@ -118,7 +120,7 @@ Two features of `k(m_lN)` that Run 2's smooth curve did not have, both propertie
 
 These tails are what spoils a single shared curve (Run 2's method, and the `kfactor` fallback here): when one
 curve serves every sample, the neighbouring points' tails raise the curve in each point's core, so the integrated
-`<k>` of a point sits above its direct ratio at high mass (first section). AN-19-083 Fig. 55 shows the same offset
+`<k>` of a point sits 2-19 % above its direct ratio (first section). AN-19-083 Fig. 55 shows the same offset
 ("Integrated" vs "Inclusive"). The per-point curves applied here do not have it: their averages reproduce the
 direct ratios (next section).
 

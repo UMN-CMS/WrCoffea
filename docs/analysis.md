@@ -57,7 +57,7 @@ muons get their scale and smearing corrections ([corrections.md](corrections.md)
 | --- | --- |
 | tight electron | pT > 53 GeV, \|η\| < 2.5, ECAL crack 1.4442 to 1.566 vetoed on the supercluster η, `cutBased_HEEP` |
 | tight muon | TuneP pT > 53 GeV, \|η\| < 2.4, `highPtId == 2` (global high-pT ID), `tkRelIso < 0.1` |
-| loose electron (boosted partner) | HEEP, or the cut-based Loose working point from the VID bitmap with the isolation bits ignored |
+| loose electron (boosted partner) | the cut-based Loose working point from the VID bitmap with the isolation bits ignored (a HEEP electron that fails it is not a loose electron; 0.5 to 1 % of HEEP electrons in 2024 signal and tt̄); the extra-tight-lepton veto counts the HEEP electrons among these |
 | loose muon (boosted partner) | `highPtId == 2`, no isolation requirement |
 | AK4 jet | pT > 40 GeV, \|η\| < 2.4, tight ID with lepton veto (2024: the correctionlib `jetid.json`; other eras `jetId >= 6`); CHS in UL, Puppi in Run 3 |
 | AK8 jet | pT > 200 GeV, \|η\| < 2.4, tight ID, soft-drop mass > 40 GeV; the SR and flavour-CR jet also needs `lsf3 > 0.75` |
