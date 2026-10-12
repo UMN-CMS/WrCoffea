@@ -33,3 +33,19 @@ class TestGetEraDetails:
             assert run
             assert year
             assert era == era_key
+
+
+def test_era_subdirs_is_the_single_definition():
+    """das_utils and skim.plan re-export era_utils.ERA_SUBDIRS; every configured era resolves."""
+    import yaml
+    from wrcoffea import das_utils
+    from wrcoffea.era_utils import ERA_SUBDIRS, era_subdir
+    from wrcoffea.skim import plan
+    assert das_utils.ERA_SUBDIRS is ERA_SUBDIRS and plan.ERA_SUBDIRS is ERA_SUBDIRS
+    for era, m in ERA_MAPPING.items():
+        run, year, _ = get_era_details(era)
+        assert ERA_SUBDIRS[era] == f"{run}/{year}/{era}" == era_subdir(era) == f"{m['run']}/{m['year']}/{era}"
+    lumis = yaml.safe_load(open("wrcoffea/config.yaml"))["lumis"]
+    assert set(lumis) <= set(ERA_SUBDIRS)
+    with pytest.raises(ValueError, match="Unsupported era"):
+        era_subdir("NoSuchEra")

@@ -181,6 +181,22 @@ def load_masses_from_csv(file_path: Path) -> list[str]:
     return mass_choices
 
 
+def needs_mass_points(sample: str) -> bool:
+    """True for ``Signal`` and for a composite mode that includes it (``signal``, ``mc``, ``all``)."""
+    return sample == "Signal" or "Signal" in COMPOSITE_SAMPLES.get(sample, ())
+
+
+def mass_choices_for(era: str, sample: str) -> list[str]:
+    """The era's signal mass points when *sample* needs them, else ``[]``.
+
+    Data and background runs never read ``data/signal_points/<era>_mass_points.csv``,
+    so a data-only era without a CSV (RunIII2025Summer25) runs.
+    """
+    if not needs_mass_points(sample):
+        return []
+    return load_masses_from_csv(Path(f"data/signal_points/{era}_mass_points.csv"))
+
+
 def select_default_signal_points(era: str) -> list[str]:
     """Return the default grid of signal mass points for an era.
 

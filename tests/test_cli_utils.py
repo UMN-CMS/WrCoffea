@@ -1,6 +1,7 @@
 """Tests for wrcoffea.cli_utils — mass normalization, filtering, fileset path building."""
 
 import pytest
+from pathlib import Path
 
 from wrcoffea.cli_utils import (
     normalize_mass_point,
@@ -303,3 +304,26 @@ def test_ul_signal_points_select_the_official_samples(era):
         flavours = sorted(d["metadata"]["sample"].split("_")[0] for d in selected.values())
         assert flavours == ["WRtoNEltoElElJJ", "WRtoNMutoMuMuJJ"], mass
     assert not any(d["metadata"].get("scan_source") for d in fileset.values())
+
+
+class TestMassPointsOnlyForSignalRuns:
+    """The mass-point CSV is read only when Signal is involved (a data-only era has none)."""
+
+    def test_needs_mass_points(self):
+        from wrcoffea.cli_utils import needs_mass_points
+        assert needs_mass_points("Signal") and needs_mass_points("signal") and needs_mass_points("mc") and needs_mass_points("all")
+        assert not any(needs_mass_points(s) for s in ("EGamma", "Muon", "DYJets", "tt_tW", "Nonprompt", "Other", "data", "bkg"))
+
+    def test_data_run_of_an_era_without_csv(self):
+        from wrcoffea.cli_utils import mass_choices_for
+        assert not Path("data/signal_points/RunIII2025Summer25_mass_points.csv").exists()
+        assert mass_choices_for("RunIII2025Summer25", "EGamma") == []
+        assert mass_choices_for("RunIII2025Summer25", "data") == []
+        with pytest.raises(FileNotFoundError):
+            mass_choices_for("RunIII2025Summer25", "Signal")
+
+    def test_signal_run_reads_the_csv(self):
+        from wrcoffea.cli_utils import mass_choices_for
+        points = mass_choices_for("RunIII2024Summer24", "Signal")
+        assert "WR4000_N2100" in points
+        assert mass_choices_for("RunIII2024Summer24", "all") == points

@@ -37,18 +37,7 @@ DEFAULT_GROUP_INPUT_BYTES = {"data": 60e9, "mc": 30e9, "signal": 1e12}
 # reaches the plan or fileset metadata.
 FILE_LIST_KEYS = ("files", "file_sizes", "file_events", "file_adler32")
 
-ERA_SUBDIRS = {
-    "RunIISummer20UL16APV": "RunII/2016/RunIISummer20UL16APV",
-    "RunIISummer20UL16": "RunII/2016/RunIISummer20UL16",
-    "RunIISummer20UL17": "RunII/2017/RunIISummer20UL17",
-    "RunIISummer20UL18": "RunII/2018/RunIISummer20UL18",
-    "Run3Summer22": "Run3/2022/Run3Summer22",
-    "Run3Summer22EE": "Run3/2022/Run3Summer22EE",
-    "Run3Summer23": "Run3/2023/Run3Summer23",
-    "Run3Summer23BPix": "Run3/2023/Run3Summer23BPix",
-    "RunIII2024Summer24": "Run3/2024/RunIII2024Summer24",
-    "RunIII2025Summer25": "Run3/2025/RunIII2025Summer25",
-}
+from wrcoffea.era_utils import ERA_SUBDIRS  # era -> <run>/<year>/<era>, one definition for the repo
 
 
 def code_version() -> str:

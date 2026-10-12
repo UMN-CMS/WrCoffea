@@ -24,6 +24,7 @@ from wrcoffea.cli_utils import (
     load_and_select_fileset,
     load_composite_fileset,
     load_masses_from_csv,
+    mass_choices_for,
     normalize_mass_point,
     select_signal_points,
     split_sample_groups,
@@ -717,8 +718,8 @@ if __name__ == "__main__":
     # Normalize any legacy naming to canonical WR/N format before validation.
     args.mass = normalize_mass_point(args.mass)
 
-    signal_points = Path(f"data/signal_points/{args.era}_mass_points.csv")
-    MASS_CHOICES = load_masses_from_csv(signal_points)
+    # The mass-point CSV is read only for runs that involve Signal: a data-only era has none.
+    MASS_CHOICES = mass_choices_for(args.era, args.sample)
 
     logging.info(f"Analyzing {args.era} - {args.sample} events")
     validate_arguments(args, MASS_CHOICES)

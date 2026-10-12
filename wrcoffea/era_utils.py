@@ -16,6 +16,18 @@ ERA_MAPPING = {
     "RunIII2025Summer25": {"run": "Run3", "year": "2025"},
 }
 
+# era -> "<run>/<year>/<era>", the directory layout of data/configs, data/filesets, the skims and the
+# analyzer outputs.  The single definition; wrcoffea.das_utils and wrcoffea.skim.plan re-export it.
+ERA_SUBDIRS = {era: f"{m['run']}/{m['year']}/{era}" for era, m in ERA_MAPPING.items()}
+
+
+def era_subdir(era):
+    """``<run>/<year>/<era>`` of a known era (ValueError otherwise)."""
+    if era not in ERA_SUBDIRS:
+        raise ValueError(f"Unsupported era: {era}. Valid eras: {sorted(ERA_SUBDIRS)}")
+    return ERA_SUBDIRS[era]
+
+
 def get_era_details(era):
     """
     Retrieves the 'run' and 'year' associated with a given era.
