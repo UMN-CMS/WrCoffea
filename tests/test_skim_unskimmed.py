@@ -102,6 +102,7 @@ def test_write_era_filesets(roots, caplog):
     assert "WWW_4F" in caplog.text and "optional, skipped" in caplog.text
     md = mc[MC]["metadata"]
     assert md["xsec"] == 1.5 and md["order"] == "NLO" and "note" not in md and "genEventSumw" not in md
+    assert "dataset" not in md             # reserved by coffea's preprocess
     assert md["sample"] == "TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8" and md["nevts"] == 1000
     # private signal: the config's own file list, sorted, with its event counts
     sig = json.loads(paths[2].read_text())

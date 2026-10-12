@@ -157,6 +157,7 @@ def dataset_entry(key: str, cfg: Mapping, *, dbs, redirector: str, today: str,
     metadata = {k: v for k, v in cfg.items() if k not in DROPPED_KEYS}
     metadata.setdefault("das_name", das)
     metadata["sample"] = cfg.get("dataset") or (das.split("/")[1] if das.startswith("/") else key)
+    metadata.pop("dataset", None)          # coffea's preprocess refuses a "dataset" metadata key
     metadata["nfiles"] = len(urls)
     if nevts is not None:
         metadata["nevts"] = nevts
