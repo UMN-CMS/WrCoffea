@@ -159,20 +159,17 @@ data/configs/Run3/2023/Run3Summer23/
 
 See `docs/filesets.md` for the expected JSON schema.
 
-### 4b. Generate fileset JSONs
+### 4b. Fileset JSONs
 
-Use the fileset scripts to query DAS and produce the fileset JSONs that
-the analyzer reads at runtime (see `docs/filesets.md` for full details):
+The analyzer reads fileset JSONs at runtime (see `docs/filesets.md`):
 
 ```bash
-# Unskimmed filesets (from DAS)
-python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_data.json
-python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_signal.json
-python3 scripts/full_fileset.py --config data/configs/Run3/2023/Run3Summer23/Run3Summer23_mc_dy_lo_inc.json
-
 # Skimmed filesets: written by the skim campaign once the era is skimmed (step 5)
 python3 bin/skim.py fileset --plan-dir plans/v2_Run3Summer23 --era Run3Summer23
 ```
+
+Unskimmed filesets (`unskimmed/`) are optional, only needed for `--unskimmed` runs, and are written by
+hand from the DAS file lists following an existing era's file.
 
 The resulting fileset JSONs land under:
 

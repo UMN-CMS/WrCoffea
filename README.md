@@ -222,9 +222,8 @@ bin/                # User-facing CLI scripts (production workflows)
 wrcoffea/           # Installable Python package (analysis code, utilities, config)
 data/               # Dataset configs, filesets, correction payloads, golden JSONs, signal mass points
 docs/               # Documentation (markdown guides)
-scripts/            # Helper scripts: filesets, cross sections, reweight derivations, payload conversion
+scripts/            # Helper scripts: cross sections, DY reweight derivations, luminosity, PDF sets, payload conversion
 tests/              # Automated test suite (pytest)
-studies/            # One-off studies (m(ll) cut optimization)
 ```
 
 ### Key Directories

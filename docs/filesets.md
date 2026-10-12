@@ -4,23 +4,13 @@ The first step is to find the files that will be fed into the analyzer. This can
 
 ## Unskimmed Filesets
 
-Use `scripts/full_fileset.py` to build fileset JSONs from DAS. This queries `dasgoclient` for the logical file names of each dataset in the config, and uses the FNAL XRootD redirector (`root://cmsxrootd.fnal.gov/`) which automatically routes to the nearest available replica.
-
-```bash
-python3 scripts/full_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_data.json
-python3 scripts/full_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_signal.json
-python3 scripts/full_fileset.py --config data/configs/Run3/2024/RunIII2024Summer24/RunIII2024Summer24_mc_dy_lo_inc.json
-```
-
-Optionally filter to a single `physics_group` with `--dataset`:
-```bash
-python3 scripts/full_fileset.py --config data/configs/.../RunIII2024Summer24_data.json --dataset Muon
-```
-
-Output path:
-```
-data/filesets/Run3/2024/RunIII2024Summer24/unskimmed/RunIII2024Summer24_data_fileset.json
-```
+The unskimmed filesets (`data/filesets/<Run>/<Year>/<Era>/unskimmed/`) list the original NanoAOD
+files of each dataset through the global XRootD redirector, with the same per-dataset metadata as the
+skimmed ones. They are kept in the repository and maintained by hand: to add or change one, copy the
+layout of an existing file and take the logical file names from DAS (`dasgoclient -query="file dataset=..."`
+on lxplus or the LPC, or the DBS listing the skim plan already holds for every dataset of a planned era).
+The former generator script (`scripts/full_fileset.py`) was removed on 2026-10-11; the files in the repo
+are the reference.
 
 To run the analysis on unskimmed files, pass `--unskimmed`:
 ```bash
@@ -67,7 +57,7 @@ data/configs/
     ...
 ```
 
-Each config JSON maps `physics_group` names to DAS dataset paths. The fileset scripts read these configs and produce the corresponding fileset JSONs under `data/filesets/`.
+Each config JSON maps `physics_group` names to DAS dataset paths. The skim campaign reads these configs (`bin/skim.py plan`) and writes the skimmed filesets under `data/filesets/`; the unskimmed ones are maintained by hand (above).
 
 ## Fileset Directory Layout
 
