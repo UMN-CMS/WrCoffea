@@ -3,7 +3,7 @@
 What this page answers: which golden JSON each era uses, how the luminosity of every era is
 computed (brilcalc over the lumisections actually in the skims), the numbers in use and their
 uncertainties. The numbers live in `wrcoffea/config.yaml` (`lumis`, `lumi_unc`, `lumi_jsons`) and
-`WR_Plotter/data/lumi.yaml`; this page explains them. Verified on 2026-10-11.
+`WR_Plotter/data/lumi.yaml`; this page explains them. Verified on 2026-10-12.
 
 ## Golden JSONs
 
@@ -114,12 +114,14 @@ reprocessing, are the reason the processed luminosity sits below the golden tota
 ## Re-doing it for a new era or a new skim
 
 ```bash
-python3 bin/skim.py validate --plan-dir plans/v2_<era> --remote <campaign URL> --remote-lumis   # writes the masks
+python3 bin/skim.py validate --plan-dir <campaign root>/plans/<plan> --out <campaign root> --remote <campaign URL> --remote-lumis   # writes the masks
 python3 scripts/processed_lumi.py --byls golden<year>_byls_physics.csv --golden data/lumis/.../Cert_....json \
-    --masks <skims root>/<run>/<year>/<era>/data/*/*_processed_lumis.json --out processed_lumi_normtag_PHYSICS.json
+    --masks <campaign root>/<run>/<year>/<era>/data/*/*_processed_lumis.json --out processed_lumi_normtag_PHYSICS.json
 ```
 
-Then write the era's number into `wrcoffea/config.yaml` (`lumis`) and `WR_Plotter/data/lumi.yaml`,
-and copy the masks and the result into `data/lumis/.../processed_skims_v2/`. A golden JSON that is
+The plan and the masks are in the skim campaign root (`skim.py --out`), not in the repository
+([skimming.md](skimming.md)). Then write the era's number into `wrcoffea/config.yaml` (`lumis`)
+and `WR_Plotter/data/lumi.yaml`, and copy the masks and the result into
+`data/lumis/.../processed_skims_v2/`. A golden JSON that is
 re-issued under the same name (2024 in 2026) changes the data selection; re-check the files
 against the DQM site when an era is revisited.

@@ -4,7 +4,7 @@ What this page answers: which correction each era applies, from which payload, w
 comes from, and what is a placeholder. The mapping is `wrcoffea/config.yaml`; the files are under
 `data/jsonpog/<POG>/<Run>/<era>/` (POG JSONs), `data/reweights/` (our own payloads),
 `data/muon_highpt/` and `data/pdf_sets/`. How each correction enters the event weight is in
-[analysis.md](analysis.md). Verified on 2026-10-11.
+[analysis.md](analysis.md). Verified on 2026-10-12.
 
 ## Where POG payloads come from, and how to check them
 
@@ -93,10 +93,12 @@ values; see the open items in analysis.md. Every Run 3 muon file is the CAT rele
 | signal k-factor | all | `signal_kfactor_13tev_20261010.json` (UL), `signal_kfactor_13p6tev_20261010.json` (Run 3): per-point k(m(ℓN)) curves, [studies/signal_kfactor.md](studies/signal_kfactor.md) |
 | PDF sets | all | `data/pdf_sets/<Run>/<year>/<era>.json` (`scripts/pdf_sets.py`): the LHA ID of each sample's `LHEPdfWeight` (NNPDF3.1 325300/325500 everywhere; UL also 306000 symmhessian+α_S and 320900 replicas); 2025 uses the 2024 table |
 
-The Run 3 DY and signal payloads of 2026-10-11 are derivations of this repository
-(`scripts/derive_dy_zpt_reweight.py`, `scripts/derive_dy_reshape.py`, `scripts/signal_kfactor/`),
-with the recipe of AN-19-083; the Run 2 payloads converted from the Run 2 analyzer
-(`scripts/convert_run2_*.py`) are kept next to them for comparison.
+The DY payloads named `_20261011`, UL and Run 3, and the signal k-factor payloads of 2026-10-10
+are derivations of this repository (`scripts/derive_dy_zpt_reweight.py`,
+`scripts/derive_dy_reshape.py`, `scripts/signal_kfactor/`); the DY ones follow the recipe of
+AN-19-083. The Run 3 reshapes were derived on 2026-10-12 from the 2026-10-11 production. The Run 2
+payloads converted from the Run 2 analyzer (`scripts/convert_run2_*.py`) are kept next to the UL
+ones for comparison.
 
 ## Placeholders at a glance
 
@@ -108,4 +110,4 @@ with the recipe of AN-19-083; the Run 2 payloads converted from the Run 2 analyz
 | TuneP momentum with flat 5 %/TeV scale, no smearing | UL, 2022, 2023, 2025 | the high-pT recipe payloads of those eras |
 | EGM 1 ± 20 % above 500 GeV (reco) / 1 TeV (HEEP), clipped away | Run 3 | a decision on the high-pT treatment |
 | No electron scale/smearing variations | UL | a prescription (see analysis.md) |
-| No parton-shower variations | UL | a reskim with the event-derived PSSumw |
+| Parton-shower weight means (PSSumw) estimated from the original files (`scripts/estimate_ps_sums.py`) | UL | a reskim with the event-derived PSSumw |

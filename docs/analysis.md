@@ -6,7 +6,7 @@ The code is the reference (`wrcoffea/analyzer.py`, `regions.py`, `systematics.py
 `scale_factors.py`, cut values in `wrcoffea/config.yaml: cuts`); the payload of every correction
 per era is in [corrections.md](corrections.md). The selection follows the Run 2 analysis
 CMS-EXO-20-002 (AN-19-083); the differences are listed in
-[studies/run2_hnwr_comparison.md](studies/run2_hnwr_comparison.md). Verified on 2026-10-11.
+[studies/run2_hnwr_comparison.md](studies/run2_hnwr_comparison.md). Verified on 2026-10-12.
 
 ## Signal and topologies
 
@@ -28,14 +28,17 @@ Summer24 production (137 points, [inputs.md](inputs.md)).
 Applied to data and MC unless stated.
 
 - **Golden JSON** (data): the certified lumisections of the era ([luminosity.md](luminosity.md)).
-- **Noise filters** (`_NOISE_FLAGS` in `analyzer.py`): goodVertices, globalSuperTightHalo2016Filter,
+- **Noise filters** (`_COMMON_NOISE_FLAGS`, `_OPTIONAL_NOISE_FLAGS` and `apply_noise_filter` in
+  `analyzer.py`): goodVertices, globalSuperTightHalo2016Filter, EcalDeadCellTriggerPrimitiveFilter,
   BadPFMuonFilter, eeBadScFilter, plus BadPFMuonDzFilter and hfNoisyHitsFilter where the branch
   exists; Run 2 UL adds HBHENoiseFilter and HBHENoiseIsoFilter in every year and ecalBadCalibFilter
-  for 2017 and 2018; 2024 adds ecalBadCalibFilter. For 2022 and 2023 the NanoAOD ecalBadCalibFilter
-  is not used; instead the JME recipe for runs 362433 to 367144 rejects an event with PuppiMET > 100 GeV
-  and a jet (pT > 50 GeV, −0.5 < η < −0.1, −2.1 < φ < −1.8, neutral or charged EM fraction > 0.9) back to
-  back with it, Δφ > 2.9 (`ecal_bad_calib_filter`; on PuppiMET since 2026-10-11, PF MET before, a
-  difference of a few events per million). A required flag the input lacks, or a missing or unreadable
+  for 2017 and 2018; 2024 adds ecalBadCalibFilter. 2025 has no era-specific list yet: it gets the
+  common flags only (the log says "Noise filters are not applied", but the common ones are). For 2022
+  and 2023 the NanoAOD ecalBadCalibFilter is not used; instead the JME recipe for runs 362433 to
+  367144 rejects an event with PuppiMET > 100 GeV and a jet (pT > 50 GeV, −0.5 < η < −0.1,
+  −2.1 < φ < −1.8, neutral or charged EM fraction > 0.9) back to back with it, Δφ > 2.9
+  (`ecal_bad_calib_filter`; on PuppiMET since 2026-10-11, PF MET before, a difference of a few
+  events per million). A required flag the input lacks, or a missing or unreadable
   golden JSON, stops the run (since 2026-10-11); the two optional flags are applied when present.
 - **Jet veto maps** (JME): a jet with pT > 15 GeV, EM fraction < 0.9 and the tight-lepton-veto ID in a
   vetoed cell. Run 3 rejects the **event** (the JME recommendation; 13 to 15 % of 2024 events). The
@@ -59,11 +62,14 @@ muons get their scale and smearing corrections ([corrections.md](corrections.md)
 | AK4 jet | pT > 40 GeV, \|η\| < 2.4, tight ID with lepton veto (2024: the correctionlib `jetid.json`; other eras `jetId >= 6`); CHS in UL, Puppi in Run 3 |
 | AK8 jet | pT > 200 GeV, \|η\| < 2.4, tight ID, soft-drop mass > 40 GeV; the SR and flavour-CR jet also needs `lsf3 > 0.75` |
 
-Notes on the AK8 jet. The soft-drop mass cut uses NanoAOD's JEC-corrected `msoftdrop` by default;
-`ak8_msoftdrop_mode: raw` (per era in `config.yaml`) cuts on the mass of the uncorrected subjets,
-which is what Run 2 cut on, and accounts for about 9 % of the UL18 boosted DY CR yield (decision
-pending). NanoAOD's `lsf3` is −1 for jets without a lepton (Run 2 stored 0) and counts non-PF
-leptons; `FatJet_muonIdx3SJ` / `electronIdx3SJ` are stale in UL NanoAOD and are never used.
+Notes on the AK8 jet. The soft-drop mass cut uses NanoAOD's JEC-corrected `msoftdrop` by default.
+An optional per-era key `ak8_msoftdrop_mode` (`corrected` or `raw`, read by
+`scale_factors.ak8_msoftdrop_mode`; an era without an entry is `corrected`) switches to the mass of
+the uncorrected subjets, which is what Run 2 cut on. `config.yaml` sets it for no era today; a study
+can set it through `WRCOFFEA_CONFIG_OVERLAY`. The choice accounts for about 9 % of the UL18 boosted
+DY CR yield (decision pending). NanoAOD's `lsf3` is −1 for jets without a lepton (Run 2 stored 0)
+and counts non-PF leptons; `FatJet_muonIdx3SJ` / `electronIdx3SJ` are stale in UL NanoAOD and are
+never used.
 
 ## Triggers
 
@@ -78,7 +84,9 @@ Each region uses one trigger OR; the data stream follows the trigger.
 
 The resolved eμ region uses the muon trigger; the boosted flavour CRs use the trigger of the
 leading lepton. Run 2 data are the SingleElectron and SingleMuon primary datasets (the Photon
-paths count on the SingleElectron stream, as in Run 2); 2018 and Run 3 have EGamma and Muon.
+paths count on the SingleElectron stream, as in Run 2), except UL18, whose primary datasets are
+EGamma and SingleMuon; Run 3 has EGamma and Muon (plus SingleMuon in 2022B and C). The analyzer
+calls the two streams `EGamma` and `Muon` in every era.
 Both data files fill every region with no overlap removal, so each region reads exactly one
 stream: EGamma for the ee regions and `wr_emu_boosted_flavor_cr`, Muon for the μμ regions,
 `wr_resolved_flavor_cr` and `wr_mue_boosted_flavor_cr`.
@@ -157,9 +165,10 @@ are cross-checks and get the identity):
   per UL era and per Run 3 data-taking year.
 
 Both are switched off with `--no-dy-zpt-reweight` (implies `--no-dy-reshape`) and `--no-dy-reshape`.
-The HT-binned set has no events below LHE H_T = 40 GeV, which costs 9 to 16 % of the boosted-SR DY
-and about 1 % of the resolved-SR DY and nothing in the control regions; the choice (2026-10-08) is
-to live with it rather than stitch.
+The HT-binned sets have no events below their first bin, LHE H_T = 40 GeV in Run 3 and 70 GeV in
+UL (`default_mc_tag` in `config.yaml`). In 2024 this costs 9 to 16 % of the boosted-SR DY, about 1 %
+of the resolved-SR DY and nothing in the control regions; the choice (2026-10-08) is to live with it
+rather than stitch.
 
 ### Signal normalization
 
@@ -200,22 +209,24 @@ templates. Variations are written as `syst_<label lower>_<region>` folders.
 | `ps` | PSISR, PSFSR | weight | parton-shower ISR and FSR from `PSWeight`, normalized the same way |
 | `pdf` | PDF, AlphaS | members | every `LHEPdfWeight` member stored per PDF set (`pdfmembers_<region>/<var>_lha<id>`); the Hessian quadrature and the α_S shift (scaled to 0.0015) are formed at the final binning by the plotter and the datacards |
 
-What each era can produce (2026-10-11; from the registry and the payloads of
+What each era can produce (2026-10-12; from the registry and the payloads of
 [corrections.md](corrections.md)):
 
 | Family | UL16APV, UL16, UL17, UL18 | 2022, 2022EE, 2023, 2023BPix | 2024 | 2025 |
 | --- | --- | --- | --- | --- |
-| `lumi`, `pileup`, `sf`, `jer`, `jes`, `muscale`, `musmear`, `dyzpt`, `lsf`, `scale`, `pdf` | yes | yes | yes | yes |
+| `lumi`, `pileup`, `sf`, `jer`, `jes`, `dyzpt`, `lsf`, `scale`, `pdf` | yes | yes | yes | yes |
+| `muscale`, `musmear` | placeholder (TuneP, flat 5 %/TeV scale, smearing = nominal) | placeholder | yes (the high-pT recipe) | placeholder |
 | `prefire` | yes | no (no prefiring in Run 3) | no | no |
 | `elescale`, `elesmear` | no (no scale-and-smearing payload; UL NanoAODv9 MC has no scale uncertainty branch) | yes | yes | yes |
 | `dyreshape` | yes | yes | yes | not yet (no 2025 reshape) |
 | `ps` | yes: the UL filesets carry PSSumw estimated from a few million unselected events of every original sample (`scripts/estimate_ps_sums.py`, 2026-10-11; exact sums come with the next skim, which derives them from the events) | yes | yes | yes |
 
 Samples without generator weights (the Pythia 8 WW, WZ, ZZ) get their nominal for `scale` and
-`pdf`, with a warning; so does a dataset whose fileset records why it has no dataset-level means
-(`PSSumw_source.status`, e.g. original files unreachable for the UL estimate). Missing means without
+contribute no `pdf` members, with a warning. A dataset whose fileset records why it has no
+dataset-level means (`PSSumw_source.status`, e.g. original files unreachable for the UL estimate)
+gets its nominal for that family, also with a warning. Missing means without
 such a record are an error. The plotter's band and the systematics tables take every source present
-in the files ([plotting.md](plotting.md)).
+in the files ([WR_Plotter/docs/plotting.md](../WR_Plotter/docs/plotting.md)).
 
 ## Open items
 

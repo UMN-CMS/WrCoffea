@@ -1,20 +1,19 @@
 # Skimming
 
-The skims are NanoAOD files reduced to the events and branches the WR analysis
-can ever need. The toolkit lives in `wrcoffea/skim/` with one driver,
-`bin/skim.py`. It replaces the 2026-02 skimmer (per-file Condor jobs, tarballs,
-`hadd`-style merging) with a plan-driven campaign in which every input file is
-downloaded with checksum verification, skimmed from local scratch, written into
-size-bounded parts with one fixed schema per dataset, and verified twice before
-the local copy is deleted.
+What this page answers: what the skims contain, how a skim campaign is planned, run (on a
+laptop or as LPC Condor jobs), validated and turned into analyzer filesets, and which inputs could
+not be skimmed. The skims are NanoAOD files reduced to the events and branches the WR analysis can
+ever need. The toolkit lives in `wrcoffea/skim/` with one driver, `bin/skim.py`: a plan-driven
+campaign in which every input file is downloaded with checksum verification, skimmed from local
+scratch, written into size-bounded parts with one fixed schema per dataset, and verified twice
+before the local copy is deleted. Verified on 2026-10-12.
 
-Status (2026-10-10):
+Status:
 
-- The skims_v2 campaign is done for 2022, 2023, 2024 and UL18, and every active
-  skimmed fileset of those eras points at it
+- The skims_v2 campaign covers the four UL eras, 2022, 2022EE, 2023, 2023BPix and 2024. Every
+  skimmed fileset of those eras points at it, in Billy's area at Wisconsin
   (`root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/`).
-- UL17 is running on LPC Condor.
-- UL16, UL16APV and the 2025 data have plans but no skims yet.
+- The 2025 data are not skimmed yet; the workflow below is the recipe.
 
 ## Selection
 
@@ -114,14 +113,18 @@ dataset. Replace `<you>` by your username and `<remote>` by the xrootd storage t
 inside the coffea container; only the Condor submission and `condor_q` run on the host.
 
 ```bash
-# 0. Clone under nobackup (the plan, the job files and the mirrored statuses live there too)
-cd ~/nobackup && git clone --recursive git@github.com:UMN-CMS/WrCoffea.git && cd WrCoffea && git switch billy_dev
+# 0. Clone under nobackup (the plan, the job files and the mirrored statuses live there too). Clone the branch
+#    directly: `git switch billy_dev` after a clone of main leaves WR_Plotter at main's submodule pointer
+#    (if you did that, run `git submodule update --init --recursive` after the switch).
+cd ~/nobackup && git clone --recursive --branch billy_dev git@github.com:UMN-CMS/WrCoffea.git && cd WrCoffea
 
-# 1. A proxy on a shared path: the Condor jobs read it
+# 1. A proxy on a shared path (asks for your grid key passphrase). The Condor jobs use it, so it must stay
+#    valid for the whole campaign.
 voms-proxy-init --rfc --voms cms -valid 192:00 --out ~/nobackup/x509up
 export X509_USER_PROXY=~/nobackup/x509up
 export SKIM_PLAN=~/nobackup/skims_v2/plans/v2_RunIII2025Summer25 SKIM_OUT=~/nobackup/skims_v2 SKIM_PROXY=~/nobackup/x509up
-REMOTE=root://cmsxrootd.hep.wisc.edu//store/user/<you>/WRAnalyzer/skims_v2
+export REMOTE=root://cmsxrootd.hep.wisc.edu//store/user/<you>/WRAnalyzer/skims_v2   # exported: steps 7-9 read it in the container
+export RUCIO_ACCOUNT=<your Rucio account>   # read by skim.py run/group; the default is Billy's (wijackso)
 
 # 2. The container holds coffea, uproot and the XRootD bindings; open a shell in it for steps 3, 4, 7, 8 and 9
 IMG=/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-almalinux9-noml:2026.9.0-py3.12
@@ -132,26 +135,33 @@ apptainer exec -B /cvmfs -B /uscms_data -B /uscms/home -B /uscms/homes $IMG bash
 #    by hand (docs/inputs.md); the golden JSON is data/lumis/Run3/2025/RunIII2025Summer25/Cert_...Golden.json.
 python3 bin/skim.py plan --campaign v2 --plan-dir $SKIM_PLAN --era RunIII2025Summer25     # DBS through the proxy
 
-# 4. (optional) one group locally, to see the tooling work before submitting everything
-python3 bin/skim.py run --plan-dir $SKIM_PLAN --dataset Muon0_Run2025C --workers 2 --out $SKIM_OUT --scratch ~/nobackup/skim_scratch
+# 4. (optional) one group locally, to see the tooling work before submitting everything. Write it to a test root,
+#    not $SKIM_OUT: a group done in $SKIM_OUT is skipped by step 5, so its parts would never reach $REMOTE.
+#    Delete ~/nobackup/skim_test afterwards.
+python3 bin/skim.py run --plan-dir $SKIM_PLAN --dataset Muon0_Run2025C --limit-groups 1 --workers 1 \
+    --out ~/nobackup/skim_test --scratch ~/nobackup/skim_scratch
 
 # 5. Submit one Condor job per group (on the HOST, not in the container): writes parts straight to <remote>
 bin/lpc_condor.sh --jobs-dir ~/nobackup/skimjobs/v2_2025 --era RunIII2025Summer25 --remote $REMOTE \
     --cpus 2 --decompression-threads 2 --submit
 
-# 6. Watch; rerunning the same command later submits only what is still pending (that is the retry)
+# 6. Watch the jobs
 condor_q; ls ~/nobackup/skimjobs/v2_2025/logs/
 
-# 7. Bring the statuses and sidecars back, look at them, classify inputs no server can serve
+# 7. Bring the statuses and sidecars back, look at them, classify inputs no server can serve.
+#    Step 5 again is the retry, but only after this step: what is pending is read from the statuses
+#    in $SKIM_OUT, which only `mirror` brings up to date (without it, finished groups are resubmitted).
 python3 bin/skim.py mirror --plan-dir $SKIM_PLAN --out $SKIM_OUT --remote $REMOTE
-python3 bin/skim.py status --plan-dir $SKIM_PLAN --out $SKIM_OUT -v
-python3 bin/skim.py bad-files --plan-dir $SKIM_PLAN --out $SKIM_OUT --classify      # then step 5 again if anything is transient
+python3 bin/skim.py -v status --plan-dir $SKIM_PLAN --out $SKIM_OUT
+python3 bin/skim.py bad-files --plan-dir $SKIM_PLAN --out $SKIM_OUT --classify --rucio-account $RUCIO_ACCOUNT
 
 # 8. Validate against DBS and the golden JSON; writes the processed-lumisection masks of every stream
 python3 bin/skim.py validate --plan-dir $SKIM_PLAN --out $SKIM_OUT --skip-reread --remote $REMOTE --remote-lumis \
     --report $SKIM_PLAN/validation.json            # add --accept-bad-files once corrupt/unavailable inputs are the only problem
 
-# 9. The analyzer fileset: data/filesets/Run3/2025/RunIII2025Summer25/skimmed/RunIII2025Summer25_data_fileset.json
+# 9. The analyzer fileset: data/filesets/Run3/2025/RunIII2025Summer25/skimmed/RunIII2025Summer25_data_fileset.json.
+#    A family file with an unfinished selected dataset is NOT written: the command lists every missing
+#    dataset and exits 1 (`--allow-missing` writes the file without them).
 python3 bin/skim.py fileset --plan-dir $SKIM_PLAN --out $SKIM_OUT --era RunIII2025Summer25 --remote $REMOTE
 ```
 
@@ -159,7 +169,9 @@ Then:
 
 - **Luminosity.** Make the per-lumisection brilcalc table of the 2025 golden JSON and run
   `scripts/processed_lumi.py` on the masks of step 8 (recipe in [luminosity.md](luminosity.md));
-  write the number into `wrcoffea/config.yaml` (`lumis`) and `WR_Plotter/data/lumi.yaml`, and copy
+  write the number into `wrcoffea/config.yaml` (`lumis`) and into a `RunIII2025Summer25` entry of
+  `WR_Plotter/data/lumi.yaml` (the plotter has no 2025 entry yet; see
+  [adding_a_new_era.md](adding_a_new_era.md#7-wr_plotter-for-plotting)), and copy
   the masks and the result into `data/lumis/Run3/2025/RunIII2025Summer25/processed_skims_v2/`.
 - **MC for 2025.** 2025 is data-only and uses the 2024 MC (`mc_alias` in `config.yaml`). `skim.py
   fileset --era RunIII2025Summer25` also writes the 2025 MC filesets, with the era and year
@@ -170,16 +182,37 @@ Then:
 - **Unskimmed filesets** need no skims: `python3 bin/skim.py unskimmed-fileset --era RunIII2025Summer25`
   (a proxy is enough).
 
+**MC eras.** The workflow above is data-only. An MC era uses the same steps with the selection
+`--datatype mc` on `bin/lpc_condor.sh` (the wrapper passes selection arguments through to
+`skim.py condor`), `mirror` and `status`. Add `--exclude _scan` to leave out the UL
+multi-model scan samples (`<era>_signal_scan.json`); when they are skimmed, `skim.py split-scan`
+must run before `fileset` ([Multi-model scan samples](#multi-model-scan-samples)). `validate`,
+`upload` and `fileset` take the same selection. With a selection, `fileset` replaces only the
+selected entries of an existing family file and keeps the others; without one it rewrites each
+family file from the campaign.
+
 Names to know: a job processes one *group* (a slice of a dataset, ~60 GB of data input or 30 GB
 of MC); `skim.py group --dataset KEY --gid N` is what the job runs, followed by `skim.py ship`,
 which copies the parts (adler32-verified), the sidecars and the group status to the remote tree.
 
 **Laptop variant** (how the 2022 to 2024 and UL campaigns were partly run): the same `plan`, then
-`skim.py run --plan-dir ... --out ~/work/skims_v2 --scratch ~/work/skim_scratch --workers 3`
+`skim.py run --plan-dir ... --out <campaign root> --scratch <scratch> --workers 3`
 dataset by dataset, `validate` without `--skip-reread` (every part is re-read), `skim.py upload
---plan-dir ... --out ~/work/skims_v2` to copy the parts to the remote, and `fileset`. The closure
-test `scripts/skim_closure.py --plan-dir ... --dataset <key> --out ... --inputs-dir <kept inputs>
+--plan-dir ... --out <campaign root> --remote <remote>` to copy the parts to the remote, and
+`fileset`. The closure test `scripts/skim_closure.py --plan-dir ... --dataset <key> --out ... --inputs-dir <kept inputs>
 --sample <group>` compares the analyzer on a skimmed dataset with its raw inputs (`--keep-inputs`).
+
+**Billy's defaults.** Several `skim.py` defaults are Billy's setup; a new user overrides them:
+
+- `--remote` (`condor`, `mirror`, `upload`, `fileset`) defaults to his Wisconsin area
+  (`/store/user/wijackso/WRAnalyzer/skims_v2`): always pass `--remote`.
+- `--rucio-account` defaults to `wijackso`. `run` and `group` read `RUCIO_ACCOUNT` first;
+  `bad-files` does not, so pass `--rucio-account` there. The Condor jobs get no `RUCIO_ACCOUNT`
+  and use the default; their Rucio replica lookup is a best-effort fallback after the
+  redirectors, so a wrong account only costs that fallback.
+- `--out` and `--scratch` default to his laptop layout (`skim.py run --help` prints them).
+- `bin/lpc_condor.sh` defaults `SKIM_PROXY` to his proxy file and `SKIM_PLAN` / `SKIM_OUT` to his
+  LPC layout: export all three (step 1 above).
 
 Config entries flagged `"optional": true` (the low-mass `MLL-10to50` DY companions, about 1.5
 billion events in 2024 alone and outside every analysis selection) are left out of plans unless
@@ -197,23 +230,20 @@ laptop stalls the downloads.
 
 A transfer whose output file has not grown for 180 s (`fetch.STALL_TIMEOUT`)
 is killed and the file is fetched from the next source: a redirector can hand
-out a server that accepts the connection and then sends nothing (seen on
-2026-10-05 from campus, three transfers frozen for 20 minutes), and waiting
+out a server that accepts the connection and then sends nothing, and waiting
 for the size-based deadline would cost up to half an hour per file. The
 attempt is recorded with category `stall`.
 
 An input that passes its checksum but cannot be read (a basket that does not
-decompress or deserialize; the first one met was
-`DYto2L-4Jets_Bin-HT-100to400-MLL-50to120` file `0709bde6-...`, LZMA data
-errors in several branches on every replica) is corrupt at the source, so
+decompress or deserialize on every replica; the known cases are in
+[Known input defects](#known-input-defects-skims_v2)) is corrupt at the source, so
 retrying it is futile. The attempt that meets it fails, discards its partial
 parts and records the file in the group status with category `corrupt`; the
 next run of that group skips it from the start (also in Condor plan slices,
 which carry the corrupt inputs seen in the statuses), records it again and
 finishes with `bad_files`. A second permanent category is `unavailable`: files DBS still lists as
-valid but that no server can serve because Rucio knows no replica at all
-(44 files, 2.4 % of the events, of `DYto2Mu-2Jets_Bin-2J-MLL-50` on
-2026-10-06). Jobs cannot tell these from transient failures, so
+valid but that no server can serve because Rucio knows no replica at all.
+Jobs cannot tell these from transient failures, so
 `skim.py bad-files --classify` is run where Rucio is reachable (laptop or
 login node) on the mirrored statuses: unreachable files whose every attempt
 said "no servers" and that have no disk replica are rewritten as
@@ -379,77 +409,13 @@ the recipe, the numbers and the per-era notes are in [luminosity.md](luminosity.
 
 ## Edge eras (2022B, 2023B, 2024B)
 
-The golden JSONs certify runs before the eras that PdmV recommends (2022B,
-2023B, 2024B); their data are skimmed like any other stream, but whether the
-analysis can use them depends on the jet corrections.
-
-History. Until 2026-10-07 the analyzer used older JME payloads: the 2023
-residual (Summer23Prompt23_V2) started at run 367080 = 2023C, so 2023B data
-failed (flow = error), and the 2022 residual (22Sep2023 RunCD_V3) had no run
-input and was named and documented for 2022C/D only, so 2022B would have
-received it silently. Both B periods were moved out of the analysis data into
-edge-era configs (`*_data_edge2022B.json`, `*_data_edge2023B.json`) on
-2026-10-07.
-
-The same day the 2022 and 2023 payloads were updated to the latest official
-ones (V4, table below). Their data residuals take the run number as an input
-(flow = error outside the bins): 2022 `[355065, 359022)`, i.e. 2022B, C and D
-together; 2022EE bins at 359022 / 360332 / 362350 / 362761 (E, F, G); 2023
-`[366365, 367765, 369803)`, whose first bin includes 2023B; 2023BPix
-`[369803, 372416)`. With both B periods covered officially, they were brought
-back into the analysis data (Billy, 2026-10-07), like 2024B:
-
-- 2022B is in `Run3Summer22_data.json` again; Run3Summer22 uses the
-  2022B+C+D processed luminosity (ee 8.082 / mumu 8.076, so 8.08 fb⁻¹; the 2022
-  skims were switched in on 2026-10-08).
-- 2023B is in `Run3Summer23_data.json` again; Run3Summer23 uses the 2023B+C
-  processed luminosity (ee 18.587 / mumu 18.588, so 18.59 fb⁻¹).
-- 2024B is part of the 2024 analysis data and of its luminosity (109.70): the
-  2024 residual (Summer24Prompt24_V5) starts at run 378971, which covers it.
-
-To take a B period out again, move its entries into a separate
-`<era>_data_edge<period>.json` config (its fileset is then never loaded by
-the analyzer) and use the luminosity without it (2022C+D 7.98, 2023C 17.96).
-
-Where the jet corrections come from: the JME POG publishes them as
-correctionlib files on cvmfs, one directory per campaign with dated versions
-and a `latest` link, under
-`/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/<campaign>/` (for example
-`Run3-22CDSep23-Summer22-NanoAODv12`, `Run3-22EFGSep23-Summer22EE-NanoAODv12`,
-`Run3-23CSep23-Summer23-NanoAODv12`, `Run3-23DSep23-Summer23BPix-NanoAODv12`,
-`Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15`); each has a
-`changes.md`. The source repositories are
-`gitlab.cern.ch/cms-analysis-corrections/JME/<campaign>`. The older mirror
-`/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/` holds
-older versions (on 2026-10-07 its 2022 file was still `RunCD_V2`). The copies
-in `data/jsonpog/JME/` are tagged in `wrcoffea/config.yaml` (`jerc_jsons`);
-compare versions by the canonical JSON content, not the gzip checksum.
-
-Payloads in the repo (updated 2026-10-07 from cvmfs `latest`; only
-`jet_jerc.json.gz` and `fatJet_jerc.json.gz` changed, the jet veto maps and
-jet ID files were identical):
-
-| era | before 2026-10-07 | now (= latest official) |
-| --- | --- | --- |
-| Run3Summer22 | `Summer22_22Sep2023_RunCD_V3`, `JRV1` | `Summer22_22Sep2023_V4`, `JRV2` (2026-06-05) |
-| Run3Summer22EE | `Summer22EE_22Sep2023_RunE/F/G_V3`, `JRV1` | `Summer22EE_22Sep2023_V4`, `JRV2` (2026-06-05) |
-| Run3Summer23 | `Summer23Prompt23_V2`, `RunCv1234_JRV1` | `Summer23Prompt23_V4`, `RunCv1234_JRV3` (2026-07-15) |
-| Run3Summer23BPix | `Summer23BPixPrompt23_V3`, `RunD_JRV1` | `Summer23BPixPrompt23_V4`, `RunD_JRV3` (2026-07-15) |
-| RunIII2024Summer24 | `Summer24Prompt24_V5`, `JRV2` | unchanged |
-
-The new JER payloads give the nominal scale factor and its uncertainty as
-separate corrections (`ScaleFactor` without a `systematic` input, plus
-`SFUncertainty`), the schema the analyzer already handled for 2024.
-
-The update is a repackaging, not a recalibration: comparing old and new
-files on a grid of eta, pT (and phi for BPix), the data L2L3 residuals, the
-MC L2Relative, the JES Total uncertainty, the JER scale factors and the
-resolutions agree to the printed precision for all four eras; only the JER
-scale factor "up" value differs by about 0.001 in places (nominal plus
-uncertainty instead of a stored up value). What changes is the explicit run
-validity of the data residuals. Smoke tests after the switch (muon and
-electron data, signal, ttbar with `--systs jes jer`, one chunk each, all
-four eras) ran cleanly with filled, finite histograms.
+The golden JSONs certify runs before the eras that PdmV recommends (2022B, 2023B, 2024B). Their
+data are skimmed like any other stream and are part of the analysis data: the data residuals of the
+current JME payloads take the run number as an input and cover these runs, and the era luminosities
+in `wrcoffea/config.yaml` (`lumis`) include them. To take a B period out again, move its entries
+into a separate `<era>_data_edge<period>.json` config (its fileset is then never loaded by the
+analyzer) and use the luminosity without it. The JME payloads and where they come from are in
+[corrections.md](corrections.md).
 
 ## Known input defects (skims_v2)
 
@@ -494,26 +460,15 @@ Samples without LHE weights by design: the pure-Pythia 8 dibosons
 Run 3 era (they do have the 4 `PSWeight` entries). The analyzer fills their
 `scale` variations with the nominal weight and warns once per dataset.
 
-UL18 (skim completed 2026-10-09: 742 groups, 318 datasets, 5.51 billion
-events in, 280.6 million kept, 474 GB):
-
-- Three official signal files could not be read, costing 1-3 % of the events
-  of three mass points.
-- The three pre-legacy scan samples validated with per-model event counts
-  equal to DBS.
-- `validate --remote-lumis` passes 315 of 318 datasets. The three failures,
-  SingleMuon 2018A and 2018D and EGamma 2018A, are expected: the skims hold
-  lumisections (612, 2799 and 38) that no DBS file lists. DBS's per-file
-  lumisection lists are incomplete there (for example run 316240 of EGamma:
-  DBS lists 1184 of its 1222 lumisections), while the planned files equal the
-  current valid DBS files. Nothing is lost.
+UL18: `validate --remote-lumis` fails SingleMuon 2018A and 2018D and EGamma 2018A, as expected:
+DBS's per-file lumisection lists are incomplete there, so the skims hold lumisections no DBS file
+lists, while the planned files equal the current valid DBS files. Nothing is lost.
 
 ## Running on Condor at the LPC
 
 One job per group, in the coffea container on the worker, writing straight to
-Wisconsin: the EOS user area at FNAL is 86 % full (1.73 of 2 TB), and the
-skims' final home is Wisconsin anyway. Statuses and sidecars store part names
-relative to the dataset directory (older absolute records still load), so the
+Wisconsin, the skims' final home (`--remote` names any other xrootd root). Statuses and
+sidecars store part names relative to the dataset directory (older absolute records still load), so the
 remote tree has exactly the layout of a local campaign root.
 
 Setup: a clone of the repository under `~/nobackup` on the LPC (the workflow above), a proxy on a
@@ -528,14 +483,16 @@ the laptop already finished.
 On the login node, `bin/lpc_condor.sh` does the two halves in the right
 places: Condor only exists on the host and the skim tooling only runs inside
 the container, so the wrapper saves the queue (`condor_q -af SkimGroup
-JobStatus`) to a file, runs `skim.py condor --inflight-file` inside the
+JobStatus Iwd`) to a file, runs `skim.py condor --inflight-file` inside the
 container, and runs `condor_submit` on the host when `--submit` is given:
 
 ```
 bin/lpc_condor.sh --jobs-dir ~/nobackup/skimjobs/v2 --cpus 2 --decompression-threads 2 [selection] [--submit]
 ```
 
-(`SKIM_PLAN`, `SKIM_OUT`, `SKIM_PROXY` and `SKIM_IMAGE` override the defaults.)
+The wrapper's defaults for `SKIM_PLAN`, `SKIM_OUT` and `SKIM_PROXY` are Billy's (his plan, his
+campaign root, his proxy file): a new user exports all three, as in step 1 of the workflow.
+`SKIM_IMAGE` is optional. Pass `--remote` too; its default is his Wisconsin area.
 
 `condor` lists the pending groups exactly like `run` does and leaves out the
 groups `condor_q` still shows (ClassAd `SkimGroup` = `era/dataset:gid`). It
@@ -543,7 +500,7 @@ writes:
 
 - the JDL;
 - `run_group.sh`;
-- a 140 kB code tarball;
+- a code tarball;
 - one plan slice per dataset;
 - `groups.txt`.
 
@@ -581,5 +538,5 @@ while a stat or a small copy by name takes about a second.
 
 The compression and part-size study behind the defaults is in
 [studies/skim_output_format.md](studies/skim_output_format.md). The skims made before October 2026
-(`WRAnalyzer/skims/` at Wisconsin) are no longer used by any fileset; what they were is recorded in
-[history.md](history.md).
+(`WRAnalyzer/skims/` at Wisconsin: 1209 branches, about 3.2 kB per event, zlib:1, no
+LuminosityBlocks tree, genEventSumw from a separate DAS pass) are no longer used by any fileset.

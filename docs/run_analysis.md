@@ -2,7 +2,7 @@
 
 What this page answers: how to run `bin/run_analysis.py`, what it writes, how blinding and the
 systematics production work, and what every flag does. What the selection and the corrections
-are is in [analysis.md](analysis.md) and [corrections.md](corrections.md). Verified on 2026-10-11.
+are is in [analysis.md](analysis.md) and [corrections.md](corrections.md). Verified on 2026-10-12.
 
 ## Usage
 
@@ -31,7 +31,7 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
 | `signal` | Signal: the 9-point default grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV), or `--signal-points` |
-| single | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal --mass WR<wr>_N<n>` |
+| single | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal --mass WR<wr>_N<n>`; also the subgroups of the split groups (`TTbar`, `tW`, `WJets`, `TTSemiLep`, `SingleTop`, `Diboson`, `Triboson`, `ttV`, see `--split-groups`) |
 
 Composite modes run the samples one after the other locally (3 Dask workers by default; a failing
 sample is logged and the next one runs) and in parallel with `--condor` at the LPC
@@ -53,13 +53,16 @@ python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3800_N1600 --dir m
 ```text
 WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_<sample>.root
 WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_<sample>_systematics.json   (the manifest)
+WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_signal_WR<wr>_N<n>.root    (one file per signal point)
 ```
 
-`--dir` names the production, `--name` adds a suffix to the file name. Inside a file:
+`--dir` names the production; without it the files go directly under `<Era>/`. `--name` is
+inserted after the prefix: `WRAnalyzer_<name>_<sample>.root`. Inside a file:
 
 - `<region>/<var>_<region>`: the nominal histograms (MC scaled to σ × L), one folder per region
   ([analysis.md](analysis.md) lists them). Variations, where produced:
-  `syst_<label lower>_<region>/<var>_syst_<label>_<region>`; PDF members:
+  `syst_<label lower>_<region>/<var>_syst_<label lower>_<region>`, the label in lower case with
+  only letters and digits kept (`MuonTrigSfUp` → `muontrigsfup`); PDF members:
   `pdfmembers_<region>/<var>_lha<id>` (TH2: variable × member).
 - `cutflow_resolved/`, `cutflow_boosted/`: per channel (`ee`, `mumu`, `em`) the `cumulative` and
   `onecut` cutflows, weighted and `_unweighted`, with the cut names as bin labels. The weighted bins
@@ -67,12 +70,13 @@ WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_<sample>_systematics.js
 - `event_weights/<region>/` (MC, nominal pass only, not with `--unskimmed`): `positive` and
   `negative` (event counts vs log10|w| by the sign of the region's nominal weight) and
   `components/<name>` (one distribution per factor of w: generator weight, normalization, pileup,
-  DY Z-pT, signal k-factor, DY reshape, each lepton SF; `corrections` is their product).
+  L1 prefiring (UL), DY Z-pT, signal k-factor, DY reshape, each lepton SF; `corrections` is their
+  product).
 - With `--save-events`: the `events_<region>` TTrees of the signal regions (`mass`, `weight`).
 
 The manifest records the datasets and their chunk counts, the requested families, the
 observables covered, per region the produced, normalization and unaffected variations, the
-reweight statuses, the PDF-set layouts and the `blinding` record.
+PDF-set layouts and the `blinding` record.
 
 ## Blinding
 
@@ -98,8 +102,13 @@ always gets nominal only). The families, their sources, and what each era can pr
 [analysis.md, Systematics](analysis.md#systematics). Rules the production enforces:
 
 - A family or source the era cannot produce is an error at start-up, never a silent skip
-  (UL `elescale`/`elesmear`, Run 3 `prefire`; UL `ps` with filesets that lack PSSumw). A deliberate
-  omission of one source is recorded with `--omit-systs <Source>` and listed in the manifest.
+  (UL `elescale`/`elesmear`, Run 3 `prefire`). A deliberate omission of one source is recorded
+  with `--omit-systs <Source>` and listed in the manifest.
+- `scale` and `ps` need the dataset-level weight means in the fileset (`LHEScaleSumw`, `PSSumw`).
+  A dataset without them is an error when its first chunk is processed, not at start-up, unless the
+  fileset records why they are missing (`PSSumw_source.status`, e.g. the three UL signal datasets
+  whose original files are unreachable): such a dataset gets its nominal for that family, with a
+  warning.
 - Weight sources share one pass; shape sources (`jer`, `jes`, `elescale`, `elesmear`, `muscale`,
   `musmear`) re-run the selection on shifted kinematics. `lumi` is applied at export.
 - Coverage: every chunk records the (region, variation) pairs it completed, with the production
@@ -113,9 +122,10 @@ always gets nominal only). The families, their sources, and what each era can pr
   everywhere.
 - In zsh pass the families as separate words; a `$VAR` holding the list does not word-split.
 - Samples without generator weights (the Pythia 8 WW/WZ/ZZ have no `LHEScaleWeight` or
-  `LHEPdfWeight`) get their nominal weight for those variations with one warning per dataset;
-  so do the few 2022 files whose events lack the LHE weights ([skimming.md](skimming.md), "Known
-  input defects"). Any other mismatch in the number of weights is an error.
+  `LHEPdfWeight`) get their nominal weight for `scale` and contribute no PDF members, with one
+  warning per dataset; events of the few 2022 files that lack the LHE weights get their nominal
+  ([skimming.md](skimming.md), "Known input defects"). Any other mismatch in the number of weights
+  is an error.
 - Streaming the skims from Wisconsin works for systematics runs at a low round-trip time; raise
   `--xrootd-timeout` (120 to 300 s) for them.
 
@@ -159,8 +169,9 @@ cd WR_Plotter && ../.venv/bin/python bin/emu_transfer_factor.py --era RunIII2024
 ## Troubleshooting
 
 - **Unskimmed runs crash on I/O.** The original files are read through redirectors and see more
-  transient errors than the skims. `skipbadfiles=True` in the `Runner(...)` call of
-  `bin/run_analysis.py` skips unreadable files, at the price of silently losing their events.
+  transient errors than the skims. The `Runner(...)` call in `bin/run_analysis.py` has
+  `skipbadfiles=False`, so an unreadable file makes the sample fail. Setting it to `True` there
+  skips such files, at the price of silently losing their events; there is no flag for it.
 - **"Operation expired" while streaming skims** under `--systs`: raise `--xrootd-timeout`; on a
   high-latency link copy the skims locally and run with `--fileset` on a rewritten fileset.
 - **A smoke run's data/MC ratio** (`--maxfiles 1`) means nothing: one file carries the full sum of

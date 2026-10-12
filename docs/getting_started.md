@@ -1,24 +1,25 @@
 # Getting started
 
 What this page answers: how to set up the environment on a laptop or at the FNAL LPC, get a grid
-proxy, run one sample and the tests. Verified on 2026-10-11.
+proxy, run one sample and the tests. Verified on 2026-10-12.
 
 ## Clone
 
 ```bash
-git clone --recursive git@github.com:UMN-CMS/WrCoffea.git
+git clone --recursive -b billy_dev git@github.com:UMN-CMS/WrCoffea.git
 cd WrCoffea
 git submodule update --init --recursive      # if the clone was made without --recursive
 ```
 
-The analyzer is on branch `billy_dev`, the plotter submodule on `billyDev`. Run every command
+The analyzer is on branch `billy_dev`, the plotter submodule on `billyDev`. The default branch
+`main` is far behind and has the old documentation, so clone with `-b billy_dev`. Run every command
 from the repository root: `data/...` and `WR_Plotter/rootfiles/...` are resolved relative to it.
 
 ## Environment
 
-Python 3.12 and coffea 2025.12.0, pinned in `pyproject.toml` to the versions of the
-`coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12` container, so laptop and LPC runs match.
-Python 3.14 does not work (no correctionlib wheel).
+`pyproject.toml` requires Python 3.11 or later and pins coffea 2025.12.0, the version of the
+`coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12` container. Use Python 3.12, as the container
+does, so laptop and LPC runs match. Python 3.14 does not work (no correctionlib wheel).
 
 **Laptop (local runs, plotting, derivations).**
 
@@ -40,8 +41,8 @@ adds pytest. Everything in `WR_Plotter/bin/` runs with this same environment. Th
 source .venv/bin/activate && pip install -e .     # XRootD comes from the system site-packages
 ```
 
-For Condor (the analyzer at scale, and the skim campaigns) work inside the pinned coffea
-container, which creates its own `.env`:
+To run the analyzer on Condor, work inside the pinned coffea container, which creates its own
+`.env`:
 
 ```bash
 curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh && bash bootstrap.sh   # once
@@ -50,20 +51,24 @@ pip install -e .                                                                
 ```
 
 Never use the `:latest` tag: it can lag behind and mismatch the pinned versions. Details and the
-Condor flags: [condor.md](condor.md). Which machine does what: the laptop runs the analyzer,
-the plots, the fits and the derivations; the LPC runs the skim campaigns and large Condor
-productions.
+Condor flags: [condor.md](condor.md). The skim campaign's Condor jobs do not use this container:
+they run in their own image on the worker nodes ([skimming.md](skimming.md)). Which machine does
+what: the laptop runs the analyzer, the plots, the fits and the derivations; the LPC runs the
+skim campaigns and large Condor productions.
 
 Check the environment:
 
 ```bash
 .venv/bin/python -c "import coffea, sys; print(coffea.__version__, sys.version.split()[0])"   # 2025.12.0 3.12.x
-.venv/bin/python -m pytest tests -q                                                           # ~800 tests, offline, about a minute
+.venv/bin/python -m pytest tests -q                                                           # 836 tests, offline, about two minutes
 ```
 
 ## Grid proxy
 
-The skims stream from Wisconsin and DBS queries need a VOMS proxy:
+The skims stream from Wisconsin and DBS queries need a VOMS proxy. That needs a CMS grid
+certificate (`usercert.pem` and `userkey.pem` in `.globus/` in your home directory) registered in
+the CMS VO. On a laptop you also need `voms-proxy-init` and the CA certificates, with
+`X509_CERT_DIR` pointing at them.
 
 ```bash
 voms-proxy-init --rfc --voms cms -valid 192:00

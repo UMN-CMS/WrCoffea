@@ -1,6 +1,7 @@
 # Signal NLO/LO k-factor
 
-How the QCD NLO/LO correction of W_R -> l N production is derived and applied, following AN-19-083 App. A.
+What this page answers: how the QCD NLO/LO correction of W_R -> l N production is derived and applied (following
+AN-19-083 App. A), what it gives, how the payloads were validated, and what is still open. Verified on 2026-10-12.
 Everything here is reproducible with `scripts/signal_kfactor/` (first derivation 2026-10-09/10).
 
 ## What is applied (decided 2026-10-10, "option 2")
@@ -101,8 +102,9 @@ Direct per-point k = c x sigma_NLO / sigma_LO (official card), scale band = 9-po
 | WR8000_N7900 | 1.656 (+6.4/-7.4 %) | 1.614 | - |
 
 The 13 and 13.6 TeV values agree within 1 %; both agree with Run 2 within 1-3 % (ours slightly higher, by about
-`c`). The curves and the averaged-k plots (the figures of AN-19-083 App. A, with the Run 2 curves overlaid at
-13 TeV) are in `~/work/skims_v2/_kfactor/plots/` (`kfactor_vs_mlN_<E>.pdf`, `kfactor_<E>.pdf`).
+`c`). `kfactor_analysis.py` draws the curves and the averaged-k plots (the figures of AN-19-083 App. A, with the
+Run 2 curves overlaid at 13 TeV) into the campaign work area (`kfactor_vs_mlN_<E>.pdf`, `kfactor_<E>.pdf`); they
+are not in the repository.
 
 Two features of `k(m_lN)` that Run 2's smooth curve did not have, both properties of the samples:
 
@@ -114,9 +116,11 @@ Two features of `k(m_lN)` that Run 2's smooth curve did not have, both propertie
   `bwcutoff` has no effect); the official 2022 sample's gen-level m_lN shape matches the LO run. The weight is
   therefore larger in the tails (`k` ~ 1.6-1.75 between cores, ~1.2-1.5 at the cores).
 
-Because one curve serves every sample, the integrated `<k>` of a point is 3-5 % above its direct ratio at
-m_WR >= 4 TeV (the neighbouring points' tails raise the curve in its core); Run 2's Fig. 55 shows the same offset
-("Integrated" vs "Inclusive").
+These tails are what spoils a single shared curve (Run 2's method, and the `kfactor` fallback here): when one
+curve serves every sample, the neighbouring points' tails raise the curve in each point's core, so the integrated
+`<k>` of a point sits above its direct ratio at high mass (first section). AN-19-083 Fig. 55 shows the same offset
+("Integrated" vs "Inclusive"). The per-point curves applied here do not have it: their averages reproduce the
+direct ratios (next section).
 
 ## Validation of the payloads (2026-10-10)
 
@@ -130,9 +134,8 @@ m_WR >= 4 TeV (the neighbouring points' tails raise the curve in its core); Run 
 - `config.yaml: signal_kfactor` maps UL18 and every Run 3 era to the new payloads since 2026-10-10 02:50. Signal
   histograms made before that carry no k-factor shape weight in Run 3 and the Run 2 one in UL18.
 - The config cross sections are `LO x k_point` since 2026-10-10 (UL18 written at 05:35, the five Run 3 eras at
-  06:55; `order` = `LO x k(NLO)`; the skimmed filesets were regenerated and installed, backups under
-  `~/work/skims_v2/`). Run 3 signal histograms made before 06:55 are normalised at LO, 28 to 62 % low; UL18 sets
-  made before 05:35 had cross sections for the 16 AN-19-083 Table 23 points only.
+  06:55; `order` = `LO x k(NLO)`; the skimmed filesets were regenerated and installed). Run 3 signal histograms
+  made before 06:55 are normalised at LO, 28 to 62 % low; UL18 sets made before 05:35 had cross sections for the 16 AN-19-083 Table 23 points only.
 
 ## Open: the official samples have no N -> l t b (parked 2026-10-10)
 
@@ -166,11 +169,9 @@ How to pick it up:
    private grid, which has the events), or document the assumption. Either way the AN must state it.
 3. The same `jj` definition applies to the 2024 private production (same gridpack cards); check its proc_card.
 
-Tooling and records from the 2026-10-10 checks (LPC login node, `~/nobackup/kfactor/`): `test_job136/dec_test.sh`
-(the bwcutoff test, 13.6 TeV WR2000_N100), `test_job13_lhapdf/` (the 2.6.5 route: `go.sh`, `go3.sh`,
-`out/13_WR*`), `lhapdf-6.2.3/` built by `lhapdf_build/build.sh`, gridpack cards under `~/nobackup/provdump/cards/`
-(`off_2000_100`, `priv_2000_100`). Copies of the two scripts: `scripts/signal_kfactor/build_lhapdf.sh` and
-`scripts/signal_kfactor/decay_chain_test.sh`.
+Tooling from the 2026-10-10 checks: `scripts/signal_kfactor/decay_chain_test.sh` (the bwcutoff test, 13.6 TeV
+WR2000_N100) and `scripts/signal_kfactor/build_lhapdf.sh` (the local LHAPDF 6.2.3 of the MG 2.6.5 route). Their
+outputs and the extracted gridpack cards stay in the campaign work area at the LPC.
 
 ## Payloads
 

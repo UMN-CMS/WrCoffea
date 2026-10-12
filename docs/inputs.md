@@ -1,7 +1,7 @@
 # Inputs: dataset configs, cross sections and filesets
 
 What this page answers: where the list of datasets of an era lives, how each MC cross section is
-built and recorded, and how the filesets the analyzer reads are produced. Verified on 2026-10-11.
+built and recorded, and how the filesets the analyzer reads are produced. Verified on 2026-10-12.
 
 ```
 data/configs/<Run3|RunII>/<year>/<era>/<era>_<family>.json      configs: datasets + metadata
@@ -14,8 +14,9 @@ One file per *family*: `data`, `signal`, and one `mc_dy_<variant>` per Drell-Yan
 `nlo_ptll`; the list per era is `dy_variants` in `wrcoffea/config.yaml`). Each MC family holds all
 backgrounds plus one DY variant, so a background sample appears once in every MC file of its era.
 The analyzer reads `lo_ht` unless `--dy` names another variant (`default_mc_tag`). UL16, UL17 and
-UL18 also have a `signal_scan` family (the pre-legacy multi-model scan samples). The 2022 and
-2022EE `nanov15/` sub-folders hold unused NanoAODv15 variants and are not read by any tool.
+UL18 also have a `signal_scan` family (the pre-legacy multi-model scan samples). The `nanov15/`
+sub-folders of the 2022, 2022EE, 2023 and 2023BPix configs hold unused NanoAODv15 variants and are
+not read by any tool.
 
 The analyzer never reads the configs directly: `skim.py plan` copies their metadata into the
 campaign plan, `skim.py fileset` writes it into the skimmed filesets, and
@@ -50,12 +51,12 @@ A data entry has only the naming keys (`das_name`, `run`, `year`, `era`, `datase
 | `das_name` | all | The DAS path, identical to the entry's key. A private sample (not in DBS) uses its `dataset` name for both. |
 | `run`, `year`, `era` | all | `Run3` or `RunII`; the data-taking year; the analysis era (`Run3Summer22`, `Run3Summer22EE`, `Run3Summer23`, `Run3Summer23BPix`, `RunIII2024Summer24`, `RunIII2025Summer25`, `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer20UL17`, `RunIISummer20UL18`). |
 | `dataset` | all | Short name used for outputs and plan keys. MC: the primary dataset name; an extension dataset normally carries the same name and is skimmed and normalised together with the nominal (see below). Data: `<primary dataset>_<run period>`, e.g. `Muon_Run2022C`. |
-| `physics_group` | all | The group the analyzer runs it in: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `Signal`, or the data streams `Muon`, `EGamma` (`SingleMuon`, `SingleElectron` in Run 2 before 2018). |
+| `physics_group` | all | The group the analyzer runs it in: `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `Signal`, or the data streams `Muon`, `EGamma` in every era (the Run 2 `SingleMuon` and `SingleElectron` primary datasets are in `Muon` and `EGamma`). |
 | `datatype` | all | `mc` or `data`. |
 | `xsec` | MC | The cross section in pb that normalises the sample, the only cross-section field the analysis uses. |
 | `order` | MC | The perturbative order `xsec` corresponds to (table below). |
 | `total_uncertainty` | MC | For campaign values: the statistical uncertainty of the generator number scaled like the value, in pb. Not a theory uncertainty, not used by the analyzer. |
-| `xsec_source` | MC (Run 3, UL18) | Provenance of `xsec` from the GenXSecAnalyzer campaign (next section). The other UL eras document theirs in [studies/run2_ul_dataset_report.md](studies/run2_ul_dataset_report.md). |
+| `xsec_source` | MC, every era | Provenance of `xsec` from the GenXSecAnalyzer campaign (next section). The UL campaign: [studies/ul_xsec_campaign.md](studies/ul_xsec_campaign.md). The UL multi-model scan samples have none. |
 | `note` | some | Free text: low-mass companions, edge-era history, scan samples. |
 | `optional` | some | `true` for samples the default selection does not need (the DY `MLL-10to50` companions, reference-only inclusive W+jets). Not skimmed. |
 | `scan` | some (UL) | `true` for the pre-legacy multi-model WR scan samples: skimmed whole and split per `GenModel_*` flag with `skim.py split-scan`. |
@@ -84,9 +85,9 @@ Event IDs repeat across the merged jobs (every job wrote run 1, lumi 1), which n
 | `kfactor` | The ratio applied on top: `reference / (generator × factor)` for ttbar, tW, t-channel; for DY and W+jets the inclusive NNLO reference over the inclusive header of the sample's generator class in its era; 1 otherwise. |
 | `reference`, `reference_source` | The reference cross section the k-factor is computed from, and its order and source. |
 | `normalize` | `reference` (scaled to the reference, the convention) or `generator` (generator × factor). |
-| `status`, `kept_value`, `reason` | No GenXSecAnalyzer value (MiniAOD on tape only): the earlier config value was kept. |
 | `copied_from` | Official signal whose MiniAOD could not be read in this era: the generator value measured on the same primary dataset in the nearest sibling UL era (the UL campaigns share the 13 TeV gridpacks), or, failing that, on the other-flavour sample of the same mass point (same gridpack parameters; the two flavours' values agree to about 1 %). The note names the donor; `generator`, `release` and `events_run` are the donor's. |
-| `jobs`, `compared_to` | Private samples: the cross section is the per-event `LHEWeight_originalXWGTUP` times the events of each generator job, averaged over the complete jobs; `compared_to` is the same point in a reference config. |
+| `jobs`, `compared_to` | Written by `scripts/private_signal_config.py` for a private sample: the cross section is the per-event `LHEWeight_originalXWGTUP` times the events of each generator job, averaged over the complete jobs; `compared_to` is the same point in a reference config. `genxsec_campaign.py apply` replaces that record when it applies the signal k-factor, so no current entry carries them. |
+| `base_source` | Signal scaled by its k-factor without a GenXSecAnalyzer measurement (the 2024 private samples): where the LO value the k-factor multiplies comes from (the private production's LHE header, or an LO value already in the config). |
 
 ## How `xsec` is built
 
@@ -106,10 +107,11 @@ xsec = generator × factor × kfactor
   is `LO x k(NNLO)` or `NLO x k(NNLO)`.
 - **ttbar, tW, t-channel**: the inclusive reference × branching fraction (the generator value
   cancels): ttbar 923.6 pb (NNLO+NNLL), tW 43.95 pb per charge (NLO+NNLL), t-channel 145.0 (top) and
-  87.2 pb (antitop) (NNLO, 5FS), 13.6 TeV, m_t = 172.5 GeV. 13 TeV values in the UL report.
+  87.2 pb (antitop) (NNLO, 5FS), 13.6 TeV, m_t = 172.5 GeV. 13 TeV values:
+  [studies/ul_xsec_campaign.md](studies/ul_xsec_campaign.md).
 - **WW, WZ, ZZ** (inclusive Pythia 8, 2026-10-08): the MATRIX NNLO QCD × NLO EW references quoted by
-  the first Run 3 measurements, WW 125.8 pb, WZ 54.7 pb, ZZ 16.7 pb. Run 2 UL keeps WW 118.7 (NNLO),
-  WZ 47.13 and ZZ 16.523 pb (NLO).
+  the first Run 3 measurements, WW 125.8 pb, WZ 54.7 pb, ZZ 16.7 pb. Run 2 UL (2026-10-10): the
+  13 TeV NNLO references quoted by the CMS 13 TeV measurements, WW 118.8 pb, WZ 50.7 pb, ZZ 16.5 pb.
 - **LO MLM W+jets** (2026-10-10): generator × k with k = the inclusive NNLO W→ℓν cross section over
   the inclusive LO MLM header of the era (13.6 TeV MATRIX 63650.1 pb for three flavours; 13 TeV FEWZ
   61526.7 pb), the DY construction. The inclusive `WtoLNu-4Jets` / `WJetsToLNu` samples stay in the
@@ -131,7 +133,7 @@ xsec = generator × factor × kfactor
 | `LO x k(NLO)` | LO scaled by an NLO/LO k-factor. | signal (per-point direct k) |
 | `LO x k(NNLO)` | LO scaled by an NNLO/LO k-factor. | LO MLM DY and W+jets (inclusive and every bin) |
 | `NLO x k(NNLO)` | NLO scaled by an NNLO/NLO k-factor. | DY amcatnloFXFX and POWHEG |
-| `unknown` | No value, or a value whose provenance the rules cannot read. | some UL16/UL16APV/UL17 drafts |
+| `unknown` | No value, or a value whose provenance the rules cannot read. | none in the current configs |
 
 **Extension datasets.** An extension (`..._ext1-vN`) is more events of the same sample, so nominal
 and extension share one cross section divided by the generator-weight sum of both. With the same
@@ -153,8 +155,11 @@ The skim campaign writes them from the campaign plan and the part sidecars
 ([skimming.md](skimming.md)):
 
 ```bash
-python3 bin/skim.py fileset --plan-dir plans/v2 --out ~/work/skims_v2 --era RunIII2024Summer24
+python3 bin/skim.py fileset --plan-dir <campaign root>/plans/v2 --out <campaign root> --era RunIII2024Summer24
 ```
+
+The plan (`plan.json`, written by `skim.py plan`) and the part sidecars are not in the
+repository: they sit in the campaign root, `--out` (the default is Billy's).
 
 - **Files**: the skims_v2 parts at Wisconsin,
   `root://cmsxrootd.hep.wisc.edu//store/user/wijackso/WRAnalyzer/skims_v2/...` (`--local` points at
@@ -169,6 +174,9 @@ python3 bin/skim.py fileset --plan-dir plans/v2 --out ~/work/skims_v2 --era RunI
   the plan; after a config change run `bin/skim.py refresh-metadata --plan-dir ...` first.
 - **Output**: one file per family under `data/filesets/` (`--fileset-dir` overrides). Every active
   skimmed fileset of UL16APV, UL16, UL17, UL18 and 2022 to 2024 points at skims_v2; 2025 has no skims yet.
+- **Data-only eras**: for `RunIII2025Summer25` (`mc_alias` in `config.yaml`) `skim.py fileset`
+  writes the MC filesets from the 2024 configs and skims, with the era rewritten and
+  `skims_from_era` recording the source.
 
 ## Unskimmed filesets
 
@@ -191,7 +199,8 @@ python3 bin/skim.py unskimmed-fileset --era Run3Summer22 --family data signal
 - An `optional` dataset without valid files is skipped with a warning; a required one stops the
   run. The `signal_scan` families are left out (the scan samples are split only when skimmed).
 - Rerunning overwrites the files deterministically; a `git diff` then shows what changed in DAS.
-- `RunIII2025Summer25` is data-only: its MC filesets are the 2024 ones (`mc_alias` in `config.yaml`).
+- `unskimmed-fileset` does not apply `mc_alias`: for the data-only `RunIII2025Summer25` it writes
+  only the data fileset, so there is no unskimmed 2025 MC fileset.
 
 ```bash
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --unskimmed --dy lo_inc
