@@ -1627,18 +1627,21 @@ class WrAnalysis(processor.ProcessorABC):
     def _apply_shape_variation(events, source, direction):
         """Return events with shifted kinematics for shape *source*.
 
-        Jet variations swap pt and mass; lepton variations swap pt only.
-        Uses ``ak.with_field`` so the original events are not mutated.
+        Every ``pt``/``mass``/``msoftdrop`` variation the collection carries
+        for the source is swapped in: jets swap pt and mass (and the AK8
+        soft-drop mass where the subjet recipe moved it), leptons pt, the jet
+        mass sources m_SD only.  Uses ``ak.with_field`` so the original events
+        are not mutated.
         """
-        pt_field = source.variation_field(direction)
-        mass_field = pt_field.replace("pt_", "mass_", 1)
+        primary = source.variation_field(direction)
+        suffix = primary.split("_", 1)[1]
         for coll_name in source.objects:
             coll = getattr(events, coll_name, None)
-            if coll is None or pt_field not in coll.fields:
+            if coll is None or primary not in coll.fields:
                 continue
-            coll = ak.with_field(coll, coll[pt_field], "pt")
-            if mass_field in coll.fields:
-                coll = ak.with_field(coll, coll[mass_field], "mass")
+            for kin in ("pt", "mass", "msoftdrop"):
+                if f"{kin}_{suffix}" in coll.fields:
+                    coll = ak.with_field(coll, coll[f"{kin}_{suffix}"], kin)
             if isinstance(events, ak.Array):
                 events = ak.with_field(events, coll, coll_name)
             else:
@@ -1846,7 +1849,7 @@ class WrAnalysis(processor.ProcessorABC):
         
         # JEC/JER always; JER and JES up/down kinematics only when requested.
         events = apply_jet_corrections(
-            events, mc_campaign, is_mc, variations=self._enabled_systs & {"jer", "jes"},
+            events, mc_campaign, is_mc, variations=self._enabled_systs & {"jer", "jes", "jms", "jmr"},
         )
 
         # print("--- JEC VERIFICATION (First 10 events) ---")

@@ -1121,6 +1121,7 @@ logger = logging.getLogger(__name__)
 ELECTRON_SMEAR_SALT = 11
 JER_SALT_AK4 = 4
 JER_SALT_AK8 = 8
+JER_SALT_SUBJET = 5
 
 
 @lru_cache(maxsize=None)
@@ -1436,8 +1437,10 @@ def _gen_jet_match(jets, gen_idx, genjets, max_dr):
     return genpt, matched
 
 
-def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, events, ceval, tag, algo, sys_var="nom"):
-    """Returns smeared pt and mass without modifying the original jet collection"""
+def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, events, ceval, tag, algo, sys_var="nom",
+                            salt=None):
+    """Returns smeared pt and mass without modifying the original jet collection.  *salt* picks the random
+    stream (default: the AK4 or AK8 one by *algo*)."""
     if ak.sum(ak.num(jets)) == 0:
         return pt_to_smear, mass_to_smear
 
@@ -1460,7 +1463,8 @@ def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, ev
     # One standard-normal draw per jet: the same jet gets the same draw in the nominal and in every
     # JES/JER variation, and the jets of an event get independent draws (object_normal_draws).
     counts = ak.num(jets, axis=1)
-    salt = JER_SALT_AK8 if algo.upper().startswith("AK8") else JER_SALT_AK4
+    if salt is None:
+        salt = JER_SALT_AK8 if algo.upper().startswith("AK8") else JER_SALT_AK4
     rand = ak.unflatten(object_normal_draws(events, jets, salt), counts)
     cjer_unmatch = 1 + rand * sigma * np.sqrt(np.maximum(sf_val**2 - 1, 0))
 
@@ -1525,142 +1529,179 @@ def _apply_jec(jets, events, ceval, tag, algo, isMC):
     jets = ak.with_field(jets, mass_final, "mass")
     return jets
 
-def _correct_subjets(subjets, events, ceval, tag, algo, isMC):
-    if "Rho" in events.fields:
-        rho = events.Rho.fixedGridRhoFastjetAll    # Run 3 schema                                                                                                           
-    elif "fixedGridRhoFastjetAll" in events.fields:
-        rho = events.fixedGridRhoFastjetAll
-    else:
-        return subjets
+# Soft-drop mass, JME jet mass recommendation (JMAR page, 2026-10-12): for all eras, apply the AK4 JEC and JER
+# to both soft-drop subjets (AK4 PUPPI jets) and take m_SD = mass(p1 + p2); propagate JES and JER through both
+# subjets; residual JMS (1 +- 0.01) m_SD; residual JMR: the m_SD resolution width +- 2 %, without moving the
+# mass scale.  2024-2026 provisional; validated for 50 <= m_SD < 300 GeV and pT >= 100 GeV.
+SUBJET_JEC_ALGO = "AK4PFPuppi"
+SUBJET_GEN_MAX_DR = 0.2          # R/2 of the AK4 JER matching
+JMS_UNC = 0.01
+JMR_UNC = 0.02
 
-    #rho = events.Rho.fixedGridRhoFastjetAll
-    # Raw quantities
+
+def _event_rho(events):
+    if "Rho" in events.fields:
+        return events.Rho.fixedGridRhoFastjetAll
+    if "fixedGridRhoFastjetAll" in events.fields:
+        return events.fixedGridRhoFastjetAll
+    return None
+
+
+def has_subjet_jec(era):
+    """Does *era*'s AK4 JERC payload carry the AK4 PUPPI corrections the subjets need?  (The UL payloads hold
+    AK4PFchs only.)"""
+    cfg = JERC_JSONS[era]["JERC_AK4"]
+    return _has_correction(_get_ceval(cfg["json"]), f"{cfg['tag_MC']}_L2Relative_{SUBJET_JEC_ALGO}")
+
+
+def _correct_subjets(subjets, events, ceval, tag, algo, isMC):
+    """AK4 JEC of the soft-drop subjets: the production JEC is undone with each subjet's own ``rawFactor`` and
+    L1FastJet x L2Relative (x L2L3Residual on data) applied to the raw pT, as _apply_jec does for the AK4
+    jets.  No subjet is dropped: ``FatJet_subJetIdx1/2`` index this collection.
+
+    NanoAODv9 and v12 store no ``SubJet_area``.  Only L1FastJet reads it; without it that level is skipped,
+    which is exact for a PUPPI payload, whose L1FastJet is 1 (checked on the chunk's subjets)."""
+    rho = _event_rho(events)
+    if rho is None:
+        return subjets
     pt_raw = subjets.pt * (1 - subjets.rawFactor)
     mass_raw = subjets.mass * (1 - subjets.rawFactor)
-    
-    # Initialize final arrays with raw values to accumulate into
-    pt_final = pt_raw
-    mass_final = mass_raw
-
-    # Unify MC and Data tag iteration
-    unique_tags = set(ak.to_list(tag)) if not isMC else [tag if isinstance(tag, str) else tag[0]]
-    
-    # Filter out empty tags and 'none' so we only look at real keys
-    valid_tags = [t for t in unique_tags if t not in ["", "none"]]
-
-    if len(valid_tags) > 0:
-        for t in valid_tags:
-            
-            # 1. L1 FastJet
-            l1_key = f"{t}_L1FastJet_{algo}"
-            if _has_correction(ceval, l1_key):
-                # _safe_eval is smart enough to extract area, eta, etc., from subjets natively!
+    pt_final, mass_final = pt_raw, mass_raw
+    tags = [tag if isinstance(tag, str) else tag[0]] if isMC else sorted(set(ak.to_list(tag)) - {"", "none"})
+    for t in tags:
+        c1 = 1.0
+        l1_key = f"{t}_L1FastJet_{algo}"
+        if _has_correction(ceval, l1_key):
+            if "area" in subjets.fields:
                 c1 = _safe_eval(ceval[l1_key], subjets, events, pt_raw, rho)
             else:
-                c1 = 1.0
-                
-            pt1 = pt_raw * c1
-            m1 = mass_raw * c1
-
-            # 2. L2 Relative
-            l2_key = f"{t}_L2Relative_{algo}"
-            if _has_correction(ceval, l2_key):
-                c2 = _safe_eval(ceval[l2_key], subjets, events, pt1, rho)
-            else:
-                c2 = 1.0
-                
-            pt2 = pt1 * c2
-            m2 = m1 * c2
-            
-            # # 3. L3 Absolute (Commented out as in apply_jec)
-            # l3_key = f"{t}_L3Absolute_{algo}"
-            # if _has_correction(ceval, l3_key):
-            #     c3 = _safe_eval(ceval[l3_key], subjets, events, pt2, rho)
-            # else:
-            #     c3 = 1.0
-                
-            # pt3 = pt2 * c3
-            # m3 = m2 * c3
-
-            # 4. Residuals
-            res_key = f"{t}_L2L3Residual_{algo}"
-            if not isMC:
-                if _has_correction(ceval, res_key):
-                    # Notice we pass pt2 here since L3 is commented out
-                    c4 = _safe_eval(ceval[res_key], subjets, events, pt2, rho)
-                else:
-                    c4 = 1.0
-            else:
-                c4 = 1.0
-
-            pt_out = pt2 * c4
-            m_out = m2 * c4
-            
-            # 5. Masking and Accumulation
-            if isMC:
-                pt_final = pt_out
-                mass_final = m_out
-            else:
-                # Create a nested mask matching the subjets collection dimensions
-                subjet_mask = (tag == t) & ak.ones_like(subjets.pt, dtype=bool)
-                
-                # Accumulate the correctly matched subjets
-                pt_final = ak.where(subjet_mask, pt_out, pt_final)
-                mass_final = ak.where(subjet_mask, m_out, mass_final)
-
-    else:
-        # If there are no valid tags, just assign the uncorrected arrays
-        pt_final = pt_raw
-        mass_final = mass_raw
-
-    # Update fields and return the updated subjets collection
+                for area in (0.0, 0.5):
+                    probe = ak.with_field(subjets, ak.full_like(subjets.pt, area), "area")
+                    l1 = np.asarray(ak.flatten(_safe_eval(ceval[l1_key], probe, events, pt_raw, rho), axis=None))
+                    if not np.allclose(l1, 1.0):
+                        raise RuntimeError(
+                            f"{l1_key} is not 1 and the input has no SubJet_area, so the subjet JEC "
+                            "cannot be applied."
+                        )
+        pt1, m1 = pt_raw * c1, mass_raw * c1
+        l2_key = f"{t}_L2Relative_{algo}"
+        c2 = _safe_eval(ceval[l2_key], subjets, events, pt1, rho)
+        pt2, m2 = pt1 * c2, m1 * c2
+        res_key = f"{t}_L2L3Residual_{algo}"
+        c4 = _safe_eval(ceval[res_key], subjets, events, pt2, rho) if (not isMC and _has_correction(ceval, res_key)) else 1.0
+        if isMC:
+            pt_final, mass_final = pt2 * c4, m2 * c4
+        else:
+            in_era = (tag == t) & ak.ones_like(subjets.pt, dtype=bool)
+            pt_final = ak.where(in_era, pt2 * c4, pt_final)
+            mass_final = ak.where(in_era, m2 * c4, mass_final)
     subjets = ak.with_field(subjets, pt_final, "pt")
-    subjets = ak.with_field(subjets, mass_final, "mass")
-    
-    return subjets
+    return ak.with_field(subjets, mass_final, "mass")
 
-def _recompute_softdrop(events):
-    fatjets = events.FatJet
-    subjets = events.SubJet
 
-    base_mass = fatjets.msoftdrop if "msoftdrop" in fatjets.fields else fatjets.mass
-    
-    # 1. Define the mask
-    has_subjets = (fatjets.subJetIdx1 >= 0) & (fatjets.subJetIdx2 >= 0)
+def _subjet_gen_index(subjets, events):
+    """Index into ``SubGenJetAK8`` of each subjet's gen subjet: NanoAOD's ``SubJet_subGenJetAK8Idx`` where it
+    exists (v15), otherwise the nearest gen subjet in dR (v9, v12); -1 when there is none.  The dR < R/2
+    condition is _gen_jet_match's."""
+    if "subGenJetAK8Idx" in subjets.fields:
+        return subjets.subGenJetAK8Idx
+    gen = events.SubGenJetAK8
+    pairs = ak.cartesian({"j": subjets, "g": gen}, axis=1, nested=True)
+    dphi = (pairs.j.phi - pairs.g.phi + np.pi) % (2 * np.pi) - np.pi
+    dr2 = (pairs.j.eta - pairs.g.eta) ** 2 + dphi ** 2
+    return ak.fill_none(ak.argmin(dr2, axis=2), -1)
 
-    # 2. Use ak.mask to keep the shape consistent (249054 * var)
-    # This ensures idx1 has the same length as fatjets, with None where has_subjets is False
-    idx1 = ak.mask(fatjets.subJetIdx1, has_subjets)
-    idx2 = ak.mask(fatjets.subJetIdx2, has_subjets)
 
-    # 3. Indexing with a mask propagates the None values
-    
-    sj1 = subjets[idx1]
-    sj2 = subjets[idx2]
-    sj1_vec = ak.zip({"pt": sj1.pt, "eta": sj1.eta, "phi": sj1.phi, "mass": sj1.mass}, with_name="PtEtaPhiMLorentzVector")
-    sj2_vec = ak.zip({"pt": sj2.pt, "eta": sj2.eta, "phi": sj2.phi, "mass": sj2.mass}, with_name="PtEtaPhiMLorentzVector")
-    
-    # Adding vectors handles all the px, py, pz, E math in optimized C++
-    mass_new = (sj1_vec + sj2_vec).mass
-    # # 4. Math operations automatically ignore None and return None at those positions
-    # px = sj1.pt * np.cos(sj1.phi) + sj2.pt * np.cos(sj2.phi)
-    # py = sj1.pt * np.sin(sj1.phi) + sj2.pt * np.sin(sj2.phi)
-    # pz = sj1.pt * np.sinh(sj1.eta) + sj2.pt * np.sinh(sj2.eta)
+def _fatjet_subjet_pair(fatjets, n_subjets):
+    """(idx1, idx2, has_both) of each AK8 jet; an index is unusable when negative or out of range."""
+    i1, i2 = fatjets.subJetIdx1, fatjets.subJetIdx2
+    has = (i1 >= 0) & (i2 >= 0) & (i1 < n_subjets) & (i2 < n_subjets)
+    return ak.mask(i1, has), ak.mask(i2, has), has
 
-    # e1 = np.sqrt((sj1.pt*np.cosh(sj1.eta))**2 + sj1.mass**2)
-    # e2 = np.sqrt((sj2.pt*np.cosh(sj2.eta))**2 + sj2.mass**2)
 
-    # # mass_new now has the same shape as fatjets, but with None where there are no subjets
-    # mass_new = np.sqrt(np.maximum((e1 + e2)**2 - px**2 - py**2 - pz**2, 0))
-    mass_new = ak.values_astype(mass_new, "float32")
-    base_mass = ak.values_astype(base_mass, "float32")
-    # 5. Fill the Nones in mass_new with the original base_mass values
-    # ak.fill_none is often cleaner than ak.where for this specific pattern
-    updated_msoftdrop = ak.where(has_subjets, mass_new, base_mass)
-    # updated_msoftdrop = ak.fill_none(mass_new, base_mass)
-    updated_msoftdrop = ak.to_packed(updated_msoftdrop)
-    # Return the updated fatjets record
-    return ak.with_field(fatjets, updated_msoftdrop, "msoftdrop")
+def _pair_mass(a, b):
+    """Invariant mass of two (pt, eta, phi, mass) records."""
+    px = a.pt * np.cos(a.phi) + b.pt * np.cos(b.phi)
+    py = a.pt * np.sin(a.phi) + b.pt * np.sin(b.phi)
+    pz = a.pt * np.sinh(a.eta) + b.pt * np.sinh(b.eta)
+    e = (np.sqrt((a.pt * np.cosh(a.eta)) ** 2 + a.mass ** 2)
+         + np.sqrt((b.pt * np.cosh(b.eta)) ** 2 + b.mass ** 2))
+    return np.sqrt(np.maximum(e ** 2 - px ** 2 - py ** 2 - pz ** 2, 0.0))
+
+
+def _softdrop_mass(fatjets, subjets, sj_pt, sj_mass):
+    """m_SD = mass(p1 + p2) of each AK8 jet's two soft-drop subjets with the given subjet pT and mass;
+    NanoAOD's ``msoftdrop`` for a jet without two usable subjets."""
+    i1, i2, has = _fatjet_subjet_pair(fatjets, ak.num(subjets.pt))
+    sj = ak.zip({"pt": sj_pt, "eta": subjets.eta, "phi": subjets.phi, "mass": sj_mass})
+    m = ak.fill_none(_pair_mass(sj[i1], sj[i2]), 0.0)
+    return ak.to_packed(ak.values_astype(ak.where(has, m, fatjets.msoftdrop), "float32"))
+
+
+def _gen_softdrop_mass(fatjets, subjets, events):
+    """Generator-level m_SD of each AK8 jet, from the gen subjets matched to its two subjets (dR < R/2);
+    None where a subjet has no match."""
+    gen = events.SubGenJetAK8
+    idx = _subjet_gen_index(subjets, events)
+    _, matched = _gen_jet_match(subjets, idx, gen, max_dr=SUBJET_GEN_MAX_DR)
+    safe = ak.where(matched, idx, 0)
+    g = ak.pad_none(gen, 1, axis=1)[safe]
+    g = ak.zip({"pt": g.pt, "eta": g.eta, "phi": g.phi, "mass": g.mass, "ok": matched})
+    i1, i2, has = _fatjet_subjet_pair(fatjets, ak.num(subjets.pt))
+    g1, g2 = g[i1], g[i2]
+    return ak.mask(_pair_mass(g1, g2), has & ak.fill_none(g1.ok & g2.ok, False))
+
+
+def _softdrop_from_subjets(fatjets, events, ceval, tag, cfg, isMC, variations):
+    """``FatJet`` with ``msoftdrop`` from the AK4-corrected (and, on MC, smeared) subjets, and on MC the
+    requested JER / JES variations of it as ``msoftdrop_<var>_{up,down}``: each varies both subjets with the
+    same nuisance as the jets (JES: the AK4 PUPPI uncertainty of the source of ``jes_unc_mapping``)."""
+    algo = SUBJET_JEC_ALGO
+    subjets = _correct_subjets(events.SubJet, events, ceval, tag, algo, isMC)
+    pt_jec, mass_jec = subjets.pt, subjets.mass
+    if not isMC:
+        return ak.with_field(fatjets, _softdrop_mass(fatjets, subjets, pt_jec, mass_jec), "msoftdrop")
+
+    genpt, matched = _gen_jet_match(subjets, _subjet_gen_index(subjets, events), events.SubGenJetAK8,
+                                    max_dr=SUBJET_GEN_MAX_DR)
+
+    def msd(pt, mass, sys_var="nom"):
+        pt_s, mass_s = _get_smeared_kinematics(subjets, pt, mass, genpt, matched, events, ceval, cfg["JR_tag_MC"],
+                                               algo, sys_var=sys_var, salt=JER_SALT_SUBJET)
+        return _softdrop_mass(fatjets, subjets, pt_s, mass_s)
+
+    out = ak.with_field(fatjets, msd(pt_jec, mass_jec), "msoftdrop")
+    if "jer" in variations:
+        for d in ("up", "down"):
+            out = ak.with_field(out, msd(pt_jec, mass_jec, d), f"msoftdrop_jer_{d}")
+    if "jes" in variations:
+        for cat_name, source_name in cfg.get("jes_unc_mapping", {}).items():
+            key = f"{tag}_{source_name}_{algo}"
+            if not _has_correction(ceval, key):
+                raise KeyError(f"JES source '{source_name}' has no {algo} uncertainty ('{key}') for the subjets")
+            shift = ceval[key].evaluate(subjets.eta, pt_jec)
+            for d, sign in (("up", 1.0), ("down", -1.0)):
+                c = 1.0 + sign * shift
+                out = ak.with_field(out, msd(pt_jec * c, mass_jec * c), f"msoftdrop_{cat_name}_{d}")
+    return out
+
+
+def _jet_mass_variations(fatjets, events, variations):
+    """Residual JMS and JMR of the soft-drop mass (MC): ``msoftdrop_jms_{up,down}`` = (1 +- JMS_UNC) m_SD;
+    ``msoftdrop_jmr_{up,down}`` widens / narrows the m_SD response by JMR_UNC around the generator m_SD,
+    m_gen + (m - m_gen)(1 +- JMR_UNC), so the scale stays (jets whose subjets have no gen match keep m_SD)."""
+    m = fatjets.msoftdrop
+    if "jms" in variations:
+        for d, sign in (("up", 1.0), ("down", -1.0)):
+            fatjets = ak.with_field(fatjets, ak.values_astype(m * (1.0 + sign * JMS_UNC), "float32"), f"msoftdrop_jms_{d}")
+    if "jmr" in variations:
+        m_gen = _gen_softdrop_mass(fatjets, events.SubJet, events)
+        for d, sign in (("up", 1.0), ("down", -1.0)):
+            m_var = ak.where(ak.is_none(m_gen, axis=-1), m,
+                             ak.fill_none(m_gen + (m - m_gen) * (1.0 + sign * JMR_UNC), 0.0))
+            m_var = ak.values_astype(np.maximum(m_var, 0.0), "float32")
+            fatjets = ak.with_field(fatjets, ak.to_packed(m_var), f"msoftdrop_jmr_{d}")
+    return fatjets
 
 
 #: Which AK8 soft-drop mass the selection cuts on.  "corrected" (the default) is
@@ -1709,10 +1750,16 @@ def apply_jet_corrections(events, era, isMC, variations=()):
       - ``"jer"``: JER scale-factor up/down (``pt_jer_up`` ...)
       - ``"jes"``: each source in the era's ``jes_unc_mapping``
         (``pt_CMS_scale_j_Total_up`` ...)
+      - ``"jms"``, ``"jmr"``: the residual soft-drop mass scale and resolution
+        (``msoftdrop_jms_up`` ...; FatJet only)
     Nothing is computed for variations that are not requested.
 
-    For an era whose ``ak8_msoftdrop_mode`` is ``"raw"``, ``FatJet.msoftdrop``
-    is replaced by the soft-drop mass of the uncorrected input subjets.
+    ``FatJet.msoftdrop`` follows the JME jet mass recommendation where the AK4
+    JERC payload has AK4 PUPPI corrections (Run 3): the subjets get the AK4 JEC
+    and, on MC, the AK4 JER, and m_SD is their summed mass; JER and JES also
+    vary it (``msoftdrop_jer_up`` ...).  Without them (UL) NanoAOD's m_SD is
+    kept.  For an era whose ``ak8_msoftdrop_mode`` is ``"raw"``, ``msoftdrop``
+    is the soft-drop mass of the uncorrected input subjets instead.
     """
     msd_mode = ak8_msoftdrop_mode(era)
     input_subjets = events.SubJet if "SubJet" in events.fields else None
@@ -1836,22 +1883,24 @@ def apply_jet_corrections(events, era, isMC, variations=()):
                         fatjets = ak.with_field(fatjets, mass_final, f"mass_{cat_name}_{jes_dir}")
 
     # ==========================================
-    # STEP 3: Correct Subjets
+    # STEP 3: Soft-drop mass (JME jet mass recommendation)
     # ==========================================
     events = ak.with_field(events, jets, "Jet")
-    events = ak.with_field(events, fatjets, "FatJet")
-    
-    if "SubJet" in events.fields and "area" in events.SubJet.fields:
-        subjets = _correct_subjets(events.SubJet, events, cevalAK8, tagAK8, algoAK8, isMC)
-        events = ak.with_field(events, subjets, "SubJet")
-        fatjets = _recompute_softdrop(events)
-        events = ak.with_field(events, fatjets, "FatJet")
-
     if msd_mode == "raw":
-        fatjets = ak.with_field(events.FatJet, _raw_softdrop_mass(events.FatJet, input_subjets), "msoftdrop")
-        events = ak.with_field(events, fatjets, "FatJet")
-
-    return events
+        fatjets = ak.with_field(fatjets, _raw_softdrop_mass(fatjets, input_subjets), "msoftdrop")
+    elif input_subjets is not None and "rawFactor" in input_subjets.fields and has_subjet_jec(era):
+        fatjets = _softdrop_from_subjets(fatjets, events, cevalAK4, tagAK4, cfgAK4, isMC, variations)
+    else:
+        key = f"subjet_jec::{era}"
+        if key not in _WARN_ONCE:
+            _WARN_ONCE.add(key)
+            logger.warning(
+                "Era '%s': no %s JEC in the AK4 JERC payload (or no SubJet collection); FatJet.msoftdrop is "
+                "NanoAOD's and the JES/JER variations do not move it.", era, SUBJET_JEC_ALGO,
+            )
+    if isMC and ({"jms", "jmr"} & set(variations)):
+        fatjets = _jet_mass_variations(fatjets, events, variations)
+    return ak.with_field(events, fatjets, "FatJet")
 
 
 def lsf_sf(era, jet_lepton_flavor, n_events):

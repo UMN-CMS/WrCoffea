@@ -63,8 +63,14 @@ scale and smearing corrections ([corrections.md](corrections.md)).
 | AK4 jet | pT > 40 GeV, \|η\| < 2.4, tight ID with lepton veto (2024 and 2025: the correctionlib `jetid.json`, NanoAODv15 having no `jetId` branch; 2022 and 2023: the JME repair of the NanoAODv12 `jetId`, whose lepton-veto bit is wrong: the Tight bit with muEF < 0.8 and chEmEF < 0.8 for \|η\| ≤ 2.7, since 2026-10-12; UL: the lepton-veto bit); CHS in UL, Puppi in Run 3. The jet veto maps use the same ID |
 | AK8 jet | pT > 200 GeV, \|η\| < 2.4, tight ID, soft-drop mass > 40 GeV; the SR and flavour-CR jet also needs `lsf3 > 0.75` |
 
-Notes on the AK8 jet. The soft-drop mass cut uses NanoAOD's JEC-corrected `msoftdrop` by default.
-An optional per-era key `ak8_msoftdrop_mode` (`corrected` or `raw`, read by
+Notes on the AK8 jet. The soft-drop mass follows the JME jet mass recommendation where the payloads
+allow it (Run 3, since 2026-10-12; `_softdrop_from_subjets` in `scale_factors.py`): the two soft-drop
+subjets get the AK4 PUPPI JEC from their raw momenta and, on MC, the AK4 JER (gen subjets matched
+within ΔR < 0.2), and m_SD is the mass of their sum; a jet without two subjets keeps NanoAOD's value.
+UL keeps NanoAOD's `msoftdrop`, as the UL JERC payloads carry no AK4 PUPPI corrections. On 2023 DY
+the AK4 JEC alone reproduces NanoAOD's m_SD to 0.05 % and the JER adds a spread of about 1.6 %; on
+2024 signal m_SD is about 1 % below NanoAOD's (newer JEC). The m_SD > 40 GeV cut moves by less than
+0.2 % of the jets. An optional per-era key `ak8_msoftdrop_mode` (`corrected` or `raw`, read by
 `scale_factors.ak8_msoftdrop_mode`; an era without an entry is `corrected`) switches to the mass of
 the uncorrected subjets, which is what Run 2 cut on. `config.yaml` sets it for no era today; a study
 can set it through `WRCOFFEA_CONFIG_OVERLAY`. The choice accounts for about 9 % of the UL18 boosted
@@ -206,7 +212,8 @@ templates. Variations are written as `syst_<label lower>_<region>` folders.
 | `prefire` | L1Prefiring | weight | the NanoAOD `L1PreFiringWeight` (UL only) |
 | `sf` | MuonRecoSf, MuonIdSf, MuonIsoSf, MuonTrigSf, LooseMuonRecoSf, LooseMuonIdSf, ElectronRecoSf, ElectronIdSf, ElectronTrigSf, LooseElectronRecoSf | weight | each lepton scale-factor component, only in the regions it enters |
 | `lsf` | LsfSf | weight | the LSF scale factor (boosted SR and flavour CRs) |
-| `jer`, `jes` | JER, JES (the `Total` source) | shape | jet energy resolution and scale; the selection and the masses are recomputed |
+| `jer`, `jes` | JER, JES (the `Total` source) | shape | jet energy resolution and scale; the selection and the masses are recomputed (Run 3: the AK8 soft-drop mass too, through both subjets) |
+| `jms`, `jmr` | JMS, JMR | shape | the residual soft-drop mass scale, (1 ± 0.01) m_SD, and resolution, m_gen + (m_SD − m_gen)(1 ± 0.02) with m_gen from the matched gen subjets (jets without a match unchanged); they move the m_SD > 40 GeV cut of the boosted regions (JME jet mass recommendation, validated for 50 ≤ m_SD < 300 GeV and pT ≥ 100 GeV) |
 | `elescale`, `elesmear` | EleScale, EleSmear | shape | electron energy scale and resolution (Run 3) |
 | `muscale`, `musmear` | MuScale, MuSmear | shape | muon momentum scale and resolution (2022 to 2024: the high-pT recipe; UL and 2025: a scale placeholder and no `musmear`, see open items) |
 | `dyzpt` | DYZptQcdScale, DYZptQcdPdf, DYZptQcdAlphaS, DYZptEw1, DYZptEw2, DYZptEw3 | weight | the Z-pT reweight's QCD and EW uncertainties (DY only) |
@@ -220,7 +227,7 @@ What each era can produce (2026-10-12; from the registry and the payloads of
 
 | Family | UL16APV, UL16, UL17, UL18 | 2022, 2022EE, 2023, 2023BPix | 2024 | 2025 |
 | --- | --- | --- | --- | --- |
-| `lumi`, `pileup`, `sf`, `jer`, `jes`, `dyzpt`, `lsf`, `scale`, `pdf` | yes | yes | yes | yes |
+| `lumi`, `pileup`, `sf`, `jer`, `jes`, `jms`, `jmr`, `dyzpt`, `lsf`, `scale`, `pdf` | yes | yes | yes | yes |
 | `muscale` | placeholder (TuneP, a 5 %/TeV × pT shift of both charges) | yes (the high-pT recipe) | yes | placeholder |
 | `musmear` | no (no high-pT muon payload: the variation would be a copy of the nominal) | yes | yes | no |
 | `prefire` | yes | no (no prefiring in Run 3) | no | no |
@@ -265,6 +272,12 @@ Decisions and measurements still outstanding, with the date they were last looke
   (2026-10-11).
 - **Soft-drop mass definition.** Corrected (default) versus the raw subjet mass Run 2 used, about
   9 % of the UL18 boosted DY CR (2026-10-10).
+- **Soft-drop mass in UL.** The JME recipe needs the AK4 PUPPI JEC and JER, which the UL JERC
+  payloads do not carry (the JEC and JR databases have them as text files); UL keeps NanoAOD's m_SD,
+  and JES and JER do not move it there (2026-10-12).
+- **Jet mass uncertainties below their validated range.** JMS and JMR are validated for
+  50 ≤ m_SD < 300 GeV; our cut sits at 40 GeV, so their size there is an extrapolation
+  (2026-10-12).
 - **Official signal samples have no N → ℓtb.** The official gridpacks' `jj` excludes the top and the N
   width counts only the generated channels, so for m_N above a few hundred GeV the samples put the
   full rate into ℓℓ + light jets while about a third should go to ℓtb; parked (2026-10-10).

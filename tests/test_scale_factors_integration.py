@@ -1212,10 +1212,40 @@ class TestRawSoftdropMass:
         got = ak.to_list(sf._raw_softdrop_mass(events.FatJet, events.SubJet))
         assert got[0] == pytest.approx([two, 9.0, 0.0], rel=1e-5)
 
-    def test_corrected_mode_keeps_nanoaod_msoftdrop(self, monkeypatch):
+    def test_corrected_mode_follows_the_jme_recipe(self, monkeypatch):
+        """Run 3 data: a jet with two subjets gets m_SD from the subjets with the production JEC undone and the
+        AK4 PUPPI L2Relative x L2L3Residual applied (L1 is 1 for PUPPI; these subjets have no area, as in
+        NanoAODv12); a jet without two subjets keeps NanoAOD's m_SD."""
+        vector = pytest.importorskip("vector")
         monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {})
-        out = sf.apply_jet_corrections(_make_subjet_events(), self.ERA, False)
+        events = _make_subjet_events()
+        out = sf.apply_jet_corrections(events, self.ERA, False)
+
+        cfg = sf.JERC_JSONS[self.ERA]["JERC_AK4"]
+        ceval = sf._get_ceval(cfg["json"])
+        (tag,) = set(ak.to_list(sf._select_data_tag(cfg["tag_Data"], events.run)))
+        p4 = []
+        for pt, eta, phi, mass, raw in [(120.0, 0.3, 0.1, 10.0, 0.1), (80.0, 0.6, 0.5, 8.0, 0.2)]:
+            pt_raw, mass_raw = pt * (1 - raw), mass * (1 - raw)
+            args = {"JetEta": eta, "JetPhi": phi, "JetPt": pt_raw, "Rho": 20.0, "run": 380000.0}
+            l2 = ceval[f"{tag}_L2Relative_AK4PFPuppi"]
+            c2 = l2.evaluate(*[args[i.name] for i in l2.inputs])
+            res = ceval[f"{tag}_L2L3Residual_AK4PFPuppi"]
+            args["JetPt"] = pt_raw * c2
+            c = c2 * res.evaluate(*[args[i.name] for i in res.inputs])
+            p4.append(vector.obj(pt=pt_raw * c, eta=eta, phi=phi, mass=mass_raw * c))
+        got = ak.to_list(out.FatJet.msoftdrop)[0]
+        assert got[0] == pytest.approx((p4[0] + p4[1]).mass, rel=1e-5)
+        assert got[1:] == [66.0, 77.0]
+
+    def test_ul_keeps_nanoaod_msoftdrop(self, monkeypatch, caplog):
+        """The UL JERC payloads have no AK4 PUPPI corrections: NanoAOD's m_SD stays, with a warning."""
+        monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {})
+        assert not sf.has_subjet_jec("RunIISummer20UL18") and sf.has_subjet_jec(self.ERA)
+        with caplog.at_level("WARNING"):
+            out = sf.apply_jet_corrections(_make_subjet_events(), "RunIISummer20UL18", True)
         assert ak.to_list(out.FatJet.msoftdrop) == [[55.0, 66.0, 77.0]]
+        assert "AK4PFPuppi" in caplog.text
 
     def test_raw_mode_replaces_msoftdrop(self, monkeypatch):
         monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {self.ERA: "raw"})
@@ -1228,6 +1258,66 @@ class TestRawSoftdropMass:
         monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {self.ERA: "raw"})
         with pytest.raises(RuntimeError, match="rawFactor"):
             sf.apply_jet_corrections(_make_jec_events(), self.ERA, False)
+
+
+def _make_subjet_mc_events():
+    """_make_subjet_events plus gen subjets, listed in the reverse order of the subjets (so the nearest-dR match
+    has to find them): gen subjet 2 - i sits on subjet i with 0.97 of its pT and 0.9 of its mass."""
+    events = _make_subjet_events()
+    sj = events.SubJet
+    gen = ak.zip({"pt": sj.pt[:, ::-1] * 0.97, "eta": sj.eta[:, ::-1], "phi": sj.phi[:, ::-1],
+                  "mass": sj.mass[:, ::-1] * 0.9})
+    return ak.with_field(events, gen, "SubGenJetAK8")
+
+
+class TestSoftdropJME:
+    """The JME soft-drop mass recipe on MC: AK4 JEC + JER on the subjets, JES/JER propagated, JMS and JMR."""
+
+    ERA = "RunIII2024Summer24"
+
+    @pytest.fixture(autouse=True)
+    def _real_correctionlib(self, monkeypatch):
+        pytest.importorskip("correctionlib")
+        monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {})
+
+    def test_gen_subjets_matched_by_nearest_dr(self):
+        events = _make_subjet_mc_events()
+        assert ak.to_list(sf._subjet_gen_index(events.SubJet, events)) == [[2, 1, 0]]
+
+    def test_variations_move_only_jets_with_two_subjets(self):
+        out = sf.apply_jet_corrections(_make_subjet_mc_events(), self.ERA, True,
+                                       variations={"jer", "jes", "jms", "jmr"}).FatJet
+        nominal = ak.to_list(out.msoftdrop)[0]
+        assert nominal[1:] == [66.0, 77.0]
+        for var in ("jer", "CMS_scale_j_Total"):
+            for d in ("up", "down"):
+                assert ak.to_list(out[f"msoftdrop_{var}_{d}"])[0][1:] == [66.0, 77.0]
+        # JES moves both subjets the same way
+        assert ak.to_list(out.msoftdrop_CMS_scale_j_Total_up)[0][0] > nominal[0]
+        assert ak.to_list(out.msoftdrop_CMS_scale_j_Total_down)[0][0] < nominal[0]
+
+    def test_jms_scales_the_mass(self):
+        out = sf.apply_jet_corrections(_make_subjet_mc_events(), self.ERA, True, variations={"jms"}).FatJet
+        m = np.asarray(ak.to_list(out.msoftdrop)[0])
+        assert ak.to_list(out.msoftdrop_jms_up)[0] == pytest.approx(list(1.01 * m), rel=1e-6)
+        assert ak.to_list(out.msoftdrop_jms_down)[0] == pytest.approx(list(0.99 * m), rel=1e-6)
+        assert "msoftdrop_jer_up" not in out.fields
+
+    def test_jmr_scales_the_response_around_the_gen_mass(self):
+        vector = pytest.importorskip("vector")
+        events = _make_subjet_mc_events()
+        out = sf.apply_jet_corrections(events, self.ERA, True, variations={"jmr"}).FatJet
+        m = ak.to_list(out.msoftdrop)[0]
+        m_gen = (vector.obj(pt=120.0 * 0.97, eta=0.3, phi=0.1, mass=9.0)
+                 + vector.obj(pt=80.0 * 0.97, eta=0.6, phi=0.5, mass=7.2)).mass
+        up, down = ak.to_list(out.msoftdrop_jmr_up)[0], ak.to_list(out.msoftdrop_jmr_down)[0]
+        assert up[0] == pytest.approx(m_gen + (m[0] - m_gen) * 1.02, rel=1e-5)
+        assert down[0] == pytest.approx(m_gen + (m[0] - m_gen) * 0.98, rel=1e-5)
+        assert up[1:] == m[1:] and down[1:] == m[1:]         # no subjet pair: unchanged
+
+    def test_data_gets_no_mass_variations(self):
+        out = sf.apply_jet_corrections(_make_subjet_events(), self.ERA, False, variations={"jes", "jms", "jmr"})
+        assert not [f for f in out.FatJet.fields if f.startswith("msoftdrop_")]
 
 
 # ---------------------------------------------------------------------------

@@ -15,7 +15,7 @@ python3 bin/run_analysis.py RunIII2024Summer24 all --dir 20261011           # ev
 python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir 20261011           # the four background groups
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --dir 20261011 --dy nlo_inc
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --dir 20261011
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf jer jes elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf --dir 20261011
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf jer jes jms jmr elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf --dir 20261011
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --maxfiles 1 --maxchunks 1 --dir smoke   # a quick test
 python3 bin/run_analysis.py RunIISummer20UL18 data --unblind --dir 20261011                     # Run 2 only
 ```
@@ -110,8 +110,8 @@ always gets nominal only). The families, their sources, and what each era can pr
   fileset records why they are missing (`PSSumw_source.status`, e.g. the three UL signal datasets
   whose original files are unreachable): such a dataset gets its nominal for that family, with a
   warning.
-- Weight sources share one pass; shape sources (`jer`, `jes`, `elescale`, `elesmear`, `muscale`,
-  `musmear`) re-run the selection on shifted kinematics. `lumi` is applied at export.
+- Weight sources share one pass; shape sources (`jer`, `jes`, `jms`, `jmr`, `elescale`, `elesmear`,
+  `muscale`, `musmear`) re-run the selection on shifted kinematics. `lumi` is applied at export.
 - Coverage: every chunk records the (region, variation) pairs it completed, with the production
   configuration (families, omissions, observables, regions, blinding); chunks or datasets produced
   with different configurations are never merged, and a dataset that did not complete every
@@ -149,7 +149,7 @@ always gets nominal only). The families, their sources, and what each era can pr
 | `--study transfer-factor` or `dy-cr-split` | Add a study's extra regions (`<region>_nomass`; the DY CR split at m(ℓℓ) = 100 GeV). |
 | `--save-events` | Write the signal-region (mass, weight) TTrees. |
 | `--split-groups GROUP ...` | Composite runs: write `tt_tW` as TTbar + tW, `Nonprompt` as WJets + TTSemiLep + SingleTop, `Other` as Diboson + Triboson + ttV. |
-| `--systs FAMILY ...` | `lumi pileup prefire sf jer jes elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf`. |
+| `--systs FAMILY ...` | `lumi pileup prefire sf jer jes jms jmr elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf`. |
 | `--syst-observables all`, `fit` or `NAME ...` | Histograms that receive the variations. |
 | `--omit-systs SOURCE ...` | Leave out named sources although their family is enabled (recorded). |
 | `--condor`, `--max-workers N`, `--worker-wait-timeout N`, `--threads-per-worker N` | Execution: Condor at the LPC, Dask workers (local default 3; Condor 50 single, 200 composite skimmed, 500 composite unskimmed). |

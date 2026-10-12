@@ -22,7 +22,8 @@ production yet). The final sets are `--dir 20261011_systs` in every era.
 | Electron trigger SF (`sf`) | yes | proxy | UL: the Run 2 HEEP trigger-OR efficiencies; Run 3: the Ele30 TightID SF stands in for the OR (Remaining, #94) |
 | Loose-lepton SFs (`sf`) | yes | yes | boosted partner: muon reco + ID, electron reco |
 | LSF SF (`lsf`) | yes | placeholder | UL: AN-19-083 Table 60 per year; Run 3: 1.00 ± 0.10 (Remaining, #95) |
-| JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out |
+| JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out; in Run 3 they also move the AK8 soft-drop mass (JME recipe, since 2026-10-12), not in UL (no AK4 PUPPI payload) |
+| Soft-drop mass scale and resolution (`jms`, `jmr`) | yes | yes | JME residual JMS ±1 % and JMR ±2 % (since 2026-10-12); validated for 50 ≤ m_SD < 300 GeV, our cut is 40 GeV |
 | Electron energy scale and smearing (`elescale`, `elesmear`) | no | yes | UL NanoAODv9 MC carries no scale uncertainty (Remaining, #96) |
 | Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder (`musmear` refused) | yes | the high-pT recipe in 2022 to 2024 (2022/2023 since 2026-10-12, POG Run 3 tables); UL and 2025: a 5 %/TeV × pT scale placeholder, no resolution variation (Remaining, #91) |
 | DY Z-pT reweight, 6 nuisances (`dyzpt`) | yes | yes | own derivations, AN-19-083 recipe, 2026-10-11; one payload per UL era, 2022+2023 together, 2024 alone; the Run 3 DY CR closure is still to be documented (Remaining, #101) |

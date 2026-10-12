@@ -150,6 +150,27 @@ class TestRegistry:
         assert jes.available(RUN3) and jes.available(UL18)
         assert jes.required_fields("Up") == ("pt_CMS_scale_j_Total_up", "mass_CMS_scale_j_Total_up")
 
+    def test_jet_mass_sources_vary_the_softdrop_mass_only(self):
+        (jms,) = systematics_for(RUN3, ["jms"])
+        (jmr,) = systematics_for(UL18, ["jmr"])
+        assert jms.objects == ("FatJet",) and jms.required_fields("Down") == ("msoftdrop_jms_down",)
+        assert jmr.variation_field("Up") == "msoftdrop_jmr_up" and jmr.available(UL18)
+        assert jms.applies(region="wr_ee_resolved_sr", is_mc=True)   # the shape pass refills every region
+
+    def test_shape_swap_takes_the_softdrop_mass(self):
+        from types import SimpleNamespace
+        from wrcoffea.analyzer import WrAnalysis
+        fat = ak.zip({"pt": [[300.0]], "mass": [[90.0]], "msoftdrop": [[50.0]],
+                      "pt_jer_up": [[310.0]], "mass_jer_up": [[93.0]], "msoftdrop_jer_up": [[52.0]],
+                      "msoftdrop_jms_up": [[50.5]]})
+        events = SimpleNamespace(FatJet=fat)
+        (jer,) = systematics_for(RUN3, ["jer"])
+        (jms,) = systematics_for(RUN3, ["jms"])
+        out = WrAnalysis._apply_shape_variation(events, jer, "Up").FatJet
+        assert ak.to_list(out.pt) == [[310.0]] and ak.to_list(out.msoftdrop) == [[52.0]]
+        out = WrAnalysis._apply_shape_variation(events, jms, "Up").FatJet
+        assert ak.to_list(out.pt) == [[300.0]] and ak.to_list(out.msoftdrop) == [[50.5]]
+
     def test_unknown_family_rejected(self):
         with pytest.raises(ValueError, match="Unknown systematic family"):
             systematics_for(RUN3, ["btag"])

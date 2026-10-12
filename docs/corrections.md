@@ -54,7 +54,13 @@ JER smearing on MC follows the JME hybrid method: a jet matched to a generator j
 0.2 for AK4 and 0.4 for AK8, and |pT − pT_gen| < 3 σ_JER pT) is scaled by its JER scale factor
 towards the generator pT; any other jet is smeared stochastically by a Gaussian of width
 σ_JER √(SF² − 1); no jet is smeared below an energy of 10 MeV. The JER up/down variations use the
-same matching and random numbers as the nominal. The random numbers of the stochastic JER and of the
+same matching and random numbers as the nominal. The AK8 soft-drop mass follows the JME jet mass
+recommendation in Run 3: the soft-drop subjets get the AK4 PUPPI JEC (production JEC undone with
+`SubJet_rawFactor`; NanoAODv12 has no `SubJet_area`, so L1FastJet is skipped, which is exact for
+PUPPI, where it is 1) and, on MC, the AK4 JER with gen subjets (`SubGenJetAK8`, NanoAOD's index in
+v15, nearest in ΔR otherwise, matched within 0.2), and m_SD is recomputed from them; JES and JER
+vary both subjets; JMS and JMR are the `jms` and `jmr` families. UL keeps NanoAOD's m_SD (no AK4
+PUPPI payload). The random numbers of the stochastic JER and of the
 Run 3 electron smearing are drawn per object from correctionlib's `hashprng` of (event, luminosity
 block, φ, a salt per correction), so they are reproducible and independent between the objects of
 an event (`object_normal_draws` in `wrcoffea/scale_factors.py`; since 2026-10-12).

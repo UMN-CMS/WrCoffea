@@ -88,7 +88,7 @@ FIT_KEYWORD = "fit"
 
 # Public CLI families, in the order they are documented.
 FAMILIES: tuple[str, ...] = (
-    "lumi", "pileup", "sf", "jer", "jes", "elescale", "elesmear", "muscale", "musmear",
+    "lumi", "pileup", "sf", "jer", "jes", "jms", "jmr", "elescale", "elesmear", "muscale", "musmear",
     "dyzpt", "lsf", "dyreshape", "scale", "ps", "pdf", "prefire",
 )
 
@@ -181,10 +181,12 @@ class Systematic:
     # Are the correction inputs configured for this era?
     available_in: Callable[[str], bool] = _all_eras
     objects: tuple[str, ...] = ()
-    # For ``shape`` sources: the ``<field_source>`` in ``pt_<field_source>_<dir>``.
+    # For ``shape`` sources: the ``<field_source>`` in ``<kinematic>_<field_source>_<dir>``.
     field_source: str | None = None
-    # Shape sources whose swap also replaces the object mass (jets).
-    varies_mass: bool = False
+    # The kinematic fields a shape source must provide (``pt`` and, for jets, ``mass``; ``msoftdrop`` for the
+    # jet mass sources).  The swap also takes any other ``pt``/``mass``/``msoftdrop`` variation present
+    # (the soft-drop mass that JES and JER move where the subjet recipe runs).
+    kinematics: tuple[str, ...] = ("pt",)
     note: str = ""
 
     def __post_init__(self):
@@ -215,17 +217,16 @@ class Systematic:
         return self.applies(region=region, is_mc=is_mc) and self.available(era)
 
     def variation_field(self, direction: str) -> str:
-        """NanoAOD-side field carrying the shifted pT for a shape source."""
+        """NanoAOD-side field carrying the shifted primary kinematic (pT, or m_SD) for a shape source."""
         if self.kind != SHAPE:
             raise ValueError(f"{self.name} is not a shape systematic")
-        return f"pt_{self.field_source}_{direction.lower()}"
+        return f"{self.kinematics[0]}_{self.field_source}_{direction.lower()}"
 
     def required_fields(self, direction: str) -> tuple[str, ...]:
         """Fields a non-empty affected collection must carry for *direction*."""
-        pt_field = self.variation_field(direction)
-        if self.varies_mass:
-            return (pt_field, pt_field.replace("pt_", "mass_", 1))
-        return (pt_field,)
+        if self.kind != SHAPE:
+            raise ValueError(f"{self.name} is not a shape systematic")
+        return tuple(f"{k}_{self.field_source}_{direction.lower()}" for k in self.kinematics)
 
 
 # ---------------------------------------------------------------------------
@@ -281,7 +282,7 @@ def _jes_sources_for(era: str) -> list[Systematic]:
         name = "JES" if cat_name == _JES_TOTAL_SOURCE else f"JES_{cat_name}"
         out.append(Systematic(
             name, "jes", SHAPE, available_in=_has_jes_variations,
-            objects=("Jet", "FatJet"), field_source=cat_name, varies_mass=True,
+            objects=("Jet", "FatJet"), field_source=cat_name, kinematics=("pt", "mass"),
         ))
     return out
 
@@ -342,6 +343,12 @@ _PDF_NOTE = (
     "alpha_s shift, scaled to 0.0015) at their own binning (wrcoffea/pdf_weights.py)."
 )
 
+_JET_MASS_NOTE = (
+    "JME jet mass recommendation: JMS (1 +- 0.01) m_SD; JMR m_gen + (m_SD - m_gen)(1 +- 0.02) with m_gen from "
+    "the matched gen subjets (jets without a gen match unchanged).  JME validated them for 50 <= m_SD < 300 GeV "
+    "and pT >= 100 GeV; our cut is m_SD > 40 GeV."
+)
+
 _STATIC_SOURCES: dict[str, list[Systematic]] = {
     "lumi": [Systematic("Lumi", "lumi", NORMALIZATION, available_in=lambda e: e in LUMI_UNC)],
     # QCD renormalization / factorization scales (LHEScaleWeight, 9-weight NanoAOD order)
@@ -359,7 +366,14 @@ _STATIC_SOURCES: dict[str, list[Systematic]] = {
                            note="NanoAOD L1PreFiringWeight Up/Dn (Run 2 UL only).")],
     "sf": _sf_sources(),
     "jer": [Systematic("JER", "jer", SHAPE, available_in=_has_jer_variations,
-                       objects=("Jet", "FatJet"), field_source="jer", varies_mass=True)],
+                       objects=("Jet", "FatJet"), field_source="jer", kinematics=("pt", "mass"))],
+    # Residual soft-drop mass scale and resolution (JME jet mass recommendation): m_SD only, so they move the
+    # AK8 m_SD > 40 GeV cut, i.e. the boosted regions; the shape pass refills every region (the resolved ones
+    # come out as nominal).
+    "jms": [Systematic("JMS", "jms", SHAPE, available_in=lambda e: e in JERC_JSONS, objects=("FatJet",),
+                       field_source="jms", kinematics=("msoftdrop",), note=_JET_MASS_NOTE)],
+    "jmr": [Systematic("JMR", "jmr", SHAPE, available_in=lambda e: e in JERC_JSONS, objects=("FatJet",),
+                       field_source="jmr", kinematics=("msoftdrop",), note=_JET_MASS_NOTE)],
     "elescale": [Systematic("EleScale", "elescale", SHAPE, available_in=_has_electron_scale_smearing,
                             objects=("Electron",), field_source="scale")],
     "elesmear": [Systematic("EleSmear", "elesmear", SHAPE, available_in=_has_electron_scale_smearing,
