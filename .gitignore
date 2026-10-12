@@ -41,4 +41,4 @@ bootstrap.sh
 shell
 
 # CMS-internal reference copy of the Muon POG recommendations page
-corrections.md
+/corrections.md
