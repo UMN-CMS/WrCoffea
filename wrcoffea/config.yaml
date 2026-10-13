@@ -606,8 +606,8 @@ dy_zpt_reweight:
   Run3Summer22EE: data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json
   Run3Summer23: data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json
   Run3Summer23BPix: data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json
-  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261011.json
-  RunIII2025Summer25: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261011.json   # 2024 MC
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261013.json   # re-derived 2026-10-13 (full 2024 rerun)
+  RunIII2025Summer25: data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261013.json   # 2024 MC
 
 # DY reshape: data-driven (data - non-DY MC)/DY ratio vs leading AK4 jet pT
 # (resolved) or DY-candidate AK8 jet pT (boosted), measured in the DY CRs with
@@ -638,7 +638,7 @@ dy_reshape:
   Run3Summer22EE: data/reweights/Run3/2022/dy_reshape_run2jetpt_20261011.json
   Run3Summer23: data/reweights/Run3/2023/dy_reshape_run2jetpt_20261011.json
   Run3Summer23BPix: data/reweights/Run3/2023/dy_reshape_run2jetpt_20261011.json
-  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261011.json
+  RunIII2024Summer24: data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261013.json   # re-derived 2026-10-13 (full 2024 rerun)
 
 # The DY datasets the era's Z-pT reweight and reshape were derived for: a regular
 # expression searched in the dataset name (fileset metadata "sample").  Other DY

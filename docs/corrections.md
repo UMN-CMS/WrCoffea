@@ -112,8 +112,8 @@ Summer24 MC), its release of 2026-04-28.
 | | UL17 | 1.02 ± 0.08 / 0.98 ± 0.07 |
 | | UL18 | 1.05 (+0.07 −0.06) / 1.04 (+0.06 −0.05) |
 | | 2022 to 2025 | **placeholder** 1.00 ± 0.10 per flavour until a Run 3 measurement exists |
-| DY Z-pT reweight | all | `data/reweights/RunII/<year>/<era>/dy_zpt_reweight_ul_20261011.json` per UL era; `data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json` (2022, 2022EE, 2023, 2023BPix); `data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261011.json` (2024, 2025) |
-| DY jet-pT reshape | all but 2025 | `dy_reshape_run2jetpt_20261011.json` per UL era; `data/reweights/Run3/2022/`, `Run3/2023/`, `Run3/2024/RunIII2024Summer24/` per data-taking year |
+| DY Z-pT reweight | all | `data/reweights/RunII/<year>/<era>/dy_zpt_reweight_ul_20261011.json` per UL era; `data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json` (2022, 2022EE, 2023, 2023BPix); `data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261013.json` (2024, 2025; re-derived 2026-10-13, identical to the 20261011 file) |
+| DY jet-pT reshape | all but 2025 | `dy_reshape_run2jetpt_20261011.json` per UL era; `data/reweights/Run3/2022/`, `Run3/2023/` per data-taking year (`_20261011`); 2024 `Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261013.json` (from the 2026-10-13 rerun, within 1 % of the 20261011 file) |
 | signal k-factor | all | `signal_kfactor_13tev_20261010.json` (UL), `signal_kfactor_13p6tev_20261010.json` (Run 3): per-point k(m(ℓN)) curves, [studies/signal_kfactor.md](studies/signal_kfactor.md) |
 | PDF sets | all | `data/pdf_sets/<Run>/<year>/<era>.json` (`scripts/pdf_sets.py`): the LHA ID of each sample's `LHEPdfWeight` (NNPDF3.1 325300/325500 everywhere; UL also 306000 symmhessian+α_S and 320900 replicas); 2025 uses the 2024 table |
 
