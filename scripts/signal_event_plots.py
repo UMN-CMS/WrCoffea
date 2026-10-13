@@ -22,7 +22,11 @@ its skimmed file, reads the generator particles of the unskimmed file, and write
 to ``<out>/hists/<point>_<flavour>.pkl``.  ``plot`` draws every point found there.
 
     python scripts/signal_event_plots.py fill --era RunIII2024Summer24 --point WR4000_N2100 --flavour El --out DIR
-    python scripts/signal_event_plots.py plot --out DIR
+    python scripts/signal_event_plots.py plot --out DIR --era RunIII2024Summer24 --dir 20261013_skims_v2 --local-plots
+
+With --era/--dir the plots go next to that production's other signal outputs,
+WR_Plotter/<plots>/<Run>/<Year>/<Era>/<dir>/signal_outputs/event_level/ (summary.txt under tables/ likewise);
+without, into <out>/plots.
 
 Generator objects (GenPart): the produced W_R is the last copy of pdg 34 whose parent is not a
 heavy neutrino (the virtual W_R of the N decay is left out); N is the last copy of pdg 9900012/14/16;
@@ -498,11 +502,13 @@ def _eff(num: Hist, den: Hist):
     return num.axes[0].centers, num.axes[0].widths / 2, eff, err
 
 
-def plot(out: Path, com: float = 13.6) -> None:
+def plot(out: Path, com: float = 13.6, *, plots_dir: Path | None = None, tables_dir: Path | None = None) -> None:
+    """Draw every point filled under *out*: plots into *plots_dir* (default <out>/plots), summary.txt into
+    *tables_dir* (default <out>)."""
     items = sorted(_load(out), key=_sort_key)
     if not items:
         raise SystemExit(f"no histograms under {out / 'hists'}")
-    plots = out / "plots"
+    plots = Path(plots_dir) if plots_dir else out / "plots"
     for flavour, (_, channel) in FLAVOURS.items():
         these = [it for it in items if it["flavour"] == flavour]
         if not these:
@@ -618,8 +624,10 @@ def plot(out: Path, com: float = 13.6) -> None:
         lines.append(f"{it['point']} {it['flavour']} {c.get('gen_events', 0)} {c.get('gen_merged', 0) / n:.3f} {nj} "
                      f"{c.get('njet_matched_lsf', 0) / max(nj, 1):.3f} {ns} {c.get('nolsf_sr_pass_lsf', 0) / max(ns, 1):.3f} "
                      f"{c.get('gen_wr_within10pct', 0) / n:.3f} {c.get('gen_wr_below90pct', 0) / n:.3f}")
-    (out / "summary.txt").write_text("\n".join(lines) + "\n")
-    logger.info("plots under %s, summary in %s", plots, out / "summary.txt")
+    summary = (Path(tables_dir) if tables_dir else out) / "summary.txt"
+    summary.parent.mkdir(parents=True, exist_ok=True)
+    summary.write_text("\n".join(lines) + "\n")
+    logger.info("plots under %s, summary in %s", plots, summary)
 
 
 # ---------------------------------------------------------------------------
@@ -633,8 +641,11 @@ def main(argv=None) -> None:
     f.add_argument("--flavour", required=True, choices=sorted(FLAVOURS))
     f.add_argument("--out", required=True, type=Path)
     p = sub.add_parser("plot", help="draw every filled point")
-    p.add_argument("--out", required=True, type=Path)
-    p.add_argument("--com", type=float, default=13.6)
+    p.add_argument("--out", required=True, type=Path, help="the fill step's --out (the histograms)")
+    p.add_argument("--era", default=None, help="with --dir: write into that production's signal_outputs/event_level")
+    p.add_argument("--dir", default=None, help="production (--dir of run_analysis.py) whose signal outputs get the plots")
+    p.add_argument("--local-plots", action="store_true", help="WR_Plotter/plots/ instead of EOS (as the plotter)")
+    p.add_argument("--com", type=float, default=None, help="centre-of-mass energy label (default: the era's)")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     if args.cmd == "fill":
@@ -642,7 +653,16 @@ def main(argv=None) -> None:
     else:
         import matplotlib
         matplotlib.use("Agg")
-        plot(args.out, args.com)
+        plots_dir = tables_dir = None
+        com = args.com or 13.6
+        if args.dir:
+            if not args.era:
+                parser.error("--dir needs --era")
+            from wrplotter.config import load_lumi
+            from wrplotter.signal_plots import signal_output_dirs
+            plots_dir, tables_dir = signal_output_dirs(args.era, args.dir, "event_level", local_plots=args.local_plots)
+            com = args.com or float(load_lumi(args.era).get("com", 13.6))
+        plot(args.out, com, plots_dir=plots_dir, tables_dir=tables_dir)
 
 
 if __name__ == "__main__":
