@@ -140,10 +140,10 @@ weight *= ZPtReweight(ptZ) * ZPtEWCorr(ptZ)
 `data/reweights/RunII/2018/RunIISummer20UL18/dy_zpt_reweight_run2legacy_v4_2018.json`
 (provenance recorded in the file).  `config.yaml` mapped `RunIISummer20UL18` to
 it until 2026-10-11, when our own derivation (next section) replaced it; the
-file stays for reference.  The analyzer applies the nominal weight of the
-mapped payload to the DY datasets named by `dy_reweight_datasets`
-(`--no-dy-zpt-reweight` turns it off), and `--systs dyzpt` produces the Up/Down
-pairs.  Every MC dataset records `dy_zpt_reweight` in its `dataset_meta`
+file stays for reference.  With `--dy-reweight zpt` or `zpt+reshape`
+(off by default since 2026-10-12) the analyzer applies the nominal weight of the
+mapped payload to the DY datasets named by `dy_reweight_datasets`, and
+`--systs dyzpt` produces the Up/Down pairs.  Every MC dataset records `dy_zpt_reweight` in its `dataset_meta`
 (`applied`, `identity`, `not_for_sample`, `off`, or `unconfigured`).
 
 ## Our own Z-pT reweight for the UL eras (2026-10-11)

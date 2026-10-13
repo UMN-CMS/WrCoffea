@@ -298,6 +298,52 @@ def test_validate_dy_nlo_ptll_warns(caplog):
     assert "nlo_ptll" not in caplog.text
 
 
+@pytest.mark.parametrize("flags, expected", [
+    ({}, "none"),  # the default since 2026-10-12
+    ({"dy_reweight": "zpt"}, "zpt"),
+    ({"dy_reweight": "zpt+reshape"}, "zpt+reshape"),
+    # The legacy switches keep the output they gave when both corrections were on by default.
+    ({"no_dy_zpt_reweight": True}, "none"),
+    ({"no_dy_reshape": True}, "zpt"),
+    ({"no_dy_zpt_reweight": True, "no_dy_reshape": True}, "none"),
+])
+def test_resolve_dy_reweight(flags, expected):
+    assert run_analysis.resolve_dy_reweight(SimpleNamespace(**flags)) == expected
+
+
+@pytest.mark.parametrize("dy, ok", [(None, True), ("lo_ht", True), ("nlo_inc", False), ("lo_inc", False)])
+def test_validate_dy_reweight_only_for_lo_ht(dy, ok):
+    args = _dy_args("RunIII2024Summer24", dy)
+    args.dy_reweight = "zpt"
+    if ok:
+        run_analysis.validate_arguments(args, [])
+    else:
+        with pytest.raises(ValueError, match="has nothing to reweight"):
+            run_analysis.validate_arguments(args, [])
+
+
+def test_resolve_dy_reweight_legacy_flag_conflicts():
+    with pytest.raises(ValueError, match="--no-dy-reshape cannot be combined with --dy-reweight"):
+        run_analysis.resolve_dy_reweight(SimpleNamespace(dy_reweight="zpt+reshape", no_dy_reshape=True))
+
+
+@pytest.mark.parametrize("systs, dy_reweight, error", [
+    (["dyzpt"], None, "--dy-reweight zpt"),
+    (["dyreshape"], None, "--dy-reweight zpt\\+reshape"),
+    (["dyzpt", "dyreshape"], "zpt", "--dy-reweight zpt\\+reshape"),
+    (["dyzpt"], "zpt", None),
+    (["dyzpt", "dyreshape"], "zpt+reshape", None),
+])
+def test_validate_dy_systs_need_the_reweight(systs, dy_reweight, error):
+    args = _dy_args("RunIISummer20UL18", None)
+    args.systs, args.dy_reweight = systs, dy_reweight
+    if error is None:
+        run_analysis.validate_arguments(args, [])
+    else:
+        with pytest.raises(ValueError, match=error):
+            run_analysis.validate_arguments(args, [])
+
+
 def _unblind_args(era, unblind=True):
     args = _dy_args(era, None)
     args.sample = "Muon"
@@ -384,6 +430,38 @@ def test_process_fileset_forwards_unblind(monkeypatch, extra, expected):
     run_analysis._process_fileset(args, fileset={}, client=object(), condor=False)
 
     assert captured["unblind"] is expected
+
+
+@pytest.mark.parametrize("dy_reweight, zpt, reshape", [(None, False, False), ("none", False, False),
+                                                       ("zpt", True, False), ("zpt+reshape", True, True)])
+def test_process_fileset_forwards_dy_reweight(monkeypatch, dy_reweight, zpt, reshape):
+    """_process_fileset hands --dy-reweight to the processor (no DY reweighting by default)."""
+    captured = {}
+
+    class FakeRunner:
+        def __init__(self, **kwargs):
+            pass
+
+        def preprocess(self, fileset, treename):
+            return {}
+
+        def __call__(self, preproc, treename, processor_instance):
+            return {}, {}
+
+    class FakeWrAnalysis:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+    monkeypatch.setattr(coffea_processor, "DaskExecutor", lambda **kwargs: None)
+    monkeypatch.setattr(coffea_processor, "Runner", FakeRunner)
+    monkeypatch.setattr(analyzer_mod, "WrAnalysis", FakeWrAnalysis)
+    args = SimpleNamespace(sample="DYJets", mass=None, systs=[], region="both", unskimmed=False,
+                           study=[], chunksize=1000, maxchunks=None, dy_reweight=dy_reweight)
+
+    run_analysis._process_fileset(args, fileset={}, client=object(), condor=False)
+
+    assert captured["dy_zpt_reweight"] is zpt
+    assert captured["dy_reshape"] is reshape
 
 
 def test_preprocess_with_xrd_fallback_raises_after_all_redirectors_fail(monkeypatch):

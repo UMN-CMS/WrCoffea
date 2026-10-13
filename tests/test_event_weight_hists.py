@@ -151,8 +151,9 @@ def _pu(n, values):
 
 class TestAnalyzerFactors:
 
-    def test_base_factors_multiply_to_base_weight(self):
-        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both")
+    @pytest.mark.parametrize("dy_zpt_reweight", [False, True])
+    def test_base_factors_multiply_to_base_weight(self, dy_zpt_reweight):
+        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both", dy_zpt_reweight=dy_zpt_reweight)
         events = _Events([1.5, -0.5, 2.0])
         meta = {"era": "RunIII2024Summer24", "xsec": 12.3, "genEventSumw": 4567.0, "sample": "s",
                 "physics_group": "tt_tW"}
@@ -160,8 +161,9 @@ class TestAnalyzerFactors:
             weights, _ = proc.build_event_weights(events, meta, is_mc=True)
             factors = proc._event_weight_factors(events, meta, weights)
 
-        # an era with a DY Z-pT payload gives every MC dataset the factor (identity for non-DY)
-        zpt = {"dy_zpt"} if meta["era"] in DY_ZPT_REWEIGHT_JSONS else set()
+        # with the reweight on, an era with a DY Z-pT payload gives every MC dataset the factor
+        # (identity for non-DY); it is off by default since 2026-10-12
+        zpt = {"dy_zpt"} if dy_zpt_reweight and meta["era"] in DY_ZPT_REWEIGHT_JSONS else set()
         assert set(factors) == {GENWEIGHT_COMPONENT, NORMALIZATION_COMPONENT, "pileup"} | zpt
         if zpt:
             np.testing.assert_allclose(factors["dy_zpt"], 1.0)
@@ -199,7 +201,7 @@ class TestAnalyzerFactors:
 
     @pytest.mark.parametrize("payload", [None, {"nominal": np.array([1.2, 0.8]), "variations": {}}])
     def test_dy_reshape_recorded_when_applied(self, payload):
-        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both")
+        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both", dy_zpt_reweight=True, dy_reshape=True)
         factors = {}
         with patch("wrcoffea.analyzer.dy_reshape_weight", return_value=payload):
             proc._dy_reshape_for_region({"Nominal": np.ones(2)}, "resolved", np.full(2, 100.0),

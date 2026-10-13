@@ -284,7 +284,7 @@ class TestAnalyzerWiring:
     def test_dy_nominal_includes_reweight_and_variations(self, mock_pu):
         ones = np.ones(self.N)
         mock_pu.return_value = (ones, ones, ones)
-        proc = WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved")
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved", dy_zpt_reweight=True)
         ev = self._events()
         weights, syst = proc.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
         expected = dy_zpt_weight(ev, UL18, is_dy=True)
@@ -299,7 +299,7 @@ class TestAnalyzerWiring:
     def test_non_dy_gets_identity_labels(self, mock_pu):
         ones = np.ones(self.N)
         mock_pu.return_value = (ones, ones, ones)
-        proc = WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved")
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved", dy_zpt_reweight=True)
         _, syst = proc.build_event_weights(self._events(), self._meta("tt_tW"), is_mc=True)
         for name in SOURCE_NAMES:
             np.testing.assert_array_equal(syst[f"{name}Up"], syst[NOMINAL])
@@ -314,10 +314,18 @@ class TestAnalyzerWiring:
         _, syst_off = off.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
         np.testing.assert_allclose(syst_off[NOMINAL], 10.0 * LUMIS[UL18] * 1000.0 / 100.0)
         assert set(syst_off) == {NOMINAL}
-        on = WrAnalysis(mass_point=None, enabled_systs=[], region="resolved")
+        on = WrAnalysis(mass_point=None, enabled_systs=[], region="resolved", dy_zpt_reweight=True)
         _, syst_on = on.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
         assert set(syst_on) == {NOMINAL}
         assert not np.allclose(syst_on[NOMINAL], syst_off[NOMINAL])
+        # Off by default since 2026-10-12.
+        default = WrAnalysis(mass_point=None, enabled_systs=[], region="resolved")
+        _, syst_default = default.build_event_weights(ev, self._meta(DY_PROCESS_GROUP), is_mc=True)
+        np.testing.assert_array_equal(syst_default[NOMINAL], syst_off[NOMINAL])
+
+    def test_dyzpt_family_needs_the_reweight(self):
+        with pytest.raises(ValueError, match="dyzpt"):
+            WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved")
 
 
 
@@ -354,7 +362,7 @@ class TestDySampleGuard:
         wiring = TestAnalyzerWiring()
         ones = np.ones(wiring.N)
         mock_pu.return_value = (ones, ones, ones)
-        proc = WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved")
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyzpt"], region="resolved", dy_zpt_reweight=True)
         with caplog.at_level("WARNING"):
             _, syst = proc.build_event_weights(wiring._events(), wiring._meta(DY_PROCESS_GROUP, self.NLO),
                                                is_mc=True)
@@ -368,7 +376,7 @@ class TestDySampleGuard:
         from tests.test_analyzer import _SF_PATCHES, _make_integration_events
         from contextlib import ExitStack
         events = _make_integration_events(n_events=3, metadata={"sample": sample})
-        proc = WrAnalysis(mass_point=None, region="resolved")
+        proc = WrAnalysis(mass_point=None, region="resolved", dy_zpt_reweight=True)
         with ExitStack() as stack:
             for target, replacement in _SF_PATCHES.items():
                 stack.enter_context(patch(target, new=replacement))

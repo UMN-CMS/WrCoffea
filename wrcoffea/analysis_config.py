@@ -181,6 +181,7 @@ SEL_TWO_TIGHT_LEPTONS = "two_tight_leptons"
 SEL_TWO_TIGHT_ELECTRONS = "two_tight_electrons"
 SEL_TWO_TIGHT_MUONS = "two_tight_muons"
 SEL_TWO_TIGHT_EM = "two_tight_em"
+SEL_NO_THIRD_TIGHT_LEPTON = "no_third_tight_lepton"   # at most two tight leptons of any flavour
 SEL_LEAD_TIGHT_PT60 = "lead_tight_lepton_pt60"
 SEL_SUBLEAD_TIGHT_PT53 = "sublead_tight_pt53"
 SEL_MIN_TWO_AK4_JETS = "min_two_ak4_jets"

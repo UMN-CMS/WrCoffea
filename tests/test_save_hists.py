@@ -1,5 +1,7 @@
 """Tests for wrcoffea.save_hists — ROOT naming and histogram summing."""
 
+import json
+
 import pytest
 
 from wrcoffea.save_hists import _normalize_syst_name, _folder_and_hist_names
@@ -327,6 +329,8 @@ class TestSaveHistogramsIntegration:
         args.mass = None
         args.dir = None
         args.name = None
+        args.dy = None            # run_analysis.py defaults
+        args.dy_reweight = None
         # Apply overrides
         for k, v in overrides.items():
             setattr(args, k, v)
@@ -359,6 +363,35 @@ class TestSaveHistogramsIntegration:
         # Verify ROOT file was created
         expected_path = tmp_path / "WR_Plotter" / "rootfiles" / "RunII" / "2018" / "RunIISummer20UL18" / "WRAnalyzer_DYJets.root"
         assert expected_path.exists()
+
+    @pytest.mark.parametrize("dy, dy_reweight, filename", [
+        (None, None, "WRAnalyzer_DYJets.root"),
+        ("lo_ht", "none", "WRAnalyzer_DYJets.root"),
+        (None, "zpt", "WRAnalyzer_DYJets_lo_ht_zpt.root"),
+        ("lo_ht", "zpt+reshape", "WRAnalyzer_DYJets_lo_ht_zpt_reshape.root"),
+        ("nlo_inc", None, "WRAnalyzer_DYJets_nlo_inc.root"),
+    ])
+    def test_save_histograms_dy_variant_naming(self, tmp_path, monkeypatch, dy, dy_reweight, filename):
+        """Every DY variant shares the directory; all but the default carry their tag in the file name."""
+        monkeypatch.chdir(tmp_path)
+        h = self._create_test_hist("mass_dilepton")
+        h.fill(process="DYJets", region="wr_mumu_resolved_sr", syst="Nominal", mass_dilepton=50.0, weight=1.0)
+        save_histograms({"dataset1": {"mass_dilepton": h}},
+                        self._create_mock_args(dy=dy, dy_reweight=dy_reweight))
+        out_dir = tmp_path / "WR_Plotter" / "rootfiles" / "RunII" / "2018" / "RunIISummer20UL18"
+        assert sorted(p.name for p in out_dir.glob("*.root")) == [filename]
+        manifest = json.loads((out_dir / filename.replace(".root", "_systematics.json")).read_text())
+        assert manifest["dy"] == {"variant": dy or "lo_ht", "reweight": dy_reweight or "none"}
+        assert manifest["root_file"] == filename
+
+    def test_save_histograms_non_dy_has_no_dy_record(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        h = self._create_test_hist("mass_dilepton")
+        h.fill(process="tt_tW", region="wr_mumu_resolved_sr", syst="Nominal", mass_dilepton=50.0, weight=1.0)
+        save_histograms({"dataset1": {"mass_dilepton": h}},
+                        self._create_mock_args(sample="tt_tW", dy_reweight="zpt+reshape"))
+        out_dir = tmp_path / "WR_Plotter" / "rootfiles" / "RunII" / "2018" / "RunIISummer20UL18"
+        assert "dy" not in json.loads((out_dir / "WRAnalyzer_tt_tW_systematics.json").read_text())
 
     def test_save_histograms_signal_naming(self, tmp_path, monkeypatch):
         """Test that Signal samples get signal_{mass}.root naming."""

@@ -46,6 +46,7 @@ from wrcoffea.save_hists import (
 from wrcoffea.systematics import (
     FAMILIES,
     FIT_OBSERVABLES,
+    NEVER_VARIED,
     NOMINAL,
     NORMALIZATION,
     SHAPE,
@@ -185,11 +186,15 @@ class TestRegistry:
 
     def test_resolve_syst_observables(self):
         known = all_histogram_names()
-        assert resolve_syst_observables(None, known) is None
-        assert resolve_syst_observables([], known) is None
-        assert resolve_syst_observables(["all"], known) is None
+        # default (2026-10-12): the fit observables, the m(W_R) masses only
+        assert FIT_OBSERVABLES == ("mass_fourobject", "mass_twoobject")
+        assert resolve_syst_observables(None, known) == frozenset(FIT_OBSERVABLES)
+        assert resolve_syst_observables([], known) == frozenset(FIT_OBSERVABLES)
         assert resolve_syst_observables(["fit"], known) == frozenset(FIT_OBSERVABLES)
+        assert resolve_syst_observables(["all"], known) is None
         assert resolve_syst_observables(["mass_dilepton"], known) == frozenset({"mass_dilepton"})
+        with pytest.raises(ValueError, match="never varied"):
+            resolve_syst_observables(["mass_fourobject", "etavsPhi_leadingJet"], known)
         with pytest.raises(ValueError, match="unknown observable"):
             resolve_syst_observables(["not_a_hist"], known)
         with pytest.raises(ValueError, match="cannot be combined"):
@@ -693,7 +698,8 @@ class TestAnalyzerCoverage:
         meta = out["dataset_meta"]
         assert (meta["era"], meta["datatype"], meta["physics_group"]) == ({UL18}, {"mc"}, {"DYJets"})
         # Blinding is run-level (recorded for MC too); the processor default is blind.
-        assert meta["syst_config"] == {production_config(self.FAMILIES, self.OMIT, None, region="resolved",
+        fit = frozenset(n for n in FIT_OBSERVABLES if n in all_histogram_names())   # the default
+        assert meta["syst_config"] == {production_config(self.FAMILIES, self.OMIT, fit, region="resolved",
                                                           blind=True)}
         assert set(out["syst_coverage"]) == set(RESOLVED_REGIONS)
         for region in RESOLVED_REGIONS:
@@ -759,7 +765,7 @@ class TestAnalyzerCoverage:
     @_apply_sf_patches
     def test_chunks_with_different_observable_coverage_cannot_merge(self, *_):
         out_fit = self._proc(syst_observables=["fit"]).process(_mumu_chunk())
-        out_all = self._proc(syst_observables=None).process(_mumu_chunk())
+        out_all = self._proc(syst_observables=["all"]).process(_mumu_chunk())
         merged = accumulate([out_fit, out_all])
         with pytest.raises(SystematicCoverageError, match="systematic production config"):
             dataset_coverage("d", merged["DYJetsToLL_M-50"])
@@ -796,9 +802,9 @@ class TestAnalyzerCoverage:
         for key in ("mass_dilepton", "mass_fourobject", "pt_leading_lepton"):
             _assert_hists_equal(merged[key], single[key])
 
-        # The ee nominal survives under the muon-shift label.
-        ee = merged["mass_dilepton"][{"region": "wr_ee_resolved_sr", "syst": "MuScaleUp"}].sum(flow=True).value
-        ee_nom = merged["mass_dilepton"][{"region": "wr_ee_resolved_sr", "syst": NOMINAL}].sum(flow=True).value
+        # The ee nominal survives under the muon-shift label (on a fit observable: the default varies only those).
+        ee = merged["mass_fourobject"][{"region": "wr_ee_resolved_sr", "syst": "MuScaleUp"}].sum(flow=True).value
+        ee_nom = merged["mass_fourobject"][{"region": "wr_ee_resolved_sr", "syst": NOMINAL}].sum(flow=True).value
         assert ee_nom > 0 and ee == pytest.approx(ee_nom)
 
         for cov in (dataset_coverage("d", merged), dataset_coverage("d", single)):
@@ -807,7 +813,7 @@ class TestAnalyzerCoverage:
     @_apply_sf_patches
     def test_reduced_and_all_coverage_agree_on_shared_histograms(self, *_):
         reduced = self._proc(syst_observables=["fit"]).process(_mumu_chunk())["DYJetsToLL_M-50"]
-        everything = self._proc(syst_observables=None).process(_mumu_chunk())["DYJetsToLL_M-50"]
+        everything = self._proc(syst_observables=["all"]).process(_mumu_chunk())["DYJetsToLL_M-50"]
 
         for name in FIT_OBSERVABLES:
             if name in reduced:
@@ -815,6 +821,17 @@ class TestAnalyzerCoverage:
         assert set(reduced["pt_leading_lepton"].axes["syst"]) == {NOMINAL}
         assert "PileupUp" in everything["pt_leading_lepton"].axes["syst"]
         assert reduced["syst_coverage"] == everything["syst_coverage"]
+
+    @_apply_sf_patches
+    def test_default_varies_the_fit_masses_only_and_all_never_the_eta_phi_maps(self, *_):
+        default = self._proc().process(_mumu_chunk())["DYJetsToLL_M-50"]
+        everything = self._proc(syst_observables=["all"]).process(_mumu_chunk())["DYJetsToLL_M-50"]
+        assert "PileupUp" in default["mass_fourobject"].axes["syst"]
+        assert set(default["mass_dilepton"].axes["syst"]) == {NOMINAL}
+        assert "PileupUp" in everything["mass_dilepton"].axes["syst"]
+        for name in NEVER_VARIED:
+            if name in everything:
+                assert set(everything[name].axes["syst"]) == {NOMINAL}
 
 
 # ---------------------------------------------------------------------------
@@ -836,11 +853,11 @@ class TestWriter:
 
         with uproot.open(root_path) as f:
             keys = {k.split(";")[0] for k in f.keys()}
-            nominal = f["wr_mumu_resolved_sr/mass_dilepton_wr_mumu_resolved_sr"].values(flow=True)
-            up = f["syst_lumiup_wr_mumu_resolved_sr/mass_dilepton_syst_lumiup_wr_mumu_resolved_sr"].values(flow=True)
-            down = f["syst_lumidown_wr_mumu_resolved_sr/mass_dilepton_syst_lumidown_wr_mumu_resolved_sr"].values(flow=True)
-            up_var = f["syst_lumiup_wr_mumu_resolved_sr/mass_dilepton_syst_lumiup_wr_mumu_resolved_sr"].variances(flow=True)
-            nom_var = f["wr_mumu_resolved_sr/mass_dilepton_wr_mumu_resolved_sr"].variances(flow=True)
+            nominal = f["wr_mumu_resolved_sr/mass_fourobject_wr_mumu_resolved_sr"].values(flow=True)
+            up = f["syst_lumiup_wr_mumu_resolved_sr/mass_fourobject_syst_lumiup_wr_mumu_resolved_sr"].values(flow=True)
+            down = f["syst_lumidown_wr_mumu_resolved_sr/mass_fourobject_syst_lumidown_wr_mumu_resolved_sr"].values(flow=True)
+            up_var = f["syst_lumiup_wr_mumu_resolved_sr/mass_fourobject_syst_lumiup_wr_mumu_resolved_sr"].variances(flow=True)
+            nom_var = f["wr_mumu_resolved_sr/mass_fourobject_wr_mumu_resolved_sr"].variances(flow=True)
 
         delta = float(LUMI_UNC[UL18])
         assert nominal.sum() > 0
@@ -848,8 +865,8 @@ class TestWriter:
         np.testing.assert_allclose(down, nominal * (1 - delta))
         np.testing.assert_allclose(up_var, nom_var * (1 + delta) ** 2)
 
-        assert "syst_pileupup_wr_mumu_resolved_sr/mass_dilepton_syst_pileupup_wr_mumu_resolved_sr" in keys
-        assert "syst_muonidsfup_wr_mumu_resolved_sr/mass_dilepton_syst_muonidsfup_wr_mumu_resolved_sr" in keys
+        assert "syst_pileupup_wr_mumu_resolved_sr/mass_fourobject_syst_pileupup_wr_mumu_resolved_sr" in keys
+        assert "syst_muonidsfup_wr_mumu_resolved_sr/mass_fourobject_syst_muonidsfup_wr_mumu_resolved_sr" in keys
         # Unaffected: muon SFs do not apply to the ee region, so no empty template.
         assert not any(k.startswith("syst_muonidsfup_wr_ee_resolved_sr") for k in keys)
         # Coverage restriction: only fit observables carry variations.

@@ -45,7 +45,7 @@ from wrcoffea.analysis_config import (
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
-    SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
+    SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM, SEL_NO_THIRD_TIGHT_LEPTON,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
     SEL_60_MLL_150, DYCR_MLL_SPLIT, SEL_MLL_60_100, SEL_MLL_100_150,
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
@@ -95,6 +95,13 @@ _WARN_ONCE: set[str] = set()
 # NanoAODv12 (2022/2023) stores a wrong Jet_jetId lepton-veto bit.  The JME Jet ID page's repair: start from the
 # Tight bit, add the forward cuts to Tight, and build the lepton veto for |eta| <= 2.7 from the energy fractions.
 NANOAOD_V12_ERAS = ("Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix")
+
+
+def _both(a, b):
+    """Per-object AND of two jagged masks; an all-empty mask (type ``var * unknown``) counts as boolean."""
+    def _as_bool(m):
+        return ak.enforce_type(m, "var * bool") if str(ak.type(m).content) == "var * unknown" else m
+    return _as_bool(a) & _as_bool(b)
 
 
 def ak4_tight_lepton_veto_from_bits(jets, era):
@@ -165,10 +172,11 @@ class WrAnalysis(processor.ProcessorABC):
       the selection on shifted kinematics; normalization families (``lumi``)
       are not filled at event level at all, the writer scales the nominal.
     - `syst_observables`: which histograms receive the non-Nominal entries.
-      ``None``, empty, or ``["all"]`` selects every histogram (default);
-      ``["fit"]`` selects the fit observables
-      (``wrcoffea.systematics.FIT_OBSERVABLES``); otherwise an explicit list
-      of histogram names.
+      ``None``, empty, or ``["fit"]`` selects the fit observables
+      (``wrcoffea.systematics.FIT_OBSERVABLES``, the default since
+      2026-10-12); ``["all"]`` every histogram except
+      ``wrcoffea.systematics.NEVER_VARIED`` (the eta-phi maps); otherwise an
+      explicit list of histogram names.
     - `omit_systs`: source names (e.g. ``ElectronTrigSf``) deliberately left
       out although their family is enabled.  Recorded in the output so the
       omission is never mistaken for coverage.
@@ -178,14 +186,16 @@ class WrAnalysis(processor.ProcessorABC):
       metadata. Histograms are filled without the ``/sumw`` normalization; the
       caller must divide by the accumulated ``_sumw`` per dataset after processing.
     - `dy_zpt_reweight`: apply the DY Z-pT (QCD x EW) reweighting to ``DYJets``
-      for eras with a payload in ``config.yaml`` (default True).  The
-      ``dyzpt`` systematic family needs it enabled.
+      for eras with a payload in ``config.yaml``.  Default False (since
+      2026-10-12 the default DY is the LO HT-binned sample at its NNLO cross
+      section, not reweighted; ``--dy-reweight`` in ``bin/run_analysis.py``).
+      The ``dyzpt`` systematic family needs it enabled.
     - `signal_kfactor`: apply the k(m_lN)/<k> shape reweighting to ``Signal``
       for eras with a payload in ``config.yaml`` (default True).
     - `dy_reshape`: apply the data-driven DY reshape vs jet pT to ``DYJets``
-      for eras with a payload in ``config.yaml`` (default True).  It is
+      for eras with a payload in ``config.yaml`` (default False).  It is
       derived on top of the Z-pT reweighting, so it is only applied when
-      that is on too.
+      that is on too.  The ``dyreshape`` systematic family needs it enabled.
     - `unblind`: also build the signal regions for data and keep its full
       cutflows (default False: data is blinded, see ``wrcoffea.regions``).
       Only Run 2 data may be unblinded; MC is never blinded.  Recorded in
@@ -193,7 +203,7 @@ class WrAnalysis(processor.ProcessorABC):
     """
     def __init__(self, mass_point, enabled_systs=None, region="both", compute_sumw=False,
                  region_variants=None, syst_observables=None, omit_systs=None,
-                 dy_zpt_reweight=True, signal_kfactor=True, dy_reshape=True,
+                 dy_zpt_reweight=False, signal_kfactor=True, dy_reshape=False,
                  save_events=False, unblind=False):
         self._signal_sample = mass_point
         self._compute_sumw = compute_sumw
@@ -211,6 +221,12 @@ class WrAnalysis(processor.ProcessorABC):
         # wrcoffea.regions).  Validated up front so bad names fail before processing.
         self._region_variants = validate_variants(region_variants or ())
         self._enabled_systs = normalize_families(enabled_systs)
+        if "dyzpt" in self._enabled_systs and not self._dy_zpt_reweight:
+            raise ValueError("The dyzpt family varies the DY Z-pT reweighting, which is off: "
+                             "pass dy_zpt_reweight=True.")
+        if "dyreshape" in self._enabled_systs and not self._dy_reshape:
+            raise ValueError("The dyreshape family varies the DY reshape, which is off: pass "
+                             "dy_reshape=True and dy_zpt_reweight=True.")
         # None -> every histogram gets every variation; otherwise a frozenset
         # of histogram names (Nominal is always filled everywhere).
         self._syst_observables = resolve_syst_observables(syst_observables, all_histogram_names())
@@ -652,6 +668,9 @@ class WrAnalysis(processor.ProcessorABC):
 
         # Add criteria
         selections.add(SEL_TWO_TIGHT_LEPTONS,    n_tight == 2)
+        # The third-lepton veto as its own cutflow row: after ">= 2 tight <flavour>" (the two_id_* rows) it removes
+        # the events with an extra tight lepton of either flavour (Billy, 2026-10-12).
+        selections.add(SEL_NO_THIRD_TIGHT_LEPTON, n_tight <= 2)
         selections.add("lead_tight_lepton_pt60", ak.fill_none(l1.pt > CUTS["lead_lepton_pt_min"], False))
         selections.add("sublead_tight_pt53",     ak.fill_none(l2.pt > CUTS["sublead_lepton_pt_min"], False))
         selections.add("min_two_ak4_jets",       n_ak4 >= 2)
@@ -700,19 +719,22 @@ class WrAnalysis(processor.ProcessorABC):
         # Lepton-level counts per event (separate by flavor)
         n_ele_pteta = ak.sum(lepton_masks["ele_pteta"], axis=1)
         n_mu_pteta  = ak.sum(lepton_masks["mu_pteta"],  axis=1)
-        n_ele_id    = ak.sum(lepton_masks["ele_id"],    axis=1)
-        n_mu_id     = ak.sum(lepton_masks["mu_id"],     axis=1)
+        # ID row: leptons passing pT/eta AND the ID together, i.e. tight leptons (Billy, 2026-10-12: an ID-only
+        # count let the pT/eta row and the ID row pass on different pairs of leptons, e.g. a HEEP electron at
+        # 35-53 GeV, so the next row mixed that mismatch with the third-lepton veto).
+        n_ele_id    = ak.sum(_both(lepton_masks["ele_pteta"], lepton_masks["ele_id"]), axis=1)
+        n_mu_id     = ak.sum(_both(lepton_masks["mu_pteta"],  lepton_masks["mu_id"]),  axis=1)
 
         # Object-level cutflow rows.  These use "at least" counts so that an
-        # extra lepton passing only one of (pT/eta, ID) does not reject an
-        # event that the region (exactly two tight leptons) keeps; the tight
-        # rows that follow in the cutflow pin the count to exactly two.
-        # pT/eta-only
+        # extra lepton failing the pT/eta cuts does not reject an event that the
+        # region keeps; the no_third_tight_lepton row that follows in the cutflow
+        # pins the count to exactly two tight leptons.
+        # pT/eta only
         selections.add("two_pteta_electrons", n_ele_pteta >= 2)
         selections.add("two_pteta_muons",     n_mu_pteta  >= 2)
         selections.add("two_pteta_em",        (n_ele_pteta >= 1) & (n_mu_pteta >= 1))
 
-        # ID-only
+        # pT/eta and ID (tight)
         selections.add("two_id_electrons", n_ele_id >= 2)
         selections.add("two_id_muons",     n_mu_id  >= 2)
         selections.add("two_id_em",        (n_ele_id >= 1) & (n_mu_id >= 1))

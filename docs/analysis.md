@@ -131,9 +131,10 @@ CR measured on tt̄, AN-19-083 Appendix J); `dy-cr-split` splits the DY CRs at m
 
 ## Event weights
 
-MC base weight: `genWeight × xsec × lumi × 1000 / genEventSumw`, times the pileup weight, the DY
-Z-pT weight, the signal k(m(ℓN))/⟨k⟩ weight and, in the UL eras, the L1 prefiring weight. Per
-region it is multiplied by the lepton scale factors that enter that region and by the DY reshape:
+MC base weight: `genWeight × xsec × lumi × 1000 / genEventSumw`, times the pileup weight, the
+signal k(m(ℓN))/⟨k⟩ weight, in the UL eras the L1 prefiring weight and, with `--dy-reweight`, the
+DY Z-pT weight. Per region it is multiplied by the lepton scale factors that enter that region
+(and by the DY reshape with `--dy-reweight zpt+reshape`):
 
 - ee regions: electron reco, HEEP ID and trigger SFs of the tight electrons; μμ regions: muon reco,
   ID, isolation and trigger SFs of the tight muons; eμ regions: both, and the trigger SF of the
@@ -141,7 +142,7 @@ region it is multiplied by the lepton scale factors that enter that region and b
 - boosted regions: loose-muon reco and ID (no isolation) or loose-electron reco SFs of the partner
   (the loose-electron ID efficiency is absorbed in the LSF SF, as in Run 2);
 - boosted SR and flavour CRs: the LSF SF by the flavour of the lepton in the jet;
-- DY (the LO HT-binned sample only): the jet-pT reshape.
+- DY (the LO HT-binned sample only, with `--dy-reweight zpt+reshape`): the jet-pT reshape.
 
 Trigger SFs: electrons, one SF for the OR (Run 3: the EGM Ele30 TightID SF as a proxy; UL: the
 Run 2 HEEP trigger-OR efficiency); muons, the per-leg data/MC efficiency OR for 2022 to 2025 and
@@ -158,9 +159,11 @@ lepton SFs.
 
 ### Drell-Yan modelling
 
-DY is the LO madgraphMLM HT-binned sample (`lo_ht`) in every era, with two corrections derived
-exactly as in AN-19-083 and applied only to that sample (`dy_reweight_datasets`; other DY variants
-are cross-checks and get the identity):
+DY is the LO madgraphMLM HT-binned sample (`lo_ht`) in every era. By default (since 2026-10-12) it
+is not reweighted: its cross section, LO × the inclusive NNLO k-factor of its generator class
+([inputs.md](inputs.md)), is its only correction. Two corrections derived exactly as in AN-19-083
+can be switched on with `--dy-reweight`; they apply only to that sample (`dy_reweight_datasets`;
+other DY variants are cross-checks and get the identity):
 
 - **Z-pT reweight** (`wrcoffea/dy_reweight.py`, payload per era): the NLO/LO ratio versus the
   generator Z pT (dilepton system, m ≥ 50 GeV) of the inclusive NLO FxFX over the inclusive LO MLM
@@ -176,7 +179,11 @@ are cross-checks and get the identity):
   difference. Derived by `scripts/derive_dy_reshape.py` from a production without it; one payload
   per UL era and per Run 3 data-taking year.
 
-Both are switched off with `--no-dy-zpt-reweight` (implies `--no-dy-reshape`) and `--no-dy-reshape`.
+`--dy-reweight zpt` applies the Z-pT reweight, `--dy-reweight zpt+reshape` both (the reshape was
+derived on top of the Z-pT reweight, so it never comes alone); `none` is the default. The `dyzpt`
+and `dyreshape` families need the matching correction on. Productions made before 2026-10-12 have
+both corrections in their default DY (the old `--no-dy-zpt-reweight` and `--no-dy-reshape` still
+work and give what they gave then: `none` and `zpt`).
 The HT-binned sets have no events below their first bin, LHE H_T = 40 GeV in Run 3 and 70 GeV in
 UL (`default_mc_tag` in `config.yaml`). In 2024 this costs 9 to 16 % of the boosted-SR DY, about 1 %
 of the resolved-SR DY and nothing in the control regions; the choice (2026-10-08) is to live with it
@@ -216,8 +223,8 @@ templates. Variations are written as `syst_<label lower>_<region>` folders.
 | `jms`, `jmr` | JMS, JMR | shape | the residual soft-drop mass scale, (1 ± 0.01) m_SD, and resolution, m_gen + (m_SD − m_gen)(1 ± 0.02) with m_gen from the matched gen subjets (jets without a match unchanged); they move the m_SD > 40 GeV cut of the boosted regions (JME jet mass recommendation, validated for 50 ≤ m_SD < 300 GeV and pT ≥ 100 GeV) |
 | `elescale`, `elesmear` | EleScale, EleSmear | shape | electron energy scale and resolution (Run 3) |
 | `muscale`, `musmear` | MuScale, MuSmear | shape | muon momentum scale and resolution (2022 to 2024: the high-pT recipe; UL and 2025: a scale placeholder and no `musmear`, see open items) |
-| `dyzpt` | DYZptQcdScale, DYZptQcdPdf, DYZptQcdAlphaS, DYZptEw1, DYZptEw2, DYZptEw3 | weight | the Z-pT reweight's QCD and EW uncertainties (DY only) |
-| `dyreshape` | DYReshapeStat, DYReshapeChannel | weight | the reshape's statistical and ee-vs-μμ uncertainties (DY only) |
+| `dyzpt` | DYZptQcdScale, DYZptQcdPdf, DYZptQcdAlphaS, DYZptEw1, DYZptEw2, DYZptEw3 | weight | the Z-pT reweight's QCD and EW uncertainties (DY only; needs `--dy-reweight zpt` or `zpt+reshape`) |
+| `dyreshape` | DYReshapeStat, DYReshapeChannel | weight | the reshape's statistical and ee-vs-μμ uncertainties (DY only; needs `--dy-reweight zpt+reshape`) |
 | `scale` | ScaleMuR, ScaleMuF, ScaleMuRF | weight | QCD renormalization and factorization scales from `LHEScaleWeight`, each normalized to the dataset's mean so only acceptance and shape move; the plotter takes the envelope |
 | `ps` | PSISR, PSFSR | weight | parton-shower ISR and FSR from `PSWeight`, normalized the same way |
 | `pdf` | PDF, AlphaS | members | every `LHEPdfWeight` member stored per PDF set (`pdfmembers_<region>/<var>_lha<id>`); the Hessian quadrature and the α_S shift (scaled to 0.0015) are formed at the final binning by the plotter and the datacards |

@@ -60,6 +60,7 @@ import numpy as np
 import uproot
 from hist import Hist
 
+from wrcoffea.cli_utils import dy_file_tag, dy_record
 from wrcoffea.era_utils import get_era_details
 from wrcoffea.histograms import all_histogram_names
 from wrcoffea.pdf_weights import collect_members, write_members
@@ -68,6 +69,7 @@ from wrcoffea.systematics import (
     NOMINAL,
     NORMALIZATION,
     describe_syst_observables,
+    is_varied,
     required_labels,
     normalization_factor,
     normalize_families,
@@ -611,7 +613,7 @@ def materialize_normalization(summed: Dict[str, Hist], report: MergeReport, era:
             for direction, sign in (("Up", 1.0), ("Down", -1.0)):
                 label = src.label(direction)
                 for key, h in summed.items():
-                    if syst_observables is not None and key not in syst_observables:
+                    if not is_varied(key, syst_observables):
                         continue
                     copy_nominal_into(h, region, label, scale=1.0 + sign * factor)
                 labels.append(label)
@@ -780,8 +782,13 @@ def save_histograms(histograms, args):
     else:
         filename_prefix = f"WRAnalyzer"
 
+    # DY variants share the directory: anything but the default DY carries its tag in the file name.
+    dy = (dy_record(era, getattr(args, "dy", None), getattr(args, "dy_reweight", None))
+          if sample == "DYJets" else None)
     if sample == "Signal":
         output_file = output_dir / f"{filename_prefix}_signal_{hnwr_mass}.root"
+    elif dy is not None and (tag := dy_file_tag(era, dy)) is not None:
+        output_file = output_dir / f"{filename_prefix}_{sample}_{tag}.root"
     else:
         output_file = output_dir / f"{filename_prefix}_{sample}.root"
 
@@ -836,6 +843,8 @@ def save_histograms(histograms, args):
     )
     if pdf_layouts:
         manifest["pdf_sets"] = pdf_layouts
+    if dy is not None:
+        manifest["dy"] = dy
     manifest_file = output_file.with_name(output_file.stem + "_systematics.json")
     manifest_file.write_text(json.dumps(manifest, indent=2, sort_keys=True))
 

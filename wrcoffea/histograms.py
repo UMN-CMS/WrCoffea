@@ -29,13 +29,13 @@ from coffea.processor import column_accumulator
 
 from wrcoffea.regions import blind_cutflow_steps
 from wrcoffea.pdf_weights import PDF_OBSERVABLES, fill_members
+from wrcoffea.systematics import is_varied
 from wrcoffea.analysis_config import (
     CUTS,
     SEL_MIN_TWO_AK4_JETS_PTETA, SEL_MIN_TWO_AK4_JETS_ID,
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
-    SEL_TWO_TIGHT_LEPTONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53,
-    SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
+    SEL_LEAD_TIGHT_PT60, SEL_NO_THIRD_TIGHT_LEPTON,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
     #SEL_JET_VETO_MAP,
@@ -55,7 +55,7 @@ NOMINAL = "Nominal"
 
 def _labels_for(hist_name, syst_weights, syst_observables):
     """Which entries of ``syst_weights`` are filled into ``hist_name``."""
-    if syst_observables is None or hist_name in syst_observables:
+    if is_varied(hist_name, syst_observables):
         return list(syst_weights)
     return [k for k in syst_weights if k == NOMINAL]
 
@@ -64,7 +64,7 @@ def _fill_pdf_members(output, pdf, hist_name, region, cut, vals, syst_weights_cu
     """Fill the PDF members of *hist_name* (a fit mass) when this pass carries them."""
     if pdf is None or hist_name not in PDF_OBSERVABLES or NOMINAL not in syst_weights_cut:
         return
-    if syst_observables is not None and hist_name not in syst_observables:
+    if not is_varied(hist_name, syst_observables):
         return
     store, members = pdf
     axis = output[hist_name].axes[hist_name]
@@ -503,10 +503,8 @@ def fill_cutflows(output, selections, weights, *, blind=False):
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_ELECTRONS,
             SEL_TWO_ID_ELECTRONS,
-            SEL_TWO_TIGHT_LEPTONS,
-            SEL_TWO_TIGHT_ELECTRONS,
+            SEL_NO_THIRD_TIGHT_LEPTON,
             SEL_LEAD_TIGHT_PT60,
-            SEL_SUBLEAD_TIGHT_PT53,
             SEL_E_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
             SEL_MLLJJ_GT800,
@@ -518,10 +516,8 @@ def fill_cutflows(output, selections, weights, *, blind=False):
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_MUONS,
             SEL_TWO_ID_MUONS,
-            SEL_TWO_TIGHT_LEPTONS,
-            SEL_TWO_TIGHT_MUONS,
+            SEL_NO_THIRD_TIGHT_LEPTON,
             SEL_LEAD_TIGHT_PT60,
-            SEL_SUBLEAD_TIGHT_PT53,
             SEL_MU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
             SEL_MLLJJ_GT800,
@@ -533,10 +529,8 @@ def fill_cutflows(output, selections, weights, *, blind=False):
             SEL_MIN_TWO_AK4_JETS_ID,
             SEL_TWO_PTETA_EM,
             SEL_TWO_ID_EM,
-            SEL_TWO_TIGHT_LEPTONS,
-            SEL_TWO_TIGHT_EM,
+            SEL_NO_THIRD_TIGHT_LEPTON,
             SEL_LEAD_TIGHT_PT60,
-            SEL_SUBLEAD_TIGHT_PT53,
             SEL_EMU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
             SEL_MLLJJ_GT800,

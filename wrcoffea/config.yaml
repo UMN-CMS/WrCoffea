@@ -50,6 +50,9 @@ lumis:
 # 9-16 % of the boosted SR DY in 2024 (none of either DY CR) come from there.
 # Those boosted SR events are high-mass DY -> ll+gamma with no partons: the AK8
 # jet is the second lepton plus its FSR photon.
+# Since 2026-10-12 it is not reweighted by default: the configured cross section
+# (LO x the inclusive NNLO k-factor) is its only correction.  The Z-pT reweight
+# and the jet-pT reshape below are applied only with --dy-reweight.
 default_mc_tag:
   RunIISummer20UL16APV: dy_lo_ht
   RunIISummer20UL16: dy_lo_ht
@@ -568,10 +571,11 @@ lumi_unc:
   RunIII2025Summer25: 0.05     # 5% (2025 preliminary; uncorrelated with the other years)
 
 # Drell-Yan Z-pT reweighting (QCD NLO/LO ratio x EW correction) evaluated on
-# the generator-level Z pT of DYJets events.  The nominal weight is applied to
-# DYJets whenever an era is listed here (disable with --no-dy-zpt-reweight);
-# --systs dyzpt adds the QCD scale/PDF/alphaS and EW variations.  It applies
-# only to the datasets named by dy_reweight_datasets (the LO HT-binned set).
+# the generator-level Z pT of DYJets events.  Off by default since 2026-10-12;
+# bin/run_analysis.py --dy-reweight zpt (or zpt+reshape) applies the nominal
+# weight in the eras listed here, and --systs dyzpt then adds the QCD
+# scale/PDF/alphaS and EW variations.  It applies only to the datasets named by
+# dy_reweight_datasets (the LO HT-binned set).
 #
 # Payloads are our own derivations with scripts/derive_dy_zpt_reweight.py,
 # done the way AN-19-083 Sec. 5.1 did it (Billy, 2026-10-11; SKFlat
@@ -610,8 +614,8 @@ dy_zpt_reweight:
 # ee and mumu combined (Run 2 DYReshapeJetPt) and applied to every DY event in
 # every region.  Derive with scripts/derive_dy_reshape.py from a production
 # that had the Z-pT reweighting on; the reshape is only applied together with
-# it.  Disable with --no-dy-reshape; --systs dyreshape adds the stat and
-# ee-vs-mumu variations.
+# it.  Off by default since 2026-10-12; --dy-reweight zpt+reshape applies it,
+# and --systs dyreshape then adds the stat and ee-vs-mumu variations.
 #
 # UL18: derived 2026-09-07 from the local production dyreshape_20260907 (data +
 # bkg, DY lo_ht, Z-pT reweight on).  Its overall level (~1.5 at low jet pT

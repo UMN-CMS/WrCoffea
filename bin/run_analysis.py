@@ -19,6 +19,7 @@ from wrcoffea.cli_utils import (
     SPLITTABLE_GROUPS,
     build_fileset_path,
     build_sample_to_group_map,
+    default_dy_variant,
     list_eras,
     list_samples,
     load_and_select_fileset,
@@ -42,6 +43,31 @@ from wrcoffea.xrootd_fallback import (
 )
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Corrections of the LO HT-binned DY sample (config.yaml dy_zpt_reweight, dy_reshape).  Since
+# 2026-10-12 the default is none: DY at its NNLO-normalized cross section, not reweighted.
+DY_REWEIGHT_CHOICES = ("none", "zpt", "zpt+reshape")
+
+
+def resolve_dy_reweight(args) -> str:
+    """The DY corrections to apply: ``--dy-reweight`` (default ``none``) or a legacy flag.
+
+    The legacy flags switched corrections off while both were on by default, and keep
+    the output they gave then: ``--no-dy-zpt-reweight`` = neither (``none``),
+    ``--no-dy-reshape`` = the Z-pT reweight alone (``zpt``).
+    """
+    mode = getattr(args, "dy_reweight", None)
+    if getattr(args, "no_dy_zpt_reweight", False):
+        legacy = ("--no-dy-zpt-reweight", "none")  # it switched the reshape off too
+    elif getattr(args, "no_dy_reshape", False):
+        legacy = ("--no-dy-reshape", "zpt")
+    else:
+        return mode or "none"
+    if mode is not None:
+        raise ValueError(f"{legacy[0]} cannot be combined with --dy-reweight.")
+    logging.warning("%s is deprecated: it means --dy-reweight %s (the default is none since "
+                    "2026-10-12).", *legacy)
+    return legacy[1]
 
 
 def _format_dask_log_entries(entries):
@@ -189,12 +215,16 @@ def validate_arguments(args, sig_points):
     # and every requested observable must be a booked histogram.
     validate_requested(args.era, getattr(args, "systs", None) or [],
                        getattr(args, "omit_systs", None) or [])
-    if getattr(args, "no_dy_zpt_reweight", False) and "dyzpt" in (getattr(args, "systs", None) or []):
-        raise ValueError("--systs dyzpt varies the DY Z-pT reweighting; it cannot be combined with --no-dy-zpt-reweight.")
-    if "dyreshape" in (getattr(args, "systs", None) or []) and (
-            getattr(args, "no_dy_reshape", False) or getattr(args, "no_dy_zpt_reweight", False)):
-        raise ValueError("--systs dyreshape varies the DY reshape; it needs both the reshape and the "
-                         "Z-pT reweighting on (drop --no-dy-reshape / --no-dy-zpt-reweight).")
+    dy_reweight = getattr(args, "dy_reweight", None) or "none"
+    if dy_reweight != "none" and args.dy not in (None, default_dy_variant(args.era)):
+        raise ValueError(f"--dy-reweight corrects the {default_dy_variant(args.era)} DY sample only "
+                         f"(config.yaml dy_reweight_datasets); --dy {args.dy} has nothing to reweight.")
+    if "dyzpt" in (getattr(args, "systs", None) or []) and dy_reweight == "none":
+        raise ValueError("--systs dyzpt varies the DY Z-pT reweighting, which is off by default: "
+                         "add --dy-reweight zpt or --dy-reweight zpt+reshape.")
+    if "dyreshape" in (getattr(args, "systs", None) or []) and dy_reweight != "zpt+reshape":
+        raise ValueError("--systs dyreshape varies the DY reshape, which is off unless "
+                         "--dy-reweight zpt+reshape.")
     from wrcoffea.histograms import all_histogram_names
     resolve_syst_observables(getattr(args, "syst_observables", None), all_histogram_names())
 
@@ -517,9 +547,9 @@ def _process_fileset(args, fileset, *, client, condor=False):
         syst_observables=getattr(args, "syst_observables", None),
         omit_systs=getattr(args, "omit_systs", None),
         save_events=bool(getattr(args, "save_events", False)),
-        dy_zpt_reweight=not getattr(args, "no_dy_zpt_reweight", False),
+        dy_zpt_reweight=(getattr(args, "dy_reweight", None) or "none") != "none",
         signal_kfactor=not getattr(args, "no_signal_kfactor", False),
-        dy_reshape=not getattr(args, "no_dy_reshape", False),
+        dy_reshape=getattr(args, "dy_reweight", None) == "zpt+reshape",
         unblind=bool(getattr(args, "unblind", False)),
     )
     run = Runner(
@@ -651,22 +681,28 @@ if __name__ == "__main__":
                                "output manifest. Required when a source has no inputs for the era.")
     optional.add_argument("--syst-observables", nargs="*", default=None, metavar="OBS",
                           help="Histograms that receive the systematic variations (Nominal is always "
-                               "filled everywhere). Default: all. Use 'fit' to restrict them to "
-                               f"{' '.join(FIT_OBSERVABLES)} (saves memory), or list histogram names.")
+                               f"filled everywhere). Default: fit, the fit observables ({' '.join(FIT_OBSERVABLES)}). "
+                               "'all' varies every histogram except the eta-phi maps (for the productions "
+                               "behind the control plots), or list histogram names.")
     optional.add_argument("--region", type=str, default="both", choices=["resolved", "boosted", "both"], help="Analysis region to run: resolved, boosted, or both (default: both).")
     optional.add_argument("--unblind", action="store_true",
                           help="Fill the data signal regions (and their variants) and the full data cutflows. "
                                "Run 2 eras only. Default: data is blinded (no signal-region histograms or "
                                "events, ee/mumu cutflows stop before the mll cut); MC is never blinded.")
-    optional.add_argument("--no-dy-zpt-reweight", action="store_true",
-                          help="Do not apply the DY Z-pT (QCD x EW) reweighting to DYJets for eras with a payload "
-                               "in config.yaml (dy_zpt_reweight). Incompatible with --systs dyzpt.")
+    optional.add_argument("--dy-reweight", choices=DY_REWEIGHT_CHOICES, default=None,
+                          help="Corrections of the LO HT-binned DY sample, for eras with payloads in config.yaml "
+                               "(dy_zpt_reweight, dy_reshape): none (default since 2026-10-12: the sample at "
+                               "its NNLO-normalized cross section), zpt (the Z-pT QCD x EW reweight) or "
+                               "zpt+reshape (also the data-driven jet-pT reshape, derived on top of the Z-pT "
+                               "reweight). --systs dyzpt needs zpt or zpt+reshape, --systs dyreshape "
+                               "zpt+reshape. The DY file is WRAnalyzer_DYJets.root for the default DY (lo_ht, "
+                               "none), WRAnalyzer_DYJets_<variant>[_zpt|_zpt_reshape].root otherwise.")
+    # Legacy switches from when both corrections were on by default (resolve_dy_reweight).
+    optional.add_argument("--no-dy-zpt-reweight", action="store_true", help=argparse.SUPPRESS)
     optional.add_argument("--xrootd-timeout", type=int, default=None, metavar="SECONDS",
                           help="XRootD read timeout per chunk (default: 60 with --condor, 10 locally). Raise it when "
                                "streaming skims over a high-latency link ('Operation expired' read failures).")
-    optional.add_argument("--no-dy-reshape", action="store_true",
-                          help="Do not apply the data-driven DY reshape vs jet pT for eras with a payload in "
-                               "config.yaml (dy_reshape). Also off whenever --no-dy-zpt-reweight is given.")
+    optional.add_argument("--no-dy-reshape", action="store_true", help=argparse.SUPPRESS)
     optional.add_argument("--no-signal-kfactor", action="store_true",
                           help="Do not apply the signal k(m_lN)/<k> shape reweighting for eras with a payload "
                                "in config.yaml (signal_kfactor).")
@@ -738,6 +774,7 @@ if __name__ == "__main__":
 
     # Normalize any legacy naming to canonical WR/N format before validation.
     args.mass = normalize_mass_point(args.mass)
+    args.dy_reweight = resolve_dy_reweight(args)
 
     # The mass-point CSV is read only for runs that involve Signal: a data-only era has none.
     MASS_CHOICES = mass_choices_for(args.era, args.sample)

@@ -324,6 +324,35 @@ def filter_by_process(fileset: Mapping, desired_process: str, *, mass: str | Non
     }
 
 
+# DY outputs share one directory: the default DY (the era's default_mc_tag variant, not reweighted) is
+# WRAnalyzer_DYJets.root, any other WRAnalyzer_DYJets_<tag>.root with <tag> = the --dy variant plus the
+# --dy-reweight suffix (WR_Plotter data/dy_samples.yaml uses the same tags).
+DY_REWEIGHT_SUFFIX = {"none": "", "zpt": "_zpt", "zpt+reshape": "_zpt_reshape"}
+
+
+def default_dy_variant(era: str) -> str:
+    """The era's default DY variant: config.yaml ``default_mc_tag`` without its ``dy_`` prefix."""
+    _, _, era_name = get_era_details(era)
+    tag = DEFAULT_MC_TAG.get(era_name)
+    if tag is None:
+        raise ValueError(f"No default MC fileset tag for era '{era_name}' (config.yaml default_mc_tag).")
+    return tag.removeprefix("dy_")
+
+
+def dy_record(era: str, dy: str | None, dy_reweight: str | None) -> dict:
+    """What a DYJets output holds: ``{"variant": ..., "reweight": ...}`` (written to its manifest)."""
+    reweight = dy_reweight or "none"
+    if reweight not in DY_REWEIGHT_SUFFIX:
+        raise ValueError(f"Unknown DY reweighting '{reweight}'; choices: {', '.join(DY_REWEIGHT_SUFFIX)}.")
+    return {"variant": dy or default_dy_variant(era), "reweight": reweight}
+
+
+def dy_file_tag(era: str, record: dict) -> str | None:
+    """The file-name tag of a DYJets output: None for the default DY, else ``<variant>[_zpt|_zpt_reshape]``."""
+    tag = record["variant"] + DY_REWEIGHT_SUFFIX[record["reweight"]]
+    return None if tag == default_dy_variant(era) else tag
+
+
 def build_fileset_path(*, era: str, sample: str, unskimmed: bool, dy: str) -> Path:
     run, year, era_name = get_era_details(era)
 

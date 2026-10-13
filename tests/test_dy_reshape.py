@@ -21,6 +21,7 @@ from wrcoffea.systematics import NOMINAL, expected_labels, systematics_for, vali
 UL18 = "RunIISummer20UL18"
 RUN3 = "Run3Summer22"
 UNMAPPED = "RunXSummer99"   # no era maps a reshape payload under this name
+ON = {"dy_zpt_reweight": True, "dy_reshape": True}   # both off by default since 2026-10-12
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -47,7 +48,8 @@ def _make_rootfiles(tmp_path):
         # file: {channel: (data or MC yields per kind)}
         "WRAnalyzer_EGamma.root": {"ee": (1.0, 1000), "mumu": (0.0, 0)},
         "WRAnalyzer_Muon.root": {"ee": (0.0, 0), "mumu": (1.0, 2000)},
-        "WRAnalyzer_DYJets.root": {"ee": (0.5, 1600), "mumu": (0.5, 3400)},   # 800 / 1700
+        "WRAnalyzer_DYJets_lo_ht_zpt.root": {"ee": (0.5, 1600), "mumu": (0.5, 3400)},   # 800 / 1700
+        "WRAnalyzer_DYJets.root": {"ee": (1.0, 777), "mumu": (1.0, 777)},   # the default DY: ignored
         "WRAnalyzer_tt_tW.root": {"ee": (1.0, 100), "mumu": (1.0, 100)},
         "WRAnalyzer_Other.root": {"ee": (1.0, 50), "mumu": (1.0, 60)},
         "WRAnalyzer_signal_WR2000_N1000.root": {"ee": (1.0, 999), "mumu": (1.0, 999)},  # must be ignored
@@ -105,6 +107,29 @@ class TestDerivation:
         (b / "WRAnalyzer_Other.root").unlink()
         with pytest.raises(ValueError, match="different non-DY background files"):
             s.derive([a, b], "2022")
+
+    @pytest.mark.parametrize("reweight, ok", [("zpt", True), ("zpt+reshape", False), ("none", False)])
+    def test_dy_record_checked(self, tmp_path, reweight, ok):
+        rootfiles = _make_rootfiles(tmp_path)
+        (rootfiles / "WRAnalyzer_DYJets_lo_ht_zpt_systematics.json").write_text(
+            json.dumps({"dy": {"variant": "lo_ht", "reweight": reweight}}))
+        s = _script()
+        if ok:
+            assert s.derive(rootfiles, UL18)["resolved"]["ratio"][2] == pytest.approx(2690 / 2500)
+        else:
+            with pytest.raises(ValueError, match="--dy-reweight zpt"):
+                s.derive(rootfiles, UL18)
+
+    def test_old_layout_dy_file(self, tmp_path, capsys):
+        """Productions before 2026-10-12: the DY file of another directory, named WRAnalyzer_DYJets.root."""
+        rootfiles = _make_rootfiles(tmp_path / "prod")
+        old = tmp_path / "prod_noreshape"
+        old.mkdir()
+        (rootfiles / "WRAnalyzer_DYJets_lo_ht_zpt.root").rename(old / "WRAnalyzer_DYJets.root")
+        out = _script().derive(rootfiles, UL18, dy_rootfiles=old, dy_file="WRAnalyzer_DYJets.root")
+        assert out["resolved"]["ratio"][2] == pytest.approx(2690 / 2500)
+        assert out["provenance"]["dy_file"] == "WRAnalyzer_DYJets.root"
+        assert "no DY record" in capsys.readouterr().err
 
     def test_cli_writes_payload(self, tmp_path):
         rootfiles = _make_rootfiles(tmp_path / "prod")
@@ -201,7 +226,7 @@ class TestAnalyzerWiring:
                                            group == "DYJets", True)
 
     def test_dy_gets_ratio_and_variations(self, configured):
-        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both", **ON)
         out = self._run(proc, "resolved", [50.0, 150.0, 2500.0], "DYJets")
         np.testing.assert_allclose(out[NOMINAL], [2.4, 2.2, 1.4])
         np.testing.assert_allclose(out["DYReshapeStatUp"], [2.6, 2.4, 1.6])
@@ -210,14 +235,14 @@ class TestAnalyzerWiring:
         np.testing.assert_allclose(out[NOMINAL], [1.8, 1.2, 1.9])
 
     def test_non_dy_identity_with_labels(self, configured):
-        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both", **ON)
         out = self._run(proc, "resolved", [150.0] * self.N, "tt_tW")
         for name in SOURCE_NAMES:
             np.testing.assert_array_equal(out[f"{name}Up"], out[NOMINAL])
         np.testing.assert_allclose(out[NOMINAL], 2.0)
 
     def test_existing_sf_variations_are_scaled_too(self, configured):
-        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both")
+        proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both", **ON)
         base = {NOMINAL: np.ones(self.N), "MuonIdSfUp": np.full(self.N, 1.5)}
         out = self._run(proc, "resolved", [150.0] * self.N, "DYJets", syst=base)
         np.testing.assert_allclose(out["MuonIdSfUp"], 1.65)
@@ -225,23 +250,28 @@ class TestAnalyzerWiring:
 
     def test_disabled_and_coupled_to_zpt(self, configured):
         base = {NOMINAL: np.ones(self.N)}
-        for proc in (WrAnalysis(mass_point=None, region="both", dy_reshape=False),
-                     WrAnalysis(mass_point=None, region="both", dy_zpt_reweight=False)):
+        for proc in (WrAnalysis(mass_point=None, region="both"),  # off by default since 2026-10-12
+                     WrAnalysis(mass_point=None, region="both", dy_zpt_reweight=True, dy_reshape=False),
+                     WrAnalysis(mass_point=None, region="both", dy_zpt_reweight=False, dy_reshape=True)):
             assert not proc._dy_reshape
             assert self._run(proc, "resolved", [150.0] * self.N, "DYJets", syst=base) is base
 
     def test_unconfigured_era_untouched(self):
-        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both", **ON)
         base = {NOMINAL: np.ones(self.N)}
         assert proc._dy_reshape_for_region(base, "resolved", np.ones(self.N), UNMAPPED, True, True) is base
 
     def test_other_dy_sample_gets_identity(self, configured):
-        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both")
+        proc = WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both", **ON)
         base = {NOMINAL: np.full(self.N, 2.0)}
         out = proc._dy_reshape_for_region(base, "resolved", np.full(self.N, 150.0), UL18, False, True)
         np.testing.assert_allclose(out[NOMINAL], 2.0)
         for name in SOURCE_NAMES:
             np.testing.assert_array_equal(out[f"{name}Up"], out[NOMINAL])
+
+    def test_dyreshape_family_needs_the_reshape(self):
+        with pytest.raises(ValueError, match="dyreshape"):
+            WrAnalysis(mass_point=None, enabled_systs=["dyreshape"], region="both", dy_zpt_reweight=True)
 
     def test_group_name_instead_of_flag_refused(self, configured):
         proc = WrAnalysis(mass_point=None, enabled_systs=[], region="both")

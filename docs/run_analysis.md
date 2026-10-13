@@ -15,7 +15,8 @@ python3 bin/run_analysis.py RunIII2024Summer24 all --dir 20261011           # ev
 python3 bin/run_analysis.py RunIII2024Summer24 bkg --dir 20261011           # the four background groups
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --dir 20261011 --dy nlo_inc
 python3 bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --dir 20261011
-python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf jer jes jms jmr elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf --dir 20261011
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --systs lumi pileup sf jer jes jms jmr elescale elesmear muscale musmear lsf scale ps pdf --dir 20261011
+python3 bin/run_analysis.py RunIII2024Summer24 DYJets --dy-reweight zpt+reshape --dir 20261011   # WRAnalyzer_DYJets_lo_ht_zpt_reshape.root
 python3 bin/run_analysis.py RunIII2024Summer24 DYJets --maxfiles 1 --maxchunks 1 --dir smoke   # a quick test
 python3 bin/run_analysis.py RunIISummer20UL18 data --unblind --dir 20261011                     # Run 2 only
 ```
@@ -54,10 +55,17 @@ python3 bin/run_analysis.py RunIISummer20UL18 Signal --mass WR3800_N1600 --dir m
 WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_<sample>.root
 WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_<sample>_systematics.json   (the manifest)
 WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_signal_WR<wr>_N<n>.root    (one file per signal point)
+WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/WRAnalyzer_DYJets_<tag>.root          (a DY sample other than the default)
 ```
 
 `--dir` names the production; without it the files go directly under `<Era>/`. `--name` is
-inserted after the prefix: `WRAnalyzer_<name>_<sample>.root`. Inside a file:
+inserted after the prefix: `WRAnalyzer_<name>_<sample>.root`. Every DY sample goes into the
+same `--dir` (since 2026-10-12): the default (`lo_ht`, not reweighted) is
+`WRAnalyzer_DYJets.root`, any other `WRAnalyzer_DYJets_<tag>.root` with `<tag>` the `--dy`
+variant plus `_zpt` or `_zpt_reshape` for `--dy-reweight zpt` or `zpt+reshape`
+(`WRAnalyzer_DYJets_nlo_inc.root`, `WRAnalyzer_DYJets_lo_ht_zpt_reshape.root`). Before, every
+variant was `WRAnalyzer_DYJets.root` in a directory of its own, `<dir>_<tag>_dy` by
+convention. Inside a file:
 
 - `<region>/<var>_<region>`: the nominal histograms (MC scaled to σ × L), one folder per region
   ([analysis.md](analysis.md) lists them). Variations, where produced:
@@ -76,7 +84,8 @@ inserted after the prefix: `WRAnalyzer_<name>_<sample>.root`. Inside a file:
 
 The manifest records the datasets and their chunk counts, the requested families, the
 observables covered, per region the produced, normalization and unaffected variations, the
-PDF-set layouts and the `blinding` record.
+PDF-set layouts, the `blinding` record and, for DY, the `dy` record (`variant`, `reweight`; since
+2026-10-12).
 
 ## Blinding
 
@@ -118,9 +127,11 @@ always gets nominal only). The families, their sources, and what each era can pr
   applicable variation in every chunk makes the writer raise instead of writing a partial template.
   A source that cannot affect a region (muon scale factors in an `ee` region) writes no folder there
   and is listed as `unaffected`.
-- `--syst-observables fit` restricts the variations to the fit observables (`mass_dilepton`,
-  `mass_fourobject`, `mass_twoobject`); an explicit list restricts further. Nominal is always filled
-  everywhere.
+- Which histograms receive the variations (`--syst-observables`): by default (`fit`) the fit
+  observables, `mass_fourobject` and `mass_twoobject`; `all` every histogram, for the productions
+  behind the control plots (the AN kinematics), which then carry the full band; an explicit list names
+  them. The 2D eta-phi jet maps are never varied, even with `all`. Nominal is always filled everywhere.
+  Control plots of a production made with the default show the MC statistical band only.
 - In zsh pass the families as separate words; a `$VAR` holding the list does not word-split.
 - Samples without generator weights (the Pythia 8 WW/WZ/ZZ have no `LHEScaleWeight` or
   `LHEPdfWeight`) get their nominal weight for `scale` and contribute no PDF members, with one
@@ -141,7 +152,8 @@ always gets nominal only). The families, their sources, and what each era can pr
 | `--dy VARIANT` | DY variant (`dy_variants` per era in `config.yaml`); default `lo_ht`. `nlo_ptll` runs with a warning but is not a DY prediction: its pT(ll) slices are added unstitched (the comment in `validate_arguments`). |
 | `--region resolved`, `boosted` or `both` | Topologies to fill (default both). |
 | `--unblind` | Fill the data signal regions and full cutflows (Run 2 only). |
-| `--no-dy-zpt-reweight`, `--no-dy-reshape`, `--no-signal-kfactor` | Switch a correction off (`--no-dy-zpt-reweight` implies `--no-dy-reshape`; incompatible with the corresponding `--systs` family). |
+| `--dy-reweight none`, `zpt` or `zpt+reshape` | Corrections of the LO HT-binned DY sample: none (the default since 2026-10-12; the sample at its NNLO-normalized cross section), the Z-pT reweight, or the Z-pT reweight and the jet-pT reshape. `--systs dyzpt` needs `zpt` or `zpt+reshape`, `--systs dyreshape` needs `zpt+reshape`. Only the default variant (`lo_ht`) takes it. The output is `WRAnalyzer_DYJets_lo_ht_zpt[_reshape].root`. The old `--no-dy-zpt-reweight` and `--no-dy-reshape` still work, with a warning, and mean `none` and `zpt`. |
+| `--no-signal-kfactor` | Switch the signal k(m(ℓN))/⟨k⟩ reweight off. |
 | `--unskimmed` | Read the unskimmed filesets (the original NanoAOD files); sums genWeight itself. |
 | `--fileset PATH` | An explicit fileset; with `Signal`, `--mass` only has to be a point of that fileset. |
 | `--dir TAG`, `--name SUFFIX` | Output sub-directory and file-name suffix. |
@@ -150,7 +162,7 @@ always gets nominal only). The families, their sources, and what each era can pr
 | `--save-events` | Write the signal-region (mass, weight) TTrees. |
 | `--split-groups GROUP ...` | Composite runs: write `tt_tW` as TTbar + tW, `Nonprompt` as WJets + TTSemiLep + SingleTop, `Other` as Diboson + Triboson + ttV. |
 | `--systs FAMILY ...` | `lumi pileup prefire sf jer jes jms jmr elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf`. |
-| `--syst-observables all`, `fit` or `NAME ...` | Histograms that receive the variations. |
+| `--syst-observables fit`, `all` or `NAME ...` | Histograms that receive the variations: default `fit` (the m(W_R) masses); `all` every histogram but the eta-phi maps. |
 | `--omit-systs SOURCE ...` | Leave out named sources although their family is enabled (recorded). |
 | `--condor`, `--max-workers N`, `--worker-wait-timeout N`, `--threads-per-worker N` | Execution: Condor at the LPC, Dask workers (local default 3; Condor 50 single, 200 composite skimmed, 500 composite unskimmed). |
 | `--chunksize N`, `--maxchunks N`, `--maxfiles N` | Events per chunk (250000), chunks per file, files per dataset (for tests). |

@@ -79,12 +79,25 @@ KINDS = (WEIGHT, SHAPE, NORMALIZATION, MEMBERS)
 NOMINAL = "Nominal"
 DIRECTIONS = ("Up", "Down")
 
-# By default every histogram receives every enabled variation.
-# ``--syst-observables fit`` restricts the variations to the fit masses
-# (a memory/throughput option), and an explicit list restricts them further.
-FIT_OBSERVABLES: tuple[str, ...] = ("mass_dilepton", "mass_fourobject", "mass_twoobject")
+# Which histograms receive the enabled variations (Nominal is filled everywhere).
+# Since 2026-10-12 the default is the fit observables, the m(W_R) masses the
+# datacards take (Billy: m_ll is not one); ``--syst-observables all`` varies
+# every histogram except NEVER_VARIED, for the productions behind the control
+# plots; an explicit list names the histograms.
+FIT_OBSERVABLES: tuple[str, ...] = ("mass_fourobject", "mass_twoobject")
 ALL_OBSERVABLES = "all"
 FIT_KEYWORD = "fit"
+
+# Detector-position maps: a systematic band on them says nothing, and varied
+# they were 57 % of a systematics file (2024 tt_tW, 2026-10-12).  Never varied,
+# even with ``--syst-observables all``.
+NEVER_VARIED: frozenset[str] = frozenset({"etavsPhi_leadingJet", "etavsPhi_subleadingJet"})
+
+
+def is_varied(hist_name: str, syst_observables: frozenset[str] | None) -> bool:
+    """Whether *hist_name* receives the variations, given a resolved ``syst_observables``
+    (None: every histogram except NEVER_VARIED)."""
+    return hist_name not in NEVER_VARIED and (syst_observables is None or hist_name in syst_observables)
 
 # Public CLI families, in the order they are documented.
 FAMILIES: tuple[str, ...] = (
@@ -596,24 +609,28 @@ def parse_production_config(text: str) -> dict:
 def resolve_syst_observables(names: Iterable[str] | None, known: Iterable[str]) -> frozenset[str] | None:
     """Turn a ``--syst-observables`` value into a frozenset, or None for all.
 
-    ``None`` / empty input and the literal ``"all"`` select every observable
-    (represented as ``None``); the literal ``"fit"`` selects
+    ``None`` / empty input (the default) and the literal ``"fit"`` select
     :data:`FIT_OBSERVABLES` (restricted to the names that are actually
-    booked); otherwise an explicit list of histogram names.
+    booked); the literal ``"all"`` selects every observable except
+    :data:`NEVER_VARIED` (represented as ``None``); otherwise an explicit
+    list of histogram names, which may not name a NEVER_VARIED one.
     """
     known = set(known)
     names = [str(n).strip() for n in (names or ()) if str(n).strip()]
-    if not names or any(n.lower() == ALL_OBSERVABLES for n in names):
+    if any(n.lower() == ALL_OBSERVABLES for n in names):
         if len(names) > 1:
             raise ValueError("--syst-observables: 'all' cannot be combined with explicit names")
         return None
-    if any(n.lower() == FIT_KEYWORD for n in names):
+    if not names or any(n.lower() == FIT_KEYWORD for n in names):
         if len(names) > 1:
             raise ValueError("--syst-observables: 'fit' cannot be combined with explicit names")
         return frozenset(n for n in FIT_OBSERVABLES if n in known)
     unknown = sorted(set(names) - known)
     if unknown:
         raise ValueError(f"--syst-observables: unknown observable(s) {unknown}")
+    never = sorted(set(names) & NEVER_VARIED)
+    if never:
+        raise ValueError(f"--syst-observables: {never} are never varied (detector-position maps)")
     return frozenset(names)
 
 

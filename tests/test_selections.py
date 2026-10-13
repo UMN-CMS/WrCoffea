@@ -557,6 +557,48 @@ class TestResolvedSelections:
         assert ak.to_numpy(selections.all("two_id_electrons"))[0] == False, \
             "Only 1 electron passes ID, should fail two_id_electrons"
 
+    def test_id_row_needs_pt_eta_and_id_together(self, analyzer):
+        """An electron passing the ID but not pT/eta does not count in the ID row."""
+        tight_leptons = _make_leptons(
+            pts=[[65.0, 55.0]],
+            etas=[[0.0, 0.0]],
+            phis=[[0.0, 3.14159]],
+            masses=[[0.0, 0.0]],
+            charges=[[1, -1]],
+            flavors=[["electron", "electron"]],
+        )
+        ak4_jets = _make_jets(
+            pts=[[200.0, 150.0]],
+            etas=[[2.0, -2.0]],
+            phis=[[1.5, -1.5]],
+            masses=[[10.0, 10.0]],
+        )
+        triggers = _default_triggers()
+
+        # Only 1 electron passes ID (should fail two_id_electrons)
+        lepton_masks = {
+            "ele_pteta": ak.Array([[True, False]]),
+            "mu_pteta":  ak.Array([[]]),
+            "ele_id":    ak.Array([[True, True]]),   # both pass ID, only 1 passes pT/eta
+            "mu_id":     ak.Array([[]]),
+        }
+        jet_masks = {
+            "ak4_pteta": ak.Array([[True, True]]),
+            "ak4_id":    ak.Array([[True, True]]),
+        }
+
+        selections = analyzer.resolved_selections(
+            tight_leptons, ak4_jets,
+            lepton_masks=lepton_masks,
+            jet_masks=jet_masks,
+            triggers=triggers,
+        )
+
+        # Since 2026-10-12 the ID row counts electrons passing pT/eta and the ID together (tight electrons).
+        assert ak.to_numpy(selections.all("two_pteta_electrons"))[0] == False
+        assert ak.to_numpy(selections.all("two_id_electrons"))[0] == False, \
+            "Two electrons pass the ID but only one also passes pT/eta: the ID row must fail"
+
     def test_jet_mask_propagation(self, analyzer):
         """Test that jet masks are properly counted and stored."""
         tight_leptons = _make_leptons(

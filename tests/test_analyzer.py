@@ -1033,7 +1033,9 @@ class TestProcessIntegration:
     @patch("wrcoffea.analyzer.electron_id_sf", new=_mock_electron_reco_sf)
     def test_resolved_same_flavor_requires_two_total_tight_leptons(self, flavor, region):
         """Extra tight leptons are vetoed; an extra loose lepton remains allowed."""
-        proc = WrAnalysis(mass_point=None, region="resolved", region_variants={"nomass"})
+        # syst_observables all: the JER pass below is checked on mass_dilepton, not a fit observable
+        proc = WrAnalysis(mass_point=None, region="resolved", region_variants={"nomass"},
+                          syst_observables=["all"])
         events = _make_integration_events(
             n_events=4, n_muons=2, n_electrons=2,
             metadata={"xsec": 1.0, "genEventSumw": LUMIS["RunIISummer20UL18"] * 1000.0},
@@ -1089,7 +1091,7 @@ class TestProcessIntegration:
         cutflow = output["cutflow"][flavor]
         for name, expected in (("cumulative_unweighted", 2.0), ("cumulative", 101.0)):
             counts = dict(zip(list(cutflow[name].axes[0]), cutflow[name].values()))
-            assert counts["two_tight_leptons"] == pytest.approx(expected)
+            assert counts["no_third_tight_lepton"] == pytest.approx(expected)
 
     @_apply_sf_patches
     def test_process_region_resolved_only(self, *_mocks):

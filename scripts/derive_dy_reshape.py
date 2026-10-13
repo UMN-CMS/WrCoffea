@@ -13,10 +13,14 @@ per-channel ratios are kept and their absolute difference is stored as the
 channel systematic.  Bins without DY MC (below the jet thresholds) get a
 ratio of 1 with zero uncertainty.
 
-The DY histograms must have been produced with the Z-pT reweighting on
-(the default), because the reshape is applied on top of it.  When only DY
-was rerun with the reweighting, ``--dy-rootfiles`` points at that directory
-and the data and non-DY backgrounds still come from ``--rootfiles``.
+The DY histograms must have been produced with the Z-pT reweighting on and
+the reshape off (``run_analysis.py DYJets --dy-reweight zpt``), because the
+reshape is applied on top of the Z-pT reweight.  That run writes
+``WRAnalyzer_DYJets_lo_ht_zpt.root`` next to the other files, the default
+``--dy-file``; its manifest's ``dy`` record is checked.  ``--dy-rootfiles``
+reads the DY file from other directories (one per ``--rootfiles`` entry), and
+``--dy-file WRAnalyzer_DYJets.root`` reads productions made before
+2026-10-12, when every DY variant had its own directory.
 ``--region-suffix _mll60to100`` derives the ratio in the DY CR1 halves of the
 ``dy-cr-split`` study (AN-19-083 CR1 -> CR2 test) instead of the full DY CRs.
 
@@ -28,7 +32,8 @@ Example::
 
     python scripts/derive_dy_reshape.py --era RunIII2024Summer24 \
         --rootfiles WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<tag> \
-        --dy-rootfiles WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<dy tag> \
+        --dy-rootfiles WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<old dy dir> \
+        --dy-file WRAnalyzer_DYJets.root \
         --out data/reweights/Run3/2024/RunIII2024Summer24/dy_reshape_<tag>.json
 """
 
@@ -60,7 +65,7 @@ KINDS = {
     },
 }
 DATA_FILES = {"ee": "WRAnalyzer_EGamma.root", "mumu": "WRAnalyzer_Muon.root"}
-DY_FILE = "WRAnalyzer_DYJets.root"
+DY_FILE = "WRAnalyzer_DYJets_lo_ht_zpt.root"   # run_analysis.py DYJets --dy-reweight zpt
 NOT_BACKGROUND = ("DYJets", "EGamma", "Muon", "signal", "Signal", "Observed")
 
 
@@ -118,7 +123,23 @@ def _ratio(data, var_data, bkg, var_bkg, dy, var_dy):
     return ratio, err, ok
 
 
-def derive_kind(rootfiles, kind: str, bkgs: list[str], dy_rootfiles=None, region_suffix: str = "") -> dict:
+def check_dy_file(path: Path) -> None:
+    """Refuse a DY file whose manifest says it is not the Z-pT reweighted, unreshaped LO HT DY.
+
+    Files made before 2026-10-12 have no ``dy`` record and cannot be checked (a warning).
+    """
+    manifest = path.with_name(path.stem + "_systematics.json")
+    record = json.loads(manifest.read_text()).get("dy") if manifest.is_file() else None
+    if record is None:
+        print(f"WARNING: {path} has no DY record in its manifest (made before 2026-10-12): make sure it "
+              "has the Z-pT reweight and not the reshape.", file=sys.stderr)
+    elif record.get("reweight") != "zpt":
+        raise ValueError(f"{path} holds DY with --dy-reweight {record.get('reweight')}; the reshape is derived "
+                         "on DY with the Z-pT reweight and without the reshape (--dy-reweight zpt).")
+
+
+def derive_kind(rootfiles, kind: str, bkgs: list[str], dy_rootfiles=None, region_suffix: str = "",
+                dy_file: str = DY_FILE) -> dict:
     """*rootfiles* / *dy_rootfiles*: one production directory, or several whose histograms are summed (a
     data-taking year from its sub-eras); *bkgs* are the non-DY file names, read from every directory."""
     dirs, dy_dirs = _as_dirs(rootfiles), _as_dirs(dy_rootfiles or rootfiles)
@@ -130,7 +151,7 @@ def derive_kind(rootfiles, kind: str, bkgs: list[str], dy_rootfiles=None, region
         region = region + region_suffix
         key = f"{region}/{cfg['variable']}_{region}"
         data, var_data = _read_sum([d / DATA_FILES[channel] for d in dirs], key, edges)
-        dy, var_dy = _read_sum([d / DY_FILE for d in dy_dirs], key, edges)
+        dy, var_dy = _read_sum([d / dy_file for d in dy_dirs], key, edges)
         bkg = np.zeros_like(dy)
         var_bkg = np.zeros_like(dy)
         for name in bkgs:
@@ -164,8 +185,11 @@ def derive_kind(rootfiles, kind: str, bkgs: list[str], dy_rootfiles=None, region
     }
 
 
-def derive(rootfiles, era: str, note: str = "", dy_rootfiles=None, region_suffix: str = "") -> dict:
+def derive(rootfiles, era: str, note: str = "", dy_rootfiles=None, region_suffix: str = "",
+           dy_file: str = DY_FILE) -> dict:
     dirs, dy_dirs = _as_dirs(rootfiles), _as_dirs(dy_rootfiles or rootfiles)
+    for d in dy_dirs:
+        check_dy_file(d / dy_file)
     names = [[p.name for p in background_files(d)] for d in dirs]
     if not names[0]:
         raise FileNotFoundError(f"No non-DY background files found in {dirs[0]}")
@@ -178,7 +202,7 @@ def derive(rootfiles, era: str, note: str = "", dy_rootfiles=None, region_suffix
             "rootfiles": [str(d) for d in dirs] if len(dirs) > 1 else str(dirs[0]),
             "dy_rootfiles": [str(d) for d in dy_dirs] if len(dy_dirs) > 1 else str(dy_dirs[0]),
             "regions": {k: {ch: r + region_suffix for ch, r in v["regions"].items()} for k, v in KINDS.items()},
-            "dy_file": DY_FILE,
+            "dy_file": dy_file,
             "data_files": DATA_FILES,
             "background_files": bkgs,
             "derived_on": date.today().isoformat(),
@@ -188,7 +212,7 @@ def derive(rootfiles, era: str, note: str = "", dy_rootfiles=None, region_suffix
         "requires_dy_zpt_reweight": True,
     }
     for kind in KINDS:
-        out[kind] = derive_kind(dirs, kind, bkgs, dy_dirs, region_suffix)
+        out[kind] = derive_kind(dirs, kind, bkgs, dy_dirs, region_suffix, dy_file)
     return out
 
 
@@ -199,15 +223,19 @@ def main(argv=None):
                         help="WR_Plotter rootfile directory of one production, or several (the sub-eras of a year) "
                              "whose histograms are summed")
     parser.add_argument("--dy-rootfiles", type=Path, nargs="*", default=None,
-                        help="Directory (or directories, one per --rootfiles entry) holding WRAnalyzer_DYJets.root "
+                        help="Directory (or directories, one per --rootfiles entry) holding the DY file "
                              "(default: --rootfiles)")
+    parser.add_argument("--dy-file", default=DY_FILE,
+                        help=f"DY file name (default {DY_FILE}, from run_analysis.py DYJets --dy-reweight zpt; "
+                             "WRAnalyzer_DYJets.root for productions made before 2026-10-12)")
     parser.add_argument("--region-suffix", default="",
                         help="Suffix of the DY CR regions to use, e.g. _mll60to100 (study dy-cr-split)")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--note", default="", help="Free-text provenance note (e.g. the production command)")
     args = parser.parse_args(argv)
 
-    payload = derive(args.rootfiles, args.era, args.note, args.dy_rootfiles or None, args.region_suffix)
+    payload = derive(args.rootfiles, args.era, args.note, args.dy_rootfiles or None, args.region_suffix,
+                     args.dy_file)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=1)
