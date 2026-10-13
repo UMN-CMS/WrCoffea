@@ -288,6 +288,15 @@ Decisions and measurements still outstanding, with the date they were last looke
 - **Official signal samples have no N → ℓtb.** The official gridpacks' `jj` excludes the top and the N
   width counts only the generated channels, so for m_N above a few hundred GeV the samples put the
   full rate into ℓℓ + light jets while about a third should go to ℓtb; parked (2026-10-10).
+- **Signal cutflows mix the two flavour samples.** Each signal mass point is one file holding both
+  its electron and its muon sample, so a cutflow row before the lepton ID counts events of both. The
+  resolved μμ row "≥ 2 μ (pT, η)" also counts electron-sample events with two muon candidates above
+  53 GeV: candidates inside multi-TeV jets, mostly without a generator match, about 10 % passing the
+  loose ID. That row then exceeds 100 % of the muon sample's σ × L at high m_WR (up to 122 % at
+  (8000, 7900) GeV in 2024). The ID row removes them, so the later rows and the signal-region
+  efficiencies are unaffected; no other row in any channel exceeds 100 %. Fix: run each flavour's
+  sample into its own file (no code change), or require a minimal muon ID in that row; both need a
+  signal rerun (2026-10-13).
 - **Luminosity correlations.** The correlated 2022 to 2024 components belong in the datacards
   (2026-10-10).
 - **2025.** Data-only era, configured but not skimmed; electron trigger SF and muon momentum are
