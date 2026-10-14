@@ -166,8 +166,9 @@ always gets nominal only). The families, their sources, and what each era can pr
 | `--systs FAMILY ...` | `lumi pileup prefire sf jer jes jms jmr elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf`. |
 | `--syst-observables fit`, `all` or `NAME ...` | Histograms that receive the variations: default `fit` (the m(W_R) masses); `all` every histogram but the eta-phi maps. |
 | `--omit-systs SOURCE ...` | Leave out named sources although their family is enabled (recorded). |
-| `--condor`, `--max-workers N`, `--worker-wait-timeout N`, `--threads-per-worker N` | Execution: Condor at the LPC, Dask workers (local default 3; Condor 50 single, 200 composite skimmed, 500 composite unskimmed). |
-| `--chunksize N`, `--maxchunks N`, `--maxfiles N` | Events per chunk (250000), chunks per file, files per dataset (for tests). |
+| `--condor`, `--max-workers N`, `--worker-memory SIZE`, `--worker-wait-timeout S`, `--threads-per-worker N` | Execution: Condor at the LPC, Dask workers (local default 3; Condor 50 single, 200 composite skimmed, 500 composite unskimmed), Condor worker memory (6GB, 8GB with `--systs`) and the wait for the first worker (3600 s); the reasons are in [condor.md](condor.md#settings). |
+| `--scheduler FILE` | Run on the workers of `bin/condor_cluster.py` instead of starting new ones (implies `--condor`; refused if the workers' copy of `wrcoffea/` or `data/` differs from the checkout): [condor.md](condor.md#one-cluster-for-several-commands). |
+| `--chunksize N`, `--maxchunks N`, `--maxfiles N` | Events per chunk (100000 with `--condor`, 250000 locally), chunks per file, files per dataset (for tests). |
 | `--xrootd-timeout S` | XRootD read timeout per chunk (default 60 with `--condor`, 10 locally). |
 | `--xrd-fallback`, `--xrd-fallback-timeout`, `--xrd-fallback-retries-per-redirector`, `--xrd-fallback-sleep` | Redirector fallback for unskimmed preprocessing (on by default with `--unskimmed`). |
 

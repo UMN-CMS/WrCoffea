@@ -49,8 +49,9 @@ curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap
 pip install -e .                                                                                            # once per container tag
 ```
 
-Never use the `:latest` tag: it can lag behind and mismatch the pinned versions. Details and the
-Condor flags: [condor.md](condor.md). The skim campaign's Condor jobs do not use this container:
+Never use the `:latest` tag: it can lag behind and mismatch the pinned versions. Start Condor runs
+from one named login node inside tmux: the run lives in your login session. Details, the Condor
+flags and the measured settings: [condor.md](condor.md). The skim campaign's Condor jobs do not use this container:
 they run in their own image on the worker nodes ([skimming.md](skimming.md)). Which machine does
 what: the laptop runs the analyzer, the plots, the fits and the derivations; the LPC runs the
 skim campaigns and large Condor productions.

@@ -1,5 +1,12 @@
 import os
 os.environ.setdefault("NUMEXPR_MAX_THREADS", "1")
+# Each coffea-image shell on an LPC login node has its own PID namespace, so this process
+# gets the same PID in all of them, and the OpenMP runtime loaded with numpy registers
+# itself under that PID in the node's shared /dev/shm. A second run started on the same
+# node (or one after a killed run) then aborts at start with "OMP: Error #15 ... found
+# unknown library already initialized" (2026-10-14). One process here only ever loads one
+# OpenMP runtime, the case in which the runtime allows this check to be switched off.
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="coffea.*")
@@ -13,7 +20,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from wrcoffea.era_utils import get_era_details
-from wrcoffea.analysis_config import DY_VARIANTS
+from wrcoffea.analysis_config import CONFIG_OVERLAY_ENV, DY_VARIANTS
 from wrcoffea.cli_utils import (
     COMPOSITE_SAMPLES,
     SPLITTABLE_GROUPS,
@@ -135,25 +142,69 @@ def _dump_dask_diagnostics(client, *, label, out_dir=Path("logs"), max_entries=3
         return None
 
 
-def _wait_for_workers_or_raise(client, *, requested_workers, min_workers, timeout_s, label):
-    """Wait for workers and raise a diagnostic-rich error on timeout."""
+def _format_job_states(states):
+    if not states:
+        return "job states unknown"
+    text = ", ".join(f"{states[k]} {k}" for k in ("idle", "running", "held", "ended"))
+    if states.get("hold_reason"):
+        text += f" (hold reason: {states['hold_reason']})"
+    return text
+
+
+def _wait_for_workers_or_raise(client, *, requested_workers, min_workers, timeout_s, label,
+                               job_states=None, poll_s=60, report_s=300):
+    """Wait for the first workers; raise a diagnostic-rich error when none can come.
+
+    ``job_states()`` returns the Condor states of the submitted worker jobs ({"idle", "running",
+    "held", "ended"} counts and a "hold_reason"). Jobs idle in the queue mean a busy pool:
+    keep waiting until ``timeout_s`` and say so every ``report_s``. Jobs that end or are held
+    before any worker connected mean workers that cannot start: stop at once instead of
+    waiting out the timeout (2026-10-14: a busy pool kept every worker away for over 30
+    minutes, and a broken environment made every worker die at start).
+    """
     timeout_s = int(timeout_s)
-    timeout = f"{timeout_s}s"
     logging.info(
         "Waiting for Condor workers (requested %d, need %d, timeout=%ss)...",
         requested_workers,
         min_workers,
         timeout_s,
     )
-    try:
-        client.wait_for_workers(min_workers, timeout=timeout)
-    except TimeoutError as e:
-        diag_file = _dump_dask_diagnostics(client, label=label)
-        diag_msg = f" Diagnostics: {diag_file}" if diag_file is not None else ""
-        raise RuntimeError(
-            f"Timed out waiting for at least {min_workers} Condor worker(s) "
-            f"after {timeout_s}s (requested {requested_workers}).{diag_msg}"
-        ) from e
+    start = last_report = time.monotonic()
+    states = None
+    failed = None
+    while True:
+        remaining = timeout_s - (time.monotonic() - start)
+        if remaining <= 0:
+            break
+        try:
+            client.wait_for_workers(min_workers, timeout=f"{max(1, min(poll_s, int(remaining)))}s")
+            return
+        except TimeoutError:
+            pass
+        if job_states is not None:
+            try:
+                states = job_states()
+            except Exception as exc:  # the schedd query is advisory only
+                logging.debug("Could not query the Condor job states: %r", exc)
+        if states and states["ended"] + states["held"] >= min(3, requested_workers):
+            failed = (f"{states['ended']} worker job(s) ended and {states['held']} were held before any "
+                      "worker connected: the workers cannot start")
+            break
+        if time.monotonic() - last_report >= report_s:
+            last_report = time.monotonic()
+            logging.info("Still waiting for Condor workers after %.0f s: %s.",
+                         last_report - start, _format_job_states(states))
+    diag_file = _dump_dask_diagnostics(client, label=label)
+    diag_msg = f" Diagnostics: {diag_file}" if diag_file is not None else ""
+    if failed:
+        raise RuntimeError(f"{failed} ({_format_job_states(states)}). The worker logs are in "
+                           f"{CONDOR_LOG_DIR_TEMPLATE.format(user=os.environ.get('USER', '$USER'))}."
+                           f"{diag_msg}")
+    raise RuntimeError(
+        f"Timed out waiting for at least {min_workers} Condor worker(s) "
+        f"after {timeout_s}s (requested {requested_workers}; {_format_job_states(states)}). "
+        f"Idle jobs mean the pool had no free slot: rerun later or raise --worker-wait-timeout.{diag_msg}"
+    )
 
 
 def validate_arguments(args, sig_points):
@@ -163,6 +214,11 @@ def validate_arguments(args, sig_points):
     # Data signal regions are blind unless --unblind, which only Run 2 allows.
     if getattr(args, "unblind", False):
         check_unblind_allowed(args.era)
+
+    # The Condor workers read config.yaml as shipped: an overlay would reach only this process.
+    if (getattr(args, "condor", False) or getattr(args, "scheduler", None)) and os.environ.get(CONFIG_OVERLAY_ENV):
+        raise ValueError(f"{CONFIG_OVERLAY_ENV} is set, but the Condor workers never read it (they read "
+                         "config.yaml as shipped): run locally, or unset it.")
 
     picks_points = getattr(args, "signal_points", None) or getattr(args, "mwr_range", None)
     if is_composite:
@@ -310,11 +366,126 @@ def normalize_by_sumw(hists_dict):
 # tests/test_run_analysis.py checks that config.yaml uses no other subdirectory.
 CONDOR_DATA_DIRS = ("lumis", "jsonpog", "reweights", "pdf_sets", "muon_highpt")
 
+# Where lpcjobqueue has Condor put the worker logs (deleted after three days).
+CONDOR_LOG_DIR_TEMPLATE = "/uscmst1b_scratch/lpc1/3DayLifetime/{user}/dask-logs"
 
-@contextmanager
-def _condor_cluster(*, n_workers, wait_timeout_s):
-    """Set up LPCCondorCluster, yield client, clean up on exit."""
+# Condor worker size (measured 2026-10-14, docs/condor.md). The memory is the job's
+# request_memory, a hard limit on the worker node, and the Dask worker's limit, whose pause
+# (80 %) and restart (95 %) thresholds must stay above the worker's peak. Nominal workers
+# peaked at 2.4-2.9 GB with 100k-event chunks (processing and merging), and the last merges
+# of a composite with every signal point hold its whole output (about 1.2 GB): with 4 GB
+# those merges killed four workers in a row and ended the run. With --systs the workers
+# peaked at 3.9 GB. A 10 GB job waited minutes longer for a slot than a 2-4 GB one.
+CONDOR_WORKER_MEMORY = "6GB"
+CONDOR_WORKER_MEMORY_SYSTS = "8GB"
+CONDOR_CHUNKSIZE = 100_000
+LOCAL_CHUNKSIZE = 250_000
+
+# The packages a Condor worker imports. A worker runs the coffea image with the shipped
+# virtual environment (.env) in front of it, and nothing else: a package this process
+# imports from the user site (~/.local) is missing or another version there. An
+# lpcjobqueue in ~/.local, for example, makes the lpcjobqueue bootstrap skip installing it
+# into .env, and every worker then dies at start ("No module named 'lpcjobqueue'", the
+# workers preload lpcjobqueue.patch) while this process waits for them.
+CONDOR_WORKER_MODULES = ("lpcjobqueue", "coffea", "awkward", "uproot", "dask", "distributed",
+                         "numpy", "hist", "correctionlib")
+
+
+def _check_condor_environment(modules=CONDOR_WORKER_MODULES):
+    """Raise before any job is submitted if a package the workers need comes from the user site."""
+    import importlib
+    import site
+
+    if not site.ENABLE_USER_SITE:
+        return
+    user_site = os.path.realpath(site.getusersitepackages())
+    shadowed = []
+    for name in modules:
+        path = os.path.realpath(importlib.import_module(name).__file__)
+        if path.startswith(user_site + os.sep):
+            shadowed.append(os.path.dirname(path))
+    if shadowed:
+        raise RuntimeError(
+            f"Imported from the user site {user_site}, which the Condor workers do not have: "
+            f"{', '.join(shadowed)}. Delete these directories and their *.dist-info next to them, "
+            "then start ./shell again (its .bashrc reinstalls lpcjobqueue into .env). See "
+            "docs/condor.md."
+        )
+
+
+def _condor_job_states(cluster):
+    """Condor states of the cluster's worker jobs (one job per worker): idle, running, held, and
+    ended (completed, removed or gone from the queue), with one hold reason; None before any
+    job is submitted. Queries the schedd lpcjobqueue submitted to, through its own thread."""
+    from lpcjobqueue.schedd import SCHEDD, SCHEDD_POOL
+
+    ids = {job.job_id for job in list(cluster.workers.values()) if getattr(job, "job_id", None)}
+    if not ids:
+        return None
+    constraint = f"ClusterId >= {min(ids)} && ClusterId <= {max(ids)}"
+    ads = SCHEDD_POOL.submit(
+        lambda: SCHEDD().query(constraint=constraint, projection=["ClusterId", "JobStatus", "HoldReason"])
+    ).result(timeout=120)
+    states = {"idle": 0, "running": 0, "held": 0, "ended": 0, "hold_reason": None}
+    seen = set()
+    for ad in ads:
+        cluster_id = int(ad["ClusterId"])
+        if cluster_id not in ids:
+            continue
+        seen.add(cluster_id)
+        status = int(ad["JobStatus"])   # 1 idle, 2 running, 3 removed, 4 completed, 5 held, 6 transferring
+        if status == 1:
+            states["idle"] += 1
+        elif status in (2, 6, 7):
+            states["running"] += 1
+        elif status == 5:
+            states["held"] += 1
+            states["hold_reason"] = states["hold_reason"] or str(ad.get("HoldReason", ""))[:200]
+        else:
+            states["ended"] += 1
+    states["ended"] += len(ids - seen)
+    return states
+
+
+def _port_in_use(exc) -> bool:
+    """Whether a cluster start failed because its scheduler port was taken."""
+    import errno
+
+    while exc is not None:
+        if isinstance(exc, OSError) and exc.errno == errno.EADDRINUSE:
+            return True
+        if "bind to local port" in str(exc):   # lpcjobqueue's own message for it
+            return True
+        exc = exc.__cause__ or exc.__context__
+    return False
+
+
+def _start_lpc_cluster(cluster_cls, *, attempts=5, **kwargs):
+    """Start an LPCCondorCluster, retrying when its scheduler port is taken.
+
+    lpcjobqueue draws the scheduler port at random from 10000-10100, the range open on the
+    login nodes, so a run sharing the node with other Dask schedulers (yours or other
+    users') can draw a busy one and fail with "Address already in use" (2026-10-14).
+    """
+    for attempt in range(1, attempts + 1):
+        try:
+            return cluster_cls(**kwargs)
+        except (RuntimeError, OSError) as exc:
+            if attempt == attempts or not _port_in_use(exc):
+                raise
+            logging.warning("Dask scheduler port already in use (attempt %d of %d); retrying.",
+                            attempt, attempts)
+
+
+def _start_condor_cluster(*, n_workers, memory):
+    """Start an LPCCondorCluster of ``n_workers`` workers with the worker setup; return (cluster, client).
+
+    lpcjobqueue copies wrcoffea/, bin/ and data/<CONDOR_DATA_DIRS> when the cluster starts, and
+    every worker, also one that joins later, gets that copy.
+    """
     from dask.distributed import Client, WorkerPlugin
+
+    _check_condor_environment()
     from lpcjobqueue import LPCCondorCluster
 
     class _CondorWorkerSetup(WorkerPlugin):
@@ -337,11 +508,12 @@ def _condor_cluster(*, n_workers, wait_timeout_s):
                     os.symlink(src, dst)
 
     repo_root = Path(__file__).resolve().parent.parent
-    log_dir = f"/uscmst1b_scratch/lpc1/3DayLifetime/{os.environ['USER']}/dask-logs"
+    log_dir = CONDOR_LOG_DIR_TEMPLATE.format(user=os.environ["USER"])
 
-    cluster = LPCCondorCluster(
+    cluster = _start_lpc_cluster(
+        LPCCondorCluster,
         ship_env=True,
-        memory="10GB",
+        memory=memory,
         transfer_input_files=[
             str(repo_root / "wrcoffea"),
             str(repo_root / "bin"),
@@ -357,22 +529,127 @@ def _condor_cluster(*, n_workers, wait_timeout_s):
         client.register_plugin(_CondorWorkerSetup(), name="_CondorWorkerSetup")
     else:
         client.register_worker_plugin(_CondorWorkerSetup())
-    _wait_for_workers_or_raise(
-        client,
-        requested_workers=n_workers,
-        min_workers=1,
-        timeout_s=wait_timeout_s,
-        label=f"condor_startup_{n_workers}workers",
-    )
-    logging.info(
-        "Started with %d/%d workers; remaining will join dynamically.",
-        len(client.scheduler_info()["workers"]), n_workers,
-    )
+    return cluster, client
+
+
+@contextmanager
+def _condor_cluster(*, n_workers, wait_timeout_s, memory):
+    """Start Condor workers for one run, yield the client, remove the workers on exit."""
+    cluster, client = _start_condor_cluster(n_workers=n_workers, memory=memory)
     try:
+        _wait_for_workers_or_raise(
+            client,
+            requested_workers=n_workers,
+            min_workers=1,
+            timeout_s=wait_timeout_s,
+            label=f"condor_startup_{n_workers}workers",
+            job_states=lambda: _condor_job_states(cluster),
+        )
+        logging.info(
+            "Started with %d/%d workers; remaining will join dynamically.",
+            len(client.scheduler_info()["workers"]), n_workers,
+        )
         yield client
     finally:
         client.close()
         cluster.close()
+
+
+# ---------------------------------------------------------------------------
+# A long-lived cluster that several runs share (bin/condor_cluster.py)
+# ---------------------------------------------------------------------------
+
+# Scheduler metadata key under which bin/condor_cluster.py records what its workers run.
+CLUSTER_IDENTITY_KEY = "wrcoffea-condor-cluster"
+# Packages whose versions must be the same in a run and in the workers it uses.
+CLUSTER_PACKAGES = ("coffea", "awkward", "uproot", "dask", "distributed", "numpy", "hist", "correctionlib")
+
+
+def _worker_files(repo_root=None):
+    """{path in the repository: sha256} of every file the Condor workers execute or read:
+    wrcoffea/ (the code and config.yaml) and data/<CONDOR_DATA_DIRS> (payloads, golden JSONs).
+    bin/ travels with them too, but runs only in the process that submits the work."""
+    import hashlib
+
+    repo_root = Path(repo_root) if repo_root else Path(__file__).resolve().parent.parent
+    files = {}
+    for root in (repo_root / "wrcoffea", *(repo_root / "data" / d for d in CONDOR_DATA_DIRS)):
+        for path in sorted(root.rglob("*")):
+            if path.is_file() and "__pycache__" not in path.parts:
+                files[path.relative_to(repo_root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return files
+
+
+def _cluster_identity(*, n_workers, memory, repo_root=None):
+    """What a long-lived cluster's workers run: recorded on its scheduler when it starts."""
+    from importlib.metadata import version
+
+    return {
+        "files": _worker_files(repo_root),
+        "packages": {name: version(name) for name in CLUSTER_PACKAGES},
+        "image": os.environ.get("COFFEA_IMAGE_FULL"),
+        "workers": n_workers,
+        "memory": memory,
+        "started": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+
+
+def _check_cluster_identity(identity, *, repo_root=None):
+    """Refuse a cluster whose workers run other code, data or packages than this checkout.
+
+    The workers keep the copy of wrcoffea/ and data/ made when the cluster started; the work this
+    process submits names the analyzer by module, so the workers would run their old copy of it.
+    """
+    if not identity:
+        raise RuntimeError("This scheduler records no identity, so it was not started by "
+                           "bin/condor_cluster.py and its workers' code cannot be checked.")
+    mine = _cluster_identity(n_workers=0, memory=None, repo_root=repo_root)
+    theirs = identity.get("files", {})
+    changed = sorted(p for p in set(theirs) | set(mine["files"]) if theirs.get(p) != mine["files"].get(p))
+    problems = []
+    if changed:
+        shown = ", ".join(changed[:6]) + (f" and {len(changed) - 6} more" if len(changed) > 6 else "")
+        problems.append(f"{len(changed)} file(s) of wrcoffea/ or data/ differ from the workers' copy: {shown}")
+    packages = identity.get("packages", {})
+    versions = [f"{name} {packages.get(name)} there, {ver} here" for name, ver in mine["packages"].items()
+                if packages.get(name) != ver]
+    if versions:
+        problems.append("package versions differ: " + ", ".join(versions))
+    if identity.get("image") != mine["image"]:
+        problems.append(f"another image: {identity.get('image')} there, {mine['image']} here")
+    if problems:
+        raise RuntimeError(
+            f"Cannot use the cluster started at {identity.get('started')}: " + "; ".join(problems)
+            + ". Its workers keep what they got when it started: stop bin/condor_cluster.py and start "
+            "it again from this checkout."
+        )
+
+
+@contextmanager
+def _attached_cluster(scheduler, *, wait_timeout_s):
+    """Use the workers of a cluster started by bin/condor_cluster.py (its scheduler address or
+    scheduler file) after checking that they run this checkout; leave them running on exit."""
+    from dask.distributed import Client
+
+    if os.path.isfile(scheduler):
+        client = Client(scheduler_file=scheduler, timeout=60)
+    else:
+        client = Client(scheduler, timeout=60)
+    try:
+        identity = client.get_metadata(CLUSTER_IDENTITY_KEY, None)
+        _check_cluster_identity(identity)
+        _wait_for_workers_or_raise(
+            client,
+            requested_workers=int(identity.get("workers") or 1),
+            min_workers=1,
+            timeout_s=wait_timeout_s,
+            label="attached_cluster",
+        )
+        logging.info("Using the cluster started at %s: %d workers now.",
+                     identity.get("started"), len(client.scheduler_info()["workers"]))
+        yield client
+    finally:
+        client.close()
 
 
 @contextmanager
@@ -552,8 +829,14 @@ def _process_fileset(args, fileset, *, client, condor=False):
         dy_reshape=getattr(args, "dy_reweight", None) == "zpt+reshape",
         unblind=bool(getattr(args, "unblind", False)),
     )
+    # compression=1 (coffea's default; it was None until 2026-10-14): each chunk's output stays
+    # on its worker as lz4-compressed bytes, about 28 times smaller (a DY dataset's nominal
+    # histograms: 3.9 MB pickled, 0.14 MB compressed), and a merge of the reduction tree
+    # unpacks its inputs one at a time. Uncompressed, the merges of a composite with many
+    # datasets held several large outputs at once and pushed 4 GB Condor workers over their
+    # limit; a killed worker's merged results are recomputed from their chunks.
     run = Runner(
-        executor=DaskExecutor(client=client, compression=None, retries=10, treereduction=10),
+        executor=DaskExecutor(client=client, compression=1, retries=10, treereduction=10),
         chunksize=args.chunksize,
         maxchunks=args.maxchunks,
         # Skip bad files to continue processing with remaining files
@@ -665,9 +948,22 @@ if __name__ == "__main__":
     optional.add_argument("--unskimmed", action='store_true', help="Run on unskimmed files.")
     optional.add_argument("--condor", action='store_true', help="Run on Condor. Without this flag, composite modes run locally in sequential order.")
     optional.add_argument("--max-workers", type=int, default=None, help="Number of Dask workers (local default: 3, condor single-sample: 50, condor composite skimmed: 200, condor composite unskimmed: 500).")
-    optional.add_argument("--worker-wait-timeout", type=int, default=1200, help="Seconds to wait for first Condor worker before failing (default: 1200).")
+    optional.add_argument("--worker-wait-timeout", type=int, default=3600,
+                          help="Seconds to wait for the first Condor worker while the jobs are idle in a busy pool "
+                               "(default: 3600). Worker jobs that end or are held before any worker connected "
+                               "stop the run at once.")
+    optional.add_argument("--scheduler", default=None, metavar="ADDRESS_OR_FILE",
+                          help="Run on the workers of a cluster started with bin/condor_cluster.py: its scheduler "
+                               "file (condor_scheduler.json) or address. Implies --condor and starts no workers; "
+                               "refused if the workers' copy of wrcoffea/ and data/ differs from this checkout.")
+    optional.add_argument("--worker-memory", default=None, metavar="SIZE",
+                          help="Memory of each Condor worker: the job's request_memory and the Dask "
+                               f"worker's memory limit (default: {CONDOR_WORKER_MEMORY}, {CONDOR_WORKER_MEMORY_SYSTS} "
+                               "with --systs; see docs/condor.md).")
     optional.add_argument("--threads-per-worker", type=int, default=None, help="Threads per Dask worker for local runs (LocalCluster threads_per_worker).")
-    optional.add_argument("--chunksize", type=int, default=250_000, help="Number of events per processing chunk (default: 250000).")
+    optional.add_argument("--chunksize", type=int, default=None,
+                          help=f"Number of events per processing chunk (default: {CONDOR_CHUNKSIZE} with --condor, "
+                               f"{LOCAL_CHUNKSIZE} locally).")
     optional.add_argument("--maxchunks", type=int, default=None, help="Max chunks per dataset file (default: all). Use 1 for quick testing.")
     optional.add_argument("--maxfiles", type=int, default=None, help="Max files per dataset (default: all). Use 1 for quick testing.")
     optional.add_argument("--systs", nargs="*", default=[], choices=list(FAMILIES), metavar="FAMILY",
@@ -747,6 +1043,15 @@ if __name__ == "__main__":
 
     if args.xrd_fallback is None:
         args.xrd_fallback = bool(args.unskimmed)
+    if args.scheduler:
+        if args.max_workers is not None or args.worker_memory is not None:
+            parser.error("--max-workers and --worker-memory size the workers of bin/condor_cluster.py, "
+                         "not of a run with --scheduler.")
+        args.condor = True
+    if args.chunksize is None:
+        args.chunksize = CONDOR_CHUNKSIZE if args.condor else LOCAL_CHUNKSIZE
+    if args.worker_memory is None:
+        args.worker_memory = CONDOR_WORKER_MEMORY_SYSTS if args.systs else CONDOR_WORKER_MEMORY
 
     # Listing helpers should work without positional args.
     if args.list_eras:
@@ -849,12 +1154,17 @@ if __name__ == "__main__":
     t0 = time.monotonic()
 
     if is_condor:
-        if is_composite:
-            default_workers = 500 if args.unskimmed else 200
+        if args.scheduler:
+            cluster_context = _attached_cluster(args.scheduler, wait_timeout_s=args.worker_wait_timeout)
         else:
-            default_workers = 50
-        n_workers = args.max_workers or default_workers
-        with _condor_cluster(n_workers=n_workers, wait_timeout_s=args.worker_wait_timeout) as client:
+            if is_composite:
+                default_workers = 500 if args.unskimmed else 200
+            else:
+                default_workers = 50
+            n_workers = args.max_workers or default_workers
+            cluster_context = _condor_cluster(n_workers=n_workers, wait_timeout_s=args.worker_wait_timeout,
+                                              memory=args.worker_memory)
+        with cluster_context as client:
             try:
                 hists = _process_fileset(args, fileset, client=client, condor=True)
 
@@ -869,7 +1179,10 @@ if __name__ == "__main__":
                         from wrcoffea.save_hists import save_histograms
                         save_histograms(hists, args)
 
-                logging.info("All output saved. Shutting down cluster (safe to Ctrl+C)...")
+                if args.scheduler:
+                    logging.info("All output saved. The shared cluster keeps its workers.")
+                else:
+                    logging.info("All output saved. Shutting down cluster (safe to Ctrl+C)...")
             except Exception:
                 _dump_dask_diagnostics(
                     client,

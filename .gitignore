@@ -28,6 +28,7 @@ nano_files*.txt
 .local/
 .bashrc
 .condor_config
+condor_scheduler.json
 .sites_map.json
 *.nfs*
 WR_Plotter/
