@@ -29,7 +29,7 @@ production yet). The final sets are `--dir 20261011_systs` in every era.
 | DY Z-pT reweight, 6 nuisances (`dyzpt`) | yes | yes | own derivations, AN-19-083 recipe, 2026-10-11; one payload per UL era, 2022+2023 together, 2024 alone; the Run 3 DY CR closure is still to be documented (Remaining, #101) |
 | DY jet-pT reshape, 2 nuisances (`dyreshape`) | yes | yes | per UL era; per Run 3 data-taking year; none for 2025 yet; Run 3 closure: Remaining, #101 |
 | QCD scales μR, μF (`scale`) | yes | yes | normalized per dataset; the plotter takes the envelope |
-| Parton shower ISR, FSR (`ps`) | yes (estimated means) | yes | UL filesets carry PSSumw estimated from the original files (`scripts/estimate_ps_sums.py`); exact sums at the next UL skim. Three UL signal points whose original file is unreachable keep their nominal (#104, closed with the estimate in place) |
+| Parton shower ISR, FSR (`ps`) | yes | yes | UL: exact PSSumw from the reskim of 2026-10-12/13, which derives it from the events (NanoAODv9 Runs trees have none) |
 | PDF and α_S (`pdf`) | yes | yes | every member stored; Hessian quadrature and the α_S shift formed at the fit binning |
 | L1 prefiring (`prefire`) | yes | not applicable | NanoAOD `L1PreFiringWeight` |
 

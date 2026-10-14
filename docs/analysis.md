@@ -240,13 +240,11 @@ What each era can produce (2026-10-12; from the registry and the payloads of
 | `prefire` | yes | no (no prefiring in Run 3) | no | no |
 | `elescale`, `elesmear` | no (no scale-and-smearing payload; UL NanoAODv9 MC has no scale uncertainty branch) | yes | yes | yes |
 | `dyreshape` | yes | yes | yes | not yet (no 2025 reshape) |
-| `ps` | yes: the UL filesets carry PSSumw estimated from a few million unselected events of every original sample (`scripts/estimate_ps_sums.py`, 2026-10-11; exact sums come with the next skim, which derives them from the events) | yes | yes | yes |
+| `ps` | yes: the UL skims derive PSSumw from the events (NanoAODv9 Runs trees have none; reskim of 2026-10-12/13) | yes | yes | yes |
 
 Samples without generator weights (the Pythia 8 WW, WZ, ZZ) get their nominal for `scale` and
-contribute no `pdf` members, with a warning. A dataset whose fileset records why it has no
-dataset-level means (`PSSumw_source.status`, e.g. original files unreachable for the UL estimate)
-gets its nominal for that family, also with a warning. Missing means without
-such a record are an error. The plotter's band and the systematics tables take every source present
+contribute no `pdf` members, with a warning. A dataset without the dataset-level means its
+family needs is an error. The plotter's band and the systematics tables take every source present
 in the files ([WR_Plotter/docs/plotting.md](../WR_Plotter/docs/plotting.md)).
 
 ## Open items
@@ -273,10 +271,6 @@ Decisions and measurements still outstanding, with the date they were last looke
   identically zero (the MC scale systematics were not included in the UL productions, per the EGM
   twiki); options are the data scale uncertainty mirrored onto MC or EgammaPostRecoTools at MiniAOD
   level (2026-10-11).
-- **UL parton-shower means.** The UL filesets carry PSSumw estimated from a few million unselected
-  events per sample (statistical precision well below 0.1 %); the next UL skim replaces them by the
-  exact sums. A fileset regeneration drops the estimate until `scripts/estimate_ps_sums.py` is rerun
-  (2026-10-11).
 - **Soft-drop mass definition.** Corrected (default) versus the raw subjet mass Run 2 used, about
   9 % of the UL18 boosted DY CR (2026-10-10).
 - **Soft-drop mass in UL.** The JME recipe needs the AK4 PUPPI JEC and JER, which the UL JERC

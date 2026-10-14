@@ -167,9 +167,7 @@ repository: they sit in the campaign root, `--out` (the default is Billy's).
 - **Normalisation**: `genEventSumw`, `genEventCount` and the theory-weight sums (`LHEScaleSumw`,
   `LHEPdfSumw`, `PSSumw`) come from the skims' own Runs trees (for an input whose Runs tree lacks a
   sum, the skimmer derives it from the events, see skimming.md), so no DAS pass is needed. The UL
-  filesets of the 2026-10 skims predate that and carry a `PSSumw` estimated from a few original files
-  per sample by `scripts/estimate_ps_sums.py` (`PSSumw_source` says how); rerun it after a fileset
-  regeneration until the UL skims are remade.
+  MC skims were remade on 2026-10-12/13 for that reason: NanoAODv9 Runs trees carry no `PSSumw`.
 - **Metadata**: cross sections, `order`, `xsec_source` and `physics_group` from the configs through
   the plan; after a config change run `bin/skim.py refresh-metadata --plan-dir ...` first.
 - **Output**: one file per family under `data/filesets/` (`--fileset-dir` overrides). Every active

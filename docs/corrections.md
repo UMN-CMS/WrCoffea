@@ -134,4 +134,3 @@ ones for comparison.
 | TuneP momentum with a 5 %/TeV × pT scale shift, no resolution variation | UL, 2025 | the high-pT recipe payloads of those eras |
 | EGM 1 ± 20 % above 500 GeV (reco) / 1 TeV (HEEP), clipped away | Run 3 | a decision on the high-pT treatment |
 | No electron scale/smearing variations | UL | a prescription (see analysis.md) |
-| Parton-shower weight means (PSSumw) estimated from the original files (`scripts/estimate_ps_sums.py`) | UL | a reskim with the event-derived PSSumw |

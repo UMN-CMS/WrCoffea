@@ -115,10 +115,7 @@ always gets nominal only). The families, their sources, and what each era can pr
   payload: UL and 2025). A deliberate omission of one source is recorded
   with `--omit-systs <Source>` and listed in the manifest.
 - `scale` and `ps` need the dataset-level weight means in the fileset (`LHEScaleSumw`, `PSSumw`).
-  A dataset without them is an error when its first chunk is processed, not at start-up, unless the
-  fileset records why they are missing (`PSSumw_source.status`, e.g. the three UL signal datasets
-  whose original files are unreachable): such a dataset gets its nominal for that family, with a
-  warning.
+  A dataset without them is an error when its first chunk is processed, not at start-up.
 - Weight sources share one pass; shape sources (`jer`, `jes`, `jms`, `jmr`, `elescale`, `elesmear`,
   `muscale`, `musmear`) re-run the selection on shifted kinematics. `lumi` is applied at export.
 - Coverage: every chunk records the (region, variation) pairs it completed, with the production
