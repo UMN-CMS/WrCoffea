@@ -22,7 +22,7 @@ This is the single source of truth for which eras exist (`run_analysis.py` takes
 from it). The `run` key (`"RunII"` or `"Run3"`) controls trigger path selection in
 `build_trigger_masks()`; `run` and `year` give the directory layout `<run>/<year>/<era>` of
 `data/configs/`, `data/filesets/`, the skims and the analyzer outputs. `ERA_SUBDIRS` is derived
-from `ERA_MAPPING` in the same file (`wrcoffea/das_utils.py` and `wrcoffea/skim/plan.py` re-export
+from `ERA_MAPPING` in the same file (`wrcoffea/skim/plan.py` re-exports
 it), so there is nothing else to register; `tests/test_era_utils.py` checks that every configured
 era resolves.
 

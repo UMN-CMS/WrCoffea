@@ -17,7 +17,7 @@ ERA_MAPPING = {
 }
 
 # era -> "<run>/<year>/<era>", the directory layout of data/configs, data/filesets, the skims and the
-# analyzer outputs.  The single definition; wrcoffea.das_utils and wrcoffea.skim.plan re-export it.
+# analyzer outputs.  The single definition; wrcoffea.skim.plan re-exports it.
 ERA_SUBDIRS = {era: f"{m['run']}/{m['year']}/{era}" for era, m in ERA_MAPPING.items()}
 
 

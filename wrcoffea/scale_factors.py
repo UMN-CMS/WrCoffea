@@ -469,8 +469,7 @@ def muon_trigger_sf(tight_muons, era):
        (the POG ``muon_Z`` trigger-OR entries of 2022-2025,
        ``NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose``):
        the same OR formula.
-    3. Per-lepton scale factors only (the Run 2 UL ``muon_HighPt`` files and
-       the 2022/2023 high-pT HLT payloads): the SF of the leading-pT tight
+    3. Per-lepton scale factors only (the Run 2 UL ``muon_HighPt`` files): the SF of the leading-pT tight
        muon is applied once per event, as Run 2 did.
 
     The up/down variation of forms 1 and 2 follows the Run 2 analysis

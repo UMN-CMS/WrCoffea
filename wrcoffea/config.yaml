@@ -334,7 +334,7 @@ jerc_jsons:
 # treatment from what the file contains:
 #   - with <name>_DATAeff / <name>_MCeff corrections (2024): the event SF is
 #     built from per-lepton efficiencies with the dilepton OR formula;
-#   - with the per-lepton SF only (UL18 POG file, 2022/2023 high-pT HLT files):
+#   - with the per-lepton SF only (the UL POG muon_HighPt files):
 #     the leading-pT tight muon's SF is applied once per event.
 muon_jsons:
   RunIISummer20UL16APV:
@@ -351,19 +351,19 @@ muon_jsons:
     TRIGGER: data/jsonpog/MUO/RunII/RunIISummer20UL18/muon_HighPt.json.gz
   Run3Summer22:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18)
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22/muon_scalesmearing.json.gz
   Run3Summer22EE:
     RECO: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18)
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer22EE/muon_scalesmearing.json.gz
   Run3Summer23:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18)
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23/muon_scalesmearing.json.gz
   Run3Summer23BPix:
     RECO: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_HighPt.json.gz
-    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18); the high-pT HLT file (SF only) stays beside it
+    TRIGGER: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_Z.json.gz    # trigger-OR data/MC efficiencies (CAT 2026-06-18)
     ScaleNSmear: data/jsonpog/MUO/Run3/Run3Summer23BPix/muon_scalesmearing.json.gz
   RunIII2024Summer24:
     RECO: data/jsonpog/MUO/Run3/RunIII2024Summer24/muon_HighPt.json.gz
