@@ -187,35 +187,53 @@ def run2_curve(path: str) -> tuple[np.ndarray, np.ndarray] | None:
 
 def make_plots(energy: str, points: list[dict], curve: dict, out_dir: Path, run2_payload: str | None,
                run2_inclusive: str | None) -> None:
+    """The AN-19-083 App. A figures in the CMS style of WR_Plotter (cms_label, fit_header, 10 x 10 in, 20 pt
+    legends, Petroff colours with line styles and markers so they read in greyscale)."""
+    import sys
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    import mplhep as hep
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "WR_Plotter"))
+    from wrplotter.plotting_helpers import FONT_SIZE_LEGEND, cms_label, fit_header
 
-    label_e = "13 TeV" if energy == "13" else "13.6 TeV"
+    blue, orange, red, purple, grey = "#5790fc", "#f89c20", "#e42536", "#964a8b", "#9c9ca1"   # Petroff 6
+    rlabel = "(13 TeV)" if energy == "13" else "(13.6 TeV)"
+    c = curve.get("lo_norm_factor", 1.0)
+    signal = r"$W_R \rightarrow \ell N$ signal, MG5_aMC"
+    norm = f"\nLO normalized to the samples (x {c:.3f})" if c != 1.0 else ""
+    hep.style.use("CMS")
+
+    def finish(fig, ax, text, name):
+        cms_label(ax, None, data=False, rlabel=rlabel, text=text)
+        ax.legend(loc="upper right", fontsize=FONT_SIZE_LEGEND)
+        fit_header(ax)
+        fig.savefig(out_dir / name)
+        plt.close(fig)
+
     # --- k vs m_lN (Fig. 54)
-    fig, ax = plt.subplots(figsize=(7, 6))
+    fig, ax = plt.subplots(figsize=(10, 10))
     e = np.asarray(curve["edges"]); k = np.asarray(curve["k"])
-    ax.step(e, np.append(k, k[-1]), where="post", color="k", lw=1.5, label=f"this work, {label_e}")
     if "k_scale_min" in curve:
         lo = np.asarray(curve["k_scale_min"]); hi = np.asarray(curve["k_scale_max"])
-        ax.fill_between(e, np.append(lo, lo[-1]), np.append(hi, hi[-1]), step="post", color="k", alpha=0.15,
-                        label="scale envelope (9-point)")
+        ax.fill_between(e, np.append(lo, lo[-1]), np.append(hi, hi[-1]), step="post", facecolor=blue, alpha=0.3,
+                        lw=0, label=r"Scale variations ($\mu_R$, $\mu_F$)")
+    ax.step(e, np.append(k, k[-1]), where="post", color=blue, lw=2.5, label="NLO / LO")
     kb = np.asarray(curve["k_born"])
-    ax.step(e, np.append(kb, kb[-1]), where="post", color="tab:blue", lw=0.8, ls=":", label="NLO / Born of the NLO run (same scale)")
+    ax.step(e, np.append(kb, kb[-1]), where="post", color=orange, lw=2, ls="--", label="NLO / Born of the NLO run")
     r2 = run2_curve(run2_payload) if run2_payload else None
     if r2 is not None:
         e2, k2 = r2
-        ax.step(e2, np.append(k2, k2[-1]), where="post", color="r", lw=1.2, ls="--", label="Run 2 (AN-19-083 App. A)")
-    ax.set_xlim(0, 8000); ax.set_ylim(0.8, 1.8)
-    ax.set_xlabel(r"$m_{\ell N}$ (GeV)"); ax.set_ylabel("k-factor")
-    ax.legend(loc="upper left", frameon=False)
-    fig.tight_layout(); fig.savefig(out_dir / f"kfactor_vs_mlN_{energy}.pdf"); plt.close(fig)
+        ax.step(e2, np.append(k2, k2[-1]), where="post", color=red, lw=2, ls="-.", label="Run 2 (AN-19-083)")
+    ax.set_xlim(0, 8000); ax.set_ylim(0.8, 2.0)
+    ax.set_xlabel(r"$m_{\ell N}$ [GeV]"); ax.set_ylabel("k-factor")
+    finish(fig, ax, f"{signal}\nAll mass points combined{norm}", f"kfactor_vs_mlN_{energy}.pdf")
 
-    # --- averaged k-factor vs m_WR (Fig. 55): inclusive sigma_NLO/sigma_LO per point and the integrated
-    # <k> from the curve, for m_N = 100, m_WR - 100 and fixed m_N values
-    fig, ax = plt.subplots(figsize=(7, 6))
-    # the three series of Run 2's Fig. 53/55: m_N = 100 GeV, m_N ~ m_WR / 2, m_N = m_WR - 100 GeV
-    import itertools
+    # --- averaged k-factor vs m_WR (Fig. 55): inclusive sigma_NLO/sigma_LO per point (solid) and the <k> integrated
+    # from the curve (dotted), for m_N = 100 GeV, m_N ~ m_WR / 2 and m_N = m_WR - 100 GeV (Run 2's Fig. 53/55 series)
+    fig, ax = plt.subplots(figsize=(10, 10))
+    families = {"low": (r"$m_N$ = 100 GeV", blue, "o"), "half": (r"$m_N \approx m_{W_R}$ / 2", orange, "s"),
+                "high": (r"$m_N = m_{W_R}$ - 100 GeV", red, "^")}
     by_n: dict[str, list] = {}
     by_wr: dict[int, list] = {}
     for p in points:
@@ -223,37 +241,32 @@ def make_plots(energy: str, points: list[dict], curve: dict, out_dir: Path, run2
     for mwr, ps in sorted(by_wr.items()):
         for p in sorted(ps, key=lambda p: p["mn"]):
             if p["mn"] == 100:
-                by_n.setdefault("m_N = 100 GeV", []).append(p)
+                by_n.setdefault("low", []).append(p)
             elif p["mn"] == p["mwr"] - 100:
-                by_n.setdefault("m_N = m_WR - 100 GeV", []).append(p)
+                by_n.setdefault("high", []).append(p)
         mid = min(ps, key=lambda p: abs(p["mn"] - mwr / 2))          # the point nearest m_WR / 2 (full grids
         if 0.35 * mwr <= mid["mn"] <= 0.65 * mwr:                     # have many N: only this one is drawn)
-            by_n.setdefault("m_N = m_WR / 2", []).append(mid)
-    colors = {"m_N = 100 GeV": "k", "m_N = m_WR - 100 GeV": "r", "m_N = m_WR / 2": "b"}
-    extra = itertools.cycle(["g", "m", "y", "c", "tab:orange", "tab:brown"])
-    for key, ps in by_n.items():
-        c = colors.get(key) or next(extra)
+            by_n.setdefault("half", []).append(mid)
+    for key in ("low", "half", "high"):
+        ps = by_n.get(key, [])
+        if not ps:
+            continue
+        label, col, marker = families[key]
         x = [p["mwr"] for p in ps]
         # the inclusive k-factor of a point: sigma_NLO / sigma_LO(official card) x c (Run 2's "Inclusive")
         incl = [p.get("k_nlo_over_lo_sample") or p["k_nlo_over_lo"] or p["k_nlo_over_born"] for p in ps]
         integ = [average_k_from_curve(curve, p["mln_lo_edges"], p["mln_lo_counts"]) for p in ps]
-        if len(x) > 1:
-            ax.plot(x, incl, color=c, lw=1.5, label=f"Inclusive, {key}")
-            ax.plot(x, integ, color=c, lw=1.5, ls=":", label=f"Integrated, {key}")
-        else:
-            ax.plot(x, incl, "o", color=c, label=f"Inclusive, {key}")
-            ax.plot(x, integ, "x", color=c, label=f"Integrated, {key}")
+        ax.plot(x, incl, color=col, lw=2, marker=marker, markersize=9, label=label)
+        ax.plot(x, integ, color=col, lw=2, ls=":", marker=marker, markersize=9, mfc="white")
     if run2_inclusive and Path(run2_inclusive).exists():
         rows = [l.split() for l in Path(run2_inclusive).read_text().splitlines() if l and not l.startswith("m(")]
-        ax.plot([float(r[0]) for r in rows], [float(r[1]) for r in rows], color="k", lw=0.8, ls="-.", alpha=0.6,
-                label="Run 2 inclusive, m_N = 100 GeV")
-        ax.plot([float(r[0]) for r in rows], [float(r[3]) for r in rows], color="r", lw=0.8, ls="-.", alpha=0.6,
-                label="Run 2 inclusive, m_N = m_WR - 100 GeV")
-    ax.set_xlim(0, 8000); ax.set_ylim(0.8, 1.8)
-    ax.set_xlabel(r"$m_{W_R}$ (GeV)"); ax.set_ylabel("Averaged k-factor")
-    ax.set_title(label_e, loc="right", fontsize=10)
-    ax.legend(loc="lower right", frameon=False, fontsize=8, ncol=2)
-    fig.tight_layout(); fig.savefig(out_dir / f"kfactor_{energy}.pdf"); plt.close(fig)
+        ax.plot([float(r[0]) for r in rows], [float(r[1]) for r in rows], color=grey, lw=2, ls="-.",
+                label=r"Run 2 (13 TeV), $m_N$ = 100 GeV")
+        ax.plot([float(r[0]) for r in rows], [float(r[3]) for r in rows], color=purple, lw=2, ls=(0, (6, 2)),
+                label=r"Run 2 (13 TeV), $m_N = m_{W_R}$ - 100 GeV")
+    ax.set_xlim(0, 8000); ax.set_ylim(0.8, 2.0)
+    ax.set_xlabel(r"$m_{W_R}$ [GeV]"); ax.set_ylabel("Averaged k-factor")
+    finish(fig, ax, f"{signal}\nSolid: inclusive, dotted: integrated{norm}", f"kfactor_{energy}.pdf")
 
 
 # ----------------------------------------------------------------------------- payload
