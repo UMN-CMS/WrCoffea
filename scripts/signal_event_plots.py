@@ -384,7 +384,13 @@ def fill(era: str, point: str, flavour: str, out: Path) -> Path:
 
 GEN_LABELS = {"wr": r"$W_R$", "l1": r"$\ell_1$ (from $W_R$)", "n": r"$N$", "l2": r"$\ell_2$ (from $N$)",
               "q1": r"$q_{\mathrm{lead}}$", "q2": r"$q_{\mathrm{sublead}}$"}
-COLORS = ["black", "#5790fc", "#f89c20", "#e42536", "#964a8b", "#7a21dd", "#9c9ca1", "#92dadd"]
+# CMS colour scheme (CAT: Petroff's 10 colours); no black, which CMS keeps for data.  Overlays
+# also change line style or marker, so the figures read in greyscale (PubGuidelines, figures).
+COLORS = ["#3f90da", "#ffa90e", "#bd1f01", "#94a4a2", "#832db6", "#a96b59", "#e76300", "#b9ac70",
+          "#717581", "#92dadd"]
+LINESTYLES = ["-", "--", "-.", ":"]     # named styles only: mplhep splits a tuple per histogram
+MARKERS = ["o", "s", "^", "v", "D", "P"]
+LEGEND_FONTSIZE = 20                    # WR_Plotter FONT_SIZE_LEGEND: 5.7 pt printed at 0.45 of the AN text width
 
 
 def point_label(point: str) -> str:
@@ -466,7 +472,7 @@ def _overlay(ax, entries, key, *, rebin: int | None = None, xlim=None):
         keep = (edges[:-1] >= xlim[0] - 1e-9) & (edges[1:] <= xlim[1] + 1e-9)
         top = max(top, float(vals[keep].max()) if keep.any() else 0.0)
         hep.histplot(vals, edges, yerr=errs, histtype="step", color=COLORS[i % len(COLORS)], linewidth=2,
-                     label=label, ax=ax)
+                     linestyle=LINESTYLES[i % len(LINESTYLES)], label=label, ax=ax)
     ax.set_ylim(0, 1.5 * top if top > 0 else 1)
     ax.set_xlim(*xlim)
     ax.set_ylabel("Fraction of events / bin")
@@ -513,17 +519,30 @@ def plot(out: Path, com: float = 13.6, *, plots_dir: Path | None = None, tables_
         these = [it for it in items if it["flavour"] == flavour]
         if not these:
             continue
-        chan = {"ee": "ee", "mumu": r"$\mu\mu$"}[channel]
+        chan0 = {"ee": "ee", "mumu": r"$\mu\mu$"}[channel]
         for fam, group in _families(these).items():
-            entries = [(point_label(it["point"]), it) for it in group]
+            # One m_WR for the whole family: say it once in the description, and keep the legend to m_N,
+            # short enough to stay at full size beside the CMS label.
+            # The same for one m_N across the family (lowest_N).
+            wrs = {it["m_wr"] for it in group}
+            ns = {it["point"].split("_N")[1] for it in group}
+            if len(wrs) == 1:
+                chan = rf"{chan0}, $m_{{W_R}}$ = {wrs.pop()} GeV"
+                entries = [(rf"$m_N$ = {it['point'].split('_N')[1]} GeV", it) for it in group]
+            elif len(ns) == 1:
+                chan = rf"{chan0}, $m_N$ = {ns.pop()} GeV"
+                entries = [(rf"$m_{{W_R}}$ = {it['m_wr']} GeV", it) for it in group]
+            else:
+                chan = chan0
+                entries = [(point_label(it["point"]), it) for it in group]
             # AN Figs. 3-5: generator-level kinematics
             for obj in GEN_LABELS:
                 for ax_name, xlabel in (("pt", rf"$p_T$ of {GEN_LABELS[obj]} [GeV]"), ("eta", rf"$\eta$ of {GEN_LABELS[obj]}")):
                     fig, ax = _figure()
                     _overlay(ax, entries, f"gen_{ax_name}_{obj}")
                     ax.set_xlabel(xlabel)
-                    ax.legend(fontsize=14, loc="upper right")
-                    _label(ax, com, f"{chan}, generator level\nall generated events")
+                    ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+                    _label(ax, com, f"{chan}\ngenerator level\nall generated events")
                     _save(fig, plots / channel / fam / "gen" / f"{ax_name}_{obj}.pdf")
             for key, xlabel in (("gen_mass_wr", r"$m(W_R)$ [GeV]"), ("gen_mass_n", r"$m(N)$ [GeV]"),
                                 ("gen_mass_qq", r"$m(qq)$ [GeV]"), ("gen_mass_l2qq", r"$m(\ell_2 qq)$ [GeV]"),
@@ -531,45 +550,45 @@ def plot(out: Path, com: float = 13.6, *, plots_dir: Path | None = None, tables_
                 fig, ax = _figure()
                 _overlay(ax, entries, key)
                 ax.set_xlabel(xlabel)
-                ax.legend(fontsize=14, loc="upper right")
-                _label(ax, com, f"{chan}, generator level\nall generated events")
+                ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+                _label(ax, com, f"{chan}\ngenerator level\nall generated events")
                 _save(fig, plots / channel / fam / "gen" / f"{key.removeprefix('gen_')}.pdf")
             # AN Fig. 11: soft-drop mass of the leading AK8 jet
             for tag, what in (("recipe", "JME recipe (analysis)"), ("nano", "NanoAOD")):
                 fig, ax = _figure()
                 _overlay(ax, entries, f"msd_lead_ak8_{tag}")
                 ax.set_xlabel(r"$m_{SD}$ of the leading AK8 jet [GeV]")
-                ax.legend(fontsize=14, loc="upper right")
-                _label(ax, com, f"{chan}, leading AK8 jet\n$p_T$ > 200 GeV, $|\\eta|$ < 2.4, tight ID\n{what}")
+                ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+                _label(ax, com, f"{chan}\nleading AK8 jet\n$p_T$ > 200 GeV, $|\\eta|$ < 2.4, tight ID\n{what}")
                 _save(fig, plots / channel / fam / f"msd_lead_ak8_{tag}.pdf")
             fig, ax = _figure()
             _overlay(ax, entries, "msd_njet_recipe")
             ax.set_xlabel(r"$m_{SD}$ of the $N$ jet [GeV]")
-            ax.legend(fontsize=14, loc="upper right")
-            _label(ax, com, f"{chan}, AK8 jet matched to a merged $N$\nJME recipe (analysis)")
+            ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+            _label(ax, com, f"{chan}\nAK8 jet matched to a merged $N$\nJME recipe (analysis)")
             _save(fig, plots / channel / fam / "msd_njet_recipe.pdf")
             # AN Fig. 12: LSF_3 without the LSF requirement, and of the N jet
             fig, ax = _figure()
             _overlay(ax, entries, "lsf_nolsf_sr", rebin=1, xlim=(0, 1.1))
             ax.axvline(0.75, color="grey", ls="--")
             ax.set_xlabel(r"$\mathrm{LSF}_3$ of the AK8 jet")
-            ax.legend(fontsize=14, loc="upper left")
-            _label(ax, com, f"{chan}, boosted SR selection\nwithout the LSF requirement")
+            ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper left")
+            _label(ax, com, f"{chan}\nboosted SR selection\nwithout the LSF requirement")
             _save(fig, plots / channel / fam / "lsf3_boosted_sr_nolsf.pdf")
             fig, ax = _figure()
             _overlay(ax, entries, "lsf_njet", rebin=1, xlim=(0, 1.1))
             ax.axvline(0.75, color="grey", ls="--")
             ax.set_xlabel(r"$\mathrm{LSF}_3$ of the $N$ jet")
-            ax.legend(fontsize=14, loc="upper left")
-            _label(ax, com, f"{chan}, AK8 jet matched to a merged $N$")
+            ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper left")
+            _label(ax, com, f"{chan}\nAK8 jet matched to a merged $N$")
             _save(fig, plots / channel / fam / "lsf3_njet.pdf")
             # AN Fig. 10: jet energy response
             for tag, what in (("jec", "with JEC (analysis)"), ("raw", "without JEC")):
                 fig, ax = _figure()
                 _overlay(ax, entries, f"eresp_njet_{tag}", rebin=2, xlim=(0, 2))
                 ax.set_xlabel(r"$E(\mathrm{AK8\ jet}) / E(N)$")
-                ax.legend(fontsize=14, loc="upper right")
-                _label(ax, com, f"{chan}, AK8 jet matched to a merged $N$\n{what}")
+                ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+                _label(ax, com, f"{chan}\nAK8 jet matched to a merged $N$\n{what}")
                 _save(fig, plots / channel / fam / f"energy_response_njet_{tag}.pdf")
             # Figs. 83-86 / Table 42: efficiencies
             for lep in ("l1", "l2"):
@@ -577,29 +596,30 @@ def plot(out: Path, com: float = 13.6, *, plots_dir: Path | None = None, tables_
                     fig, ax = _figure()
                     for i, (label, it) in enumerate(entries):
                         x, xe, eff, err = _eff(it["hists"][f"eff_{lep}_{ax_name}_num"], it["hists"][f"eff_{lep}_{ax_name}_den"])
-                        ax.errorbar(x, eff, xerr=xe, yerr=err, fmt="o", color=COLORS[i % len(COLORS)], label=label, markersize=5)
+                        ax.errorbar(x, eff, xerr=xe, yerr=err, fmt=MARKERS[i % len(MARKERS)], color=COLORS[i % len(COLORS)], label=label, markersize=6)
                     ax.set_ylim(0, 1.45)
                     ax.set_xlabel(xlabel)
                     ax.set_ylabel("Tight-lepton efficiency")
                     if ax_name == "pt":
                         ax.set_xscale("log")
-                    ax.legend(fontsize=14, loc="upper right")
-                    _label(ax, com, f"{chan}, tight lepton within $\\Delta R$ < 0.1\nof the generator lepton")
+                    ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+                    _label(ax, com, f"{chan}\ntight lepton within $\\Delta R$ < 0.1\nof the generator lepton")
                     _save(fig, plots / channel / fam / "efficiency" / f"tight_{lep}_vs_{ax_name}.pdf")
-            for what, ylabel, text in (("njet", "AK8 jet efficiency", "baseline AK8 jet ($p_T$ > 200, $m_{SD}$ > 40 GeV, tight ID)"),
+            for what, ylabel, text in (("njet", "AK8 jet efficiency", "baseline AK8 jet\n$p_T$ > 200 GeV, $m_{SD}$ > 40 GeV, tight ID"),
                                        ("njet_lsf", "AK8 jet efficiency", r"AK8 jet with $\mathrm{LSF}_3$ > 0.75")):
                 fig, ax = _figure()
                 for i, (label, it) in enumerate(entries):
                     x, xe, eff, err = _eff(it["hists"][f"eff_{what}_pt_num"], it["hists"][f"eff_{what}_pt_den"])
-                    ax.errorbar(x, eff, xerr=xe, yerr=err, fmt="o", color=COLORS[i % len(COLORS)], label=label, markersize=5)
+                    ax.errorbar(x, eff, xerr=xe, yerr=err, fmt=MARKERS[i % len(MARKERS)], color=COLORS[i % len(COLORS)], label=label, markersize=6)
                 ax.set_ylim(0, 1.45)
                 ax.set_xscale("log")
                 ax.set_xlabel(r"generator $p_T$ of the merged $N$ [GeV]")
                 ax.set_ylabel(ylabel)
-                ax.legend(fontsize=14, loc="upper right")
-                _label(ax, com, f"{chan}, {text}\nwithin $\\Delta R$ < 0.8 of a merged $N$")
+                ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+                _label(ax, com, f"{chan}\n{text}\nwithin $\\Delta R$ < 0.8 of a merged $N$")
                 _save(fig, plots / channel / fam / "efficiency" / f"{what}_vs_pt.pdf")
         # AN Fig. 130: W_R mass with the on-shell fraction, one plot per point
+        chan = chan0
         for it in these:
             fig, ax = _figure()
             _overlay(ax, [(point_label(it["point"]), it)], "gen_mass_wr", rebin=2, xlim=(0, 1.4 * it["m_wr"]))
@@ -611,8 +631,8 @@ def plot(out: Path, com: float = 13.6, *, plots_dir: Path | None = None, tables_
             ax.set_yscale("log")
             vals = it["hists"]["gen_mass_wr"].values()
             ax.set_ylim(max(vals.min() / n, 1e-5) if vals.min() > 0 else 1e-5, 5)
-            ax.legend(fontsize=14, loc="upper left")
-            _label(ax, com, f"{chan}, generator level\n{txt}")
+            ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper left")
+            _label(ax, com, f"{chan}\ngenerator level\n{txt}")
             _save(fig, plots / channel / "wr_mass" / f"{it['point']}.pdf")
     # Table 42 analogue and the W_R on-shell fractions
     lines = ["point flavour gen_events merged_frac njet_matched lsf_pass_frac nolsf_sr_events nolsf_sr_lsf_pass_frac wr_within10pct wr_below90pct"]
