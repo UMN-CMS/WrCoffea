@@ -29,7 +29,8 @@ charge where NanoAOD has it. The regime is chosen on that pT before any correcti
 - **MC smearing above the threshold.**
   - The same Gaussian random number is used for the nominal and for both `musmear` variations, so the variations are
     coherent with the nominal.
-  - Draws are deterministic: correctionlib hashprng of (event, luminosityBlock, phi).
+  - Draws are deterministic: correctionlib hashprng of (event, luminosityBlock, phi), with its `normal` distribution,
+    the same on every platform (since 2026-10-14; `stdnormal` differs between macOS and Linux).
 
 ## The payload
 

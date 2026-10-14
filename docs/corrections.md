@@ -63,7 +63,11 @@ vary both subjets; JMS and JMR are the `jms` and `jmr` families. UL keeps NanoAO
 PUPPI payload). The random numbers of the stochastic JER and of the
 Run 3 electron smearing are drawn per object from correctionlib's `hashprng` of (event, luminosity
 block, φ, a salt per correction), so they are reproducible and independent between the objects of
-an event (`object_normal_draws` in `wrcoffea/scale_factors.py`; since 2026-10-12).
+an event (`object_normal_draws` in `wrcoffea/scale_factors.py`; since 2026-10-12). The draws use
+correctionlib's `normal` distribution (since 2026-10-14), which gives the same numbers on macOS and
+on the Linux Condor workers; `stdnormal`, used before, hands the draw to the C++ library's
+`std::normal_distribution`, which differs between the two, so laptop and Condor outputs differed at
+the level of the smearing's statistical noise. The high-pT muon smearing draws the same way.
 
 ### Pileup
 

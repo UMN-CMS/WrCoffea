@@ -1125,14 +1125,19 @@ JER_SALT_SUBJET = 5
 
 @lru_cache(maxsize=None)
 def _object_normal_rng():
-    """correctionlib's counter-based hashprng: a standard-normal draw of (event, lumi, phi, salt)."""
+    """correctionlib's counter-based hashprng: a standard-normal draw of (event, lumi, phi, salt).
+
+    Its "normal" distribution, the same on every platform. "stdnormal" (used until 2026-10-14) hands
+    the draw to the C++ library's std::normal_distribution, which libc++ (macOS) and libstdc++ (Linux,
+    the Condor workers) implement differently: the same object got different smearing on the laptop
+    and on Condor, so their yields differed at the level of the smearing's statistical noise."""
     from correctionlib import schemav2 as cs
     corr = cs.Correction(
         name="object_normal_rng", version=1,
         inputs=[cs.Variable(name="evt", type="int"), cs.Variable(name="lumi", type="int"),
                 cs.Variable(name="phi", type="real"), cs.Variable(name="salt", type="int")],
         output=cs.Variable(name="r", type="real"),
-        data=cs.HashPRNG(nodetype="hashprng", inputs=["evt", "lumi", "phi", "salt"], distribution="stdnormal"),
+        data=cs.HashPRNG(nodetype="hashprng", inputs=["evt", "lumi", "phi", "salt"], distribution="normal"),
     )
     return cs.CorrectionSet(schema_version=2, corrections=[corr]).to_evaluator()["object_normal_rng"]
 

@@ -24,7 +24,8 @@ listed keep the old TuneP placeholder in
 
 The random numbers are deterministic: correctionlib's counter-based hashprng of
 (event, luminosityBlock, phi), so reruns and shape-variation passes see the same
-smearing.  The high-pT draw uses a distinct salt from MuonScaRe's.
+smearing, on every platform (scale_factors._object_normal_rng).  The high-pT draw
+uses a distinct salt from MuonScaRe's.
 """
 
 from __future__ import annotations
@@ -83,7 +84,9 @@ def _scare_cset(era: str):
 
 @lru_cache(maxsize=None)
 def _normal_rng():
-    """Deterministic standard-normal draws of (event, lumi, phi, salt)."""
+    """Deterministic standard-normal draws of (event, lumi, phi, salt), the same on every platform
+    (correctionlib's "normal"; "stdnormal" differs between macOS and Linux, see
+    scale_factors._object_normal_rng)."""
     from correctionlib import schemav2 as cs
     corr = cs.Correction(
         name="highpt_smear_rng", version=1,
@@ -91,7 +94,7 @@ def _normal_rng():
                 cs.Variable(name="phi", type="real"), cs.Variable(name="salt", type="int")],
         output=cs.Variable(name="r", type="real"),
         data=cs.HashPRNG(nodetype="hashprng", inputs=["evt", "lumi", "phi", "salt"],
-                         distribution="stdnormal"),
+                         distribution="normal"),
     )
     return cs.CorrectionSet(schema_version=2, corrections=[corr]).to_evaluator()["highpt_smear_rng"]
 

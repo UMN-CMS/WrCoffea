@@ -1475,6 +1475,21 @@ class TestObjectNormalDraws:
         np.testing.assert_array_equal(a, sf.object_normal_draws(events, objs, salt=11))
         assert not np.allclose(a, sf.object_normal_draws(events, objs, salt=12))
 
+    def test_same_numbers_on_every_platform(self):
+        """The laptop (macOS arm64) and the Condor workers (Linux x86_64) must draw the same numbers.
+        correctionlib's "stdnormal" did not (C++ std::normal_distribution differs between libc++ and
+        libstdc++), so their yields differed at the level of the smearing's statistical noise
+        (2026-10-14). These values come out of both platforms with "normal"."""
+        pytest.importorskip("correctionlib")
+        from wrcoffea import muon_momentum as mm
+        evt = np.array([7919, 123456789, 4242424242], dtype=np.int64)
+        lumi = np.array([42, 1, 311], dtype=np.int64)
+        phi = np.array([0.3, -2.9, 1.5])
+        salt = np.array([11, 4, 2024], dtype=np.int64)
+        expected = [-0.10854048845706626, 0.23575554320940575, -0.4404581103459056]
+        for rng in (sf._object_normal_rng(), mm._normal_rng()):
+            np.testing.assert_allclose(rng.evaluate(evt, lumi, phi, salt), expected, rtol=0, atol=1e-12)
+
 
 # ---------------------------------------------------------------------------
 # Tests: JER hybrid smearing follows the JME matching criteria
