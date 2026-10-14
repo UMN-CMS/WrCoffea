@@ -133,8 +133,8 @@ def _is_boosted(region: str) -> bool:
 
 def _uses_lsf(region: str) -> bool:
     # The LSF requirement (and its scale factor) enters the boosted SR and
-    # flavour CR; the boosted DY CR uses AK8 jets without it.
-    return _is_boosted(region) and "dy_cr" not in region
+    # flavour CR; the boosted DY CR and the _nolsf variants use AK8 jets without it.
+    return _is_boosted(region) and "dy_cr" not in region and not region.endswith("_nolsf")
 
 
 def _all_regions(region: str) -> bool:

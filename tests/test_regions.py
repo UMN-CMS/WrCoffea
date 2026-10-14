@@ -6,7 +6,7 @@ from coffea.analysis_tools import PackedSelection
 
 from wrcoffea import regions as R
 from wrcoffea.analysis_config import SEL_MLLJJ_GT800, SEL_MLJ_GT800_BOOSTED
-from wrcoffea.histograms import create_hist
+from wrcoffea.histograms import _booking_specs, create_hist
 
 
 def _selection_with(names, n=1, false=()):
@@ -46,9 +46,10 @@ def test_validate_variants_rejects_duplicate_generated_names(monkeypatch):
 
 
 def test_resolve_studies_maps_names_and_rejects_unknown():
-    assert R.resolve_studies(["transfer-factor"]) == frozenset({"nomass"})
+    assert R.resolve_studies(["transfer-factor"]) == frozenset({"nomass", "lowmass"})
     assert R.resolve_studies([]) == frozenset()
-    assert R.resolve_studies(["transfer-factor", "transfer-factor"]) == frozenset({"nomass"})
+    assert R.resolve_studies(["transfer-factor", "transfer-factor"]) == frozenset({"nomass", "lowmass"})
+    assert R.resolve_studies(["no-lsf"]) == frozenset({"nolsf"})
     with pytest.raises(ValueError, match="Unknown study"):
         R.resolve_studies(["no-such-study"])
 
@@ -98,7 +99,8 @@ def test_mass_exactly_800_lands_in_high_slice_of_mass_histogram():
     """800 GeV is a bin edge of the mass axes, so a value of exactly 800 is
     counted on the high side when the _nomass histogram is sliced there."""
     for name in ("mass_fourobject", "mass_twoobject"):
-        h = create_hist(name, (800, 0, 8000), "m")
+        bins, label = _booking_specs()[name]
+        h = create_hist(name, bins, label)
         h.fill(process="p", region="r_nomass", syst="Nominal", **{name: [800.0]}, weight=[1.0])
         edges = h.axes[name].edges
         i800 = int(np.searchsorted(edges, 800.0))
@@ -127,7 +129,7 @@ def test_is_signal_region_covers_srs_and_their_variants_only():
 
 
 @pytest.mark.parametrize("mode", R.REGION_MODES)
-@pytest.mark.parametrize("variants", [(), ("nomass",)])
+@pytest.mark.parametrize("variants", [(), ("nomass",), ("lowmass", "nolsf")])
 def test_region_names_blind_drops_only_signal_regions(mode, variants):
     full = R.region_names(mode, variants)
     blind = R.region_names(mode, variants, blind=True)
@@ -136,7 +138,7 @@ def test_region_names_blind_drops_only_signal_regions(mode, variants):
     assert sorted(blind + R.blinded_region_names(mode, variants)) == sorted(full)
     if variants:
         # Variants of the flavor CRs stay; variants of the SRs go.
-        flavor_cr_variants = [name for name in full if name.endswith("_flavor_cr_nomass")]
+        flavor_cr_variants = [name for name in full if "_flavor_cr_" in name]
         assert flavor_cr_variants and set(flavor_cr_variants) <= set(blind)
         assert not any(name.endswith("_sr_nomass") for name in blind)
 
@@ -210,7 +212,7 @@ def test_dy_cr_split_study_targets_the_four_dy_crs():
     variants = R.resolve_studies(["dy-cr-split"])
     assert variants == frozenset({"dycr_mll60to100", "dycr_mll100to150"})
     assert R.added_selections(variants) == frozenset({R.SEL_MLL_60_100, R.SEL_MLL_100_150})
-    assert R.added_selections(R.resolve_studies(["transfer-factor"])) == frozenset()
+    assert R.added_selections(R.resolve_studies(["transfer-factor"])) == frozenset({R.SEL_MLLJJ_LT800, R.SEL_MLJ_LT800_BOOSTED})
     names = R.region_names("both", variants)
     for cr in ("wr_ee_resolved_dy_cr", "wr_mumu_resolved_dy_cr", "wr_ee_boosted_dy_cr", "wr_mumu_boosted_dy_cr"):
         assert cr + "_mll60to100" in names and cr + "_mll100to150" in names
@@ -238,10 +240,73 @@ def test_dy_cr_split_halves_partition_the_dy_cr(nominal):
 def test_add_only_variant_must_add_something_new(monkeypatch):
     empty = R.RegionVariant(suffix="_e", drop=frozenset(), regions=("wr_ee_resolved_dy_cr",))
     monkeypatch.setitem(R.REGION_VARIANTS, "empty", empty)
-    with pytest.raises(ValueError, match="neither drops nor adds"):
+    with pytest.raises(ValueError, match="neither drops, replaces nor adds"):
         R.validate_variants({"empty"})
     again = R.RegionVariant(suffix="_a", drop=frozenset(), add=(R.SEL_60_MLL_150,),
                             regions=("wr_ee_resolved_dy_cr",))
     monkeypatch.setitem(R.REGION_VARIANTS, "again", again)
     with pytest.raises(ValueError, match="already has"):
         R.validate_variants({"again"})
+
+
+# ---------------------------------------------------------------------------
+# Replacement variants: lowmass (AN-19-083 App. J) and nolsf (Fig. 12)
+# ---------------------------------------------------------------------------
+
+def test_lowmass_variant_swaps_the_mass_cut_in_both_topologies():
+    var = R.REGION_VARIANTS["lowmass"]
+    res = R.variant_cuts(var, R.RESOLVED_REGIONS["wr_ee_resolved_sr"])
+    assert R.SEL_MLLJJ_LT800 in res and SEL_MLLJJ_GT800 not in res
+    boo = R.variant_cuts(var, R.BOOSTED_REGIONS["wr_mue_boosted_flavor_cr"])
+    assert R.SEL_MLJ_LT800_BOOSTED in boo and SEL_MLJ_GT800_BOOSTED not in boo
+    assert len(res) == len(R.RESOLVED_REGIONS["wr_ee_resolved_sr"])
+
+
+def test_lowmass_regions_are_built_by_blinded_data_and_the_sr_is_not():
+    """m < 800 GeV excludes the SR, so blinded data builds every _lowmass region."""
+    for region in ("wr_ee_resolved_sr", "wr_mumu_boosted_sr"):
+        assert not R.is_signal_region(region + "_lowmass")
+    blind = R.region_names("both", ["lowmass"], blind=True)
+    assert all(r + "_lowmass" in blind for r in R.REGION_VARIANTS["lowmass"].regions)
+    assert not set(R.SIGNAL_REGIONS) & set(blind)
+
+
+def test_event_below_800_enters_lowmass_and_not_the_sr():
+    names = _all_names(R.RESOLVED_REGIONS) + [R.SEL_MLLJJ_LT800]
+    sel = _selection_with(names, false={SEL_MLLJJ_GT800})
+    masks = R.build_regions(R.RESOLVED_REGIONS, sel, {"lowmass"})
+    assert not masks["wr_ee_resolved_sr"][0]
+    assert masks["wr_ee_resolved_sr_lowmass"][0]
+
+
+def test_nolsf_variant_rebuilds_the_boosted_sr_and_flavor_crs():
+    var = R.REGION_VARIANTS["nolsf"]
+    for region, mask, new in (("wr_ee_boosted_sr", R.SEL_EE_SR, R.SEL_EE_SR_NOLSF),
+                              ("wr_mue_boosted_flavor_cr", R.SEL_MUE_CR, R.SEL_MUE_CR_NOLSF)):
+        cuts = R.variant_cuts(var, R.BOOSTED_REGIONS[region])
+        assert new in cuts and mask not in cuts
+        assert R.SEL_AK8JETS_WITH_LSF not in cuts and R.SEL_ATLEAST1AK8_DPHI_GT2 in cuts
+        assert R.SEL_MLL_GT200_BOOSTED_NOLSF in cuts and R.SEL_MLJ_GT800_BOOSTED_NOLSF in cuts
+        assert R.SEL_MLL_GT200_BOOSTED not in cuts and SEL_MLJ_GT800_BOOSTED not in cuts
+    assert "wr_ee_boosted_dy_cr" not in var.regions
+
+
+def test_nolsf_srs_stay_blind_and_its_flavor_crs_do_not():
+    assert R.is_signal_region("wr_ee_boosted_sr_nolsf")
+    assert R.is_signal_region("wr_mumu_boosted_sr_nolsf")
+    assert not R.is_signal_region("wr_emu_boosted_flavor_cr_nolsf")
+    assert not R.is_signal_region("wr_mue_boosted_flavor_cr_nolsf")
+
+
+def test_added_selections_include_replacement_cuts():
+    added = R.added_selections({"nolsf"})
+    assert {R.SEL_EE_SR_NOLSF, R.SEL_MUMU_SR_NOLSF, R.SEL_EMU_CR_NOLSF, R.SEL_MUE_CR_NOLSF,
+            R.SEL_MLL_GT200_BOOSTED_NOLSF, R.SEL_MLJ_GT800_BOOSTED_NOLSF} <= added
+
+
+def test_replace_variant_must_replace_a_cut_of_each_region(monkeypatch):
+    bad = R.RegionVariant(suffix="_x", drop=frozenset(), regions=("wr_ee_resolved_dy_cr",),
+                          replace=((R.SEL_EE_SR, "something_else"),))
+    monkeypatch.setitem(R.REGION_VARIANTS, "bad", bad)
+    with pytest.raises(ValueError, match="replaces nothing"):
+        R.validate_variants({"bad"})

@@ -56,7 +56,9 @@ from wrcoffea.analysis_config import (
     SEL_NO_DY_PAIR, SEL_NO_EXTRA_TIGHT_SR, SEL_NO_EXTRA_TIGHT_CR,
     SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
     SEL_OF_LEPTON_IN_AK8, SEL_NO_SF_LEPTON_IN_AK8,
-    SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
+    SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED, SEL_MLJ_LT800_BOOSTED,
+    SEL_EE_SR_NOLSF, SEL_MUMU_SR_NOLSF, SEL_EMU_CR_NOLSF, SEL_MUE_CR_NOLSF,
+    SEL_MLL_GT200_BOOSTED_NOLSF, SEL_MLJ_GT800_BOOSTED_NOLSF,
 )
 from wrcoffea.dy_reshape import dy_reshape_weight
 from wrcoffea.dy_reweight import DY_PROCESS_GROUP, dy_zpt_weight
@@ -677,7 +679,8 @@ class WrAnalysis(processor.ProcessorABC):
                     - Selections are built on padded leading objects (`ak.pad_none`) so
                         mass/ΔR expressions are defined even when objects are missing.
         """
-        selections = PackedSelection()
+        # 64 slots: the nominal selections plus every study's (32 overflow with all studies on).
+        selections = PackedSelection(dtype="uint64")
 
         n_tight = ak.num(tight_leptons)
         n_ak4   = ak.num(ak4_jets)
@@ -913,14 +916,19 @@ class WrAnalysis(processor.ProcessorABC):
           (selections,
            tight_lep,
            ak8_cand_dy, dy_loose_lep,
-           ak8_cand, of_candidate, sf_candidate)
+           ak8_cand, of_candidate, sf_candidate,
+           nolsf)
+        where *nolsf* is None unless the ``nolsf`` region variant is requested; then it is
+        ``{"ak8": jet, "sf_candidate": ..., "of_candidate": ...}``, the SR / flavour-CR
+        objects rebuilt on the leading AK8 jet with |dphi| > 2 and no LSF requirement.
 
         Notes
         - Boosted selections are skipped entirely upstream if `FatJet/lsf3` is missing.
         - The returned per-event objects are used directly by `fill_boosted_histograms()`.
         """
 
-        selections = PackedSelection()
+        # 64 slots: the nominal selections plus every study's (32 overflow with all studies on).
+        selections = PackedSelection(dtype="uint64")
 
         # Object selections.
         looseElectrons = self.selectLooseElectrons(events)
@@ -1121,6 +1129,9 @@ class WrAnalysis(processor.ProcessorABC):
         mll_boosted = ak.where(~ak.is_none(sf_candidate), mll_sr, mll_cr)
         selections.add(SEL_MLL_GT200_BOOSTED, ak.fill_none(mll_boosted > CUTS["mll_sr_min"], False))
         selections.add(SEL_MLJ_GT800_BOOSTED, ak.fill_none(mlj_sr > CUTS["mlljj_min"], False))
+        added = added_selections(getattr(self, "_region_variants", ()))
+        if SEL_MLJ_LT800_BOOSTED in added:   # the lowmass variant (AN-19-083 App. J low-mass region)
+            selections.add(SEL_MLJ_LT800_BOOSTED, ak.fill_none(mlj_sr < CUTS["mlljj_min"], False))
 
         # Triggers.
         if triggers is not None:
@@ -1149,7 +1160,43 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add(SEL_HEM_VETO_BOOSTED_CR, hem_ok_cr)
         selections.add(SEL_MUE_CR,   mue_cr & is_sublead_e_cr & hem_ok_cr)
 
-        return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate
+        nolsf = None
+        if SEL_EE_SR_NOLSF in added:
+            nolsf = self._nolsf_selections(
+                selections, era, eTrig, muTrig, tight_lep, is_lead_e, is_lead_mu, has_dy_pair,
+                AK8_cand_dy, sf_loose, of_loose, looseMuons, looseElectrons,
+            )
+
+        return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate, nolsf
+
+    def _nolsf_selections(self, selections, era, eTrig, muTrig, tight_lep, is_lead_e, is_lead_mu, has_dy_pair,
+                          jet, sf_loose, of_loose, looseMuons, looseElectrons):
+        """The ``nolsf`` region variant (AN-19-083 Fig. 12): the boosted SR / flavour-CR region masks
+        and masses rebuilt on *jet*, the leading AK8 jet with |dphi| > 2 and no LSF requirement (the DY
+        CR jet), exactly as ``boosted_selections`` builds them on the LSF jet.  Fills the ``*_NOLSF``
+        selections and returns the objects the histograms of these regions are filled with."""
+        dr = CUTS["dr_ak8_loose"]
+        sf_cand = ak.firsts(sf_loose[jet.deltaR(sf_loose) < dr])
+        of_cand = ak.firsts(of_loose[jet.deltaR(of_loose) < dr])
+        is_sr = (~has_dy_pair) & (~ak.is_none(sf_cand)) & ak.is_none(of_cand)
+        is_cr = (~has_dy_pair) & (~ak.is_none(of_cand)) & ak.is_none(sf_cand)
+        no_extra_sr = self._no_extra_tight_leptons(looseMuons, looseElectrons, tight_lep, sf_cand)
+        no_extra_cr = self._no_extra_tight_leptons(looseMuons, looseElectrons, tight_lep, of_cand)
+        hem_sr = ak.Array(self._hem_veto_ok(era, tight_lep, sf_cand))
+        hem_cr = ak.Array(self._hem_veto_ok(era, tight_lep, of_cand))
+        sub_sr, sub_cr = abs(sf_cand.pdgId), abs(of_cand.pdgId)
+
+        def add(name, mask):
+            selections.add(name, ak.fill_none(mask, False))
+
+        add(SEL_EE_SR_NOLSF, eTrig & is_sr & is_lead_e & no_extra_sr & (sub_sr == 11) & hem_sr)
+        add(SEL_MUMU_SR_NOLSF, muTrig & is_sr & is_lead_mu & no_extra_sr & (sub_sr == 13) & hem_sr)
+        add(SEL_EMU_CR_NOLSF, eTrig & is_cr & is_lead_e & no_extra_cr & (sub_cr == 13) & hem_cr)
+        add(SEL_MUE_CR_NOLSF, muTrig & is_cr & is_lead_mu & no_extra_cr & (sub_cr == 11) & hem_cr)
+        mll = ak.where(~ak.is_none(sf_cand), (tight_lep + sf_cand).mass, (tight_lep + of_cand).mass)
+        add(SEL_MLL_GT200_BOOSTED_NOLSF, mll > CUTS["mll_sr_min"])
+        add(SEL_MLJ_GT800_BOOSTED_NOLSF, (tight_lep + jet).mass > CUTS["mlljj_min"])
+        return {"ak8": jet, "sf_candidate": sf_cand, "of_candidate": of_cand}
 
     def build_event_weights(self, events, metadata, is_mc):
         """
@@ -1486,8 +1533,8 @@ class WrAnalysis(processor.ProcessorABC):
         the flavour CRs are named lead-then-jet (``emu``: leading electron,
         muon in the jet).  Returns ``None`` for regions without an LSF jet.
         """
-        if "boosted" not in region or "dy_cr" in region:
-            return None
+        if "boosted" not in region or "dy_cr" in region or region.endswith("_nolsf"):
+            return None   # the _nolsf variants have no LSF requirement, so no LSF SF
         if "emu" in region:
             return "muon"
         if "mue" in region:
@@ -1748,19 +1795,21 @@ class WrAnalysis(processor.ProcessorABC):
                 output, resolved_selections, process_name, ak4_jets, tight_leptons,
                 weights, syst_weights, era, tight_muons, tight_electrons,
                 is_mc=is_mc, skip_cutflows=True, dy_target=self._dy_reweight_target(metadata),
+                event_values=self._event_values(events),
             ))
 
         if boosted_payload is not None:
             coverage.update(self._fill_boosted(
                 output, boosted_payload, process_name, weights, syst_weights,
                 era, is_mc=is_mc, skip_cutflows=True, dy_target=self._dy_reweight_target(metadata),
+                event_values=self._event_values(events),
             ))
         return coverage
 
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
                        *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
-                       weight_factors=None, dy_target=False, pdf=None, channel_masks=None):
+                       weight_factors=None, dy_target=False, pdf=None, channel_masks=None, event_values=None):
         """Build resolved region masks and fill histograms + cutflows.
 
         Regions (and any enabled variants) come from ``wrcoffea.regions``;
@@ -1796,6 +1845,7 @@ class WrAnalysis(processor.ProcessorABC):
             coverage[region] = fill_resolved_histograms(
                 output, region, cuts, process_name, ak4_jets, tight_leptons, weights, region_syst,
                 syst_observables=self._syst_observables, event_lists=event_lists, pdf=pdf,
+                event_values=event_values,
             )
             if event_weights is not None:
                 fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
@@ -1805,6 +1855,15 @@ class WrAnalysis(processor.ProcessorABC):
                           sf_factors={f: sf_factors[r] for f, r in finals.items() if r in sf_factors},
                           channel_masks=channel_masks)
         return coverage
+
+    @staticmethod
+    def _event_values(events):
+        """Per-event quantities of the event-level histograms (histograms.EVENT_HIST_SPECS), keyed by
+        histogram name: the number of good primary vertices (data vs MC check of the pileup weight)."""
+        npv = getattr(getattr(events, "PV", None), "npvsGood", None)
+        if npv is None:
+            raise KeyError("PV_npvsGood is missing from the input; the npv_good histogram needs it")
+        return {"npv_good": np.asarray(ak.to_numpy(npv), dtype=np.float64)}
 
     @staticmethod
     def _candidates_by_flavor(candidate):
@@ -1821,7 +1880,7 @@ class WrAnalysis(processor.ProcessorABC):
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
                       era, *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
-                      weight_factors=None, dy_target=False, pdf=None, channel_masks=None):
+                      weight_factors=None, dy_target=False, pdf=None, channel_masks=None, event_values=None):
         """Unpack boosted payload, build region masks, and fill histograms.
 
         Returns ``{region: set(labels filled)}``.  As in ``_fill_resolved``,
@@ -1835,7 +1894,8 @@ class WrAnalysis(processor.ProcessorABC):
         the AK8 jet, or opposite-flavor lepton in the AK8 jet) gets the loose
         SFs.  This matches the objects used to fill the histograms.
         """
-        boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
+        (boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate,
+         nolsf) = boosted_payload
         blind = self._blind and not is_mc
 
         lead_mu, lead_e = self._candidates_by_flavor(tight_lep)
@@ -1844,9 +1904,14 @@ class WrAnalysis(processor.ProcessorABC):
             "flavor_cr": self._candidates_by_flavor(of_candidate),
             "sr": self._candidates_by_flavor(sf_candidate),
         }
+        if nolsf is not None:
+            sublead_by_kind["flavor_cr_nolsf"] = self._candidates_by_flavor(nolsf["of_candidate"])
+            sublead_by_kind["sr_nolsf"] = self._candidates_by_flavor(nolsf["sf_candidate"])
 
         def _region_sfs(region, factors):
             kind = "dy_cr" if "dy_cr" in region else ("flavor_cr" if "flavor_cr" in region else "sr")
+            if region.endswith("_nolsf"):
+                kind += "_nolsf"
             sub_mu, sub_e = sublead_by_kind[kind]
             return self._lepton_sfs_for_region(
                 region, syst_weights, era, lead_mu, lead_e,
@@ -1866,6 +1931,9 @@ class WrAnalysis(processor.ProcessorABC):
                 sf_factors[region] = _sf_ratio(region_syst[NOMINAL], base_nominal)
             if "dy_cr" in region:
                 sublead, ak8 = DY_loose_lep, AK8_cand_dy
+            elif region.endswith("_nolsf"):
+                ak8 = nolsf["ak8"]
+                sublead = nolsf["of_candidate"] if "flavor_cr" in region else nolsf["sf_candidate"]
             elif "flavor_cr" in region:
                 sublead, ak8 = of_candidate, AK8_cand
             else:
@@ -1877,6 +1945,7 @@ class WrAnalysis(processor.ProcessorABC):
             coverage[region] = fill_boosted_histograms(
                 output, region, cuts, process_name, tight_lep, ak8, sublead, weights, region_syst,
                 syst_observables=self._syst_observables, event_lists=event_lists, pdf=pdf,
+                event_values=event_values,
             )
             if event_weights is not None:
                 fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
@@ -2048,20 +2117,21 @@ class WrAnalysis(processor.ProcessorABC):
         # Signal: the ee / mumu cutflow chains count only their generator flavour (issue #107).
         channel_masks = (signal_flavour_masks(getattr(events, "LHEPart", None), len(events), dataset)
                          if is_mc and process_name == SIGNAL_PROCESS_GROUP else None)
+        event_values = self._event_values(events)
         coverage = {}
         if resolved_selections is not None:
             coverage.update(self._fill_resolved(
                 output, resolved_selections, process_name, ak4_jets, tight_leptons,
                 weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
                 event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
-                dy_target=dy_target, pdf=pdf, channel_masks=channel_masks,
+                dy_target=dy_target, pdf=pdf, channel_masks=channel_masks, event_values=event_values,
             ))
 
         if boosted_payload is not None:
             coverage.update(self._fill_boosted(
                 output, boosted_payload, process_name, weights, syst_weights, era, is_mc=is_mc,
                 event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
-                dy_target=dy_target, pdf=pdf, channel_masks=channel_masks,
+                dy_target=dy_target, pdf=pdf, channel_masks=channel_masks, event_values=event_values,
             ))
 
         # Shape systematics: re-run selections with shifted kinematics.

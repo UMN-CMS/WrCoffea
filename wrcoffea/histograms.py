@@ -83,31 +83,48 @@ def all_histogram_names():
 ResolvedGetter = Callable[[ak.Array, ak.Array, ak.Array, ak.Array], ak.Array]
 BoostedGetter = Callable[[ak.Array, ak.Array, ak.Array], ak.Array]
 
+# Axes shared by several histograms.  The fit masses reach 12 TeV so that the 8 TeV signal tail stays out of
+# the overflow (20 % of (8000, 4100) above 8 TeV in the resolved SR).  phi spans exactly +-pi, so no edge bin
+# is partly outside the physical range.  |dphi(l, J)| starts at the 2.0 requirement of every boosted region.
+# LSF3 starts at -1 (NanoAOD's value for a jet without a lepton, about half of the boosted DY CR) and runs to
+# 2 in 0.01 bins, so the 0.75 requirement is a bin edge (1-4 % of the LSF3 > 0.75 jets are above 2).
+MASS_BINS = (1200, 0, 12000)
+PHI_BINS = (64, -np.pi, np.pi)
+DPHI_BINS = (48, 2.0, np.pi)
+LSF_BINS = (300, -1.0, 2.0)
+
+# Event-level histograms: (name, bins, label).  Their values come per event from the analyzer
+# (``WrAnalysis._event_values``), filled in every region with the region's weights.
+EVENT_HIST_SPECS: list[tuple[str, tuple[int, float, float], str]] = [
+    ("npv_good", (100, -0.5, 99.5), r"Number of good primary vertices"),
+]
+
 # Resolved getters receive (L, J, LL, JJ) where LL = dilepton 4-vec, JJ = dijet 4-vec
 # (pre-computed once per chunk in fill_resolved_histograms to avoid redundant additions).
 RESOLVED_HIST_SPECS: list[tuple[str, tuple[int, float, float], str, ResolvedGetter]] = [
-    ("pt_leading_lepton",           (200,   0, 2000), r"$p_{T}$ of the leading lepton [GeV]",           lambda L, J, LL, JJ: L[:, 0].pt),
+    ("pt_leading_lepton",           (500,   0, 5000), r"$p_{T}$ of the leading lepton [GeV]",           lambda L, J, LL, JJ: L[:, 0].pt),
     ("eta_leading_lepton",          (60,   -3,    3), r"$\\eta$ of the leading lepton",                lambda L, J, LL, JJ: L[:, 0].eta),
-    ("phi_leading_lepton",          (80,   -4,    4), r"$\\phi$ of the leading lepton",                lambda L, J, LL, JJ: L[:, 0].phi),
-    ("pt_subleading_lepton",        (200,   0, 2000), r"$p_{T}$ of the subleading lepton [GeV]",        lambda L, J, LL, JJ: L[:, 1].pt),
+    ("phi_leading_lepton",          PHI_BINS, r"$\\phi$ of the leading lepton",                lambda L, J, LL, JJ: L[:, 0].phi),
+    ("pt_subleading_lepton",        (500,   0, 5000), r"$p_{T}$ of the subleading lepton [GeV]",        lambda L, J, LL, JJ: L[:, 1].pt),
     ("eta_subleading_lepton",       (60,   -3,    3), r"$\\eta$ of the subleading lepton",             lambda L, J, LL, JJ: L[:, 1].eta),
-    ("phi_subleading_lepton",       (80,   -4,    4), r"$\\phi$ of the subleading lepton",             lambda L, J, LL, JJ: L[:, 1].phi),
-    ("pt_leading_jet",              (200,   0, 2000), r"$p_{T}$ of the leading jet [GeV]",              lambda L, J, LL, JJ: J[:, 0].pt),
+    ("phi_subleading_lepton",       PHI_BINS, r"$\\phi$ of the subleading lepton",             lambda L, J, LL, JJ: L[:, 1].phi),
+    ("pt_leading_jet",              (500,   0, 5000), r"$p_{T}$ of the leading jet [GeV]",              lambda L, J, LL, JJ: J[:, 0].pt),
     ("eta_leading_jet",             (60,   -3,    3), r"$\\eta$ of the leading jet",                   lambda L, J, LL, JJ: J[:, 0].eta),
-    ("phi_leading_jet",             (80,   -4,    4), r"$\\phi$ of the leading jet",                   lambda L, J, LL, JJ: J[:, 0].phi),
-    ("pt_subleading_jet",           (200,   0, 2000), r"$p_{T}$ of the subleading jet [GeV]",           lambda L, J, LL, JJ: J[:, 1].pt),
+    ("phi_leading_jet",             PHI_BINS, r"$\\phi$ of the leading jet",                   lambda L, J, LL, JJ: J[:, 0].phi),
+    ("pt_subleading_jet",           (500,   0, 5000), r"$p_{T}$ of the subleading jet [GeV]",           lambda L, J, LL, JJ: J[:, 1].pt),
     ("eta_subleading_jet",          (60,   -3,    3), r"$\\eta$ of the subleading jet",                lambda L, J, LL, JJ: J[:, 1].eta),
-    ("phi_subleading_jet",          (80,   -4,    4), r"$\\phi$ of the subleading jet",                lambda L, J, LL, JJ: J[:, 1].phi),
+    ("phi_subleading_jet",          PHI_BINS, r"$\\phi$ of the subleading jet",                lambda L, J, LL, JJ: J[:, 1].phi),
     ("mass_dilepton",               (5000,  0, 5000), r"$m_{\\ell\\ell}$ [GeV]",                     lambda L, J, LL, JJ: LL.mass),
-    ("pt_dilepton",                 (200,   0, 2000), r"$p_{T,\\ell\\ell}$ [GeV]",                   lambda L, J, LL, JJ: LL.pt),
+    ("pt_dilepton",                 (500,   0, 5000), r"$p_{T,\\ell\\ell}$ [GeV]",                   lambda L, J, LL, JJ: LL.pt),
     ("mass_dijet",                  (500,   0, 5000), r"$m_{jj}$ [GeV]",                               lambda L, J, LL, JJ: JJ.mass),
     ("pt_dijet",                    (500,   0, 5000), r"$p_{T,jj}$ [GeV]",                             lambda L, J, LL, JJ: JJ.pt),
     ("mass_threeobject_leadlep",    (800,   0, 8000), r"$m_{\\ell jj}$ [GeV]",                        lambda L, J, LL, JJ: (L[:, 0] + JJ).mass),
     ("pt_threeobject_leadlep",      (800,   0, 8000), r"$p_{T,\\ell jj}$ [GeV]",                      lambda L, J, LL, JJ: (L[:, 0] + JJ).pt),
     ("mass_threeobject_subleadlep", (800,   0, 8000), r"$m_{\\ell jj}$ [GeV]",                        lambda L, J, LL, JJ: (L[:, 1] + JJ).mass),
     ("pt_threeobject_subleadlep",   (800,   0, 8000), r"$p_{T,\\ell jj}$ [GeV]",                      lambda L, J, LL, JJ: (L[:, 1] + JJ).pt),
-    ("mass_fourobject",             (800,   0, 8000), r"$m_{\\ell\\ell jj}$ [GeV]",                 lambda L, J, LL, JJ: (LL + JJ).mass),
+    ("mass_fourobject",             MASS_BINS, r"$m_{\\ell\\ell jj}$ [GeV]",                 lambda L, J, LL, JJ: (LL + JJ).mass),
     ("pt_fourobject",               (800,   0, 8000), r"$p_{T,\\ell\\ell jj}$ [GeV]",               lambda L, J, LL, JJ: (LL + JJ).pt),
+    ("n_ak4_jets",                  (10, -0.5, 9.5),  r"Number of AK4 jets",                           lambda L, J, LL, JJ: ak.num(J)),
 ]
 RESOLVED_2D_HIST_SPECS: list[
     tuple[
@@ -117,27 +134,31 @@ RESOLVED_2D_HIST_SPECS: list[
         ResolvedGetter,
     ]
 ] = [
-    ("etavsPhi_leadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", (80, -4, 4), r"$\\phi$"), lambda L, J, LL, JJ: (J[:, 0].eta,J[:, 0].phi),),
-    ("etavsPhi_subleadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", (80, -4, 4), r"$\\phi$"), lambda L, J, LL, JJ: (J[:, 1].eta,J[:, 1].phi),),
+    ("etavsPhi_leadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", PHI_BINS, r"$\\phi$"), lambda L, J, LL, JJ: (J[:, 0].eta,J[:, 0].phi),),
+    ("etavsPhi_subleadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", PHI_BINS, r"$\\phi$"), lambda L, J, LL, JJ: (J[:, 1].eta,J[:, 1].phi),),
 ]
 
 
 BOOSTED_HIST_SPECS: list[tuple[str, tuple[int, float, float], str, BoostedGetter]] = [
-    ("pt_leading_lepton",               (200,   0, 2000), r"$p_{T}$ of the leading lepton [GeV]",  lambda lep, ak8, loose: lep.pt),
+    ("pt_leading_lepton",               (500,   0, 5000), r"$p_{T}$ of the leading lepton [GeV]",  lambda lep, ak8, loose: lep.pt),
     ("eta_leading_lepton",              (60,   -3,    3), r"$\\eta$ of the leading lepton",       lambda lep, ak8, loose: lep.eta),
-    ("phi_leading_lepton",              (80,   -4,    4), r"$\\phi$ of the leading lepton",       lambda lep, ak8, loose: lep.phi),
-    ("pt_subleading_lepton",            (200,   0, 2000), r"$p_{T}$ of the subleading lepton [GeV]", lambda lep, ak8, loose: loose.pt),
+    ("phi_leading_lepton",              PHI_BINS, r"$\\phi$ of the leading lepton",       lambda lep, ak8, loose: lep.phi),
+    ("pt_subleading_lepton",            (500,   0, 5000), r"$p_{T}$ of the subleading lepton [GeV]", lambda lep, ak8, loose: loose.pt),
     ("eta_subleading_lepton",           (60,   -3,    3), r"$\\eta$ of the subleading lepton",    lambda lep, ak8, loose: loose.eta),
-    ("phi_subleading_lepton",           (80,   -4,    4), r"$\\phi$ of the subleading lepton",    lambda lep, ak8, loose: loose.phi),
-    ("pt_leading_AK8Jets",              (200,   0, 2000), r"$p_{T}$ of the leading  AK8Jets [GeV]", lambda lep, ak8, loose: ak8.pt),
-    ("eta_leading_AK8Jets",             (60,   -3,    3), r"$\\eta$ of theleading  AK8Jets",       lambda lep, ak8, loose: ak8.eta),
-    ("phi_leading_AK8Jets",             (80,   -4,    4), r"$\\phi$ of theleading  AK8Jets",       lambda lep, ak8, loose: ak8.phi),
+    ("phi_subleading_lepton",           PHI_BINS, r"$\\phi$ of the subleading lepton",    lambda lep, ak8, loose: loose.phi),
+    ("pt_leading_AK8Jets",              (500,   0, 5000), r"$p_{T}$ of the leading AK8 jet [GeV]", lambda lep, ak8, loose: ak8.pt),
+    ("eta_leading_AK8Jets",             (60,   -3,    3), r"$\\eta$ of the leading AK8 jet",       lambda lep, ak8, loose: ak8.eta),
+    ("phi_leading_AK8Jets",             PHI_BINS, r"$\\phi$ of the leading AK8 jet",       lambda lep, ak8, loose: ak8.phi),
+    # The soft-drop mass the analysis cuts on (the JME subjet recipe, written into msoftdrop).
+    ("msd_leading_AK8Jets",             (200,   0, 1000), r"$m_{SD}$ of the leading AK8 jet [GeV]", lambda lep, ak8, loose: ak8.msoftdrop),
     ("mass_dilepton",                   (5000,  0, 5000), r"$m_{\\ell\\ell}$ [GeV]",             lambda lep, ak8, loose: (lep + loose).mass),
-    ("pt_dilepton",                     (200,   0, 2000), r"$p_{T,\\ell\\ell}$ [GeV]",           lambda lep, ak8, loose: (lep + loose).pt),
-    ("mass_twoobject",                  (800,   0, 8000), r"$m_{\\ell\\ell jj}$ [GeV]",          lambda lep, ak8, loose: (lep + ak8).mass),
-    ("pt_twoobject",                    (800,   0, 8000), r"$p_{T,\\ell\\ell jj}$ [GeV]",        lambda lep, ak8, loose: (lep + ak8).pt),
-    ("LSF_leading_AK8Jets",             (200,   0, 1.1),  r"LSF of leading AK8Jets",                lambda lep, ak8, loose: ak8.lsf3),
-    ("dPhi_leading_tightlepton_AK8Jet", (80,   -4,    4), r"$d\\phi$ (leading Tight lepton, AK8 Jet)", lambda lep, ak8, loose: abs(ak8.delta_phi(lep))),
+    ("pt_dilepton",                     (500,   0, 5000), r"$p_{T,\\ell\\ell}$ [GeV]",           lambda lep, ak8, loose: (lep + loose).pt),
+    ("mass_twoobject",                  MASS_BINS,        r"$m_{\\ell J}$ [GeV]",                  lambda lep, ak8, loose: (lep + ak8).mass),
+    ("pt_twoobject",                    (800,   0, 8000), r"$p_{T,\\ell J}$ [GeV]",                lambda lep, ak8, loose: (lep + ak8).pt),
+    ("LSF_leading_AK8Jets",             LSF_BINS,         r"LSF$_{3}$ of the leading AK8 jet",      lambda lep, ak8, loose: ak8.lsf3),
+    ("dPhi_leading_tightlepton_AK8Jet", DPHI_BINS,        r"$|\\Delta\\phi|$(leading tight lepton, AK8 jet)", lambda lep, ak8, loose: abs(ak8.delta_phi(lep))),
+    # In the SR / flavour CRs the lepton is inside the jet (< 0.8); in the DY CR on either side of 0.8.
+    ("dR_loose_lepton_AK8Jet",          (100,   0,    5), r"$\\Delta R$(loose lepton, AK8 jet)",  lambda lep, ak8, loose: ak8.deltaR(loose)),
 ]
 BOOSTED_2D_HIST_SPECS: list[
     tuple[str,                  # histogram key                                                                                                     
@@ -147,7 +168,7 @@ BOOSTED_2D_HIST_SPECS: list[
     ]
 ] = [
 
- ("etavsPhi_leadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", (80, -4, 4), r"$\\phi$"), lambda lep, ak8,loose: (ak8.eta, ak8.phi),),
+ ("etavsPhi_leadingJet",("eta", (60, -3, 3), r"$\\eta$"),("phi", PHI_BINS, r"$\\phi$"), lambda lep, ak8,loose: (ak8.eta, ak8.phi),),
 ]
 def _booking_specs() -> dict[str, tuple[tuple[int, float, float], str]]:
     """Return histogram booking metadata keyed by canonical histogram name."""
@@ -155,6 +176,8 @@ def _booking_specs() -> dict[str, tuple[tuple[int, float, float], str]]:
     for name, bins, label, _ in RESOLVED_HIST_SPECS:
         specs[name] = (bins, label)
     for name, bins, label, _ in BOOSTED_HIST_SPECS:
+        specs[name] = (bins, label)
+    for name, bins, label in EVENT_HIST_SPECS:
         specs[name] = (bins, label)
     # Misc always-available hists
     specs.setdefault("count", ((100, 0, 100), r"count"))
@@ -293,12 +316,28 @@ def record_events(event_lists, region, values, weights):
             cols[key] = column_accumulator(arr)
 
 
+def _fill_event_histograms(output, region, cut, process_name, syst_weights_cut, syst_observables, event_values):
+    """Fill the EVENT_HIST_SPECS histograms of *region* from *event_values* (per-event arrays of the whole
+    chunk, keyed by histogram name), with the region's weights."""
+    if not event_values:
+        return
+    mask = np.asarray(cut, dtype=bool)
+    for hist_name, _bins, _label in EVENT_HIST_SPECS:
+        if hist_name not in event_values:
+            continue
+        vals = np.asarray(event_values[hist_name], dtype=np.float64)[mask]
+        for syst_label in _labels_for(hist_name, syst_weights_cut, syst_observables):
+            output[hist_name].fill(process=process_name, region=region, syst=syst_label,
+                                   **{hist_name: vals}, weight=syst_weights_cut[syst_label])
+
+
 def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, weights, syst_weights,
-                             syst_observables=None, event_lists=None, pdf=None):
+                             syst_observables=None, event_lists=None, pdf=None, event_values=None):
     """Fill all resolved-region histograms for a given region selection mask.
 
     *pdf*, when given, is ``(store, PdfMembers)``: the PDF members of the fit
-    mass are filled into ``store`` (nominal pass only).
+    mass are filled into ``store`` (nominal pass only).  *event_values* feeds the
+    event-level histograms (see :func:`_fill_event_histograms`).
     Returns the set of syst labels completed for *region*.
     """
     leptons_cut = leptons[cut]
@@ -328,6 +367,8 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
                 weight=sw,
             )
 
+    _fill_event_histograms(output, region, cut, process_name, syst_weights_cut, syst_observables, event_values)
+
     for hist_key, xinfo, yinfo, expr in RESOLVED_2D_HIST_SPECS:
         labels = _labels_for(hist_key, syst_weights_cut, syst_observables)
         if not labels:
@@ -354,7 +395,7 @@ def fill_resolved_histograms(output, region, cut, process_name, jets, leptons, w
 
 
 def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets, looseleptons, weights, syst_weights,
-                            syst_observables=None, event_lists=None, pdf=None):
+                            syst_observables=None, event_lists=None, pdf=None, event_values=None):
     """Fill all boosted-region histograms for a given region selection mask.
 
     *pdf* as in :func:`fill_resolved_histograms`.
@@ -401,6 +442,8 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
                 **{hist_name: vals},
                 weight=sw,
             )
+
+    _fill_event_histograms(output, region, cut, process_name, syst_weights_cut, syst_observables, event_values)
 
     for (
             hist_key,

@@ -27,6 +27,9 @@ from wrcoffea.analysis_config import (
     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR, SEL_MUE_CR,
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
+    SEL_MLLJJ_LT800, SEL_MLJ_LT800_BOOSTED,
+    SEL_EE_SR_NOLSF, SEL_MUMU_SR_NOLSF, SEL_EMU_CR_NOLSF, SEL_MUE_CR_NOLSF,
+    SEL_MLL_GT200_BOOSTED_NOLSF, SEL_MLJ_GT800_BOOSTED_NOLSF,
 )
 from wrcoffea.era_utils import get_era_details
 
@@ -85,35 +88,70 @@ BOOSTED_REGIONS: dict[str, RegionCuts] = {
 
 @dataclass(frozen=True)
 class RegionVariant:
-    """Derive ``<region><suffix>`` from each nominal *region* by removing *drop* cuts
+    """Derive ``<region><suffix>`` from each nominal *region* by removing *drop* cuts,
+    swapping each cut of *replace* (``(cut, replacement)`` pairs) for its replacement,
     and AND-ing *add* cuts.
 
-    Added cuts are selections the analyzer only fills when a variant asks for them
-    (see :func:`added_selections`).
+    Added and replacement cuts are selections the analyzer only fills when a variant
+    asks for them (see :func:`added_selections`).  *blinded* False marks a variant of a
+    signal region that cannot overlap it (its selection excludes the SR), which blinded
+    data still builds (see :func:`is_signal_region`).
     """
     suffix: str
     drop: frozenset[str]
     regions: tuple[str, ...]
     description: str = ""
     add: tuple[str, ...] = ()
+    replace: tuple[tuple[str, str], ...] = ()
+    blinded: bool = True
 
 
 _DY_CRS: tuple[str, ...] = ("wr_ee_resolved_dy_cr", "wr_mumu_resolved_dy_cr",
                              "wr_ee_boosted_dy_cr", "wr_mumu_boosted_dy_cr")
+_SR_AND_FLAVOR_CRS: tuple[str, ...] = (
+    "wr_ee_resolved_sr", "wr_mumu_resolved_sr", "wr_resolved_flavor_cr",
+    "wr_ee_boosted_sr", "wr_mumu_boosted_sr",
+    "wr_emu_boosted_flavor_cr", "wr_mue_boosted_flavor_cr",
+)
 
 REGION_VARIANTS: dict[str, RegionVariant] = {
     # SR and flavor CR without the reconstructed-mass requirement.  The mass
-    # histograms span 0-8000 GeV, so one region yields both the m < 800 GeV
-    # closure region and the m > 800 GeV SR as slices at plot time.
+    # histograms span 0-12000 GeV, so one region yields both the m < 800 GeV
+    # closure region and the m > 800 GeV SR as slices at plot time (simulation:
+    # the SR variants stay blinded in data).
     "nomass": RegionVariant(
         suffix="_nomass",
         drop=frozenset({SEL_MLLJJ_GT800, SEL_MLJ_GT800_BOOSTED}),
-        regions=(
-            "wr_ee_resolved_sr", "wr_mumu_resolved_sr", "wr_resolved_flavor_cr",
-            "wr_ee_boosted_sr", "wr_mumu_boosted_sr",
-            "wr_emu_boosted_flavor_cr", "wr_mue_boosted_flavor_cr",
-        ),
+        regions=_SR_AND_FLAVOR_CRS,
         description="SR / flavor CR with the m(lljj) or m(lJ) > 800 GeV cut removed.",
+    ),
+    # AN-19-083 App. J (Figs. 103-128), its low-mass region LowWRCR: the SR and flavor CR
+    # selections with m(lljj) or m(lJ) < 800 GeV, where the data-driven tt prediction
+    # (R x flavor-CR data) is compared with data.  Disjoint from the SR (m > 800 GeV), so
+    # data fills it, as in Run 2.
+    "lowmass": RegionVariant(
+        suffix="_lowmass",
+        drop=frozenset(),
+        replace=((SEL_MLLJJ_GT800, SEL_MLLJJ_LT800), (SEL_MLJ_GT800_BOOSTED, SEL_MLJ_LT800_BOOSTED)),
+        regions=_SR_AND_FLAVOR_CRS,
+        blinded=False,
+        description="SR / flavor CR with m(lljj) or m(lJ) < 800 GeV instead of > 800 GeV (AN-19-083 LowWRCR).",
+    ),
+    # AN-19-083 Figs. 12, 93-94: the boosted SR and flavor CRs with the jet taken without
+    # the LSF requirement (the leading AK8 jet with |dphi| > 2, as in the DY CR), the
+    # lepton-in-jet candidates and masses rebuilt on it.  The SR variants stay blinded.
+    "nolsf": RegionVariant(
+        suffix="_nolsf",
+        drop=frozenset(),
+        replace=(
+            (SEL_EE_SR, SEL_EE_SR_NOLSF), (SEL_MUMU_SR, SEL_MUMU_SR_NOLSF),
+            (SEL_EMU_CR, SEL_EMU_CR_NOLSF), (SEL_MUE_CR, SEL_MUE_CR_NOLSF),
+            (SEL_AK8JETS_WITH_LSF, SEL_ATLEAST1AK8_DPHI_GT2),
+            (SEL_MLL_GT200_BOOSTED, SEL_MLL_GT200_BOOSTED_NOLSF),
+            (SEL_MLJ_GT800_BOOSTED, SEL_MLJ_GT800_BOOSTED_NOLSF),
+        ),
+        regions=("wr_ee_boosted_sr", "wr_mumu_boosted_sr", "wr_emu_boosted_flavor_cr", "wr_mue_boosted_flavor_cr"),
+        description="Boosted SR / flavor CR on the leading AK8 jet without the LSF requirement (AN-19-083 Fig. 12).",
     ),
     # AN-19-083 Sec. 5.1 / Figs. 27-30: derive the DY reshape in DY CR1
     # (60 < m(ll) < 100) and test it in DY CR2 (100 < m(ll) < 150).
@@ -136,14 +174,17 @@ REGION_VARIANTS: dict[str, RegionVariant] = {
 # Study name -> variants it enables.  Exposed as ``--study`` on the CLI.
 STUDIES: dict[str, tuple[str, ...]] = {
     # e-mu transfer factor R = SR / flavor CR, fitted separately below and
-    # above 800 GeV (AN-19-083 Appendix J closure test).  Measured on ttbar,
-    # so pair with ``--split-groups tt_tW``.
-    "transfer-factor": ("nomass",),
+    # above 800 GeV (AN-19-083 Appendix J closure test), and its closure in data
+    # in the low-mass region.  Measured on ttbar, so pair with ``--split-groups tt_tW``.
+    "transfer-factor": ("nomass", "lowmass"),
     # DY reshape CR1 -> CR2 closure (AN-19-083 Figs. 27-30).  Run data, the
     # non-DY backgrounds and DY with it, derive the reshape from the
     # _mll60to100 regions (scripts/derive_dy_reshape.py --region-suffix) and
     # compare the _mll100to150 regions before and after applying it.
     "dy-cr-split": ("dycr_mll60to100", "dycr_mll100to150"),
+    # LSF3 of the boosted jet without the LSF requirement, data in the flavor CRs
+    # (AN-19-083 Fig. 12) and simulation in the SRs (the S/sqrt(B) scan, Figs. 93-94).
+    "no-lsf": ("nolsf",),
 }
 
 _ALL_NOMINAL: dict[str, RegionCuts] = {**RESOLVED_REGIONS, **BOOSTED_REGIONS}
@@ -171,12 +212,17 @@ def validate_variants(names: Iterable[str]) -> frozenset[str]:
             cuts = _ALL_NOMINAL.get(region)
             if cuts is None:
                 raise ValueError(f"Variant '{name}' targets unknown region '{region}'.")
-            if not var.drop and not var.add:
-                raise ValueError(f"Variant '{name}' neither drops nor adds a cut.")
+            if not var.drop and not var.add and not var.replace:
+                raise ValueError(f"Variant '{name}' neither drops, replaces nor adds a cut.")
             if var.drop and not (var.drop & set(cuts)):
                 raise ValueError(f"Variant '{name}' drops nothing from region '{region}'.")
+            replaced = {old for old, _ in var.replace}
+            if var.replace and not (replaced & set(cuts)):
+                raise ValueError(f"Variant '{name}' replaces nothing in region '{region}'.")
             if set(var.add) & set(cuts):
                 raise ValueError(f"Variant '{name}' adds a cut region '{region}' already has.")
+            if {new for old, new in var.replace if old in cuts} & (set(cuts) - replaced):
+                raise ValueError(f"Variant '{name}' replaces a cut of region '{region}' by one it already has.")
             new_name = region + var.suffix
             if new_name in _ALL_NOMINAL or new_name in generated:
                 raise ValueError(f"Variant '{name}' generates duplicate region name '{new_name}'.")
@@ -233,14 +279,24 @@ def build_regions(nominal: Mapping[str, RegionCuts], selections, variants: Itera
             name = region + var.suffix
             if blind and is_signal_region(name):
                 continue
-            kept = tuple(c for c in cuts if c not in var.drop) + var.add
-            out[name] = selections.all(*kept)
+            out[name] = selections.all(*variant_cuts(var, cuts))
     return out
 
 
+def variant_cuts(var: RegionVariant, cuts: RegionCuts) -> RegionCuts:
+    """The cuts of *var*'s version of a region with *cuts*: drop, replace, then add."""
+    swap = dict(var.replace)
+    return tuple(swap.get(c, c) for c in cuts if c not in var.drop) + var.add
+
+
 def added_selections(variants: Iterable[str]) -> frozenset[str]:
-    """Selection names the requested *variants* add, which the analyzer must then fill."""
-    return frozenset(c for v in validate_variants(variants) for c in REGION_VARIANTS[v].add)
+    """Selection names the requested *variants* add or swap in, which the analyzer must then fill."""
+    out = set()
+    for v in validate_variants(variants):
+        var = REGION_VARIANTS[v]
+        out.update(var.add)
+        out.update(new for _, new in var.replace)
+    return frozenset(out)
 
 
 # ---------------------------------------------------------------------------
@@ -249,8 +305,10 @@ def added_selections(variants: Iterable[str]) -> frozenset[str]:
 
 # Data of a blinded run (the default) never builds these regions, nor any
 # variant derived from them (e.g. ``wr_ee_resolved_sr_nomass``): no
-# histograms, no --save-events trees, no coverage entry.  The flavor and DY
-# control regions are never blinded, and MC is never blinded.
+# histograms, no --save-events trees, no coverage entry.  The exception is a
+# variant marked ``blinded=False`` because its selection excludes the SR (the
+# m < 800 GeV ``_lowmass`` regions).  The flavor and DY control regions are
+# never blinded, and MC is never blinded.
 SIGNAL_REGIONS: frozenset[str] = frozenset({
     "wr_ee_resolved_sr", "wr_mumu_resolved_sr",
     "wr_ee_boosted_sr", "wr_mumu_boosted_sr",
@@ -270,11 +328,11 @@ UNBLINDABLE_RUNS: frozenset[str] = frozenset({"RunII"})
 
 
 def is_signal_region(name: str) -> bool:
-    """True for a signal region or any region variant derived from one."""
+    """True for a signal region or any blinded region variant derived from one."""
     if name in SIGNAL_REGIONS:
         return True
     return any(name == region + var.suffix
-               for var in REGION_VARIANTS.values()
+               for var in REGION_VARIANTS.values() if var.blinded
                for region in var.regions if region in SIGNAL_REGIONS)
 
 

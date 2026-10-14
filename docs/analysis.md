@@ -123,11 +123,19 @@ tight lepton vetoed):
 | `wr_ee_boosted_sr`, `wr_mumu_boosted_sr` | leading AK8 with `lsf3 > 0.75` and \|Δφ\| > 2 | a same-flavour loose lepton inside the jet (ΔR < 0.8) and no opposite-flavour one | m(ℓ_T, ℓ_L) > 200 GeV, m(ℓ_T, J) > 800 GeV | EGamma, Muon |
 | `wr_emu_boosted_flavor_cr`, `wr_mue_boosted_flavor_cr` | as the SR | an opposite-flavour loose lepton in the jet, no same-flavour one; named leading-then-jet (`emu` = leading electron, muon in the jet, electron trigger) | as the SR | EGamma, Muon |
 
-Region variants and studies (`--study`, registry in `regions.py`): `transfer-factor` adds the SR
-and flavour CRs without the mass cut (`<region>_nomass`, for the eμ transfer factor R = SR / flavour
-CR measured on tt̄, AN-19-083 Appendix J); `dy-cr-split` splits the DY CRs at m(ℓℓ) = 100 GeV
-(AN-19-083 DY CR1 and CR2, for the reshape closure). Run 2 regions not built here: resolved DYCR3
-(200 < m(ℓℓ) < 400 GeV), the low-W_R CR (m < 800 GeV) and the b-jet splits.
+Region variants and studies (`--study`, registry in `regions.py`; several can be combined):
+
+- `transfer-factor`: the SR and flavour CRs without the mass cut (`<region>_nomass`, for the eμ
+  transfer factor R = SR / flavour CR measured on tt̄, AN-19-083 Appendix J) and with m(ℓℓjj) or
+  m(ℓJ) < 800 GeV instead of > 800 GeV (`<region>_lowmass`, Run 2's low-W_R CR, for the closure
+  of the data-driven tt̄ prediction in data).
+- `dy-cr-split`: the DY CRs split at m(ℓℓ) = 100 GeV (AN-19-083 DY CR1 and CR2, for the reshape
+  closure).
+- `no-lsf`: the boosted SR and flavour CRs rebuilt on the leading AK8 jet with |Δφ| > 2 and no LSF
+  requirement (the DY CR jet), with their lepton-in-jet candidates and masses (`<region>_nolsf`,
+  AN-19-083 Figs. 12 and 93-94). These regions get no LSF scale factor.
+
+Run 2 regions not built here: resolved DYCR3 (200 < m(ℓℓ) < 400 GeV) and the b-jet splits.
 
 ## Event weights
 
@@ -200,7 +208,8 @@ analyzer applies the k(m(ℓN))/⟨k⟩ shape reweight, both from the derivation
 
 ## Blinding
 
-Data of a blinded run (the default) never builds the signal regions or their variants, and its ee
+Data of a blinded run (the default) never builds the signal regions or their variants, except the
+`_lowmass` ones (m < 800 GeV, disjoint from the SR), and its ee
 and μμ cutflows stop before the m(ℓℓ) > 200 GeV cut; control regions and the eμ cutflows are
 complete; MC is never blinded. The manifest records what a file withholds. `--unblind` is allowed
 for the Run 2 eras only. Operational details: [run_analysis.md](run_analysis.md#blinding).
@@ -253,6 +262,10 @@ in the files ([WR_Plotter/docs/plotting.md](../WR_Plotter/docs/plotting.md)).
 
 Decisions and measurements still outstanding, with the date they were last looked at.
 
+- **LSF3 above 1.** NanoAOD's lsf3 exceeds 1 for a visible share of the jets that pass the 0.75 cut:
+  above 1.1 for 7 % (tt̄) and 20 % (W+jets) of them, above 2 for 1.3 % and 3.8 %, with values up to
+  about 27 (2024 skims, AK8 jets with pT > 200 GeV and |η| < 2.4). Not yet explained; NanoAOD's lsf3
+  also counts non-PF leptons (2026-10-14).
 - **Muon momentum at high pT.** The Muon POG Run 3 recipe (MuonScaRe below 200 GeV, the
   generalized-endpoint correction on data and extra smearing on MC above) is applied to 2022, 2023
   and 2024 (2022/2023 since 2026-10-12, from the POG's Run 3 tables); UL and 2025 keep the TuneP

@@ -543,6 +543,13 @@ def _make_integration_events(n_events=5, *,
         pu.nTrueInt = ak.Array([20.0] * n_events)
         ev.Pileup = pu
 
+    # Good primary vertices (the npv_good histogram): present in data and MC.
+    class PV:
+        pass
+    pv = PV()
+    pv.npvsGood = ak.Array(np.full(n_events, 30, dtype=np.int32))
+    ev.PV = pv
+
     # NanoAOD L1 prefiring record (Run 2 UL): unit weights unless a test overrides them.
     class L1PreFiringWeight:
         pass
@@ -1601,7 +1608,7 @@ class TestBoostedSFCandidates:
                      SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR, SEL_MUE_CR,
                      SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED):
             sel.add(name, np.ones(n, dtype=bool))
-        payload = (sel, tight_lep, ak8, dy_cand, ak8, of_cand, sf_cand)
+        payload = (sel, tight_lep, ak8, dy_cand, ak8, of_cand, sf_cand, None)
 
         captured = {}
 
@@ -1744,3 +1751,64 @@ class TestTheoryWeightMeans:
         out = proc._theory_variations(self._events(), md, "RunIISummer20UL16APV")
         for up, down in out.values():
             np.testing.assert_allclose(up, 1.0)      # 1.05 / 1.05
+
+
+# ---------------------------------------------------------------------------
+# The nolsf region variant (AN-19-083 Fig. 12): the boosted SR rebuilt on the jet without the LSF cut
+# ---------------------------------------------------------------------------
+
+def _boosted_mumu_event(lsf3):
+    """One boosted mumu event: a tight muon at phi 0, a loose (non-isolated) muon inside the AK8 jet
+    at phi pi, no AK4 jets, so the event fails the resolved tag; the jet's LSF3 is *lsf3*."""
+    events = _make_integration_events(n_events=1, n_muons=2, n_electrons=0, n_jets=0, n_fatjets=1)
+    mu = events.Muon
+    mu = ak.with_field(mu, ak.Array([[300.0, 250.0]]), "pt")
+    mu = ak.with_field(mu, ak.zeros_like(mu.eta), "eta")
+    mu = ak.with_field(mu, ak.Array([[0.0, np.pi]]), "phi")
+    mu = ak.with_field(mu, ak.Array([[0.05, 0.2]]), "tkRelIso")
+    events.Muon = mu
+    fj = events.FatJet
+    fj = ak.with_field(fj, ak.full_like(fj.pt, 600.0), "pt")
+    fj = ak.with_field(fj, ak.zeros_like(fj.eta), "eta")
+    fj = ak.with_field(fj, ak.full_like(fj.phi, np.pi), "phi")
+    fj = ak.with_field(fj, ak.full_like(fj.lsf3, lsf3), "lsf3")
+    events.FatJet = fj
+    return events
+
+
+def _boosted_selection_masks(variants, lsf3):
+    from wrcoffea.analysis_config import (SEL_MUMU_SR, SEL_MUMU_SR_NOLSF, SEL_MLJ_GT800_BOOSTED_NOLSF,
+                                          SEL_MLL_GT200_BOOSTED_NOLSF)
+    proc = WrAnalysis(mass_point=None, region="both", region_variants=variants)
+    events = _boosted_mumu_event(lsf3)
+    true, false = np.ones(1, dtype=bool), np.zeros(1, dtype=bool)
+    payload = proc.boosted_selections(events, "RunIISummer20UL18", triggers=(false, true, false))
+    sel, nolsf = payload[0], payload[-1]
+    names = (SEL_MUMU_SR, SEL_MUMU_SR_NOLSF, SEL_MLJ_GT800_BOOSTED_NOLSF, SEL_MLL_GT200_BOOSTED_NOLSF)
+    return {n: (bool(sel.all(n)[0]) if n in sel.names else None) for n in names}, nolsf
+
+
+class TestNolsfVariant:
+    def test_jet_failing_the_lsf_cut_enters_only_the_nolsf_sr(self):
+        masks, nolsf = _boosted_selection_masks({"nolsf"}, lsf3=0.5)
+        assert masks["mumu_sr"] is False          # no AK8 jet passes LSF3 > 0.75
+        assert masks["mumu_sr_nolsf"] is True     # the same jet without the LSF cut holds the muon
+        assert masks["mlj_gt800_boosted_nolsf"] is True and masks["mll_gt200_boosted_nolsf"] is True
+        assert nolsf is not None and float(nolsf["ak8"].lsf3[0]) == pytest.approx(0.5)
+        assert float(nolsf["sf_candidate"].pt[0]) == pytest.approx(250.0)
+
+    def test_jet_passing_the_lsf_cut_enters_both(self):
+        masks, _ = _boosted_selection_masks({"nolsf"}, lsf3=0.9)
+        assert masks["mumu_sr"] is True and masks["mumu_sr_nolsf"] is True
+
+    def test_nolsf_selections_are_filled_only_when_requested(self):
+        masks, nolsf = _boosted_selection_masks(set(), lsf3=0.9)
+        assert nolsf is None
+        assert masks["mumu_sr_nolsf"] is None and masks["mlj_gt800_boosted_nolsf"] is None
+
+    def test_nolsf_regions_get_no_lsf_scale_factor(self):
+        assert WrAnalysis._jet_lepton_flavor("wr_mumu_boosted_sr") == "muon"
+        assert WrAnalysis._jet_lepton_flavor("wr_mumu_boosted_sr_nolsf") is None
+        assert WrAnalysis._jet_lepton_flavor("wr_mue_boosted_flavor_cr_nolsf") is None
+        from wrcoffea.systematics import _uses_lsf
+        assert _uses_lsf("wr_mumu_boosted_sr") and not _uses_lsf("wr_mumu_boosted_sr_nolsf")

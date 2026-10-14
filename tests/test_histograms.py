@@ -171,7 +171,7 @@ class TestFillBoostedHistograms:
             etas=[0.3, 0.8, 1.0],
             phis=[3.0, 3.5, 3.2],
             masses=[80.0, 90.0, 85.0],
-            extra_fields={"lsf3": [0.9, 0.85, 0.95]},
+            extra_fields={"lsf3": [0.9, 0.85, 0.95], "msoftdrop": [80.0, 80.0, 80.0]},
         )
 
         loose_leptons = _vec_array(
@@ -438,7 +438,7 @@ class TestBoostedHistogramValues:
             etas=[1.0],
             phis=[3.0],
             masses=[80.0],
-            extra_fields={"lsf3": [0.9]},
+            extra_fields={"lsf3": [0.9], "msoftdrop": [80.0]},
         )
 
         loose_lep = _vec_array(
@@ -469,7 +469,7 @@ class TestBoostedHistogramValues:
         tight_lep = _vec_array(pts=[150.0], etas=[0.5], phis=[0.0], masses=[0.105])
         ak8jet = _vec_array(
             pts=[500.0], etas=[1.0], phis=[3.0], masses=[80.0],
-            extra_fields={"lsf3": [0.95]},  # Known LSF value
+            extra_fields={"lsf3": [0.95], "msoftdrop": [80.0]},  # Known LSF value
         )
         loose_lep = _vec_array(
             pts=[80.0], etas=[-0.5], phis=[1.0], masses=[0.105],
@@ -501,7 +501,7 @@ class TestBoostedHistogramValues:
         tight_lep_1 = _vec_array(pts=[150.0], etas=[0.0], phis=[0.0], masses=[0.105])
         ak8jet_1 = _vec_array(
             pts=[500.0], etas=[1.0], phis=[1.0], masses=[80.0],
-            extra_fields={"lsf3": [0.9]},
+            extra_fields={"lsf3": [0.9], "msoftdrop": [80.0]},
         )
         loose_lep_1 = _vec_array(
             pts=[80.0], etas=[1.05], phis=[1.05], masses=[0.105],  # Close to AK8
@@ -537,7 +537,7 @@ class TestBoostedHistogramValues:
             etas=[1.0, 1.2, 0.9],
             phis=[3.0, 3.2, 2.8],
             masses=[80.0, 85.0, 75.0],
-            extra_fields={"lsf3": [0.9, 0.92, 0.88]},
+            extra_fields={"lsf3": [0.9, 0.92, 0.88], "msoftdrop": [80.0, 80.0, 80.0]},
         )
 
         loose_lep = _vec_array(
@@ -577,7 +577,7 @@ class TestBoostedHistogramValues:
             etas=[1.0, 1.2, 0.9],
             phis=[3.0, 3.2, 2.8],
             masses=[80.0, 85.0, 75.0],
-            extra_fields={"lsf3": [0.9, 0.92, 0.88]},
+            extra_fields={"lsf3": [0.9, 0.92, 0.88], "msoftdrop": [80.0, 80.0, 80.0]},
         )
 
         loose_lep = _vec_array(
@@ -664,7 +664,7 @@ class TestBookingFillingConsistency:
         tight_lep = _vec_array(pts=[150.0], etas=[0.5], phis=[0.0], masses=[0.105])
         ak8jet = _vec_array(
             pts=[500.0], etas=[1.0], phis=[3.0], masses=[80.0],
-            extra_fields={"lsf3": [0.9]},
+            extra_fields={"lsf3": [0.9], "msoftdrop": [80.0]},
         )
         loose_lep = _vec_array(
             pts=[80.0], etas=[-0.5], phis=[1.0], masses=[0.105],
@@ -698,3 +698,109 @@ class TestBookingFillingConsistency:
             # Axis name and binning must match; labels may differ.
             assert (xinfo[0], xinfo[1]) == (rxinfo[0], rxinfo[1])
             assert (yinfo[0], yinfo[1]) == (ryinfo[0], ryinfo[1])
+
+
+# ---------------------------------------------------------------------------
+# Axis ranges (2026-10-14: LSF3 from -1, phi over +-pi, fit masses to 12 TeV, pT to 5 TeV)
+# ---------------------------------------------------------------------------
+
+def _booked(name):
+    bins, label = _booking_specs()[name]
+    return create_hist(name, bins, label)
+
+
+class TestHistogramRanges:
+    def test_lsf3_keeps_minus_one_and_puts_075_on_an_edge(self):
+        h = _booked("LSF_leading_AK8Jets")
+        edges = h.axes["LSF_leading_AK8Jets"].edges
+        assert edges[0] <= -1.0 and np.isclose(edges, 0.75).any()
+        h.fill(process="p", region="r", syst="Nominal", LSF_leading_AK8Jets=[-1.0, 1.9], weight=[1.0, 1.0])
+        # NanoAOD's -1 (no lepton in the jet) and a value above 1.1 are both inside the axis.
+        assert h[{"process": "p", "region": "r", "syst": "Nominal"}].values().sum() == pytest.approx(2.0)
+
+    @pytest.mark.parametrize("name", [n for n, *_ in RESOLVED_HIST_SPECS + BOOSTED_HIST_SPECS if n.startswith("phi_")])
+    def test_phi_axes_span_exactly_pi(self, name):
+        edges = _booked(name).axes[name].edges
+        assert edges[0] == pytest.approx(-np.pi) and edges[-1] == pytest.approx(np.pi)
+
+    def test_eta_phi_maps_span_exactly_pi(self):
+        for _key, _x, (yname, ybins, _ylabel), _expr in RESOLVED_2D_HIST_SPECS + BOOSTED_2D_HIST_SPECS:
+            assert yname == "phi" and ybins[1] == pytest.approx(-np.pi) and ybins[2] == pytest.approx(np.pi)
+
+    def test_dphi_starts_at_the_boosted_requirement(self):
+        edges = _booked("dPhi_leading_tightlepton_AK8Jet").axes["dPhi_leading_tightlepton_AK8Jet"].edges
+        assert edges[0] == pytest.approx(2.0) and edges[-1] == pytest.approx(np.pi)
+
+    @pytest.mark.parametrize("name", ["mass_fourobject", "mass_twoobject"])
+    def test_fit_masses_reach_12_tev_with_800_on_an_edge(self, name):
+        edges = _booked(name).axes[name].edges
+        assert edges[-1] >= 12000.0 and np.isclose(edges, 800.0).any()
+
+    @pytest.mark.parametrize("name", ["pt_leading_lepton", "pt_subleading_lepton", "pt_leading_jet",
+                                      "pt_subleading_jet", "pt_dilepton", "pt_leading_AK8Jets"])
+    def test_pt_axes_reach_5_tev(self, name):
+        assert _booked(name).axes[name].edges[-1] >= 5000.0
+
+    def test_names_shared_by_both_topologies_have_one_binning(self):
+        """The booking keeps one histogram per name (the boosted spec wins), so a name used by both
+        topologies must have the same axis in both."""
+        resolved = {n: b for n, b, *_ in RESOLVED_HIST_SPECS}
+        for name, bins, *_ in BOOSTED_HIST_SPECS:
+            if name in resolved:
+                assert resolved[name] == bins, name
+
+
+# ---------------------------------------------------------------------------
+# New histograms: N(PV) (event level), AK8 m_SD, dR(loose lepton, AK8), N(AK4)
+# ---------------------------------------------------------------------------
+
+class TestEventLevelHistograms:
+    def _resolved(self):
+        leptons = _vec_array(pts=[[200.0, 100.0]] * 3, etas=[[0.5, -0.5]] * 3, phis=[[0.0, 1.0]] * 3,
+                             masses=[[0.105, 0.105]] * 3)
+        jets = _vec_array(pts=[[150.0, 80.0, 50.0]] * 3, etas=[[0.3, -0.3, 1.0]] * 3,
+                          phis=[[2.0, 3.0, -1.0]] * 3, masses=[[10.0, 10.0, 5.0]] * 3)
+        weights = Weights(3)
+        weights.add("test", np.array([1.0, 2.0, 3.0]))
+        return leptons, jets, weights, {"Nominal": weights.weight()}
+
+    def test_npv_good_filled_with_the_region_weights(self):
+        output = _make_test_output()
+        leptons, jets, weights, syst = self._resolved()
+        cut = np.array([True, False, True])
+        fill_resolved_histograms(output, "r", cut, "DYJets", jets, leptons, weights, syst,
+                                 event_values={"npv_good": np.array([10.0, 20.0, 30.0])})
+        h = output["npv_good"][{"process": "DYJets", "region": "r", "syst": "Nominal"}]
+        assert h.values().sum() == pytest.approx(4.0)
+        assert h[hist_mod.loc(10.0)].value == pytest.approx(1.0)
+        assert h[hist_mod.loc(30.0)].value == pytest.approx(3.0)
+
+    def test_npv_good_left_empty_without_event_values(self):
+        output = _make_test_output()
+        leptons, jets, weights, syst = self._resolved()
+        fill_resolved_histograms(output, "r", np.ones(3, dtype=bool), "DYJets", jets, leptons, weights, syst)
+        assert output["npv_good"].sum().value == 0.0
+
+    def test_n_ak4_jets_counts_every_selected_jet(self):
+        output = _make_test_output()
+        leptons, jets, weights, syst = self._resolved()
+        fill_resolved_histograms(output, "r", np.ones(3, dtype=bool), "DYJets", jets, leptons, weights, syst)
+        h = output["n_ak4_jets"][{"process": "DYJets", "region": "r", "syst": "Nominal"}]
+        assert h[hist_mod.loc(3)].value == pytest.approx(6.0)
+
+    def test_boosted_msd_dr_and_npv(self):
+        output = _make_test_output()
+        lep = _vec_array(pts=[150.0], etas=[0.5], phis=[0.0], masses=[0.105])
+        ak8 = _vec_array(pts=[500.0], etas=[0.0], phis=[3.0], masses=[80.0],
+                         extra_fields={"lsf3": [-1.0], "msoftdrop": [92.0]})
+        loose = _vec_array(pts=[80.0], etas=[0.0], phis=[2.5], masses=[0.105], extra_fields={"pdgId": [13]})
+        weights = Weights(1)
+        weights.add("test", np.array([2.0]))
+        fill_boosted_histograms(output, "wr_mumu_boosted_dy_cr", np.array([True]), "DYJets", lep, ak8, loose,
+                                weights, {"Nominal": weights.weight()}, event_values={"npv_good": np.array([42.0])})
+        sel = {"process": "DYJets", "region": "wr_mumu_boosted_dy_cr", "syst": "Nominal"}
+        assert output["msd_leading_AK8Jets"][sel][hist_mod.loc(92.0)].value == pytest.approx(2.0)
+        assert output["dR_loose_lepton_AK8Jet"][sel][hist_mod.loc(0.5)].value == pytest.approx(2.0)
+        assert output["npv_good"][sel][hist_mod.loc(42.0)].value == pytest.approx(2.0)
+        # A jet without a lepton (LSF3 = -1) is inside the LSF axis.
+        assert output["LSF_leading_AK8Jets"][sel][hist_mod.loc(-1.0)].value == pytest.approx(2.0)
