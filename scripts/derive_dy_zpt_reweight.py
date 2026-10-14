@@ -27,6 +27,11 @@ Two steps; ``fill`` caches one JSON per dataset in ``--workdir`` and ``combine``
         --ew-from data/reweights/RunII/2017/RunIISummer20UL17/dy_zpt_reweight_run2legacy_v4_2017.json \\
         --out data/reweights/RunII/2017/RunIISummer20UL17/dy_zpt_reweight_<date>.json
 
+``combine --plot <pdf>`` also draws the ratio next to the ``--ew-from`` one; ``plot`` redraws a written payload
+without recomputing it::
+
+    python scripts/derive_dy_zpt_reweight.py plot --payload <combine --out> --ew-from <reference> --plot <pdf>
+
 ``fill`` reads every file of both samples from unskimmed NanoAOD over XRootD (needs a grid proxy; about an hour
 per UL era), as Run 2 ran over the full samples; the skims cannot be used because their reco-level selection
 biases the generator spectrum.  ``--target-events N`` reads an even spread of about N events per dataset
@@ -489,35 +494,48 @@ def combine(eras: list[str], workdirs: list[Path], ew_from: Path, label: str | N
 
 
 def plot(payload: dict, reference: Path | None, out: Path) -> None:
+    """The QCD NLO/LO ratio against generator Z pT, with the reference (Run 2) ratio, in the CMS style of
+    WR_Plotter (cms_label, fit_header, 10 x 10 in, 20 pt legend, Petroff colours with distinct markers)."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    import mplhep as hep
+    sys.path.insert(0, str(REPO / "WR_Plotter"))
+    from wrplotter.config import era_label
+    from wrplotter.plotting_helpers import FONT_SIZE_LEGEND, cms_label, fit_header
 
+    blue, orange = "#5790fc", "#f89c20"          # Petroff 6
+    hep.style.use("CMS")
     q = payload["qcd"]
     e = np.asarray(q["edges"])
     c = np.sqrt(np.maximum(e[:-1], 1.0) * e[1:])
     r = np.asarray(q["central"])
-    fig, ax = plt.subplots(figsize=(9, 6))
+    fig, ax = plt.subplots(figsize=(10, 10))
     tot = np.sqrt(np.asarray(q["stat_err"]) ** 2 + np.asarray(q["pdf_err"]) ** 2)
     ax.fill_between(e, np.r_[np.asarray(q["scale_down"]), q["scale_down"][-1]],
-                    np.r_[np.asarray(q["scale_up"]), q["scale_up"][-1]], step="post", color="#2a78d6", alpha=0.2,
-                    label="scale envelope")
-    ax.errorbar(c, r, yerr=tot, fmt="o", color="#2a78d6", ms=7, lw=2, label=f"{payload['provenance']['era']} NLO/LO (stat+PDF)")
+                    np.r_[np.asarray(q["scale_up"]), q["scale_up"][-1]], step="post", facecolor=blue, alpha=0.25,
+                    lw=0, label=r"Scale variations ($\mu_R$, $\mu_F$)")
+    ax.errorbar(c, r, yerr=tot, fmt="o", color=blue, markersize=8, elinewidth=1.5,
+                label="NLO / LO (stat. + PDF unc.)")
     if reference is not None:
         ref = json.loads(reference.read_text())["qcd"]
         re_ = np.asarray(ref["edges"])
         rc = np.sqrt(np.maximum(re_[:-1], 1.0) * re_[1:])
-        ax.errorbar(rc, ref["central"], yerr=ref["pdf_err"], fmt="s", color="#eb6834", ms=7, lw=2,
-                    label=f"Run 2 reference ({reference.stem})")
+        ax.errorbar(rc, ref["central"], yerr=ref["pdf_err"], fmt="s", color=orange, markersize=8, elinewidth=1.5,
+                    mfc="white", label="Run 2 (AN-19-083)")
     ax.axhline(1, color="0.4", ls="--", lw=1)
     ax.set_xscale("log")
     ax.set_xlim(1, 8000)
     ax.set_ylim(0, 2)
-    ax.set_xlabel(r"generator Z $p_T$ [GeV]")
+    ax.set_xlabel(r"Generator $p_{T}^{Z}$ [GeV]")
     ax.set_ylabel("QCD NLO / LO")
-    ax.grid(alpha=0.3)
-    ax.legend()
-    fig.tight_layout()
+    era = str(payload["provenance"]["era"])
+    run2 = era.startswith("RunIISummer")          # the UL eras; RunIII... and Run3... are 13.6 TeV
+    cms_label(ax, None, data=False, rlabel="(13 TeV)" if run2 else "(13.6 TeV)",
+              text=f"Drell-Yan, {era_label(era)}\nInclusive NLO over inclusive LO")
+    ax.legend(loc="upper right", fontsize=FONT_SIZE_LEGEND)
+    fit_header(ax)
+    out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out)
     plt.close(fig)
 
@@ -525,7 +543,7 @@ def plot(payload: dict, reference: Path | None, out: Path) -> None:
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
-    for name in ("fill", "combine"):
+    for name in ("fill", "combine", "plot"):
         s = sub.add_parser(name)
         s.add_argument("-v", "--verbose", action="store_true")
     f = sub.choices["fill"]
@@ -545,11 +563,19 @@ def main(argv=None):
     c.add_argument("--ew-from", type=Path, required=True,
                    help="converted Run 2 payload of the year whose EW block is copied")
     c.add_argument("--plot", type=Path, default=None, help="PDF comparing the ratio with --ew-from's QCD ratio")
+    pl = sub.choices["plot"]
+    pl.add_argument("--payload", type=Path, required=True, help="a payload written by combine (--out)")
+    pl.add_argument("--ew-from", type=Path, default=None, help="the reference payload drawn next to it")
+    pl.add_argument("--plot", type=Path, required=True, help="output PDF")
     args = p.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
                         format="%(asctime)s %(levelname)s %(message)s")
     if args.cmd == "fill":
         fill(args.era, args.workdir, args.target_events, args.max_files, args.workers, args.force, args.only)
+        return 0
+    if args.cmd == "plot":                    # redraw a derived payload; nothing is recomputed
+        plot(json.loads(args.payload.read_text()), args.ew_from, args.plot)
+        print(f"plot: {args.plot}")
         return 0
     payload = combine(args.era, args.workdir, args.ew_from, args.label)
     args.out.parent.mkdir(parents=True, exist_ok=True)
