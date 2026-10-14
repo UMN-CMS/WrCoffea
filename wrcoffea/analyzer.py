@@ -1238,8 +1238,8 @@ class WrAnalysis(processor.ProcessorABC):
     def _theory_variations(self, events, metadata, era):
         """{name: (w_up, w_down)} per-event multiplicative variations for the
         enabled theory sources.  Each weight is the generator ratio divided by
-        the dataset-level ratio from the config metadata (``LHEScaleSumw`` /
-        ``PSSumw`` written by scripts/gen_event_sumw.py), so the dataset's
+        the dataset-level ratio from the fileset metadata (``LHEScaleSumw`` /
+        ``PSSumw`` from the skims' Runs sums), so the dataset's
         total yield is unchanged.  Missing config ratios are errors.  A dataset
         without the branch (pure-Pythia 8 WW/WZ/ZZ have no LHEScaleWeight) gets
         the nominal weight with one warning per dataset.  Within a dataset, an
@@ -1278,7 +1278,8 @@ class WrAnalysis(processor.ProcessorABC):
                     f"--systs {family}: metadata of '{sample}' has no "
                     f"{' or '.join(map(str, n_allowed))}-entry '{key}' (found "
                     f"{len(ratios) if ratios else 0}). Regenerate the fileset from skims that carry "
-                    "the per-dataset weighted means, or run scripts/gen_event_sumw.py on the config.")
+                    "the per-dataset weighted means (bin/skim.py fileset); an unskimmed fileset gets them from "
+                    "bin/skim.py unskimmed-fileset --runs-sums.")
             n_exp = len(ratios)
             if family == "scale" and n_exp == 8:
                 index = self._SCALE_INDEX_8
@@ -1342,7 +1343,8 @@ class WrAnalysis(processor.ProcessorABC):
         if not ratios:
             raise ValueError(
                 f"--systs pdf: metadata of '{sample}' has no LHEPdfSumw. Regenerate the fileset from "
-                "skims that carry the per-dataset weighted means, or run scripts/gen_event_sumw.py.")
+                "skims that carry the per-dataset weighted means (bin/skim.py fileset); an unskimmed fileset "
+                "gets them from bin/skim.py unskimmed-fileset --runs-sums.")
         pdfset = pdf_set(lhaid)
         members = PdfMembers(events.LHEPdfWeight, ratios, pdfset)
         if members.n_missing:

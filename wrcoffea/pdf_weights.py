@@ -27,7 +27,7 @@ combine the members at their own binning:
 Conventions
 -----------
 - Member weights are ``LHEPdfWeight[i] / LHEPdfSumw[i]``: divided by the
-  dataset-level weighted mean (fileset metadata, scripts/gen_event_sumw.py),
+  dataset-level weighted mean (fileset metadata, from the skims' Runs sums),
   so every member keeps the dataset's total yield.  Only acceptance and shape
   move, as for the QCD-scale and parton-shower weights.
 - The PDF set of each sample comes from the per-era table written by

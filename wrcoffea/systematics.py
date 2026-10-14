@@ -342,8 +342,8 @@ _MUON_TUNEP_NOTE = (
 )
 
 _THEORY_NOTE = (
-    "Per-event generator weight divided by the dataset-level ratio from the config "
-    "(scripts/gen_event_sumw.py), so the total yield is unchanged and only acceptance "
+    "Per-event generator weight divided by the dataset-level ratio from the fileset "
+    "(the skims' Runs sums), so the total yield is unchanged and only acceptance "
     "and shape move. A sample generated without the branch (pure-Pythia 8 WW/WZ/ZZ have no "
     "LHEScaleWeight) gets the nominal weight with a warning, and so do single events without "
     "the weights (one file each in 2022 ZZZ and WR MWR6000_N1500 22EE, see docs/skimming.md)."
