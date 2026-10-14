@@ -154,8 +154,10 @@ efficiency moves down, and the reverse, so the two errors add in the ratio; in 2
 relative uncertainty of the POG per-muon SF (its statistical error and the tag-and-probe fit
 variations in quadrature) with the MC efficiency kept nominal. Both since 2026-10-12; before, both
 efficiencies moved the same way, which cancelled the errors (0.01 to 0.04 % of the resolved and
-0.13 to 0.23 % of the boosted yields in 2023). Cutflows use the base weight without the per-region
-lepton SFs.
+0.13 to 0.23 % of the boosted yields in 2023). Cutflows use the base weight without the DY Z-pT
+reweight and without the per-region SFs; since 2026-10-14 each complete chain ends with a row,
+`with_region_sfs`, that adds the lepton and LSF SFs of the region the chain ends in, so it equals that
+region's yield without the DY corrections (no cutflow carries the DY Z-pT reweight or the jet-pT reshape).
 
 ### Drell-Yan modelling
 
@@ -282,15 +284,13 @@ Decisions and measurements still outstanding, with the date they were last looke
 - **Official signal samples have no N → ℓtb.** The official gridpacks' `jj` excludes the top and the N
   width counts only the generated channels, so for m_N above a few hundred GeV the samples put the
   full rate into ℓℓ + light jets while about a third should go to ℓtb; parked (2026-10-10).
-- **Signal cutflows mix the two flavour samples.** Each signal mass point is one file holding both
-  its electron and its muon sample, so a cutflow row before the lepton ID counts events of both. The
-  resolved μμ row "≥ 2 μ (pT, η)" also counts electron-sample events with two muon candidates above
-  53 GeV: candidates inside multi-TeV jets, mostly without a generator match, about 10 % passing the
-  loose ID. That row then exceeds 100 % of the muon sample's σ × L at high m_WR (up to 122 % at
-  (8000, 7900) GeV in 2024). The ID row removes them, so the later rows and the signal-region
-  efficiencies are unaffected; no other row in any channel exceeds 100 %. Fix: run each flavour's
-  sample into its own file (no code change), or require a minimal muon ID in that row; both need a
-  signal rerun (2026-10-13).
+- **Signal cutflows mixed the two flavour samples** (issue #107). Each signal mass point is one file
+  holding its electron and its muon sample, and the resolved μμ row "≥ 2 μ (pT, η)" counted electron-sample
+  events with fake in-jet muon candidates, up to 122 % of the muon sample's σ × L at (8000, 7900) GeV in
+  2024. Since 2026-10-14 the signal ee and μμ cutflow chains count only events of their own generator flavour
+  (outgoing LHE leptons); the e-μ chains and the region histograms keep both. Takes effect with the next
+  signal production; checked on three 2024 points (no row above 100 %, the last row still equal to the
+  region yield). Close #107 once that production is in.
 - **Luminosity correlations.** The correlated 2022 to 2024 components belong in the datacards
   (2026-10-10).
 - **2025.** Data-only era, configured but not skimmed; electron trigger SF and muon momentum are

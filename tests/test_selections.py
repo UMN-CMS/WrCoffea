@@ -635,6 +635,45 @@ class TestResolvedSelections:
         assert ak.to_numpy(selections.all("min_two_ak4_jets_id"))[0] == False, \
             "Only 1 jet passes ID, should fail min_two_ak4_jets_id"
 
+    def test_jet_id_row_needs_pt_eta_and_id_together(self, analyzer):
+        """Since 2026-10-14 the jet ID row counts jets passing pT/eta and the ID together: two jets passing
+        pT/eta and two passing the ID, but only one passing both, fail it."""
+        tight_leptons = _make_leptons(
+            pts=[[65.0, 55.0]], etas=[[0.0, 0.0]], phis=[[0.0, 3.14159]], masses=[[0.0, 0.0]],
+            charges=[[1, -1]], flavors=[["electron", "electron"]],
+        )
+        ak4_jets = _make_jets(pts=[[200.0, 150.0]], etas=[[2.0, -2.0]], phis=[[1.5, -1.5]], masses=[[10.0, 10.0]])
+        lepton_masks, _ = _ee_masks()
+        jet_masks = {
+            "ak4_pteta": ak.Array([[True, True, False]]),
+            "ak4_id":    ak.Array([[False, True, True]]),
+        }
+        selections = analyzer.resolved_selections(
+            tight_leptons, ak4_jets, lepton_masks=lepton_masks, jet_masks=jet_masks, triggers=_default_triggers(),
+        )
+        assert ak.to_numpy(selections.all("min_two_ak4_jets_pteta"))[0]
+        assert not ak.to_numpy(selections.all("min_two_ak4_jets_id"))[0]
+
+    def test_extra_tight_veto_without_a_candidate(self, analyzer):
+        """An event without the sub-leading candidate is vetoed only for a real extra tight lepton (before
+        2026-10-14 every such event failed the veto, which took the candidate row's losses)."""
+        from coffea.nanoevents.methods import candidate  # noqa: F401  (registers the candidate behaviour)
+
+        def objects(pts, etas, phis, **extra):
+            fields = {"pt": ak.Array(pts), "eta": ak.Array(etas), "phi": ak.Array(phis),
+                      "mass": ak.zeros_like(ak.Array(pts)), "charge": ak.zeros_like(ak.Array(pts))}
+            fields.update({k: ak.Array(v) for k, v in extra.items()})
+            return ak.zip(fields, with_name="PtEtaPhiMCandidate")
+
+        tight = ak.firsts(objects([[300.0], [300.0]], [[0.0], [0.0]], [[0.0], [0.0]]))
+        none = ak.firsts(objects([[1.0], [1.0]], [[0.0], [0.0]], [[0.0], [0.0]])[:, :0])   # no candidate in either event
+        # event 0: only the tight muon itself; event 1: plus an isolated tight muon far away
+        muons = objects([[300.0], [300.0, 120.0]], [[0.0], [0.0, 1.5]], [[0.0], [0.0, 2.5]],
+                        tkRelIso=[[0.01], [0.01, 0.02]])
+        electrons = objects([[50.0], [50.0]], [[0.0], [0.0]], [[0.0], [0.0]], cutBased_HEEP=[[False], [False]])[:, :0]
+        ok = analyzer._no_extra_tight_leptons(muons, electrons, tight, none)
+        assert ok.tolist() == [True, False]
+
     # ----- return type test ------------------------------------------------
 
     def test_returns_packed_selection(self, analyzer):

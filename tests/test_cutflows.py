@@ -13,7 +13,7 @@ from coffea.analysis_tools import PackedSelection, Weights
 
 from tests.test_analyzer import _apply_sf_patches, _make_integration_events
 from wrcoffea.analyzer import WrAnalysis
-from wrcoffea.histograms import _cutflow_histograms, fill_boosted_cutflows, fill_cutflows
+from wrcoffea.histograms import CUTFLOW_SF_ROW, _cutflow_histograms, fill_boosted_cutflows, fill_cutflows
 from wrcoffea.regions import is_signal_region
 from wrcoffea.save_hists import _save_cutflows, save_histograms
 
@@ -25,6 +25,11 @@ _CUTFLOW_NAMES = ("cumulative", "onecut", "cumulative_unweighted", "onecut_unwei
 _BLINDED_FROM = {"cutflow_resolved": "mll_gt200", "cutflow_boosted": "mll_gt200_boosted"}
 # The last step of each ee/mumu chain is the signal region.
 _SR_LAST_CUT = {"cutflow_resolved": "mll_gt400", "cutflow_boosted": "mlj_gt800_boosted"}
+# The chains of each directory: boosted me (the mu(e-jet) flavour CR) since 2026-10-14; em and me are never blinded.
+_CHANNELS = {"cutflow_resolved": {"ee", "mumu", "em"}, "cutflow_boosted": {"ee", "mumu", "em", "me"}}
+_HEM_ROWS = {"cutflow_resolved": {"ee": "hem_veto", "mumu": "hem_veto", "em": "hem_veto"},
+             "cutflow_boosted": {"ee": "hem_veto_boosted_sr", "mumu": "hem_veto_boosted_sr",
+                                 "em": "hem_veto_boosted_cr", "me": "hem_veto_boosted_cr"}}
 
 
 def _set_leptons(events, collection, records):
@@ -207,10 +212,15 @@ def _process_both_topologies(datatype, *, unblind=False):
 
 def test_analyzer_cut_chains_end_in_the_signal_regions():
     for directory, chains in _analyzer_cut_chains().items():
-        assert set(chains) == {"ee", "mumu", "em"}
+        assert set(chains) == _CHANNELS[directory]
+        for flavor, row in _HEM_ROWS[directory].items():
+            assert row in chains[flavor]
+        if "me" in chains:
+            assert chains["me"][:3] == ["no_cuts", "boosted_tag", "lead_is_muon"]
         for flavor in ("ee", "mumu"):
             assert chains[flavor][0] == "no_cuts"
-            assert chains[flavor][-1] == _SR_LAST_CUT[directory]
+            assert chains[flavor][-2] == _SR_LAST_CUT[directory]
+            assert chains[flavor][-1] == CUTFLOW_SF_ROW
             assert _BLINDED_FROM[directory] in chains[flavor]
 
 
@@ -232,9 +242,9 @@ def test_analyzer_root_output_matches_cut_chains(datatype, unblind, tmp_path, mo
 
     with uproot.open(path) as root_file:
         for directory, key in _CUTFLOW_KEYS.items():
-            assert set(root_file[directory].keys(recursive=False, cycle=False)) == {"ee", "mumu", "em"}
+            assert set(root_file[directory].keys(recursive=False, cycle=False)) == _CHANNELS[directory]
             for flavor, labels in chains[directory].items():
-                if blinded and flavor != "em":
+                if blinded and flavor in ("ee", "mumu"):
                     labels = labels[:labels.index(_BLINDED_FROM[directory])]
                 for name in _CUTFLOW_NAMES:
                     saved = root_file[f"{directory}/{flavor}/{name}"]
@@ -286,7 +296,7 @@ def test_plotter_reads_back_the_analyzer_cut_chains(plotter_cutflow, datatype, t
     for directory, key in _CUTFLOW_KEYS.items():
         topology = directory.removeprefix("cutflow_")
         for flavor, labels in chains[directory].items():
-            if datatype == "data" and flavor != "em":
+            if datatype == "data" and flavor in ("ee", "mumu"):
                 labels = labels[:labels.index(_BLINDED_FROM[directory])]
             for name in _CUTFLOW_NAMES:
                 kind = name.removesuffix("_unweighted")
@@ -315,3 +325,126 @@ def test_plotter_refuses_to_sum_sequences_that_only_share_a_bin_count(plotter_cu
     # ... so summing it with the analyzer's (e.g. across eras) is refused, not misaligned.
     with pytest.raises(ValueError, match="old_sequence.root"):
         plotter_cutflow.read_files([analyzer_file, other_file], "resolved", "mumu", "cumulative")
+
+
+def test_cutflows_leave_out_the_dy_zpt_weight_and_end_with_the_region_sfs():
+    """Every row uses the base weight without the DY Z-pT factor; the last row multiplies the chain's region
+    factor (the lepton and LSF SFs) in, and is the base weight where no factor is given (data)."""
+    weights = Weights(1, storeIndividual=True)
+    weights.add("base", np.array([2.0]))
+    weights.add("dy_zpt", np.array([1.5]))
+    output = {}
+    fill_cutflows(output, _PassAll(), weights, sf_factors={"ee": np.array([0.8])})
+    fill_boosted_cutflows(output, _PassAll(), weights, sf_factors={"mumu": np.array([0.5])})
+    for key, flavor, factor in (("cutflow", "ee", 0.8), ("cutflow", "mumu", 1.0), ("cutflow_boosted", "mumu", 0.5)):
+        for name in ("cumulative", "onecut"):
+            hist_ = output[key][flavor][name]
+            assert list(hist_.axes[0])[-1] == CUTFLOW_SF_ROW
+            np.testing.assert_allclose(hist_.values()[:-1], 2.0)
+            assert hist_.values()[-1] == pytest.approx(2.0 * factor)
+            assert hist_.variances()[-1] == pytest.approx((2.0 * factor) ** 2)
+        assert output[key][flavor]["cumulative_unweighted"].values()[-1] == 1
+
+
+def test_blinded_chains_have_no_region_sf_row():
+    weights = Weights(1)
+    weights.add("base", np.ones(1))
+    output = {}
+    fill_cutflows(output, _PassAll(), weights, blind=True)
+    assert CUTFLOW_SF_ROW not in list(output["cutflow"]["ee"]["cumulative"].axes[0])
+    assert list(output["cutflow"]["em"]["cumulative"].axes[0])[-1] == CUTFLOW_SF_ROW
+
+
+@_apply_sf_patches
+def _mumu_resolved_sr_chunk(trigger_sf):
+    """One analyzer chunk (era UL18, MC) of three mumu resolved-SR events, with a muon trigger SF of *trigger_sf*."""
+    from unittest.mock import patch
+    n = 3
+    events = _make_integration_events(n_events=n, n_muons=2, n_jets=2, n_fatjets=1, include_genweight=True)
+    for collection, fields in (
+        ("Muon", {"pt": [[300., 250.]], "eta": [[0., 0.]], "phi": [[0., np.pi]]}),
+        ("Jet", {"pt": [[300., 300.]], "eta": [[0., 0.]], "phi": [[np.pi / 2, -np.pi / 2]]}),
+    ):
+        objects = getattr(events, collection)
+        for field, values in fields.items():
+            objects = ak.with_field(objects, ak.Array(values * n), field)
+        setattr(events, collection, objects)
+
+    def trigger(tight_muons, era, *args, **kwargs):
+        m = len(tight_muons)
+        return np.full(m, trigger_sf), np.full(m, trigger_sf), np.full(m, trigger_sf)
+
+    with patch("wrcoffea.analyzer.muon_trigger_sf", new=trigger):
+        return WrAnalysis(None, region="resolved").process(events)
+
+
+def test_region_sf_row_equals_the_signal_region_yield():
+    (payload,) = _mumu_resolved_sr_chunk(0.9).values()
+    cumulative = payload["cutflow"]["mumu"]["cumulative"]
+    labels, values = list(cumulative.axes[0]), cumulative.values()
+    assert labels[-1] == CUTFLOW_SF_ROW and values[-2] > 0
+    sr = payload["mass_fourobject"][{"region": "wr_mumu_resolved_sr", "syst": "Nominal"}].sum(flow=True).value
+    assert values[-1] == pytest.approx(sr)
+    assert values[-1] == pytest.approx(0.9 * values[-2])
+
+
+def test_signal_flavour_masks_from_lhe_leptons_or_the_dataset_name():
+    from wrcoffea.analyzer import signal_flavour_masks
+    lhe = ak.zip({"pdgId": ak.Array([[2, -1, 11, -11, 1, 2], [2, -1, 13, -13, 1, 2], [2, -1, 1, 2]]),
+                  "status": ak.Array([[-1, -1, 1, 1, 1, 1], [-1, -1, 1, 1, 1, 1], [-1, -1, 1, 1]])})
+    masks = signal_flavour_masks(lhe, 3)
+    assert masks["ee"].tolist() == [True, False, False]
+    assert masks["mumu"].tolist() == [False, True, False]
+    masks = signal_flavour_masks(None, 2, "WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13p6TeV_madgraph-pythia8")
+    assert masks["ee"].tolist() == [False, False] and masks["mumu"].tolist() == [True, True]
+    assert signal_flavour_masks(None, 2, "WRtoNLtoLLJJ_MWR4000_MN2100") is None
+
+
+def test_channel_masks_restrict_the_same_flavour_chains():
+    """Two events: the ee chains count only the first, the mumu chains only the second, em both."""
+    weights = Weights(2)
+    weights.add("base", np.array([2.0, 3.0]))
+
+    class _PassAll2:
+        def all(self, *names):
+            return np.ones(2, dtype=bool)
+
+    output = {}
+    masks = {"ee": np.array([True, False]), "mumu": np.array([False, True])}
+    fill_cutflows(output, _PassAll2(), weights, channel_masks=masks)
+    fill_boosted_cutflows(output, _PassAll2(), weights, channel_masks=masks)
+    for key in ("cutflow", "cutflow_boosted"):
+        for flavor, expected, count in (("ee", 2.0, 1), ("mumu", 3.0, 1), ("em", 5.0, 2)):
+            for name in ("cumulative", "onecut"):
+                np.testing.assert_allclose(output[key][flavor][name].values(), expected)
+            np.testing.assert_array_equal(output[key][flavor]["cumulative_unweighted"].values(), count)
+
+
+@_apply_sf_patches
+def _signal_mu_chunk():
+    """One analyzer chunk (era UL18) of three mumu resolved-SR events from a muon-flavour signal dataset."""
+    n = 3
+    metadata = {"datatype": "mc", "physics_group": "Signal", "era": "RunIISummer20UL18", "xsec": 1.0,
+                "genEventSumw": 3.0, "sample": "WRtoNMutoMuMuJJ_MWR4000_N2100_TuneCP5_13TeV_madgraph-pythia8"}
+    events = _make_integration_events(n_events=n, n_muons=2, n_jets=2, n_fatjets=1, metadata=metadata,
+                                      include_genweight=True)
+    for collection, fields in (
+        ("Muon", {"pt": [[300., 250.]], "eta": [[0., 0.]], "phi": [[0., np.pi]]}),
+        ("Jet", {"pt": [[300., 300.]], "eta": [[0., 0.]], "phi": [[np.pi / 2, -np.pi / 2]]}),
+    ):
+        objects = getattr(events, collection)
+        for field, values in fields.items():
+            objects = ak.with_field(objects, ak.Array(values * n), field)
+        setattr(events, collection, objects)
+    return WrAnalysis("WR4000_N2100", region="both", signal_kfactor=False).process(events)
+
+
+def test_signal_ee_chains_skip_the_other_flavour():
+    (payload,) = _signal_mu_chunk().values()
+    for key in ("cutflow", "cutflow_boosted"):
+        assert payload[key]["ee"]["cumulative_unweighted"].values().sum() == 0
+        assert payload[key]["mumu"]["cumulative_unweighted"].values()[0] == 3
+        assert payload[key]["em"]["cumulative_unweighted"].values()[0] == 3
+    # the region histograms keep every event
+    sr = payload["mass_fourobject"][{"region": "wr_mumu_resolved_sr", "syst": "Nominal"}].sum(flow=True).value
+    assert sr == pytest.approx(payload["cutflow"]["mumu"]["cumulative"].values()[-1])

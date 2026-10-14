@@ -37,7 +37,8 @@ from wrcoffea.analysis_config import (
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_LEAD_TIGHT_PT60, SEL_NO_THIRD_TIGHT_LEPTON,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
-    SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
+    SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
+    SEL_HEM_VETO_BOOSTED_SR, SEL_HEM_VETO_BOOSTED_CR,
     #SEL_JET_VETO_MAP,
     # Boosted selections
     SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_AK8JETS_WITH_LSF,
@@ -435,24 +436,55 @@ def fill_boosted_histograms(output, region, cut, process_name, leptons, ak8jets,
     return set(syst_weights_cut)
 
 
-def _cutflow_histograms(selections, weights, steps):
+# The last row of every complete cutflow chain: the cutflow weight times the lepton (and LSF) scale factors of the
+# region the chain ends in, so it equals that region's yield (Billy, 2026-10-14).  No DY correction is in any
+# cutflow: the cutflow weight leaves out the DY Z-pT reweight, and the DY jet-pT reshape is a per-region weight.
+CUTFLOW_SF_ROW = "with_region_sfs"
+CUTFLOW_EXCLUDED_WEIGHTS = ("dy_zpt",)
+# The region each chain ends in (boosted em: the e(mu-jet) flavour CR, me: the mu(e-jet) one).
+CUTFLOW_FINAL_REGIONS = {
+    "resolved": {"ee": "wr_ee_resolved_sr", "mumu": "wr_mumu_resolved_sr", "em": "wr_resolved_flavor_cr"},
+    "boosted": {"ee": "wr_ee_boosted_sr", "mumu": "wr_mumu_boosted_sr", "em": "wr_emu_boosted_flavor_cr",
+                "me": "wr_mue_boosted_flavor_cr"},
+}
+
+
+def cutflow_weight(weights) -> np.ndarray:
+    """The per-event weight of the cutflows: the base weight without CUTFLOW_EXCLUDED_WEIGHTS."""
+    if not hasattr(weights, "weight"):
+        return np.asarray(weights, dtype=np.float64)
+    present = [n for n in CUTFLOW_EXCLUDED_WEIGHTS if n in getattr(weights, "weightStatistics", {})]
+    return np.asarray(weights.partial_weight(exclude=present) if present else weights.weight(), dtype=np.float64)
+
+
+def _cutflow_histograms(selections, weights, steps, sf_weights=None, start=None):
     """Build eager cutflows with event-level sum(w) and sum(w**2).
 
     Coffea 2025.12's eager ``yieldhist`` fills each bin with its total weight,
     giving (sum(w))**2 as the variance. Accumulate the second moment from
     individual events instead, so uncertainties are independent of chunking.
+
+    *weights* is a coffea ``Weights`` (its cutflow weight is taken, see
+    :func:`cutflow_weight`) or a per-event array.  With *sf_weights* (per event)
+    a last row CUTFLOW_SF_ROW holds sum(sf_weights) over the events passing
+    every step, in ``cumulative`` and in ``onecut`` alike (it is not a cut).
+    With *start* (a per-event mask) only those events enter any row, ``no_cuts``
+    included: the signal ee / mumu chains count their own generator flavour.
     """
-    axis = hist.axis.StrCategory(["no_cuts", *steps], name="cut")
+    labels = ["no_cuts", *steps] + ([CUTFLOW_SF_ROW] if sf_weights is not None else [])
+    axis = hist.axis.StrCategory(labels, name="cut")
     bucket = {}
     for name in ("onecut", "cumulative"):
         bucket[name] = hist.Hist(axis, storage=hist.storage.Weight())
         bucket[f"{name}_unweighted"] = hist.Hist(axis, storage=hist.storage.Weight())
 
-    event_weights = np.asarray(weights.weight(), dtype=np.float64)
-    cumulative = np.ones(len(event_weights), dtype=bool)
+    event_weights = cutflow_weight(weights)
+    included = (np.ones(len(event_weights), dtype=bool) if start is None
+                else np.asarray(start, dtype=bool))
+    cumulative = included.copy()
 
-    def record(name, index, mask):
-        selected = event_weights[mask]
+    def record(name, index, mask, values=event_weights):
+        selected = values[mask]
         view = bucket[name].view()
         view.value[index] = np.sum(selected)
         view.variance[index] = np.sum(selected**2)
@@ -466,24 +498,50 @@ def _cutflow_histograms(selections, weights, steps):
     for index, step in enumerate(steps, 1):
         mask = selections.all(step)
         cumulative &= mask
-        record("onecut", index, mask)
+        record("onecut", index, mask & included)
         record("cumulative", index, cumulative)
+    if sf_weights is not None:
+        sf = np.asarray(sf_weights, dtype=np.float64)
+        record("onecut", len(steps) + 1, cumulative, sf)
+        record("cumulative", len(steps) + 1, cumulative, sf)
     return bucket
 
 
-def fill_cutflows(output, selections, weights, *, blind=False):
+def _chain_histograms(selections, base, kind, flavor, steps, *, blind, sf_factors, channel_masks=None):
+    """The cutflow histograms of one chain: blinded data stops before its mll cut; a complete chain ends with
+    the CUTFLOW_SF_ROW row (base x the factor of *sf_factors* for *flavor*, 1 when none is given); with a
+    mask in *channel_masks* for *flavor*, only those events enter the chain."""
+    full = list(steps)
+    if blind:
+        steps = blind_cutflow_steps(kind, flavor, full)
+    sf_weights = None
+    if list(steps) == full:
+        factor = (sf_factors or {}).get(flavor)
+        sf_weights = base * (np.asarray(factor, dtype=np.float64) if factor is not None else 1.0)
+    start = (channel_masks or {}).get(flavor)
+    return _cutflow_histograms(selections, base, steps, sf_weights, start)
+
+
+def fill_cutflows(output, selections, weights, *, blind=False, sf_factors=None, channel_masks=None):
     """Build cumulative cutflows for ee, mumu, and em channels.
 
-    Order: jets (pT/eta, then ID), leptons (pT/eta, then ID, then exactly two
-    tight, then flavor-specific tight, then leading/subleading pT), trigger,
-    dR, mlljj, mll.  The object-level pT/eta and ID rows are "at least"
-    counts taken independently; the tight rows then require exactly two
-    objects passing both, so the final bin equals the region yield.
-    Extra non-tight leptons are allowed.  The final masks match the resolved
-    SR / flavor CR.
+    Order: jets (pT/eta, then ID), leptons (pT/eta, then pT/eta and ID together,
+    i.e. tight, then no third tight lepton), leading pT, trigger, dR, mlljj,
+    mll, then CUTFLOW_SF_ROW.  The object-level rows are "at least" counts; the
+    no-third-tight-lepton row pins the tight leptons to exactly two, so the last
+    cut equals the region selection.  Extra non-tight leptons are allowed.
 
     ``no_cuts`` starts after upstream event filters (and any input skim).
-    Weighted bins use base event weights, before per-region lepton SFs.
+    Weighted bins use the cutflow weight (:func:`cutflow_weight`: the base
+    event weight without the DY Z-pT reweight), before per-region lepton SFs;
+    a complete chain ends with CUTFLOW_SF_ROW, which adds *sf_factors[flavor]*
+    (the lepton and LSF SFs of the chain's region, CUTFLOW_FINAL_REGIONS), so it
+    equals that region's yield without the DY corrections.
+
+    *channel_masks* (signal): ``{"ee": mask, "mumu": mask}`` of the events of
+    each generator flavour; those chains then count only their flavour, so a
+    file holding both flavour samples of a mass point gives single-flavour
+    cutflows (the em chain keeps every event: both flavours reach the CR).
 
     With *blind* (data of a blinded run) the ee and mumu chains stop before
     the mll cut (``wrcoffea.regions.BLINDED_CUTFLOW_STEPS``); em is complete.
@@ -507,6 +565,7 @@ def fill_cutflows(output, selections, weights, *, blind=False):
             SEL_LEAD_TIGHT_PT60,
             SEL_E_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
+            SEL_HEM_VETO,
             SEL_MLLJJ_GT800,
             SEL_MLL_GT200,
             SEL_MLL_GT400,
@@ -520,6 +579,7 @@ def fill_cutflows(output, selections, weights, *, blind=False):
             SEL_LEAD_TIGHT_PT60,
             SEL_MU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
+            SEL_HEM_VETO,
             SEL_MLLJJ_GT800,
             SEL_MLL_GT200,
             SEL_MLL_GT400,
@@ -533,6 +593,7 @@ def fill_cutflows(output, selections, weights, *, blind=False):
             SEL_LEAD_TIGHT_PT60,
             SEL_EMU_TRIGGER,
             SEL_DR_ALL_PAIRS_GT0P4,
+            SEL_HEM_VETO,
             SEL_MLLJJ_GT800,
             SEL_MLL_GT200,
             SEL_MLL_GT400,
@@ -540,25 +601,27 @@ def fill_cutflows(output, selections, weights, *, blind=False):
     }
 
     # --- Per-flavor: multi-bin onecut / cumulative histograms
+    base = cutflow_weight(weights)
     for flavor, steps in chains.items():
-        if blind:
-            steps = blind_cutflow_steps("resolved", flavor, steps)
         output["cutflow"].setdefault(flavor, {}).update(
-            _cutflow_histograms(selections, weights, steps)
+            _chain_histograms(selections, base, "resolved", flavor, steps, blind=blind, sf_factors=sf_factors,
+                              channel_masks=channel_masks)
         )
 
 
-def fill_boosted_cutflows(output, selections, weights, *, blind=False):
+def fill_boosted_cutflows(output, selections, weights, *, blind=False, sf_factors=None, channel_masks=None):
     """Build cumulative cutflows for boosted ee, mumu, and em channels.
 
     Similar to fill_cutflows but for boosted topology. Shows progression
-    through boosted-specific selections (SR progression for ee/mumu,
-    flavor CR for em). As in the resolved cutflow, ``no_cuts`` follows
-    upstream filters and the weighted bins exclude per-region lepton SFs.
-    With *blind* the ee and mumu chains stop before the boosted mll cut.
+    through boosted-specific selections (SR progression for ee/mumu, the
+    e(mu-jet) flavor CR for em and the mu(e-jet) one for me). As in the resolved cutflow, ``no_cuts`` follows
+    upstream filters, the weighted bins use the cutflow weight and a complete
+    chain ends with CUTFLOW_SF_ROW (*sf_factors*: the lepton and LSF SFs of the
+    chain's region).  With *blind* the ee and mumu chains stop before the
+    boosted mll cut.
 
     Output layout (keys under ``output["cutflow_boosted"]``):
-        - per-flavor: ``ee``, ``mumu``, ``em``
+        - per-flavor: ``ee``, ``mumu``, ``em``, ``me``
             - ``onecut`` / ``cumulative`` (and unweighted variants)
     """
     output.setdefault("cutflow_boosted", {})
@@ -576,6 +639,7 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False):
             SEL_NO_EXTRA_TIGHT_SR,
             SEL_SF_LEPTON_IN_AK8,
             SEL_NO_OF_LEPTON_IN_AK8,
+            SEL_HEM_VETO_BOOSTED_SR,
             SEL_MLL_GT200_BOOSTED,
             SEL_MLJ_GT800_BOOSTED,
         ],
@@ -590,11 +654,12 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False):
             SEL_NO_EXTRA_TIGHT_SR,
             SEL_SF_LEPTON_IN_AK8,
             SEL_NO_OF_LEPTON_IN_AK8,
+            SEL_HEM_VETO_BOOSTED_SR,
             SEL_MLL_GT200_BOOSTED,
             SEL_MLJ_GT800_BOOSTED,
         ],
+        # e(mu-jet) flavour CR: leading electron, electron trigger
         "em": [
-            #SEL_JET_VETO_MAP,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_ELECTRON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
@@ -604,15 +669,31 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False):
             SEL_NO_EXTRA_TIGHT_CR,
             SEL_NO_SF_LEPTON_IN_AK8,
             SEL_OF_LEPTON_IN_AK8,
+            SEL_HEM_VETO_BOOSTED_CR,
+            SEL_MLL_GT200_BOOSTED,
+            SEL_MLJ_GT800_BOOSTED,
+        ],
+        # mu(e-jet) flavour CR: leading muon, muon trigger (since 2026-10-14)
+        "me": [
+            SEL_BOOSTEDTAG,
+            SEL_LEAD_IS_MUON,
+            SEL_LEAD_TIGHT_PT60_BOOSTED,
+            SEL_MU_TRIGGER,
+            SEL_NO_DY_PAIR,
+            SEL_AK8JETS_WITH_LSF,
+            SEL_NO_EXTRA_TIGHT_CR,
+            SEL_NO_SF_LEPTON_IN_AK8,
+            SEL_OF_LEPTON_IN_AK8,
+            SEL_HEM_VETO_BOOSTED_CR,
             SEL_MLL_GT200_BOOSTED,
             SEL_MLJ_GT800_BOOSTED,
         ],
     }
 
     # Generate cutflow histograms per flavor
+    base = cutflow_weight(weights)
     for flavor, steps in chains.items():
-        if blind:
-            steps = blind_cutflow_steps("boosted", flavor, steps)
         output["cutflow_boosted"].setdefault(flavor, {}).update(
-            _cutflow_histograms(selections, weights, steps)
+            _chain_histograms(selections, base, "boosted", flavor, steps, blind=blind, sf_factors=sf_factors,
+                              channel_masks=channel_masks)
         )

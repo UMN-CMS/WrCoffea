@@ -44,7 +44,7 @@ from wrcoffea.analysis_config import (
     SEL_TWO_PTETA_ELECTRONS, SEL_TWO_PTETA_MUONS, SEL_TWO_PTETA_EM,
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
-    SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
+    SEL_DR_ALL_PAIRS_GT0P4, SEL_HEM_VETO, SEL_HEM_VETO_BOOSTED_SR, SEL_HEM_VETO_BOOSTED_CR, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLLJJ_LT800, SEL_MLL_GT400,
     SEL_TWO_TIGHT_LEPTONS, SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM, SEL_NO_THIRD_TIGHT_LEPTON,
     SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
     SEL_60_MLL_150, DYCR_MLL_SPLIT, SEL_MLL_60_100, SEL_MLL_100_150,
@@ -75,6 +75,7 @@ from wrcoffea.systematics import (
 )
 from wrcoffea.histograms import all_histogram_names
 from wrcoffea.scale_factors import muon_sf, muon_sf_loose, muon_trigger_sf, electron_reco_sf, electron_id_sf, electron_trigger_sf, lsf_sf, pileup_weight, jet_veto_event_mask, jet_veto_jet_mask, jet_veto_mode, apply_jet_corrections, apply_electron_scale_smearing, verify_scale_smearing, verify_muon_scale_smearing, apply_muon_scale_smearing
+from wrcoffea.histograms import CUTFLOW_FINAL_REGIONS
 from wrcoffea.histograms import (
     RESOLVED_HIST_SPECS, BOOSTED_HIST_SPECS, RESOLVED_2D_HIST_SPECS, BOOSTED_2D_HIST_SPECS,
     _booking_specs, create_hist, create_hist2D,
@@ -95,6 +96,37 @@ _WARN_ONCE: set[str] = set()
 # NanoAODv12 (2022/2023) stores a wrong Jet_jetId lepton-veto bit.  The JME Jet ID page's repair: start from the
 # Tight bit, add the forward cuts to Tight, and build the lepton veto for |eta| <= 2.7 from the energy fractions.
 NANOAOD_V12_ERAS = ("Run3Summer22", "Run3Summer22EE", "Run3Summer23", "Run3Summer23BPix")
+
+
+# Fallback of signal_flavour_masks for a chunk without LHEPart: the flavour of a single-flavour signal dataset.
+SIGNAL_DATASET_FLAVOURS = {"WRtoNEltoElElJJ": "ee", "WRtoNMutoMuMuJJ": "mumu"}
+
+
+def signal_flavour_masks(lhe_part, n_events, dataset=None):
+    """``{"ee": mask, "mumu": mask}``: the events of each generator lepton flavour of a signal chunk, from its
+    outgoing LHE leptons (status 1, |pdgId| 11 or 13; one flavour per W_R -> l N -> l l q q' event); from the
+    dataset name when the chunk has no LHEPart.  None when neither tells (the cutflows then take every event).
+
+    The signal cutflows use them so that the ee and mumu chains of a mass point, whose file holds both its
+    electron and its muon sample, count only their own flavour (issue #107).
+    """
+    if lhe_part is not None and {"pdgId", "status"} <= set(lhe_part.fields):
+        pdg = abs(lhe_part.pdgId[lhe_part.status == 1])
+        n_e = ak.to_numpy(ak.sum(pdg == 11, axis=1))
+        n_mu = ak.to_numpy(ak.sum(pdg == 13, axis=1))
+        return {"ee": (n_e > 0) & (n_mu == 0), "mumu": (n_mu > 0) & (n_e == 0)}
+    name = (dataset or "").lstrip("/")
+    for prefix, channel in SIGNAL_DATASET_FLAVOURS.items():
+        if name.startswith(prefix):
+            return {c: np.full(n_events, c == channel) for c in ("ee", "mumu")}
+    return None
+
+
+def _sf_ratio(weighted, base):
+    """Per event, weighted / base: what a region multiplies onto the base weight (1 where the base is 0)."""
+    w = np.asarray(weighted, dtype=np.float64)
+    b = np.asarray(base, dtype=np.float64)
+    return np.divide(w, b, out=np.ones_like(b), where=b != 0)
 
 
 def _both(a, b):
@@ -712,7 +744,9 @@ class WrAnalysis(processor.ProcessorABC):
 
         # Jet-level counts per event
         n_ak4_pteta = ak.sum(jet_masks["ak4_pteta"], axis=1)
-        n_ak4_id    = ak.sum(jet_masks["ak4_id"],    axis=1)
+        # ID row: jets passing pT/eta AND the ID together (Billy, 2026-10-14; an ID-only count let the two jet rows
+        # pass on different jets, e.g. a soft jet passing the ID and a hard jet with a lepton failing it)
+        n_ak4_id    = ak.sum(_both(jet_masks["ak4_pteta"], jet_masks["ak4_id"]), axis=1)
         selections.add("min_two_ak4_jets_pteta", n_ak4_pteta >= 2)
         selections.add("min_two_ak4_jets_id",    n_ak4_id    >= 2)
 
@@ -854,19 +888,23 @@ class WrAnalysis(processor.ProcessorABC):
         boolean that is True when no such extras exist.
         """
         dr_cut = CUTS["dr_loose_veto"]
+
+        def away(objs, ref):
+            # Per object: further than dr_cut from *ref*.  An event without *ref* protects no object (before
+            # 2026-10-14 its whole list was None, so the veto failed every event lacking the candidate and the
+            # cutflow charged those events to this row instead of the candidate's own row).
+            far = ak.fill_none(objs.deltaR(ref) > dr_cut, True)
+            return ak.where(ak.is_none(ref), ak.ones_like(objs.pt, dtype=bool), far)
+
         extra_tight_mu = ak.sum(
-            (looseMuons.tkRelIso < CUTS["muon_iso_max"]) &
-            (ak.fill_none(looseMuons.deltaR(tight_lep) > dr_cut, True)) &
-            (ak.fill_none(looseMuons.deltaR(sublead_lep) > dr_cut, True)),
+            (looseMuons.tkRelIso < CUTS["muon_iso_max"]) & away(looseMuons, tight_lep) & away(looseMuons, sublead_lep),
             axis=1
         )
         extra_tight_el = ak.sum(
-            (looseElectrons.cutBased_HEEP) &
-            (ak.fill_none(looseElectrons.deltaR(tight_lep) > dr_cut, True)) &
-            (ak.fill_none(looseElectrons.deltaR(sublead_lep) > dr_cut, True)),
+            (looseElectrons.cutBased_HEEP) & away(looseElectrons, tight_lep) & away(looseElectrons, sublead_lep),
             axis=1
         )
-        return (extra_tight_mu == 0) & (extra_tight_el == 0)
+        return ak.fill_none((extra_tight_mu == 0) & (extra_tight_el == 0), False)
 
     def boosted_selections(self, events, era, triggers=None):
         """Build boosted PackedSelection and the objects needed for boosted histogram filling.
@@ -1107,6 +1145,8 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add(SEL_MUMU_SR,  mumu_sr & is_sublead_mu_sr & hem_ok_sr)
         selections.add(SEL_EE_SR,    ee_sr & is_sublead_e_sr & hem_ok_sr)
         selections.add(SEL_EMU_CR,   emu_cr & is_sublead_mu_cr & hem_ok_cr)
+        selections.add(SEL_HEM_VETO_BOOSTED_SR, hem_ok_sr)
+        selections.add(SEL_HEM_VETO_BOOSTED_CR, hem_ok_cr)
         selections.add(SEL_MUE_CR,   mue_cr & is_sublead_e_cr & hem_ok_cr)
 
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate
@@ -1720,7 +1760,7 @@ class WrAnalysis(processor.ProcessorABC):
     def _fill_resolved(self, output, resolved_selections, process_name, ak4_jets, tight_leptons,
                        weights, syst_weights, era, tight_muons, tight_electrons,
                        *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
-                       weight_factors=None, dy_target=False, pdf=None):
+                       weight_factors=None, dy_target=False, pdf=None, channel_masks=None):
         """Build resolved region masks and fill histograms + cutflows.
 
         Regions (and any enabled variants) come from ``wrcoffea.regions``;
@@ -1738,12 +1778,18 @@ class WrAnalysis(processor.ProcessorABC):
         lead_ak4_pt = np.asarray(ak.fill_none(ak.pad_none(ak4_jets, 1)[:, 0].pt, 0.0), dtype=np.float64)
 
         coverage = {}
+        # The lepton SFs of the regions the cutflow chains end in, for their last row (no DY reshape).
+        finals = CUTFLOW_FINAL_REGIONS["resolved"]
+        base_nominal = None if skip_cutflows else syst_weights[NOMINAL]   # shape passes: no cutflows
+        sf_factors = {}
         for region, cuts in resolved_regions.items():
             factors = dict(weight_factors) if weight_factors is not None else None
             region_syst = self._lepton_sfs_for_region(
                 region, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
                 factors=factors,
             )
+            if not skip_cutflows and region in finals.values():
+                sf_factors[region] = _sf_ratio(region_syst[NOMINAL], base_nominal)
             region_syst = self._dy_reshape_for_region(
                 region_syst, "resolved", lead_ak4_pt, era, dy_target, is_mc, factors=factors,
             )
@@ -1755,7 +1801,9 @@ class WrAnalysis(processor.ProcessorABC):
                 fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
 
         if not skip_cutflows:
-            fill_cutflows(output, resolved_selections, weights, blind=blind)
+            fill_cutflows(output, resolved_selections, weights, blind=blind,
+                          sf_factors={f: sf_factors[r] for f, r in finals.items() if r in sf_factors},
+                          channel_masks=channel_masks)
         return coverage
 
     @staticmethod
@@ -1773,7 +1821,7 @@ class WrAnalysis(processor.ProcessorABC):
 
     def _fill_boosted(self, output, boosted_payload, process_name, weights, syst_weights,
                       era, *, is_mc, skip_cutflows=False, event_lists=None, event_weights=None,
-                      weight_factors=None, dy_target=False, pdf=None):
+                      weight_factors=None, dy_target=False, pdf=None, channel_masks=None):
         """Unpack boosted payload, build region masks, and fill histograms.
 
         Returns ``{region: set(labels filled)}``.  As in ``_fill_resolved``,
@@ -1789,10 +1837,6 @@ class WrAnalysis(processor.ProcessorABC):
         """
         boosted_sel, tight_lep, AK8_cand_dy, DY_loose_lep, AK8_cand, of_candidate, sf_candidate = boosted_payload
         blind = self._blind and not is_mc
-
-        # Fill boosted cutflows
-        if not skip_cutflows:
-            fill_boosted_cutflows(output, boosted_sel, weights, blind=blind)
 
         lead_mu, lead_e = self._candidates_by_flavor(tight_lep)
         sublead_by_kind = {
@@ -1811,9 +1855,15 @@ class WrAnalysis(processor.ProcessorABC):
 
         boosted_regions = build_regions(BOOSTED_REGIONS, boosted_sel, self._region_variants, blind=blind)
         coverage = {}
+        # The lepton and LSF SFs of the regions the cutflow chains end in, for their last row (no DY reshape).
+        finals = CUTFLOW_FINAL_REGIONS["boosted"]
+        base_nominal = None if skip_cutflows else syst_weights[NOMINAL]   # shape passes: no cutflows
+        sf_factors = {}
         for region, cuts in boosted_regions.items():
             factors = dict(weight_factors) if weight_factors is not None else None
             region_syst = _region_sfs(region, factors)
+            if not skip_cutflows and region in finals.values():
+                sf_factors[region] = _sf_ratio(region_syst[NOMINAL], base_nominal)
             if "dy_cr" in region:
                 sublead, ak8 = DY_loose_lep, AK8_cand_dy
             elif "flavor_cr" in region:
@@ -1830,6 +1880,10 @@ class WrAnalysis(processor.ProcessorABC):
             )
             if event_weights is not None:
                 fill_event_weights(event_weights, region, cuts, region_syst[NOMINAL], factors)
+        if not skip_cutflows:
+            fill_boosted_cutflows(output, boosted_sel, weights, blind=blind,
+                                  sf_factors={f: sf_factors[r] for f, r in finals.items() if r in sf_factors},
+                                  channel_masks=channel_masks)
         return coverage
 
     def process(self, events):
@@ -1991,20 +2045,23 @@ class WrAnalysis(processor.ProcessorABC):
         if pdf_members is not None:
             pdf = (output.setdefault(MEMBERS_KEY, {}), pdf_members)
             output[CHUNKS_KEY] = 1          # accumulates; save_hists requires == n_chunks
+        # Signal: the ee / mumu cutflow chains count only their generator flavour (issue #107).
+        channel_masks = (signal_flavour_masks(getattr(events, "LHEPart", None), len(events), dataset)
+                         if is_mc and process_name == SIGNAL_PROCESS_GROUP else None)
         coverage = {}
         if resolved_selections is not None:
             coverage.update(self._fill_resolved(
                 output, resolved_selections, process_name, ak4_jets, tight_leptons,
                 weights, syst_weights, era, tight_muons, tight_electrons, is_mc=is_mc,
                 event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
-                dy_target=dy_target, pdf=pdf,
+                dy_target=dy_target, pdf=pdf, channel_masks=channel_masks,
             ))
 
         if boosted_payload is not None:
             coverage.update(self._fill_boosted(
                 output, boosted_payload, process_name, weights, syst_weights, era, is_mc=is_mc,
                 event_lists=event_lists, event_weights=event_weights, weight_factors=weight_factors,
-                dy_target=dy_target, pdf=pdf,
+                dy_target=dy_target, pdf=pdf, channel_masks=channel_masks,
             ))
 
         # Shape systematics: re-run selections with shifted kinematics.

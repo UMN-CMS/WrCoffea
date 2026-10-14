@@ -72,9 +72,14 @@ convention. Inside a file:
   `syst_<label lower>_<region>/<var>_syst_<label lower>_<region>`, the label in lower case with
   only letters and digits kept (`MuonTrigSfUp` → `muontrigsfup`); PDF members:
   `pdfmembers_<region>/<var>_lha<id>` (TH2: variable × member).
-- `cutflow_resolved/`, `cutflow_boosted/`: per channel (`ee`, `mumu`, `em`) the `cumulative` and
+- `cutflow_resolved/`, `cutflow_boosted/`: per channel (`ee`, `mumu`, `em`; boosted also `me`, the
+  μ(e-jet) flavour CR, since 2026-10-14) the `cumulative` and
   `onecut` cutflows, weighted and `_unweighted`, with the cut names as bin labels. The weighted bins
-  use the base event weight, without the per-region lepton scale factors.
+  use the base event weight without the DY Z-pT reweight and without the per-region scale factors;
+  a complete chain (not blinded) ends with `with_region_sfs`, the last cut times the lepton and LSF
+  SFs of its region, equal to that region's yield without the DY corrections (since 2026-10-14).
+  For signal, the `ee` and `mumu` chains count only events of their own generator flavour (outgoing LHE
+  leptons), so a mass point's file, which holds both flavour samples, has single-flavour cutflows.
 - `event_weights/<region>/` (MC, nominal pass only, not with `--unskimmed`): `positive` and
   `negative` (event counts vs log10|w| by the sign of the region's nominal weight) and
   `components/<name>` (one distribution per factor of w: generator weight, normalization, pileup,
@@ -95,8 +100,8 @@ Data is blinded by default; MC never is.
   `wr_ee_boosted_sr`, `wr_mumu_boosted_sr`) or their variants (`_nomass`, ...): no folders, no
   `--save-events` trees. The DY and flavour control regions are filled as usual.
 - The data `ee` and `mumu` cutflows stop before the m(ℓℓ) > 200 GeV cut (resolved chains end at
-  `mlljj_gt800`, boosted at `no_of_lepton_in_ak8`); the cut axis is shorter, not zero-filled. The
-  `em` cutflows are complete.
+  `mlljj_gt800`, boosted at `hem_veto_boosted_sr`); the cut axis is shorter, not zero-filled. The
+  `em` and `me` cutflows are complete.
 - The manifest's `blinding` entry says what the file withholds (`applied`, `signal_regions`,
   `cutflow_truncated_before`). Files written before blinding existed have no entry, and the plotter
   never shows their signal-region data.

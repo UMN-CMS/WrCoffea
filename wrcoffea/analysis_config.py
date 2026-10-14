@@ -171,6 +171,10 @@ SEL_DR_ALL_PAIRS_GT0P4 = "dr_all_pairs_gt0p4"
 # No selected electron inside the HEM 15/16 window (always True for eras
 # without a ``hem_veto`` entry).
 SEL_HEM_VETO = "hem_veto"
+# The boosted HEM 15/16 veto on its own, for the cutflows (the regions fold it into SEL_*_SR / SEL_*_CR):
+# the leading tight lepton and the same-flavour (SR) or opposite-flavour (flavour CR) lepton in the jet.
+SEL_HEM_VETO_BOOSTED_SR = "hem_veto_boosted_sr"
+SEL_HEM_VETO_BOOSTED_CR = "hem_veto_boosted_cr"
 SEL_MLL_GT200 = "mll_gt200"
 SEL_MLLJJ_GT800 = "mlljj_gt800"
 SEL_MLLJJ_LT800 = "mlljj_lt800"
