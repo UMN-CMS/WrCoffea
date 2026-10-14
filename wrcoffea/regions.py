@@ -27,7 +27,6 @@ from wrcoffea.analysis_config import (
     SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
     SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR, SEL_MUE_CR,
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
-    SEL_MLLJJ_LT800, SEL_MLJ_LT800_BOOSTED,
     SEL_EE_SR_NOLSF, SEL_MUMU_SR_NOLSF, SEL_EMU_CR_NOLSF, SEL_MUE_CR_NOLSF,
     SEL_MLL_GT200_BOOSTED_NOLSF, SEL_MLJ_GT800_BOOSTED_NOLSF,
 )
@@ -93,9 +92,7 @@ class RegionVariant:
     and AND-ing *add* cuts.
 
     Added and replacement cuts are selections the analyzer only fills when a variant
-    asks for them (see :func:`added_selections`).  *blinded* False marks a variant of a
-    signal region that cannot overlap it (its selection excludes the SR), which blinded
-    data still builds (see :func:`is_signal_region`).
+    asks for them (see :func:`added_selections`).
     """
     suffix: str
     drop: frozenset[str]
@@ -103,7 +100,6 @@ class RegionVariant:
     description: str = ""
     add: tuple[str, ...] = ()
     replace: tuple[tuple[str, str], ...] = ()
-    blinded: bool = True
 
 
 _DY_CRS: tuple[str, ...] = ("wr_ee_resolved_dy_cr", "wr_mumu_resolved_dy_cr",
@@ -124,18 +120,6 @@ REGION_VARIANTS: dict[str, RegionVariant] = {
         drop=frozenset({SEL_MLLJJ_GT800, SEL_MLJ_GT800_BOOSTED}),
         regions=_SR_AND_FLAVOR_CRS,
         description="SR / flavor CR with the m(lljj) or m(lJ) > 800 GeV cut removed.",
-    ),
-    # AN-19-083 App. J (Figs. 103-128), its low-mass region LowWRCR: the SR and flavor CR
-    # selections with m(lljj) or m(lJ) < 800 GeV, where the data-driven tt prediction
-    # (R x flavor-CR data) is compared with data.  Disjoint from the SR (m > 800 GeV), so
-    # data fills it, as in Run 2.
-    "lowmass": RegionVariant(
-        suffix="_lowmass",
-        drop=frozenset(),
-        replace=((SEL_MLLJJ_GT800, SEL_MLLJJ_LT800), (SEL_MLJ_GT800_BOOSTED, SEL_MLJ_LT800_BOOSTED)),
-        regions=_SR_AND_FLAVOR_CRS,
-        blinded=False,
-        description="SR / flavor CR with m(lljj) or m(lJ) < 800 GeV instead of > 800 GeV (AN-19-083 LowWRCR).",
     ),
     # AN-19-083 Figs. 12, 93-94: the boosted SR and flavor CRs with the jet taken without
     # the LSF requirement (the leading AK8 jet with |dphi| > 2, as in the DY CR), the
@@ -174,9 +158,9 @@ REGION_VARIANTS: dict[str, RegionVariant] = {
 # Study name -> variants it enables.  Exposed as ``--study`` on the CLI.
 STUDIES: dict[str, tuple[str, ...]] = {
     # e-mu transfer factor R = SR / flavor CR, fitted separately below and
-    # above 800 GeV (AN-19-083 Appendix J closure test), and its closure in data
-    # in the low-mass region.  Measured on ttbar, so pair with ``--split-groups tt_tW``.
-    "transfer-factor": ("nomass", "lowmass"),
+    # above 800 GeV (AN-19-083 Appendix J closure test).  Measured on ttbar,
+    # so pair with ``--split-groups tt_tW``.
+    "transfer-factor": ("nomass",),
     # DY reshape CR1 -> CR2 closure (AN-19-083 Figs. 27-30).  Run data, the
     # non-DY backgrounds and DY with it, derive the reshape from the
     # _mll60to100 regions (scripts/derive_dy_reshape.py --region-suffix) and
@@ -305,10 +289,8 @@ def added_selections(variants: Iterable[str]) -> frozenset[str]:
 
 # Data of a blinded run (the default) never builds these regions, nor any
 # variant derived from them (e.g. ``wr_ee_resolved_sr_nomass``): no
-# histograms, no --save-events trees, no coverage entry.  The exception is a
-# variant marked ``blinded=False`` because its selection excludes the SR (the
-# m < 800 GeV ``_lowmass`` regions).  The flavor and DY control regions are
-# never blinded, and MC is never blinded.
+# histograms, no --save-events trees, no coverage entry.  The flavor and DY
+# control regions are never blinded, and MC is never blinded.
 SIGNAL_REGIONS: frozenset[str] = frozenset({
     "wr_ee_resolved_sr", "wr_mumu_resolved_sr",
     "wr_ee_boosted_sr", "wr_mumu_boosted_sr",
@@ -328,11 +310,11 @@ UNBLINDABLE_RUNS: frozenset[str] = frozenset({"RunII"})
 
 
 def is_signal_region(name: str) -> bool:
-    """True for a signal region or any blinded region variant derived from one."""
+    """True for a signal region or any region variant derived from one."""
     if name in SIGNAL_REGIONS:
         return True
     return any(name == region + var.suffix
-               for var in REGION_VARIANTS.values() if var.blinded
+               for var in REGION_VARIANTS.values()
                for region in var.regions if region in SIGNAL_REGIONS)
 
 

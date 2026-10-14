@@ -126,16 +126,15 @@ tight lepton vetoed):
 Region variants and studies (`--study`, registry in `regions.py`; several can be combined):
 
 - `transfer-factor`: the SR and flavour CRs without the mass cut (`<region>_nomass`, for the eμ
-  transfer factor R = SR / flavour CR measured on tt̄, AN-19-083 Appendix J) and with m(ℓℓjj) or
-  m(ℓJ) < 800 GeV instead of > 800 GeV (`<region>_lowmass`, Run 2's low-W_R CR, for the closure
-  of the data-driven tt̄ prediction in data).
+  transfer factor R = SR / flavour CR measured on tt̄, AN-19-083 Appendix J).
 - `dy-cr-split`: the DY CRs split at m(ℓℓ) = 100 GeV (AN-19-083 DY CR1 and CR2, for the reshape
   closure).
 - `no-lsf`: the boosted SR and flavour CRs rebuilt on the leading AK8 jet with |Δφ| > 2 and no LSF
   requirement (the DY CR jet), with their lepton-in-jet candidates and masses (`<region>_nolsf`,
   AN-19-083 Figs. 12 and 93-94). These regions get no LSF scale factor.
 
-Run 2 regions not built here: resolved DYCR3 (200 < m(ℓℓ) < 400 GeV) and the b-jet splits.
+Run 2 regions not built here: resolved DYCR3 (200 < m(ℓℓ) < 400 GeV), the low-W_R CR
+(m < 800 GeV; deferred, see the open items) and the b-jet splits.
 
 ## Event weights
 
@@ -208,8 +207,7 @@ analyzer applies the k(m(ℓN))/⟨k⟩ shape reweight, both from the derivation
 
 ## Blinding
 
-Data of a blinded run (the default) never builds the signal regions or their variants, except the
-`_lowmass` ones (m < 800 GeV, disjoint from the SR), and its ee
+Data of a blinded run (the default) never builds the signal regions or their variants, and its ee
 and μμ cutflows stop before the m(ℓℓ) > 200 GeV cut; control regions and the eμ cutflows are
 complete; MC is never blinded. The manifest records what a file withholds. `--unblind` is allowed
 for the Run 2 eras only. Operational details: [run_analysis.md](run_analysis.md#blinding).
@@ -262,6 +260,10 @@ in the files ([WR_Plotter/docs/plotting.md](../WR_Plotter/docs/plotting.md)).
 
 Decisions and measurements still outstanding, with the date they were last looked at.
 
+- **Low-mass closure of the data-driven tt̄ prediction** (AN-19-083 App. J, Figs. 103-128: the SR and
+  flavour-CR selections with m < 800 GeV, data against R × flavour-CR data). Deferred (Billy,
+  2026-10-14); it needs a decision on whether data may fill those SR-like regions. The region variant
+  and its boosted m(ℓJ) < 800 GeV selection were written and tested in `c645b32` and removed after.
 - **LSF3 above 1.** NanoAOD's lsf3 exceeds 1 for a visible share of the jets that pass the 0.75 cut:
   above 1.1 for 7 % (tt̄) and 20 % (W+jets) of them, above 2 for 1.3 % and 3.8 %, with values up to
   about 27 (2024 skims, AK8 jets with pT > 200 GeV and |η| < 2.4). Not yet explained; NanoAOD's lsf3

@@ -98,8 +98,7 @@ Data is blinded by default; MC never is.
 
 - Data never builds the signal regions (`wr_ee_resolved_sr`, `wr_mumu_resolved_sr`,
   `wr_ee_boosted_sr`, `wr_mumu_boosted_sr`) or their variants (`_nomass`, `_nolsf`): no folders,
-  no `--save-events` trees. The `_lowmass` variants (m(ℓℓjj) or m(ℓJ) < 800 GeV) exclude the SR and
-  are filled. The DY and flavour control regions are filled as usual.
+  no `--save-events` trees. The DY and flavour control regions are filled as usual.
 - The data `ee` and `mumu` cutflows stop before the m(ℓℓ) > 200 GeV cut (resolved chains end at
   `mlljj_gt800`, boosted at `hem_veto_boosted_sr`); the cut axis is shorter, not zero-filled. The
   `em` and `me` cutflows are complete.
@@ -161,7 +160,7 @@ always gets nominal only). The families, their sources, and what each era can pr
 | `--fileset PATH` | An explicit fileset; with `Signal`, `--mass` only has to be a point of that fileset. |
 | `--dir TAG`, `--name SUFFIX` | Output sub-directory and file-name suffix. |
 | `--debug` | Run without saving histograms. |
-| `--study STUDY ...` | Add the extra regions of `transfer-factor` (`<region>_nomass`, `<region>_lowmass`), `dy-cr-split` (the DY CR split at m(ℓℓ) = 100 GeV) or `no-lsf` (`<region>_nolsf`); several can be given. |
+| `--study STUDY ...` | Add the extra regions of `transfer-factor` (`<region>_nomass`), `dy-cr-split` (the DY CR split at m(ℓℓ) = 100 GeV) or `no-lsf` (`<region>_nolsf`); several can be given. |
 | `--save-events` | Write the signal-region (mass, weight) TTrees. |
 | `--split-groups GROUP ...` | Composite runs: write `tt_tW` as TTbar + tW, `Nonprompt` as WJets + TTSemiLep + SingleTop, `Other` as Diboson + Triboson + ttV. |
 | `--systs FAMILY ...` | `lumi pileup prefire sf jer jes jms jmr elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf`. |

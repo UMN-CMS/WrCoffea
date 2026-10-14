@@ -214,8 +214,6 @@ SEL_MUE_CR = "mue_cr"
 SEL_JET_VETO_MAP = "jet_veto_map"
 
 # Study selections (regions.REGION_VARIANTS), filled only when a requested variant uses them.
-# lowmass: the m(lJ) < 800 GeV complement of SEL_MLJ_GT800_BOOSTED (AN-19-083 App. J low-mass region).
-SEL_MLJ_LT800_BOOSTED = "mlj_lt800_boosted"
 # nolsf: the boosted SR / flavour-CR selections rebuilt on the leading AK8 jet with |dphi| > 2 and no LSF
 # requirement (the DY CR jet), with their lepton-in-jet candidates and masses (AN-19-083 Figs. 12, 93-94).
 SEL_EE_SR_NOLSF = "ee_sr_nolsf"

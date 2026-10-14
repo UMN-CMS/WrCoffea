@@ -46,9 +46,9 @@ def test_validate_variants_rejects_duplicate_generated_names(monkeypatch):
 
 
 def test_resolve_studies_maps_names_and_rejects_unknown():
-    assert R.resolve_studies(["transfer-factor"]) == frozenset({"nomass", "lowmass"})
+    assert R.resolve_studies(["transfer-factor"]) == frozenset({"nomass"})
     assert R.resolve_studies([]) == frozenset()
-    assert R.resolve_studies(["transfer-factor", "transfer-factor"]) == frozenset({"nomass", "lowmass"})
+    assert R.resolve_studies(["transfer-factor", "transfer-factor"]) == frozenset({"nomass"})
     assert R.resolve_studies(["no-lsf"]) == frozenset({"nolsf"})
     with pytest.raises(ValueError, match="Unknown study"):
         R.resolve_studies(["no-such-study"])
@@ -129,7 +129,7 @@ def test_is_signal_region_covers_srs_and_their_variants_only():
 
 
 @pytest.mark.parametrize("mode", R.REGION_MODES)
-@pytest.mark.parametrize("variants", [(), ("nomass",), ("lowmass", "nolsf")])
+@pytest.mark.parametrize("variants", [(), ("nomass",), ("nolsf",)])
 def test_region_names_blind_drops_only_signal_regions(mode, variants):
     full = R.region_names(mode, variants)
     blind = R.region_names(mode, variants, blind=True)
@@ -139,7 +139,9 @@ def test_region_names_blind_drops_only_signal_regions(mode, variants):
     if variants:
         # Variants of the flavor CRs stay; variants of the SRs go.
         flavor_cr_variants = [name for name in full if "_flavor_cr_" in name]
-        assert flavor_cr_variants and set(flavor_cr_variants) <= set(blind)
+        assert set(flavor_cr_variants) <= set(blind)
+        if not (mode == "resolved" and variants == ("nolsf",)):   # nolsf is boosted only
+            assert flavor_cr_variants
         assert not any(name.endswith("_sr_nomass") for name in blind)
 
 
@@ -212,7 +214,7 @@ def test_dy_cr_split_study_targets_the_four_dy_crs():
     variants = R.resolve_studies(["dy-cr-split"])
     assert variants == frozenset({"dycr_mll60to100", "dycr_mll100to150"})
     assert R.added_selections(variants) == frozenset({R.SEL_MLL_60_100, R.SEL_MLL_100_150})
-    assert R.added_selections(R.resolve_studies(["transfer-factor"])) == frozenset({R.SEL_MLLJJ_LT800, R.SEL_MLJ_LT800_BOOSTED})
+    assert R.added_selections(R.resolve_studies(["transfer-factor"])) == frozenset()
     names = R.region_names("both", variants)
     for cr in ("wr_ee_resolved_dy_cr", "wr_mumu_resolved_dy_cr", "wr_ee_boosted_dy_cr", "wr_mumu_boosted_dy_cr"):
         assert cr + "_mll60to100" in names and cr + "_mll100to150" in names
@@ -250,34 +252,8 @@ def test_add_only_variant_must_add_something_new(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Replacement variants: lowmass (AN-19-083 App. J) and nolsf (Fig. 12)
+# Replacement variant: nolsf (AN-19-083 Fig. 12)
 # ---------------------------------------------------------------------------
-
-def test_lowmass_variant_swaps_the_mass_cut_in_both_topologies():
-    var = R.REGION_VARIANTS["lowmass"]
-    res = R.variant_cuts(var, R.RESOLVED_REGIONS["wr_ee_resolved_sr"])
-    assert R.SEL_MLLJJ_LT800 in res and SEL_MLLJJ_GT800 not in res
-    boo = R.variant_cuts(var, R.BOOSTED_REGIONS["wr_mue_boosted_flavor_cr"])
-    assert R.SEL_MLJ_LT800_BOOSTED in boo and SEL_MLJ_GT800_BOOSTED not in boo
-    assert len(res) == len(R.RESOLVED_REGIONS["wr_ee_resolved_sr"])
-
-
-def test_lowmass_regions_are_built_by_blinded_data_and_the_sr_is_not():
-    """m < 800 GeV excludes the SR, so blinded data builds every _lowmass region."""
-    for region in ("wr_ee_resolved_sr", "wr_mumu_boosted_sr"):
-        assert not R.is_signal_region(region + "_lowmass")
-    blind = R.region_names("both", ["lowmass"], blind=True)
-    assert all(r + "_lowmass" in blind for r in R.REGION_VARIANTS["lowmass"].regions)
-    assert not set(R.SIGNAL_REGIONS) & set(blind)
-
-
-def test_event_below_800_enters_lowmass_and_not_the_sr():
-    names = _all_names(R.RESOLVED_REGIONS) + [R.SEL_MLLJJ_LT800]
-    sel = _selection_with(names, false={SEL_MLLJJ_GT800})
-    masks = R.build_regions(R.RESOLVED_REGIONS, sel, {"lowmass"})
-    assert not masks["wr_ee_resolved_sr"][0]
-    assert masks["wr_ee_resolved_sr_lowmass"][0]
-
 
 def test_nolsf_variant_rebuilds_the_boosted_sr_and_flavor_crs():
     var = R.REGION_VARIANTS["nolsf"]

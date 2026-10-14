@@ -56,7 +56,7 @@ from wrcoffea.analysis_config import (
     SEL_NO_DY_PAIR, SEL_NO_EXTRA_TIGHT_SR, SEL_NO_EXTRA_TIGHT_CR,
     SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
     SEL_OF_LEPTON_IN_AK8, SEL_NO_SF_LEPTON_IN_AK8,
-    SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED, SEL_MLJ_LT800_BOOSTED,
+    SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
     SEL_EE_SR_NOLSF, SEL_MUMU_SR_NOLSF, SEL_EMU_CR_NOLSF, SEL_MUE_CR_NOLSF,
     SEL_MLL_GT200_BOOSTED_NOLSF, SEL_MLJ_GT800_BOOSTED_NOLSF,
 )
@@ -1130,8 +1130,6 @@ class WrAnalysis(processor.ProcessorABC):
         selections.add(SEL_MLL_GT200_BOOSTED, ak.fill_none(mll_boosted > CUTS["mll_sr_min"], False))
         selections.add(SEL_MLJ_GT800_BOOSTED, ak.fill_none(mlj_sr > CUTS["mlljj_min"], False))
         added = added_selections(getattr(self, "_region_variants", ()))
-        if SEL_MLJ_LT800_BOOSTED in added:   # the lowmass variant (AN-19-083 App. J low-mass region)
-            selections.add(SEL_MLJ_LT800_BOOSTED, ak.fill_none(mlj_sr < CUTS["mlljj_min"], False))
 
         # Triggers.
         if triggers is not None:
