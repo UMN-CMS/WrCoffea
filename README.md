@@ -1,5 +1,60 @@
 # WrCoffea
 
+## Run all of 2024 on LPC Condor
+
+From an LPC login node, with a CMS grid certificate in `~/.globus`. Tested from a fresh clone on
+2026-10-15; the measurements behind the settings are in [docs/condor.md](docs/condor.md).
+
+**Once**, on the node you landed on (the run lives on this node, inside tmux):
+
+```bash
+hostname                                    # note it: tmux attach works only on this node
+voms-proxy-init --voms cms --valid 192:00   # lets the workers read the skims (8 days)
+cd ~/nobackup
+git clone -b billy_dev https://github.com/UMN-CMS/WrCoffea.git && cd WrCoffea
+curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh
+bash bootstrap.sh
+tmux new -s wr
+```
+
+**tmux window 1**, the Condor workers (they stop after 30 idle minutes, or on Ctrl+C):
+
+```bash
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
+pip install -e .                            # first time only
+python bin/condor_cluster.py --workers 250
+```
+
+**tmux window 2** (Ctrl-b c), all of 2024 on those workers, seven commands at once:
+
+```bash
+./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
+TAG=$(date +%Y%m%d)_2024
+mkdir -p logs
+i=0
+for args in "all --signal-points all" \
+            "DYJets --dy-reweight zpt" "DYJets --dy-reweight zpt+reshape" \
+            "DYJets --dy lo_inc" "DYJets --dy nlo_inc" "DYJets --dy nlo_mll" "DYJets --dy nlo_njet"; do
+  i=$((i + 1))
+  python bin/run_analysis.py RunIII2024Summer24 $args --scheduler condor_scheduler.json --dir $TAG > logs/$TAG.$i.log 2>&1 &
+done
+wait
+grep -h "Execution took" logs/$TAG.*.log    # 7 lines when all succeeded
+```
+
+This writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/$TAG/`: data (blinded),
+tt_tW, Nonprompt, Other, all 137 signal points, the default DY and six other DY setups. It takes 30 to
+60 minutes, depending on how fast the pool hands out workers; then press Ctrl+C in window 1.
+
+- No worker after an hour (a busy pool, or low priority after heavy use): start both the cluster and
+  the runs with `--worker-wait-timeout 21600`.
+- A refusal that names directories in `~/.local`: delete them and start `./shell` again.
+- Progress: `condor_q -global $USER -totals` in a tmux window outside `./shell`.
+- Data, backgrounds and signal only: the first command alone. Systematics: start the cluster with
+  `--worker-memory 8GB`.
+
+## What this is
+
 Search for a right-handed W boson and a heavy neutrino, W_R → ℓN → ℓℓqq' (ee and μμ), in CMS
 Run 2 UL and Run 3 data. This repository is the coffea analyzer: NanoAOD (skimmed or not) in,
 ROOT histograms with every systematic variation out. The plots, the fits and the limits live in
@@ -9,7 +64,7 @@ Two topologies: **resolved** (two tight leptons and two AK4 jets, observable m(�
 **boosted** (one tight lepton and one AK8 jet with a lepton inside, observable m(ℓJ)). What the
 code does, cut by cut, is in [docs/analysis.md](docs/analysis.md).
 
-## In five commands
+## Locally, in five commands
 
 ```bash
 git clone --recursive -b billy_dev git@github.com:UMN-CMS/WrCoffea.git && cd WrCoffea
@@ -20,7 +75,7 @@ cd WR_Plotter && ../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summ
 ```
 
 The work happens on branch `billy_dev`; `main` is far behind and has the old documentation.
-`.venv/bin/python -m pytest tests -q` runs the analyzer tests offline (836 tests, about two minutes).
+`.venv/bin/python -m pytest tests -q` runs the analyzer tests offline (967 tests, about a minute).
 Composite modes (`all`, `bkg`, `data`, `mc`, `signal`), eras, systematics and every flag:
 [docs/run_analysis.md](docs/run_analysis.md).
 
