@@ -531,8 +531,8 @@ def plot(payload: dict, reference: Path | None, out: Path) -> None:
     ax.set_ylabel("QCD NLO / LO")
     era = str(payload["provenance"]["era"])
     run2 = era.startswith("RunIISummer")          # the UL eras; RunIII... and Run3... are 13.6 TeV
-    cms_label(ax, None, data=False, rlabel="(13 TeV)" if run2 else "(13.6 TeV)",
-              text=f"Drell-Yan, {era_label(era)}\nInclusive NLO over inclusive LO")
+    cms_label(ax, None, 13 if run2 else 13.6, data=False, year=era_label(era),
+              text="Drell-Yan\nInclusive NLO over inclusive LO")
     ax.legend(loc="upper right", fontsize=FONT_SIZE_LEGEND)
     fit_header(ax)
     out.parent.mkdir(parents=True, exist_ok=True)

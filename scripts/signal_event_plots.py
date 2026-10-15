@@ -419,9 +419,12 @@ def _figure():
     return fig, ax
 
 
+YEAR: str | None = None    # the era's plot label, set by main() from --era: shown beside the energy
+
+
 def _label(ax, com: float, text: str, **kw):
     from wrplotter.plotting_helpers import cms_label, fit_header
-    cms_label(ax, None, data=False, rlabel=f"({com:g} TeV)", text=text, **kw)
+    cms_label(ax, None, com, data=False, year=YEAR, text=text, **kw)
     fit_header(ax)
 
 
@@ -675,6 +678,10 @@ def main(argv=None) -> None:
         matplotlib.use("Agg")
         plots_dir = tables_dir = None
         com = args.com or 13.6
+        if args.era:
+            from wrplotter.config import era_label
+            global YEAR
+            YEAR = era_label(args.era)
         if args.dir:
             if not args.era:
                 parser.error("--dir needs --era")
