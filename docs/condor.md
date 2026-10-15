@@ -132,6 +132,12 @@ against 8 and 9 minutes as separate `--condor` runs (which wait for their own wo
 repeat of `lo_inc` attached at the same time took 3.5 and 2.6 minutes. The attached outputs equal the
 separate runs' (yields to 2e-16, unweighted cutflows exactly).
 
+The same evening every era (UL16APV to 2024: data, the backgrounds, every DY variant except
+`nlo_ptll`, `lo_ht` also with `--dy-reweight zpt` and `zpt+reshape`, all signal points; 79 commands,
+2.3 B events, `--dir 20261015_skims_v2`) ran on one cluster of 250 workers, three commands at a time
+from a list, in 84 minutes from the first command to the last, none failed. The 2024 files equal
+the separate runs of the day before (`20261014_skims_v2`) to 2e-16.
+
 ## Settings
 
 The defaults below come from measurements on 2026-10-14 (RunIII2024Summer24 skims read from
