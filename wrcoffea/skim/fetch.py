@@ -150,6 +150,11 @@ def _run_transfer(cmd: list[str], timeout: float, *, progress_path: str | None =
                     break
                 except subprocess.TimeoutExpired:
                     pass
+                if proc.poll() is not None:
+                    # The process has exited (abort_active() killed it, or it died on its own) while a
+                    # grandchild still holds its pipes: communicate() would wait for that grandchild's EOF.
+                    err = ""
+                    break
                 now = time.monotonic()
                 if now - t0 > timeout:
                     proc.kill()
@@ -317,6 +322,8 @@ def fetch_file(lfn: str, dest: str, sources: list[str], *, adler32: str | None =
                 retry_same = False     # the redirector may hand out the same dead server: go to the next source
             if not retry_same or attempt == attempts_per_source:
                 break
+            if STOP.is_set():
+                raise FetchAborted(f"{lfn}: stop requested")      # no backoff sleep after an abort
             lo, hi = backoff
             time.sleep(min(hi, lo * (2 ** (attempt - 1))) + random.uniform(0, 1))
     return result

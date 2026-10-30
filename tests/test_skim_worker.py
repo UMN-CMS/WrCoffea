@@ -243,7 +243,7 @@ def test_fetch_stop_aborts_running_transfer(tmp_path, monkeypatch):
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     fake = fake_bin / "xrdcp"
-    fake.write_text("#!/bin/sh\nsleep 30\n")
+    fake.write_text("#!/bin/sh\nexec sleep 30\n")   # exec: the kill must reach the sleep, which holds the pipes
     fake.chmod(0o755)
     monkeypatch.setenv("PATH", f"{fake_bin}:{os.environ['PATH']}")
     fetch.STOP.clear()
