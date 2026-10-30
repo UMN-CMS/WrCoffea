@@ -130,8 +130,8 @@ jetveto_correction_names:
   RunIII2024Summer24: Summer24Prompt24_RunBCDEFGHI_V1
   RunIII2025Summer25: Summer24Prompt25_RunCDEFG_V1
 
-# How the jet veto map is applied (JME "Jet Veto Map Recommendations", screenshots in
-# docs/pog_recommendations/jme/jetvetomaps/).  Run 3, the default "event" for eras not listed:
+# How the jet veto map is applied (JME JERC "Jet Veto Map Recommendations",
+# cms-jme-jerc.docs.cern.ch/recommendations/jet-veto-maps/).  Run 3, the default "event" for eras not listed:
 # reject the event if any jet with pT > 15, TightLeptonVeto and chEmEF + neEmEF < 0.9 lies in a
 # vetoed cell.  Run 2, "jet": drop only the jets in vetoed cells (jets with a PF muon within
 # dR < 0.2 are spared) and keep the event.  NOTE: UL18 therefore differs from Run 3 on purpose
@@ -555,9 +555,9 @@ electron_reco_config:
 
 # Systematic uncertainties: integrated luminosity fractional uncertainty
 lumi_unc:
-  # UL values from the LumiRecommendationsRun2 table saved in pdmv/run2 (2026 version:
+  # UL values from the LumiRecommendationsRun2 twiki table (r13, 2026-01-14; 2026 version:
   # 2016 1.2 %, 2017 0.82 %, 2018 0.84 %; Billy 2026-10-11: use the table for UL18 as well).
-  # Run 3 values from the LumiRecommendationsRun3 twiki (r39, 2026-06-11) saved in pdmv/run3. The lumi group
+  # Run 3 values from the LumiRecommendationsRun3 twiki (r39, 2026-06-11). The lumi group
   # correlates 2022-2024 through a covariance matrix; that belongs in the datacards, not here.
   RunIISummer20UL16APV: 0.012
   RunIISummer20UL16: 0.012
@@ -594,7 +594,7 @@ lumi_unc:
 # inclusive samples are one generator setup and are merged into one payload
 # (50M events per sample and era); the Summer24 FxFx samples are ~5 % softer in
 # Z pT above 50 GeV than the 2022/2023 ones (LO samples agree to 0.3 %), so 2024
-# has its own.  The per-era checks are in local_notes/2026-10-10_dy_nnlo/zpt_checks.
+# has its own.  The per-era checks were made on 2026-10-10.
 # The 2024 overlay files next to the payload (dy_corrections_study_overlay.yaml,
 # dy_zpt_only_study_overlay.yaml) point at the superseded stitched payloads.
 dy_zpt_reweight:
@@ -664,7 +664,7 @@ dy_reweight_datasets:
 # AN-19-083 Appendix A).  Disable with --no-signal-kfactor.  Eras absent here
 # apply no k-factor reweighting.
 signal_kfactor:
-  # 2026-10-10: our own derivation (docs/studies/signal_kfactor.md): per-point curves and direct NLO/LO from MG5_aMC fixed-order
+  # 2026-10-10: our own derivation (scripts/signal_kfactor/): per-point curves and direct NLO/LO from MG5_aMC fixed-order
   # runs at 13 TeV; the Run 2 payload signal_kfactor_run2legacy_v4_2018.json stays for reference.
   RunIISummer20UL18: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json
   # The other UL eras share the 13 TeV gridpacks, so the same per-point curves and generator-level averages apply.
@@ -696,11 +696,11 @@ pdf_sets:
   RunIII2024Summer24: data/pdf_sets/Run3/2024/RunIII2024Summer24.json
   RunIII2025Summer25: data/pdf_sets/Run3/2024/RunIII2024Summer24.json   # the 2024 MC
 
-# High-pT muon momentum (wrcoffea/muon_momentum.py, docs/studies/muon_momentum.md): eras listed
+# High-pT muon momentum (wrcoffea/muon_momentum.py): eras listed
 # get MuonScaRe below 200 GeV and the generalized-endpoint data correction + MC smearing
 # above; the others keep the TuneP placeholder (flat 5 %/TeV scale, no smearing).  The
-# payloads (data/muon_highpt/) hold numbers from CMS-internal documents;
-# docs/studies/muon_momentum.md lists their sources.
+# payloads (data/muon_highpt/) hold numbers from CMS-internal documents and name the
+# source of each (scripts/show_muon_highpt.py prints them).
 # RunIII2024Summer24 switched on 2026-10-10 ~12:00 CDT, without a rerun: 2024 histogram
 # sets made before then have uncorrected muons (final full 2024 rerun pending).
 muon_highpt:

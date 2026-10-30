@@ -75,7 +75,7 @@ cd WR_Plotter && ../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summ
 ```
 
 The work happens on branch `billy_dev`; `main` is far behind and has the old documentation.
-`.venv/bin/python -m pytest tests -q` runs the analyzer tests offline (967 tests, about a minute).
+`.venv/bin/python -m pytest tests -q` runs the analyzer tests offline (about two minutes).
 Composite modes (`all`, `bkg`, `data`, `mc`, `signal`), eras, systematics and every flag:
 [docs/run_analysis.md](docs/run_analysis.md).
 
@@ -107,10 +107,8 @@ Run 2 only).
 | [inputs.md](docs/inputs.md) | Dataset configs, how cross sections are built, skimmed and unskimmed filesets. |
 | [skimming.md](docs/skimming.md) | The skim campaign: selection, branch policy, workflow, verification, Condor at the LPC. |
 | [condor.md](docs/condor.md) | Running the analyzer on HTCondor at the LPC. |
-| [WR_Plotter/docs/plotting.md](WR_Plotter/docs/plotting.md) | The WR_Plotter commands: stacks, cutflows, DY comparisons, systematics tables, limits. |
+| [WR_Plotter/docs/plotting.md](WR_Plotter/docs/plotting.md) | The WR_Plotter commands: stacks, cutflows, DY comparisons, systematics tables. |
 | [adding_a_new_era.md](docs/adding_a_new_era.md) | The checklist for a new era. |
-| [studies/](docs/studies/) | Comparisons and derivations: the Run 2 analyzer comparison, the signal k-factor, muon momentum, the UL cross-section campaign, the skim format study. |
 
 Reference analysis: CMS-EXO-20-002 (Run 2, 138 fb⁻¹), whose analysis note AN-19-083 and code
-(SKFlat HNWRAnalyzer) this analyzer follows and is compared against in
-[docs/studies/run2_hnwr_comparison.md](docs/studies/run2_hnwr_comparison.md).
+(SKFlat HNWRAnalyzer) this analyzer follows.

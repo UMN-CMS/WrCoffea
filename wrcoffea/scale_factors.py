@@ -826,11 +826,11 @@ def electron_trigger_sf(tight_electrons, era):
 # Flat HEEP ID scale factors, keyed by the EGM era key: (value, stat, syst) for the barrel (|eta_SC| < 1.4442) and
 # the endcaps.  Used when the era's electron payload has no HEEPID working point (every Run 2 UL file and the
 # 2022/2023 Run 3 files; 2024 has one); other eras fall back to 2018.
-# - Run 2 UL: HEEP V7.0 (EGM twiki EgammaUL2016To2018, "HEEP ID Scale Factor for UL", UL2016 updated 2023-03-03; saved
-#   as docs/pog_recommendations/egamma/CMS_EgammaUL2016To2018.pdf).  Both UL16 eras take "Full 2016".
+# - Run 2 UL: HEEP V7.0 (EGM twiki EgammaUL2016To2018 r75, 2024-10-14, "HEEP ID Scale Factor for UL", UL2016 updated
+#   2023-03-03).  Both UL16 eras take "Full 2016".
 # - 2022/2023: the central EGM values, constant in pT (EGM twiki EgammSFandSSRun3, "HEEP ID SFs for 2022" (pT > 80
-#   GeV) and "... for 2023" (pT > 35 GeV), saved as docs/pog_recommendations/egamma/CMS_EgammSFandSSRun3.pdf pp. 7 and
-#   14; the same values as AN-25-107 Table 6). The single quoted uncertainty is carried as syst.
+#   GeV) and "... for 2023" (pT > 35 GeV), r57, 2025-11-05; the same values as AN-25-107 Table 6). The single quoted
+#   uncertainty is carried as syst.
 HEEP_V7_FLAT_SF = {
     "2016preVFP": {"barrel": (0.985, 0.001, 0.004), "endcap": (0.990, 0.003, 0.007)},
     "2016postVFP": {"barrel": (0.985, 0.001, 0.004), "endcap": (0.990, 0.003, 0.007)},

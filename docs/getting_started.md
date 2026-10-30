@@ -40,6 +40,8 @@ adds pytest. Everything in `WR_Plotter/bin/` runs with this same environment.
 source .venv/bin/activate && pip install -e .     # XRootD comes from the system site-packages
 ```
 
+The plotter runs in this environment too, from `WR_Plotter/`, as in the laptop recipe below.
+
 To run the analyzer on Condor, work inside the pinned coffea container, which creates its own
 `.env`:
 
@@ -60,7 +62,7 @@ Check the environment:
 
 ```bash
 .venv/bin/python -c "import coffea, sys; print(coffea.__version__, sys.version.split()[0])"   # 2025.12.0 3.12.x
-.venv/bin/python -m pytest tests -q                                                           # 836 tests, offline, about two minutes
+.venv/bin/python -m pytest tests -q                                                           # offline, about two minutes
 ```
 
 ## Grid proxy
@@ -80,7 +82,7 @@ they are set, which is the way to keep a proxy at a fixed path on a laptop.
 ## First run
 
 ```bash
-.venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --maxfiles 1 --maxchunks 1 --dir smoke   # a minute
+.venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --maxfiles 1 --maxchunks 1 --dir smoke   # a few minutes
 .venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --dir mytag                              # the full sample
 cd WR_Plotter && ../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir mytag --local-plots
 ```

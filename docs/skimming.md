@@ -555,7 +555,6 @@ while a stat or a small copy by name takes about a second.
 
 ## Output format and earlier skims
 
-The compression and part-size study behind the defaults is in
-[studies/skim_output_format.md](studies/skim_output_format.md). The skims made before October 2026
+The compression and part-size defaults come from a study on the first 2024 skims. The skims made before October 2026
 (`WRAnalyzer/skims/` at Wisconsin: 1209 branches, about 3.2 kB per event, zlib:1, no
 LuminosityBlocks tree, genEventSumw from a separate DAS pass) are no longer used by any fileset.

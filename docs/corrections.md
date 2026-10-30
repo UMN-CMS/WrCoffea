@@ -47,8 +47,9 @@ of the selected 2023 jets differ). UL (NanoAODv9) uses the stored bits.
 AK4 is CHS in UL and Puppi in Run 3, AK8 is Puppi everywhere; the JES uncertainty source is `Total`
 (`CMS_scale_j_Total`), the UL18 file also ships the regrouped sources. The UL JERC files are the
 CAT repackaging (installed 2026-10-11; values identical to the old files except the UL17 JER
-resolution, ≤ 3 %). The JME recommendation and the veto-map screenshots are referenced in
-`docs/pog_recommendations/` (not tracked).
+resolution, ≤ 3 %). The JME recommendations are on the CMS-internal JME documentation sites:
+JERC (cms-jme-jerc.docs.cern.ch: JES, JER, uncertainties, jet veto maps) and JMAR
+(cms-jme-jmar.docs.cern.ch: jet ID, noise filters, jet mass).
 
 JER smearing on MC follows the JME hybrid method: a jet matched to a generator jet (ΔR < R/2, i.e.
 0.2 for AK4 and 0.4 for AK8, and |pT − pT_gen| < 3 σ_JER pT) is scaled by its JER scale factor
@@ -97,7 +98,7 @@ SFs to 500 GeV and HEEP ID SFs to 1 TeV instead of using it (open item in analys
 | --- | --- | --- | --- | --- |
 | reco, ID, isolation SFs | `muon_HighPt.json.gz` (global-muon reco vs \|η\| and p, HighPt ID, loose tracker isolation) | same | same | 2025 file |
 | trigger SF | the leading muon's SF from `muon_HighPt.json.gz` (`NUM_HLT_DEN_HighPtLooseRelIsoProbes`); two SFs are never multiplied | per-leg data/MC efficiency OR from `muon_Z.json.gz`, entry `NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose` (our exact OR with the HighPt ID and loose tk-iso denominator; variation since 2026-10-12: each muon's data efficiency moved by the POG per-muon SF uncertainty, `stat` and the fit variations `AltBkg`, `AltSig`, `massBin`, `massRange`, `tagIso` in quadrature, MC efficiency nominal, as the payload's efficiency-level `syst_*eff` are zero) | per-leg efficiency OR from `ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json` | per-leg OR from the 2025 high-pT file |
-| momentum | TuneP; **placeholder** scale uncertainty (5 %/TeV × pT), no resolution variation (`musmear` refused) | `data/muon_highpt/Run3/<year>/<era>.json` (since 2026-10-12): MuonScaRe below 200 GeV; above, the GE κ maps of the Muon POG Run 3 tables on data and the POG's MC smearing, barrel / endcap 0 / 5 % (2022), 5 / 10 % (2022EE, 2023), 0 / 15 % (2023BPix) | `data/muon_highpt/Run3/2024/RunIII2024Summer24.json`: MuonScaRe (`muon_scalesmearing.json.gz`) below 200 GeV, the generalized-endpoint correction on data and extra smearing on MC above ([studies/muon_momentum.md](studies/muon_momentum.md)) | placeholder as UL (no 2025 recipe yet) |
+| momentum | TuneP; **placeholder** scale uncertainty (5 %/TeV × pT), no resolution variation (`musmear` refused) | `data/muon_highpt/Run3/<year>/<era>.json` (since 2026-10-12): MuonScaRe below 200 GeV; above, the GE κ maps of the Muon POG Run 3 tables on data and the POG's MC smearing, barrel / endcap 0 / 5 % (2022), 5 / 10 % (2022EE, 2023), 0 / 15 % (2023BPix) | `data/muon_highpt/Run3/2024/RunIII2024Summer24.json`: MuonScaRe (`muon_scalesmearing.json.gz`) below 200 GeV, the generalized-endpoint correction on data and extra smearing on MC above (the payload names the source of every number; `scripts/show_muon_highpt.py` prints them) | placeholder as UL (no 2025 recipe yet) |
 | loose muon (boosted partner) | reco and ID SFs, no isolation | same | same | same |
 
 The reco SF's last bin is open-ended (p > 1.5 TeV; 2024 p > 0.9 TeV) with era-dependent central
@@ -118,7 +119,7 @@ Summer24 MC), its release of 2026-04-28.
 | | 2022 to 2025 | **placeholder** 1.00 ± 0.10 per flavour until a Run 3 measurement exists |
 | DY Z-pT reweight | all | `data/reweights/RunII/<year>/<era>/dy_zpt_reweight_ul_20261011.json` per UL era; `data/reweights/Run3/dy_zpt_reweight_run3_2022_2023_20261011.json` (2022, 2022EE, 2023, 2023BPix); `data/reweights/Run3/2024/RunIII2024Summer24/dy_zpt_reweight_run3_20261013.json` (2024, 2025; re-derived 2026-10-13, identical to the 20261011 file) |
 | DY jet-pT reshape | all but 2025 | `dy_reshape_run2jetpt_20261011.json` per UL era; `data/reweights/Run3/2022/`, `Run3/2023/` per data-taking year (`_20261011`); 2024 `Run3/2024/RunIII2024Summer24/dy_reshape_run2jetpt_20261013.json` (from the 2026-10-13 rerun, within 1 % of the 20261011 file) |
-| signal k-factor | all | `signal_kfactor_13tev_20261010.json` (UL), `signal_kfactor_13p6tev_20261010.json` (Run 3): per-point k(m(ℓN)) curves, [studies/signal_kfactor.md](studies/signal_kfactor.md) |
+| signal k-factor | all | `signal_kfactor_13tev_20261010.json` (UL), `signal_kfactor_13p6tev_20261010.json` (Run 3): per-point k(m(ℓN)) curves from our own MG5_aMC NLO/LO runs (`scripts/signal_kfactor/`; the payload's `description` says how) |
 | PDF sets | all | `data/pdf_sets/<Run>/<year>/<era>.json` (`scripts/pdf_sets.py`): the LHA ID of each sample's `LHEPdfWeight` (NNPDF3.1 325300/325500 everywhere; UL also 306000 symmhessian+α_S and 320900 replicas); 2025 uses the 2024 table |
 
 The DY payloads named `_20261011`, UL and Run 3, and the signal k-factor payloads of 2026-10-10

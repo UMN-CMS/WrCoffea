@@ -5,8 +5,7 @@ regions it builds, how data is blinded, which systematic variations exist and wh
 The code is the reference (`wrcoffea/analyzer.py`, `regions.py`, `systematics.py`,
 `scale_factors.py`, cut values in `wrcoffea/config.yaml: cuts`); the payload of every correction
 per era is in [corrections.md](corrections.md). The selection follows the Run 2 analysis
-CMS-EXO-20-002 (AN-19-083); the differences are listed in
-[studies/run2_hnwr_comparison.md](studies/run2_hnwr_comparison.md). Verified on 2026-10-12.
+CMS-EXO-20-002 (AN-19-083). Verified on 2026-10-12.
 
 ## Signal and topologies
 
@@ -203,8 +202,8 @@ rather than stitch.
 ### Signal normalization
 
 The config cross section of every point is LO × the point's own direct NLO/LO k-factor, and the
-analyzer applies the k(m(ℓN))/⟨k⟩ shape reweight, both from the derivation in
-[studies/signal_kfactor.md](studies/signal_kfactor.md) (`wrcoffea/signal_kfactor.py`,
+analyzer applies the k(m(ℓN))/⟨k⟩ shape reweight, both from our own MG5_aMC NLO/LO runs per mass
+point (`scripts/signal_kfactor/`; `wrcoffea/signal_kfactor.py`,
 `--no-signal-kfactor` switches the shape part off).
 
 ## Blinding

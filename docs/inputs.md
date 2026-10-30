@@ -56,7 +56,7 @@ A data entry has only the naming keys (`das_name`, `run`, `year`, `era`, `datase
 | `xsec` | MC | The cross section in pb that normalises the sample, the only cross-section field the analysis uses. |
 | `order` | MC | The perturbative order `xsec` corresponds to (table below). |
 | `total_uncertainty` | MC | For campaign values: the statistical uncertainty of the generator number scaled like the value, in pb. Not a theory uncertainty, not used by the analyzer. |
-| `xsec_source` | MC, every era | Provenance of `xsec` from the GenXSecAnalyzer campaign (next section). The UL campaign: [studies/ul_xsec_campaign.md](studies/ul_xsec_campaign.md). The UL multi-model scan samples have none. |
+| `xsec_source` | MC, every era | Provenance of `xsec` from the GenXSecAnalyzer campaign (next section). The UL multi-model scan samples have none. |
 | `note` | some | Free text: low-mass companions, edge-era history, scan samples. |
 | `optional` | some | `true` for samples the default selection does not need (the DY `MLL-10to50` companions, reference-only inclusive W+jets). Not skimmed. |
 | `scan` | some (UL) | `true` for the pre-legacy multi-model WR scan samples: skimmed whole and split per `GenModel_*` flag with `skim.py split-scan`. |
@@ -107,8 +107,8 @@ xsec = generator × factor × kfactor
   is `LO x k(NNLO)` or `NLO x k(NNLO)`.
 - **ttbar, tW, t-channel**: the inclusive reference × branching fraction (the generator value
   cancels): ttbar 923.6 pb (NNLO+NNLL), tW 43.95 pb per charge (NLO+NNLL), t-channel 145.0 (top) and
-  87.2 pb (antitop) (NNLO, 5FS), 13.6 TeV, m_t = 172.5 GeV. 13 TeV values:
-  [studies/ul_xsec_campaign.md](studies/ul_xsec_campaign.md).
+  87.2 pb (antitop) (NNLO, 5FS), 13.6 TeV, m_t = 172.5 GeV. The 13 TeV references are the
+  `13TeV` entries of the same tables in `scripts/genxsec_campaign.py`.
 - **WW, WZ, ZZ** (inclusive Pythia 8, 2026-10-08): the MATRIX NNLO QCD × NLO EW references quoted by
   the first Run 3 measurements, WW 125.8 pb, WZ 54.7 pb, ZZ 16.7 pb. Run 2 UL (2026-10-10): the
   13 TeV NNLO references quoted by the CMS 13 TeV measurements, WW 118.8 pb, WZ 50.7 pb, ZZ 16.5 pb.
@@ -118,7 +118,7 @@ xsec = generator × factor × kfactor
   `lo_ht` configs as optional reference-only entries. This replaced the flat Run 2 factor 1.21 (the
   same ratio with the 2015 LO header).
 - **Signal** (2026-10-10, official and private, every era): LO × the point's own direct NLO/LO
-  k-factor, `order` `LO x k(NLO)`; derivation in [studies/signal_kfactor.md](studies/signal_kfactor.md).
+  k-factor, `order` `LO x k(NLO)`, from our own MG5_aMC NLO/LO runs per point (`scripts/signal_kfactor/`).
 - **Everything else** (tribosons, ttV, s-channel): generator × factor.
 
 `scripts/genxsec_campaign.py` implements the rules: `review` classifies every sample, `apply`
