@@ -154,7 +154,7 @@
         "kfactor": 1.16741,
         "normalize": "reference",
         "reference": 6340.2,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli); k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -317,7 +317,7 @@
         "kfactor": 1.16741,
         "normalize": "reference",
         "reference": 6340.2,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli); k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -478,7 +478,7 @@
         "kfactor": 1.16741,
         "normalize": "reference",
         "reference": 6340.2,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli); k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -637,7 +637,7 @@
         "kfactor": 1.16741,
         "normalize": "reference",
         "reference": 6340.2,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli); k = reference / LO MLM inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -3910,7 +3910,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -4068,7 +4068,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -4226,7 +4226,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -4391,7 +4391,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -4588,7 +4588,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -4748,7 +4748,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -4906,7 +4906,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -5064,7 +5064,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -5223,7 +5223,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -5381,7 +5381,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -5540,7 +5540,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },
@@ -5698,7 +5698,7 @@
         "kfactor": 1.14996,
         "normalize": "reference",
         "reference": 63650.1,
-        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour 21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_13_0_13",
         "tool": "GenXSecAnalyzer"
       },

@@ -154,7 +154,7 @@
         "kfactor": 0.948528,
         "normalize": "reference",
         "reference": 6077.22,
-        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -319,7 +319,7 @@
         "kfactor": 0.948528,
         "normalize": "reference",
         "reference": 6077.22,
-        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -481,7 +481,7 @@
         "kfactor": 0.948528,
         "normalize": "reference",
         "reference": 6077.22,
-        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -640,7 +640,7 @@
         "kfactor": 0.948528,
         "normalize": "reference",
         "reference": 6077.22,
-        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -801,7 +801,7 @@
         "kfactor": 0.948528,
         "normalize": "reference",
         "reference": 6077.22,
-        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -960,7 +960,7 @@
         "kfactor": 0.948528,
         "normalize": "reference",
         "reference": 6077.22,
-        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
+        "reference_source": "NLO x k(NNLO): NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -2237,7 +2237,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -2401,7 +2401,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -2565,7 +2565,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -2729,7 +2729,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -2894,7 +2894,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -3058,7 +3058,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -3222,7 +3222,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -3386,7 +3386,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -3552,7 +3552,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -3718,7 +3718,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -3882,7 +3882,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -4046,7 +4046,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -4210,7 +4210,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -4374,7 +4374,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -4538,7 +4538,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -4702,7 +4702,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -4865,7 +4865,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -5028,7 +5028,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -5192,7 +5192,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -5356,7 +5356,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },
@@ -5520,7 +5520,7 @@
         "kfactor": 1.15089,
         "normalize": "reference",
         "reference": 61526.7,
-        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf; k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
+        "reference_source": "LO x k(NNLO): NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03); k = reference / LO MLM inclusive W+jets header of this era (GenXSec)",
         "release": "CMSSW_10_6_30",
         "tool": "GenXSecAnalyzer"
       },

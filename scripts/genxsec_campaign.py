@@ -106,15 +106,14 @@ REFERENCES = {
 DY_REFERENCES = {
     "13p6TeV": (6340.2, "NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour "
                         "(+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV "
-                        "r12 (2023-10-25, L. Markovic, R. Covarelli), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf"),
+                        "r12 (2023-10-25, L. Markovic, R. Covarelli)"),
     "13TeV": (6077.22, "NNLO, FEWZ 3.1.b2, Z/gamma* -> ll with m(ll) > 50 GeV: 2025.74 pb per flavour, 6077.22 pb for "
-                       "three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as "
-                       "docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf"),
+                       "three flavours; CMS twiki StandardModelCrossSectionsat13TeV r28 (2023-08-03)"),
 }
 
 # LO madgraphMLM W+jets: a flat k = 1.21 (inclusive NNLO / LO), the Run 2 HNWR convention for the HT-binned samples
 # (AN-19-083 Tables 6-8; SKFlat CommonSampleInfo: 2016 LO x 1.21), applied in every era (decided 2026-10-08).
-# Source: the k-factor column of the SummaryTable1G25ns twiki (docs/xsec/CMS_SummaryTable1G25ns.pdf): 1.21 on every
+# Source: the k-factor column of the SummaryTable1G25ns twiki: 1.21 on every
 # HT-binned W+jets row, 1.23 on the HT-binned DY rows.
 WJETS_LO_KFACTOR = (1.21, "LO x k(NNLO) = 1.21, Run 2 convention for LO MLM W+jets (inclusive NNLO / LO; "
                           "AN-19-083 Tables 6-8)")      # superseded 2026-10-10 by W_REFERENCES (kept for the record)
@@ -126,9 +125,9 @@ WJETS_LO_KFACTOR = (1.21, "LO x k(NNLO) = 1.21, Run 2 convention for LO MLM W+je
 W_REFERENCES = {
     "13p6TeV": (63650.1, "NNLO QCD, MATRIX v2.1.0, pp -> e- nubar (9045.8 pb) + e+ nu (12170.9 pb), no cuts, per flavour "
                          "21216.7 pb (+1.2/-1.3 % scale, 0.8 % PDF), x3 flavours = 63650.1 pb; CMS twiki "
-                         "MATRIXCrossSectionsat13p6TeV r12 (2023-10-25), saved as docs/xsec/CMS_MATRIXCrossSectionsat13p6TeV.pdf"),
+                         "MATRIXCrossSectionsat13p6TeV r12 (2023-10-25)"),
     "13TeV": (61526.7, "NNLO, FEWZ 3.1, W+ 11811.4 + W- 8677.3 = 20508.9 pb per flavour, x3 flavours = 61526.7 pb; CMS twiki "
-                       "StandardModelCrossSectionsat13TeV r28 (2023-08-03), saved as docs/xsec/CMS_StandardModelCrossSectionsat13TeV.pdf"),
+                       "StandardModelCrossSectionsat13TeV r28 (2023-08-03)"),
 }
 
 # Official WR signal in an era with a signal k-factor payload (config.yaml ``signal_kfactor``): LO x <k>, the Run 2
