@@ -332,7 +332,7 @@ def parse_genxsec_output(txt: str) -> dict:
 def run_genxsec(local_files: list[str], release: str, image: str, work: Path, vm: str = "combine") -> dict:
     script = work / "run_genxsec.sh"
     cmd = ["orb", "-m", vm, "bash", "-c",
-           f"apptainer exec -B /cvmfs -B /Users/billy {IMAGES[image]} {script} {release} -1 " + " ".join(local_files)]
+           f"apptainer exec -B /cvmfs -B {Path.home()} {IMAGES[image]} {script} {release} -1 " + " ".join(local_files)]
     t0 = time.monotonic()
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=3 * 3600)
     res = parse_genxsec_output(proc.stdout + proc.stderr)
@@ -1379,7 +1379,8 @@ def main(argv=None) -> int:
     p.add_argument("--per-job", type=int, default=10)
     p.add_argument("--workers", type=int, default=8)
     p.add_argument("--no-inspect", action="store_true", help="skip the NanoAOD content inspection")
-    p.add_argument("--proxy", default="/uscms/homes/b/bjackson/x509up_u24705", help="proxy path on the LPC")
+    p.add_argument("--proxy", required=True,
+                   help="path of your proxy on the LPC, e.g. /uscms/homes/<initial>/<user>/x509up_u<uid> (the jobs read it)")
     p.set_defaults(func=cmd_prepare_condor)
     p = sub.add_parser("collect", help="parse the logs of the Condor jobs into genxsec_results.json")
     p.add_argument("--work", default="~/work/skims_v2/_genxsec")

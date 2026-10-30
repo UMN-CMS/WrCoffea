@@ -3,12 +3,12 @@
 # the skim tooling only runs inside the coffea container.  Usage (on a cmslpc login node):
 #   bin/lpc_condor.sh --jobs-dir ~/nobackup/skimjobs/v2 [skim.py condor options...] [--submit]
 # Environment: SKIM_IMAGE (container), SKIM_PLAN (plan dir), SKIM_OUT (campaign root with statuses),
-#              SKIM_PROXY (x509 proxy file).  Defaults below match Billy's setup.
+#              SKIM_PROXY (x509 proxy file; default $X509_USER_PROXY, else voms-proxy-init's default path).
 set -euo pipefail
 IMG=${SKIM_IMAGE:-/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-almalinux9-noml:2026.9.0-py3.12}
 PLAN=${SKIM_PLAN:-$HOME/nobackup/skims_v2/plans/v2}
 OUT=${SKIM_OUT:-$HOME/nobackup/skims_v2}
-PROXY=${SKIM_PROXY:-/uscms/homes/b/bjackson/x509up_u$(id -u)}
+PROXY=${SKIM_PROXY:-${X509_USER_PROXY:-/tmp/x509up_u$(id -u)}}
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 SUBMIT=0; ARGS=(); JOBS=""
 while [ $# -gt 0 ]; do

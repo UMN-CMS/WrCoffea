@@ -15,7 +15,7 @@ while [ $i -lt ${#pts[@]} ]; do
   p=$(echo "${pts[@]:$i:$PER}" | tr ' ' '+'); echo "$p, $(echo $p | tr '+' '_' | cut -c1-80)" >> jobs.txt; i=$((i + PER))
 done
 # the LPC condor_submit wrapper insists on a proxy even though these jobs never use the grid
-export X509_USER_PROXY=${X509_USER_PROXY:-/uscms/homes/b/bjackson/x509up_u$(id -u)}
+export X509_USER_PROXY=${X509_USER_PROXY:-/tmp/x509up_u$(id -u)}
 cat > submit.jdl <<EOF
 universe                = vanilla
 executable              = kfactor_job.sh
