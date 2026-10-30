@@ -21,10 +21,14 @@ from wrcoffea.analysis_config import (
     SEL_TWO_ID_ELECTRONS, SEL_TWO_ID_MUONS, SEL_TWO_ID_EM,
     SEL_E_TRIGGER, SEL_MU_TRIGGER, SEL_EMU_TRIGGER,
     SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT200, SEL_MLLJJ_GT800, SEL_MLL_GT400,
+    SEL_TWO_TIGHT_ELECTRONS, SEL_TWO_TIGHT_MUONS, SEL_TWO_TIGHT_EM,
+    SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MIN_TWO_AK4_JETS,
+    SEL_60_MLL_150,
     #SEL_JET_VETO_MAP,
     # Boosted selections
-    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_AK8JETS_WITH_LSF,
-    SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR,
+    SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK,
+    SEL_ATLEAST1AK8_DPHI_GT2, SEL_AK8JETS_WITH_LSF,
+    SEL_MUMU_DYCR, SEL_EE_DYCR, SEL_MUMU_SR, SEL_EE_SR, SEL_EMU_CR, SEL_MUE_CR,
     SEL_LEAD_IS_ELECTRON, SEL_LEAD_IS_MUON,
     SEL_NO_DY_PAIR, SEL_NO_EXTRA_TIGHT_SR, SEL_NO_EXTRA_TIGHT_CR,
     SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
@@ -252,6 +256,17 @@ def _relabel_cutflow(h_raw, cut_names):
     return h
 
 
+def _store_cutflow(bucket, selections, weights, steps):
+    cut_names = ["no_cuts"] + list(steps)
+    cf = selections.cutflow(*steps, weights=weights)
+    h_onecut, h_cumulative, _labels = cf.yieldhist(weighted=True)
+    bucket["onecut"] = _relabel_cutflow(h_onecut, cut_names)
+    bucket["cumulative"] = _relabel_cutflow(h_cumulative, cut_names)
+    h_onecut, h_cumulative, _labels = cf.yieldhist(weighted=False)
+    bucket["onecut_unweighted"] = _relabel_cutflow(h_onecut, cut_names)
+    bucket["cumulative_unweighted"] = _relabel_cutflow(h_cumulative, cut_names)
+
+
 def fill_cutflows(output, selections, weights):
     """Build cumulative cutflows for ee, mumu, and em channels.
 
@@ -260,6 +275,7 @@ def fill_cutflows(output, selections, weights):
             - ``onecut`` / ``cumulative`` (and unweighted variants)
               Multi-bin histograms with StrCategory axis (bin labels are
               the cut names, e.g. "no_cuts", "min_two_ak4_jets_pteta", ...).
+        - ``by_region``: region-specific cutflows used for table generation.
     """
     output.setdefault("cutflow", {})
 
@@ -319,6 +335,17 @@ def fill_cutflows(output, selections, weights):
         h_onecut_unw, h_cum_unw, _labels = cf.yieldhist(weighted=False)
         bucket["onecut_unweighted"] = _relabel_cutflow(h_onecut_unw, cut_names)
         bucket["cumulative_unweighted"] = _relabel_cutflow(h_cum_unw, cut_names)
+
+    region_chains = {
+        "wr_ee_resolved_dy_cr": [SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_60_MLL_150, SEL_MLLJJ_GT800],
+        "wr_mumu_resolved_dy_cr": [SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_60_MLL_150, SEL_MLLJJ_GT800],
+        "wr_resolved_flavor_cr": [SEL_TWO_TIGHT_EM, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_EMU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT400, SEL_MLLJJ_GT800],
+        "wr_ee_resolved_sr": [SEL_TWO_TIGHT_ELECTRONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_E_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT400, SEL_MLLJJ_GT800],
+        "wr_mumu_resolved_sr": [SEL_TWO_TIGHT_MUONS, SEL_LEAD_TIGHT_PT60, SEL_SUBLEAD_TIGHT_PT53, SEL_MU_TRIGGER, SEL_MIN_TWO_AK4_JETS, SEL_DR_ALL_PAIRS_GT0P4, SEL_MLL_GT400, SEL_MLLJJ_GT800],
+    }
+    by_region = output["cutflow"].setdefault("by_region", {})
+    for region, steps in region_chains.items():
+        _store_cutflow(by_region.setdefault(region, {}), selections, weights, steps)
 
 
 def fill_boosted_cutflows(output, selections, weights):
@@ -395,3 +422,15 @@ def fill_boosted_cutflows(output, selections, weights):
         h_onecut_unw, h_cum_unw, _labels = cf.yieldhist(weighted=False)
         bucket["onecut_unweighted"] = _relabel_cutflow(h_onecut_unw, cut_names)
         bucket["cumulative_unweighted"] = _relabel_cutflow(h_cum_unw, cut_names)
+
+    region_chains = {
+        "wr_mumu_boosted_dy_cr": [SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK, SEL_ATLEAST1AK8_DPHI_GT2, SEL_MUMU_DYCR],
+        "wr_mumu_boosted_sr": [SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUMU_SR, SEL_AK8JETS_WITH_LSF],
+        "wr_ee_boosted_dy_cr": [SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_DYCR_MASK, SEL_ATLEAST1AK8_DPHI_GT2, SEL_EE_DYCR],
+        "wr_ee_boosted_sr": [SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EE_SR, SEL_AK8JETS_WITH_LSF],
+        "wr_emu_boosted_flavor_cr": [SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_EMU_CR, SEL_AK8JETS_WITH_LSF],
+        "wr_mue_boosted_flavor_cr": [SEL_BOOSTEDTAG, SEL_LEAD_TIGHT_PT60_BOOSTED, SEL_MUE_CR, SEL_AK8JETS_WITH_LSF],
+    }
+    by_region = output["cutflow_boosted"].setdefault("by_region", {})
+    for region, steps in region_chains.items():
+        _store_cutflow(by_region.setdefault(region, {}), selections, weights, steps)

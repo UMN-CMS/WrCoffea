@@ -638,6 +638,14 @@ class TestProcessIntegration:
         ds = output["DYJetsToLL_M-50"]
         assert "mass_dilepton" in ds
         assert "cutflow" in ds
+        resolved_cutflows = ds["cutflow"]["by_region"]
+        assert "wr_ee_resolved_dy_cr" in resolved_cutflows
+        assert "wr_mumu_resolved_dy_cr" in resolved_cutflows
+        assert "wr_resolved_flavor_cr" in resolved_cutflows
+        assert "wr_ee_resolved_sr" in resolved_cutflows
+        assert "wr_mumu_resolved_sr" in resolved_cutflows
+        assert "cumulative" in resolved_cutflows["wr_mumu_resolved_sr"]
+        assert "cumulative_unweighted" in resolved_cutflows["wr_mumu_resolved_sr"]
 
     # ------------------------------------------------------------------
     # Boosted-only region (FatJet without lsf3 -> boosted skipped gracefully)
