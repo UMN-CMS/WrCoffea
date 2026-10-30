@@ -6,7 +6,7 @@ proxy, run one sample and the tests. Verified on 2026-10-12.
 ## Clone
 
 ```bash
-git clone --recursive -b billy_dev git@github.com:UMN-CMS/WrCoffea.git
+git clone --recursive -b billy_dev https://github.com/UMN-CMS/WrCoffea.git
 cd WrCoffea
 git submodule update --init --recursive      # if the clone was made without --recursive
 ```

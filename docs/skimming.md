@@ -9,7 +9,7 @@ and `<your Rucio account>` by your Rucio account (usually your CERN username).
 # 0. Clone under nobackup (the plan, the job files and the mirrored statuses live there too). Clone the branch
 #    directly: `git switch billy_dev` after a clone of main leaves WR_Plotter at main's submodule pointer
 #    (if you did that, run `git submodule update --init --recursive` after the switch).
-cd ~/nobackup && git clone --recursive --branch billy_dev git@github.com:UMN-CMS/WrCoffea.git && cd WrCoffea
+cd ~/nobackup && git clone --recursive --branch billy_dev https://github.com/UMN-CMS/WrCoffea.git && cd WrCoffea
 
 # 1. A proxy on a shared path (asks for your grid key passphrase). The Condor jobs use it, so it must stay
 #    valid for the whole campaign.

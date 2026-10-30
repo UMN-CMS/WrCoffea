@@ -9,7 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      # No submodules: WR_Plotter is SSH-only and not needed by the tests.
+      # No submodules: the tests do not need WR_Plotter.
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5

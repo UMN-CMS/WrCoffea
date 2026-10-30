@@ -67,7 +67,7 @@ code does, cut by cut, is in [docs/analysis.md](docs/analysis.md).
 ## Locally, in five commands
 
 ```bash
-git clone --recursive -b billy_dev git@github.com:UMN-CMS/WrCoffea.git && cd WrCoffea
+git clone --recursive -b billy_dev https://github.com/UMN-CMS/WrCoffea.git && cd WrCoffea
 python3.12 -m venv .venv && .venv/bin/pip install -e ".[xrootd,test]"     # details: docs/getting_started.md
 voms-proxy-init --rfc --voms cms -valid 192:00                            # grid proxy for the skims
 .venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --dir mytag  # one sample, one era
