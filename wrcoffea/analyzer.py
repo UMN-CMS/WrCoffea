@@ -57,6 +57,9 @@ from wrcoffea.analysis_config import (
     SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
     SEL_OF_LEPTON_IN_AK8, SEL_NO_SF_LEPTON_IN_AK8,
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
+    SEL_MIN_ONE_AK8_PTETA, SEL_MIN_ONE_AK8_MSD, SEL_MIN_ONE_AK8_ID,
+    SEL_ONE_PTETA_ELECTRON, SEL_ONE_PTETA_MUON, SEL_ONE_ID_ELECTRON, SEL_ONE_ID_MUON,
+    SEL_MIN_ONE_AK8_LSF, SEL_SF_LOOSE_LEPTON, SEL_OF_LOOSE_LEPTON,
     SEL_EE_SR_NOLSF, SEL_MUMU_SR_NOLSF, SEL_EMU_CR_NOLSF, SEL_MUE_CR_NOLSF,
     SEL_MLL_GT200_BOOSTED_NOLSF, SEL_MLJ_GT800_BOOSTED_NOLSF,
 )
@@ -838,8 +841,10 @@ class WrAnalysis(processor.ProcessorABC):
         loose_muons = (events.Muon.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Muon.eta) < CUTS["muon_eta_max"]) & (events.Muon.highPtId == CUTS["muon_highPtId"])
         return events.Muon[loose_muons]
     
-    def selectAK8Jets(self,events,era):
-        """Baseline AK8 selection used in boosted categories."""
+    def _ak8_masks(self, events, era):
+        """Per-jet masks of the AK8 requirements: ``pteta`` (pT and |eta|), ``msd`` (soft-drop mass) and ``id``
+        (the tight jet ID).  ``selectAK8Jets`` applies all three, ``selectAK8Jets_withLSF`` adds LSF3; the
+        boosted cutflow rows count them one at a time."""
         if era in JME_JSONS:
             try:
                 ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era, jetid_name="AK8PUPPI_Tight")
@@ -859,34 +864,21 @@ class WrAnalysis(processor.ProcessorABC):
                 ak8_id_mask = events.FatJet.isTight
             else:
                 ak8_id_mask = events.FatJet.jetId >= 6
+        return {
+            "pteta": (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"]),
+            "msd": events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"],
+            "id": ak8_id_mask,
+        }
 
-        ak8_jets = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])  & (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"]) & ak8_id_mask
-        return events.FatJet[ak8_jets]
+    def selectAK8Jets(self,events,era):
+        """Baseline AK8 selection used in boosted categories."""
+        m = self._ak8_masks(events, era)
+        return events.FatJet[m["pteta"] & m["msd"] & m["id"]]
 
     def selectAK8Jets_withLSF(self,events,era):
         """AK8 selection with LSF requirement used for boosted SR/CR definitions."""
-        if era in JME_JSONS:
-            try:
-                ak8_id_mask = self.jetid_mask_ak4puppi(events.FatJet, era, jetid_name="AK8PUPPI_Tight")
-            except AttributeError as e:
-                # Fallback for missing fields (shouldn't happen after config fix)
-                key = f"jetid_fallback::{era}"
-                if key not in _WARN_ONCE:
-                    _WARN_ONCE.add(key)
-                    logger.warning(
-                        "correctionlib puppi JetID requested for era '%s' but required jet fields "
-                        "are missing; falling back to Jet.jetId>=6 for this worker process. "
-                        "(example error: %s)", era, e
-                    )
-                ak8_id_mask = events.FatJet.isTight #jetId >= 6
-        else:
-            if hasattr(events.FatJet, 'isTight'):
-                ak8_id_mask = events.FatJet.isTight
-            else:
-                ak8_id_mask = events.FatJet.jetId >= 6
-
-        ak8_jets = (events.FatJet.pt > CUTS["ak8_pt_min"]) & (np.abs(events.FatJet.eta) < CUTS["ak8_eta_max"])  & (events.FatJet.msoftdrop > CUTS["ak8_msoftdrop_min"]) & (events.FatJet.lsf3 > CUTS["ak8_lsf3_min"]) & ak8_id_mask
-        return events.FatJet[ak8_jets]
+        m = self._ak8_masks(events, era)
+        return events.FatJet[m["pteta"] & m["msd"] & m["id"] & (events.FatJet.lsf3 > CUTS["ak8_lsf3_min"])]
 
     def _no_extra_tight_leptons(self, looseMuons, looseElectrons, tight_lep, sublead_lep):
         """Veto events with extra tight leptons beyond tight_lep and sublead_lep.
@@ -940,8 +932,17 @@ class WrAnalysis(processor.ProcessorABC):
         looseMuons = self.selectLooseMuons(events)
         looseElectrons = ak.with_field(looseElectrons, "electron", "flavor")
         looseMuons = ak.with_field(looseMuons, "muon", "flavor")
-        AK8Jets = self.selectAK8Jets(events,era)
-        AK8Jets_withLSF = self.selectAK8Jets_withLSF(events,era)
+        ak8 = self._ak8_masks(events, era)
+        ak8_base = ak8["pteta"] & ak8["msd"] & ak8["id"]
+        ak8_lsf = ak8_base & (events.FatJet.lsf3 > CUTS["ak8_lsf3_min"])
+        AK8Jets = events.FatJet[ak8_base]            # selectAK8Jets
+        AK8Jets_withLSF = events.FatJet[ak8_lsf]     # selectAK8Jets_withLSF
+        # Boosted cutflow object rows (2026-10-19): the AK8 requirements one at a time, "at least one" (the
+        # resolved chain's "at least two"); the LSF row sits after the DY routing in the chain.
+        selections.add(SEL_MIN_ONE_AK8_PTETA, ak.sum(ak8["pteta"], axis=1) >= 1)
+        selections.add(SEL_MIN_ONE_AK8_MSD, ak.sum(ak8["pteta"] & ak8["msd"], axis=1) >= 1)
+        selections.add(SEL_MIN_ONE_AK8_ID, ak.sum(ak8_base, axis=1) >= 1)
+        selections.add(SEL_MIN_ONE_AK8_LSF, ak.sum(ak8_lsf, axis=1) >= 1)
         AK4Jets_inc, _, _ = self.select_jets(events, era)
         # define tight by querying loose
         tight_mask_e = (looseElectrons.cutBased_HEEP)
@@ -955,6 +956,19 @@ class WrAnalysis(processor.ProcessorABC):
         tight_mask_mu = (looseMuons.tkRelIso < CUTS["muon_iso_max"])
         tightMuons_inc = looseMuons[tight_mask_mu]
         tightMuons_inc = tightMuons_inc[ak.argsort(tightMuons_inc.pt, axis=1, ascending=False)]
+        # Tight-lepton rows of the boosted cutflow: pT/eta (electrons: and the ECAL crack veto on the supercluster
+        # eta, as select_leptons), then pT/eta and the ID together, i.e. tight; "at least one" of the chain's flavour.
+        if "deltaEtaSC" in events.Electron.fields:
+            abs_sc_eta = np.abs(events.Electron.eta + events.Electron.deltaEtaSC)
+        else:
+            abs_sc_eta = np.abs(events.Electron.eta)
+        ele_pteta = ((events.Electron.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Electron.eta) < CUTS["electron_eta_max"])
+                     & ((abs_sc_eta <= 1.4442) | (abs_sc_eta >= 1.566)))
+        mu_pteta = (events.Muon.pt > CUTS["lepton_pt_min"]) & (np.abs(events.Muon.eta) < CUTS["muon_eta_max"])
+        selections.add(SEL_ONE_PTETA_ELECTRON, ak.sum(ele_pteta, axis=1) >= 1)
+        selections.add(SEL_ONE_PTETA_MUON, ak.sum(mu_pteta, axis=1) >= 1)
+        selections.add(SEL_ONE_ID_ELECTRON, ak.num(tightElectrons_inc) >= 1)
+        selections.add(SEL_ONE_ID_MUON, ak.num(tightMuons_inc) >= 1)
 
         # Slim to common fields before concatenating to avoid UnionArrays.
         # Keep deltaEtaSC so downstream electron SFs can use supercluster eta.
@@ -1032,6 +1046,9 @@ class WrAnalysis(processor.ProcessorABC):
         of_loose = looseLeptons[abs(looseLeptons.pdgId) != abs(tight_lep.pdgId)]
         sf_loose = sf_loose[ak.argsort(sf_loose.pt, axis=1, ascending=False)]
         of_loose = of_loose[ak.argsort(of_loose.pt, axis=1, ascending=False)]
+        # The loose partner before its in-jet requirement (boosted cutflow rows); None where there is no tight lepton.
+        selections.add(SEL_SF_LOOSE_LEPTON, ak.fill_none(ak.num(sf_loose) >= 1, False))
+        selections.add(SEL_OF_LOOSE_LEPTON, ak.fill_none(ak.num(of_loose) >= 1, False))
 
         # DY pair check.
         mll_pairs  = (tight_lep + sf_loose).mass

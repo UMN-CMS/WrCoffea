@@ -80,6 +80,11 @@ convention. Inside a file:
   SFs of its region, equal to that region's yield without the DY corrections (since 2026-10-14).
   For signal, the `ee` and `mumu` chains count only events of their own generator flavour (outgoing LHE
   leptons), so a mass point's file, which holds both flavour samples, has single-flavour cutflows.
+  Since 2026-10-19 the boosted chains open with object rows, as the resolved ones do: at least one
+  AK8 jet (pT and |η|, then the soft-drop mass, then the tight ID) and at least one lepton of the
+  chain's flavour (pT and |η|, then the ID), before the boosted tag; the LSF requirement and the
+  loose partner have rows of their own before the |Δφ| and in-jet rows. Older files carry the
+  shorter chain (the plotter reads the rows from the file).
 - `event_weights/<region>/` (MC, nominal pass only, not with `--unskimmed`): `positive` and
   `negative` (event counts vs log10|w| by the sign of the region's nominal weight) and
   `components/<name>` (one distribution per factor of w: generator weight, normalization, pileup,

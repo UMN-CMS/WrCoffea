@@ -235,3 +235,18 @@ SEL_OF_LEPTON_IN_AK8 = "of_lepton_in_ak8"
 SEL_NO_SF_LEPTON_IN_AK8 = "no_sf_lepton_in_ak8"
 SEL_MLL_GT200_BOOSTED = "mll_gt200_boosted"
 SEL_MLJ_GT800_BOOSTED = "mlj_gt800_boosted"
+
+# Boosted cutflow object rows (2026-10-19): the AK8 jet and tight-lepton requirements that the boosted tag and
+# the LSF-jet row take for granted, one at a time as "at least one" counts (the resolved chain counts "at least
+# two"); the LSF requirement alone, before the |dphi| row; and the loose partner before its in-jet row.  Rows
+# only: no region is built from them.
+SEL_MIN_ONE_AK8_PTETA = "min_one_ak8_jet_pteta"
+SEL_MIN_ONE_AK8_MSD = "min_one_ak8_jet_msd"
+SEL_MIN_ONE_AK8_ID = "min_one_ak8_jet_id"
+SEL_MIN_ONE_AK8_LSF = "min_one_ak8_jet_lsf"
+SEL_ONE_PTETA_ELECTRON = "one_pteta_electron"
+SEL_ONE_PTETA_MUON = "one_pteta_muon"
+SEL_ONE_ID_ELECTRON = "one_id_electron"
+SEL_ONE_ID_MUON = "one_id_muon"
+SEL_SF_LOOSE_LEPTON = "sf_loose_lepton"
+SEL_OF_LOOSE_LEPTON = "of_loose_lepton"

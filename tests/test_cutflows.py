@@ -215,8 +215,18 @@ def test_analyzer_cut_chains_end_in_the_signal_regions():
         assert set(chains) == _CHANNELS[directory]
         for flavor, row in _HEM_ROWS[directory].items():
             assert row in chains[flavor]
-        if "me" in chains:
-            assert chains["me"][:3] == ["no_cuts", "boosted_tag", "lead_is_muon"]
+        if "me" in chains:   # boosted: the object rows (since 2026-10-19), then the tag and the leading flavour
+            assert chains["me"][:8] == ["no_cuts", "min_one_ak8_jet_pteta", "min_one_ak8_jet_msd",
+                                        "min_one_ak8_jet_id", "one_pteta_muon", "one_id_muon", "boosted_tag",
+                                        "lead_is_muon"]
+            assert chains["mumu"][:8] == chains["me"][:8]
+            assert chains["ee"][4:6] == ["one_pteta_electron", "one_id_electron"]
+            for flavor in ("ee", "mumu"):
+                i = chains[flavor].index("min_one_ak8_jet_lsf")
+                assert chains[flavor][i - 1:i + 2] == ["no_dy_pair", "min_one_ak8_jet_lsf", "ak8_jets_with_lsf"]
+                assert chains[flavor].index("sf_loose_lepton") + 1 == chains[flavor].index("sf_lepton_in_ak8")
+            for flavor in ("em", "me"):
+                assert chains[flavor].index("of_loose_lepton") + 1 == chains[flavor].index("no_sf_lepton_in_ak8")
         for flavor in ("ee", "mumu"):
             assert chains[flavor][0] == "no_cuts"
             assert chains[flavor][-2] == _SR_LAST_CUT[directory]
@@ -448,3 +458,48 @@ def test_signal_ee_chains_skip_the_other_flavour():
     # the region histograms keep every event
     sr = payload["mass_fourobject"][{"region": "wr_mumu_resolved_sr", "syst": "Nominal"}].sum(flow=True).value
     assert sr == pytest.approx(payload["cutflow"]["mumu"]["cumulative"].values()[-1])
+
+
+@_apply_sf_patches
+def _mumu_boosted_sr_chunk(case="baseline"):
+    """One analyzer chunk (era UL18, MC) of three mumu boosted-SR events: a tight muon, a loose muon inside the
+    LSF AK8 jet back to back with it, and two AK4 jets (one tight lepton, so not resolved).  *case* breaks one
+    boosted requirement: the soft-drop mass, the LSF, or the partner's distance to the jet."""
+    n = 3
+    events = _make_integration_events(n_events=n, n_muons=2, n_jets=2, n_fatjets=1, include_genweight=True)
+    partner_phi = np.pi - 1.0 if case == "partner_outside_jet" else np.pi
+    fatjet = {"pt": [[600.]], "eta": [[0.]], "phi": [[np.pi]],
+              "msoftdrop": [[30. if case == "low_msd" else 80.]], "lsf3": [[0.5 if case == "no_lsf" else 0.9]]}
+    for collection, fields in (
+        ("Muon", {"pt": [[300., 250.]], "eta": [[0., 0.]], "phi": [[0., partner_phi]], "tkRelIso": [[0.05, 0.2]]}),
+        ("Jet", {"pt": [[300., 300.]], "eta": [[0., 0.]], "phi": [[np.pi / 2, -np.pi / 2]]}),
+        ("FatJet", fatjet),
+    ):
+        objects = getattr(events, collection)
+        for field, values in fields.items():
+            objects = ak.with_field(objects, ak.Array(values * n), field)
+        setattr(events, collection, objects)
+    return WrAnalysis(None, region="boosted").process(events)
+
+
+@pytest.mark.parametrize("case, fails_at", [("baseline", None), ("low_msd", "min_one_ak8_jet_msd"),
+                                            ("no_lsf", "min_one_ak8_jet_lsf"),
+                                            ("partner_outside_jet", "sf_lepton_in_ak8")])
+def test_boosted_object_rows_and_the_region_sf_row(case, fails_at):
+    """The boosted chain's object rows (2026-10-19) pass a boosted-SR event, a broken requirement is charged to its
+    own row and to no earlier one, and the region-SF row equals the boosted SR yield."""
+    (payload,) = _mumu_boosted_sr_chunk(case).values()
+    chain = payload["cutflow_boosted"]["mumu"]
+    labels = list(chain["cumulative"].axes[0])
+    counts = chain["cumulative_unweighted"].values()
+    stop = len(labels) if fails_at is None else labels.index(fails_at)
+    np.testing.assert_array_equal(counts[:stop], 3)
+    np.testing.assert_array_equal(counts[stop:], 0)
+    values = chain["cumulative"].values()
+    histogram = payload["mass_twoobject"]
+    sr = 0.0
+    if "wr_mumu_boosted_sr" in list(histogram.axes["region"]):
+        sr = histogram[{"region": "wr_mumu_boosted_sr", "syst": "Nominal"}].sum(flow=True).value
+    assert values[-1] == pytest.approx(sr)
+    if fails_at is None:
+        assert values[-2] > 0

@@ -47,6 +47,9 @@ from wrcoffea.analysis_config import (
     SEL_SF_LEPTON_IN_AK8, SEL_NO_OF_LEPTON_IN_AK8,
     SEL_OF_LEPTON_IN_AK8, SEL_NO_SF_LEPTON_IN_AK8,
     SEL_MLL_GT200_BOOSTED, SEL_MLJ_GT800_BOOSTED,
+    SEL_MIN_ONE_AK8_PTETA, SEL_MIN_ONE_AK8_MSD, SEL_MIN_ONE_AK8_ID,
+    SEL_ONE_PTETA_ELECTRON, SEL_ONE_PTETA_MUON, SEL_ONE_ID_ELECTRON, SEL_ONE_ID_MUON,
+    SEL_MIN_ONE_AK8_LSF, SEL_SF_LOOSE_LEPTON, SEL_OF_LOOSE_LEPTON,
 )
 
 logger = logging.getLogger(__name__)
@@ -657,7 +660,16 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False, sf_factor
 
     Similar to fill_cutflows but for boosted topology. Shows progression
     through boosted-specific selections (SR progression for ee/mumu, the
-    e(mu-jet) flavor CR for em and the mu(e-jet) one for me). As in the resolved cutflow, ``no_cuts`` follows
+    e(mu-jet) flavor CR for em and the mu(e-jet) one for me).  Each chain
+    opens (since 2026-10-19) with the object rows, in the resolved order:
+    the AK8 jet (pT/eta, then the soft-drop mass, then the tight ID) and
+    the chain's tight-lepton flavour (pT/eta, then pT/eta and the ID), as
+    "at least one" counts; then the boosted tag (not resolved), the
+    leading flavour, its pT, the trigger, the DY routing, the LSF jet (the
+    LSF requirement, then |dphi| > 2), the extra-tight veto, the loose
+    partner (its existence, then in the jet), the other-flavour veto and
+    the masses.  Every row is implied by a later one or by the region, so
+    the last cut still equals the region.  As in the resolved cutflow, ``no_cuts`` follows
     upstream filters, the weighted bins use the cutflow weight and a complete
     chain ends with CUTFLOW_SF_ROW (*sf_factors*: the lepton and LSF SFs of the
     chain's region).  With *blind* the ee and mumu chains stop before the
@@ -673,13 +685,20 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False, sf_factor
     chains = {
         "ee": [
             #SEL_JET_VETO_MAP,
+            SEL_MIN_ONE_AK8_PTETA,
+            SEL_MIN_ONE_AK8_MSD,
+            SEL_MIN_ONE_AK8_ID,
+            SEL_ONE_PTETA_ELECTRON,
+            SEL_ONE_ID_ELECTRON,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_ELECTRON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
             SEL_E_TRIGGER,
             SEL_NO_DY_PAIR,
+            SEL_MIN_ONE_AK8_LSF,
             SEL_AK8JETS_WITH_LSF,
             SEL_NO_EXTRA_TIGHT_SR,
+            SEL_SF_LOOSE_LEPTON,
             SEL_SF_LEPTON_IN_AK8,
             SEL_NO_OF_LEPTON_IN_AK8,
             SEL_HEM_VETO_BOOSTED_SR,
@@ -688,13 +707,20 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False, sf_factor
         ],
         "mumu": [
             #SEL_JET_VETO_MAP,
+            SEL_MIN_ONE_AK8_PTETA,
+            SEL_MIN_ONE_AK8_MSD,
+            SEL_MIN_ONE_AK8_ID,
+            SEL_ONE_PTETA_MUON,
+            SEL_ONE_ID_MUON,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_MUON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
             SEL_MU_TRIGGER,
             SEL_NO_DY_PAIR,
+            SEL_MIN_ONE_AK8_LSF,
             SEL_AK8JETS_WITH_LSF,
             SEL_NO_EXTRA_TIGHT_SR,
+            SEL_SF_LOOSE_LEPTON,
             SEL_SF_LEPTON_IN_AK8,
             SEL_NO_OF_LEPTON_IN_AK8,
             SEL_HEM_VETO_BOOSTED_SR,
@@ -703,13 +729,20 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False, sf_factor
         ],
         # e(mu-jet) flavour CR: leading electron, electron trigger
         "em": [
+            SEL_MIN_ONE_AK8_PTETA,
+            SEL_MIN_ONE_AK8_MSD,
+            SEL_MIN_ONE_AK8_ID,
+            SEL_ONE_PTETA_ELECTRON,
+            SEL_ONE_ID_ELECTRON,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_ELECTRON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
             SEL_E_TRIGGER,
             SEL_NO_DY_PAIR,
+            SEL_MIN_ONE_AK8_LSF,
             SEL_AK8JETS_WITH_LSF,
             SEL_NO_EXTRA_TIGHT_CR,
+            SEL_OF_LOOSE_LEPTON,
             SEL_NO_SF_LEPTON_IN_AK8,
             SEL_OF_LEPTON_IN_AK8,
             SEL_HEM_VETO_BOOSTED_CR,
@@ -718,13 +751,20 @@ def fill_boosted_cutflows(output, selections, weights, *, blind=False, sf_factor
         ],
         # mu(e-jet) flavour CR: leading muon, muon trigger (since 2026-10-14)
         "me": [
+            SEL_MIN_ONE_AK8_PTETA,
+            SEL_MIN_ONE_AK8_MSD,
+            SEL_MIN_ONE_AK8_ID,
+            SEL_ONE_PTETA_MUON,
+            SEL_ONE_ID_MUON,
             SEL_BOOSTEDTAG,
             SEL_LEAD_IS_MUON,
             SEL_LEAD_TIGHT_PT60_BOOSTED,
             SEL_MU_TRIGGER,
             SEL_NO_DY_PAIR,
+            SEL_MIN_ONE_AK8_LSF,
             SEL_AK8JETS_WITH_LSF,
             SEL_NO_EXTRA_TIGHT_CR,
+            SEL_OF_LOOSE_LEPTON,
             SEL_NO_SF_LEPTON_IN_AK8,
             SEL_OF_LEPTON_IN_AK8,
             SEL_HEM_VETO_BOOSTED_CR,
