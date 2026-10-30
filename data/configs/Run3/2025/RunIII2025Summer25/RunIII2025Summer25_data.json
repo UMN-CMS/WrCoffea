@@ -286,5 +286,149 @@
     "dataset": "EGamma1_Run2025G",
     "physics_group": "EGamma",
     "datatype": "data"
+  },
+  "/EGamma2/Run2025B-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma2/Run2025B-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025B",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma2/Run2025C-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma2/Run2025C-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025C",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma2/Run2025C-PromptReco-v2/NANOAOD": {
+    "das_name": "/EGamma2/Run2025C-PromptReco-v2/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025C",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma2/Run2025D-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma2/Run2025D-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025D",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma2/Run2025E-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma2/Run2025E-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025E",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma2/Run2025F-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma2/Run2025F-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025F",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma2/Run2025F-PromptReco-v2/NANOAOD": {
+    "das_name": "/EGamma2/Run2025F-PromptReco-v2/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025F",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma2/Run2025G-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma2/Run2025G-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma2_Run2025G",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025B-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma3/Run2025B-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025B",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025C-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma3/Run2025C-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025C",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025C-PromptReco-v2/NANOAOD": {
+    "das_name": "/EGamma3/Run2025C-PromptReco-v2/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025C",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025D-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma3/Run2025D-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025D",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025E-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma3/Run2025E-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025E",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025F-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma3/Run2025F-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025F",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025F-PromptReco-v2/NANOAOD": {
+    "das_name": "/EGamma3/Run2025F-PromptReco-v2/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025F",
+    "physics_group": "EGamma",
+    "datatype": "data"
+  },
+  "/EGamma3/Run2025G-PromptReco-v1/NANOAOD": {
+    "das_name": "/EGamma3/Run2025G-PromptReco-v1/NANOAOD",
+    "run": "Run3",
+    "year": "2025",
+    "era": "RunIII2025Summer25",
+    "dataset": "EGamma3_Run2025G",
+    "physics_group": "EGamma",
+    "datatype": "data"
   }
 }
