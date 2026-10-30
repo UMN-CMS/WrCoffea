@@ -581,16 +581,18 @@ def test_split_sample_groups_remaps_subgroups_and_rejects_unknown():
 
     mapping = {
         "TTto2L2Nu_TuneCP5": "tt_tW",
-        "TWminus_2L": "tt_tW",
-        "TbarWplus_2L": "tt_tW",
-        "TTtoLNu2Q": "tt_tW",  # no subgroup prefix -> stays in the parent
+        "TWminusto2L2Nu_TuneCP5": "tt_tW",
+        "TbarWplusto2L2Nu_TuneCP5": "tt_tW",
+        "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5": "tt_tW",  # UL: both tW decay modes in one sample
+        "TTtoLNu2Q": "tt_tW",  # no subgroup prefix within tt_tW -> stays in the parent
         "DYto2L": "DYJets",
     }
     out = split_sample_groups(mapping, ["tt_tW"])
     assert out == {
         "TTto2L2Nu_TuneCP5": "TTbar",
-        "TWminus_2L": "tW",
-        "TbarWplus_2L": "tW",
+        "TWminusto2L2Nu_TuneCP5": "tW",
+        "TbarWplusto2L2Nu_TuneCP5": "tW",
+        "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5": "tW",
         "TTtoLNu2Q": "tt_tW",
         "DYto2L": "DYJets",
     }
@@ -598,6 +600,28 @@ def test_split_sample_groups_remaps_subgroups_and_rejects_unknown():
     assert split_sample_groups(mapping, []) == mapping
     with pytest.raises(ValueError):
         split_sample_groups(mapping, ["DYJets"])
+
+
+def test_split_nonprompt_puts_every_run3_sample_in_a_subgroup():
+    from wrcoffea.cli_utils import split_sample_groups
+
+    mapping = {
+        "WtoLNu-4Jets_Bin-HT-100to400-MLNu-0to120_TuneCP5": "Nonprompt",
+        "TTtoLNu2Q_TuneCP5": "Nonprompt",
+        "TBbarQtoLNu-t-channel-4FS_TuneCP5": "Nonprompt",
+        "TWminustoLNu2Q_TuneCP5": "Nonprompt",   # semileptonic tW is Nonprompt (Billy, 2026-10-18)
+        "TbarWplustoLNu2Q_TuneCP5": "Nonprompt",
+        "TWminusto2L2Nu_TuneCP5": "tt_tW",
+    }
+    out = split_sample_groups(mapping, ["Nonprompt"])
+    assert out == {
+        "WtoLNu-4Jets_Bin-HT-100to400-MLNu-0to120_TuneCP5": "WJets",
+        "TTtoLNu2Q_TuneCP5": "TTSemiLep",
+        "TBbarQtoLNu-t-channel-4FS_TuneCP5": "SingleTop",
+        "TWminustoLNu2Q_TuneCP5": "tWSemiLep",
+        "TbarWplustoLNu2Q_TuneCP5": "tWSemiLep",
+        "TWminusto2L2Nu_TuneCP5": "tt_tW",   # dilepton tW stays in tt_tW
+    }
 
 
 def test_local_composite_saves_through_group_map(monkeypatch):

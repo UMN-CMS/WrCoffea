@@ -32,7 +32,7 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
 | `signal` | Signal: the 9-point default grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV), or `--signal-points` |
-| single | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal --mass WR<wr>_N<n>`; also the subgroups of the split groups (`TTbar`, `tW`, `WJets`, `TTSemiLep`, `SingleTop`, `Diboson`, `Triboson`, `ttV`, see `--split-groups`) |
+| single | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal --mass WR<wr>_N<n>`; also the subgroups of the split groups (`TTbar`, `tW`, `tWSemiLep`, `WJets`, `TTSemiLep`, `SingleTop`, `Diboson`, `Triboson`, `ttV`, see `--split-groups`) |
 
 Composite modes run the samples one after the other locally (3 Dask workers by default; a failing
 sample is logged and the next one runs) and in parallel with `--condor` at the LPC
@@ -167,7 +167,7 @@ always gets nominal only). The families, their sources, and what each era can pr
 | `--debug` | Run without saving histograms. |
 | `--study STUDY ...` | Add the extra regions of `transfer-factor` (`<region>_nomass`), `dy-cr-split` (the DY CR split at m(ℓℓ) = 100 GeV) or `no-lsf` (`<region>_nolsf`); several can be given. |
 | `--save-events` | Write the signal-region (mass, weight) TTrees. |
-| `--split-groups GROUP ...` | Composite runs: write `tt_tW` as TTbar + tW, `Nonprompt` as WJets + TTSemiLep + SingleTop, `Other` as Diboson + Triboson + ttV. |
+| `--split-groups GROUP ...` | Composite runs: write `tt_tW` as TTbar + tW (the UL `NoFullyHadronicDecays` tW samples hold both decay modes and are all `tW`), `Nonprompt` as WJets + TTSemiLep + SingleTop + tWSemiLep (Run 3 semileptonic tW), `Other` as Diboson + Triboson + ttV. |
 | `--systs FAMILY ...` | `lumi pileup prefire sf jer jes jms jmr elescale elesmear muscale musmear dyzpt lsf dyreshape scale ps pdf`. |
 | `--syst-observables fit`, `all` or `NAME ...` | Histograms that receive the variations: default `fit` (the m(W_R) masses); `all` every histogram but the eta-phi maps. |
 | `--omit-systs SOURCE ...` | Leave out named sources although their family is enabled (recorded). |

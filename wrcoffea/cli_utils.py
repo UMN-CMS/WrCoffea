@@ -27,15 +27,21 @@ COMPOSITE_SAMPLES: dict[str, list[str]] = {
 # unambiguous within a parent (e.g. diboson "WW_" vs triboson "WWW").
 # Use "TTto2L2Nu"/"TTTo2L2Nu" (dileptonic) for TTbar specifically —
 # semileptonic ttbar (TTtoLNu2Q / TTToSemiLeptonic) belongs in Nonprompt.
+# Run 3 semileptonic tW is Nonprompt with the semileptonic ttbar (Billy, 2026-10-18).
+# Run 2 (EXO-20-002) differs there: its NoFullyHadronicDecays tW held both tW decay
+# modes and sat in TT_TW, which the UL ST_tW_ samples still reproduce.
 _PHYSICS_SUBGROUPS: dict[str, tuple[str, list[str]]] = {
     # tt_tW
     "TTbar":     ("tt_tW",     ["TTto2L2Nu", "TTTo2L2Nu"]),
-    "tW":        ("tt_tW",     ["TWminus", "TbarWplus", "ST_tW_"]),
+    # dileptonic tW; the UL ST_tW_*_NoFullyHadronicDecays samples hold both decay modes
+    "tW":        ("tt_tW",     ["TWminusto2L2Nu", "TbarWplusto2L2Nu", "ST_tW_"]),
     # Nonprompt
     "WJets":     ("Nonprompt", ["WJetsToLNu", "WtoLNu"]),
     "TTSemiLep": ("Nonprompt", ["TTtoLNu2Q", "TTToSemiLeptonic"]),
     "SingleTop": ("Nonprompt", ["ST_s-channel", "ST_t-channel",
                                 "TBbarQ", "TbarBQ", "TBbarto", "TbarBto"]),
+    # Run 3 semileptonic tW (added 2026-10-04)
+    "tWSemiLep": ("Nonprompt", ["TWminustoLNu2Q", "TbarWplustoLNu2Q"]),
     # Other
     "Diboson":   ("Other",     ["WW_", "WZ_", "ZZ_"]),
     "Triboson":  ("Other",     ["WWW", "WWZ", "WZZ", "ZZZ"]),
@@ -50,7 +56,8 @@ def split_sample_groups(sample_to_group: Mapping[str, str], split_groups) -> dic
     """Remap samples of each parent group in *split_groups* to its subgroups.
 
     Uses ``_PHYSICS_SUBGROUPS`` to assign e.g. ``TTto2L2Nu*`` samples of the
-    ``tt_tW`` group to ``TTbar`` and ``TWminus*``/``TbarWplus*`` to ``tW``, so
+    ``tt_tW`` group to ``TTbar`` and ``TWminusto2L2Nu*``/``TbarWplusto2L2Nu*`` to ``tW``
+    (and the Nonprompt ``TWminustoLNu2Q*``/``TbarWplustoLNu2Q*`` to ``tWSemiLep``), so
     each subgroup is saved to its own ROOT file.  Samples of a split group
     that match no subgroup keep their parent group.  Unknown group names
     raise ``ValueError``.
@@ -94,7 +101,7 @@ def list_samples() -> list[str]:
     """Return supported top-level sample choices for the CLI."""
 
     # the physics groups plus every sub-sample of _PHYSICS_SUBGROUPS (TTbar, tW,
-    # WJets, TTSemiLep, SingleTop, Diboson, Triboson, ttV), each runnable on
+    # tWSemiLep, WJets, TTSemiLep, SingleTop, Diboson, Triboson, ttV), each runnable on
     # its own: the output is WRAnalyzer_<sample>.root
     base = ["DYJets", "tt_tW", "Nonprompt", "Other", "EGamma", "Muon", "Signal"]
     out = []
