@@ -310,6 +310,22 @@ class TestTriggerMasks:
         e_trig, mu_trig, emu_trig = proc.build_trigger_masks(ev, "RunIII2024Summer24")
         assert mu_trig.tolist() == [True, True]
 
+    def test_run3_muon_shower_trigger(self):
+        proc = WrAnalysis(mass_point=None)
+        ev = self._events_with_hlt(
+            n=2,
+            Mu50=[False, False],
+            HighPtTkMu100=[False, False],
+            CascadeMu100=[False, False],
+            Mu50_L1SingleMuShower=[True, False],
+        )
+        e_trig, mu_trig, emu_trig = proc.build_trigger_masks(ev, "RunIII2024Summer24")
+        assert mu_trig.tolist() == [True, False]
+        assert emu_trig.tolist() == [True, False]
+        # Run 2 keeps its own per-year paths.
+        e_trig, mu_trig, emu_trig = proc.build_trigger_masks(ev, "RunIISummer20UL18")
+        assert mu_trig.tolist() == [False, False]
+
     def test_missing_hlt_path_defaults_false(self):
         proc = WrAnalysis(mass_point=None)
         ev = self._events_with_hlt(n=2)

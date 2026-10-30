@@ -87,7 +87,7 @@ Each region uses one trigger OR; the data stream follows the trigger.
 | UL16APV, UL16 | Ele27_WPTight_Gsf, Photon175, Ele115_CaloIdVT_GsfTrkIdT | Mu50, TkMu50 |
 | UL17 | Ele35_WPTight_Gsf, Photon200 (Ele115 left out: off for the first ~5 fb⁻¹, as in Run 2) | Mu50, OldMu100, TkMu100 |
 | UL18 | Ele32_WPTight_Gsf, Photon200, Ele115_CaloIdVT_GsfTrkIdT | Mu50, OldMu100, TkMu100 |
-| Run 3 | Ele30_WPTight_Gsf, Photon200, Ele115_CaloIdVT_GsfTrkIdT, Ele50_CaloIdVT_GsfTrkIdT_PFJet165 | Mu50, HighPtTkMu100, CascadeMu100 |
+| Run 3 | Ele30_WPTight_Gsf, Photon200, Ele115_CaloIdVT_GsfTrkIdT, Ele50_CaloIdVT_GsfTrkIdT_PFJet165 | Mu50, HighPtTkMu100, CascadeMu100, Mu50_L1SingleMuShower (from 2022E; absent in 2022 B-D and Run3Summer22 MC) |
 
 The resolved eμ region uses the muon trigger; the boosted flavour CRs use the trigger of the
 leading lepton. Run 2 data are the SingleElectron and SingleMuon primary datasets (the Photon
@@ -153,7 +153,9 @@ DY Z-pT weight. Per region it is multiplied by the lepton scale factors that ent
 
 Trigger SFs: electrons, one SF for the OR (Run 3: the EGM Ele30 TightID SF as a proxy; UL: the
 Run 2 HEEP trigger-OR efficiency); muons, the per-leg data/MC efficiency OR for 2022 to 2025 and
-the leading muon's SF alone in the UL eras (two SFs are never multiplied). The muon variation of
+the leading muon's SF alone in the UL eras (two SFs are never multiplied). The Run 3 muon trigger
+payloads are measured for Mu50, CascadeMu100 and HighPtTkMu100 only; Mu50_L1SingleMuShower (in the
+OR since 2026-10-17) is not covered. The muon variation of
 the efficiency OR: in 2024 and 2025 it follows the Run 2 analysis (SKFlat
 `MCCorrection::MuonTrigger_SF`), every muon's data efficiency moving up by its error while its MC
 efficiency moves down, and the reverse, so the two errors add in the ratio; in 2022 and 2023, whose

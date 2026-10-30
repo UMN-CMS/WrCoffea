@@ -609,9 +609,14 @@ class WrAnalysis(processor.ProcessorABC):
         if run == "RunII":
             mu_trig = any_of(RUN2_TRIGGERS.get(mc_campaign, RUN2_TRIGGERS["RunIISummer20UL18"])["mu"])
         elif run == "Run3":
-            mu_trig = hlt("Mu50") | hlt("HighPtTkMu100") | hlt("CascadeMu100")
+            # The Muon POG high-pT OR for Run 3 (muon-wiki documentation/hlt, 2026-05-07).  Mu50_L1SingleMuShower
+            # exists from 2022E on (not in 2022 B-D data or Run3Summer22 MC; hlt() gives False there).  The Run 3
+            # trigger SF payloads are measured for the first three paths only.
+            mu_trig = (hlt("Mu50") | hlt("HighPtTkMu100") | hlt("CascadeMu100")
+                       | hlt("Mu50_L1SingleMuShower"))
         else:  # unknown era — OR all known muon triggers as safe fallback
-            mu_trig = hlt("Mu50") | hlt("OldMu100") | hlt("TkMu100") | hlt("HighPtTkMu100") | hlt("CascadeMu100")
+            mu_trig = (hlt("Mu50") | hlt("OldMu100") | hlt("TkMu100") | hlt("HighPtTkMu100") | hlt("CascadeMu100")
+                       | hlt("Mu50_L1SingleMuShower"))
 
         emu_trig = mu_trig
 
