@@ -660,7 +660,7 @@ dy_reweight_datasets:
 
 # Signal NLO/LO k-factor vs generator-level m(lN), applied as k(m_lN)/<k>
 # (shape only: the signal cross sections in the configs are AN-19-083 LO x <k>).
-# Payload from scripts/convert_run2_signal_kfactor.py (SKFlat HNWR/Run2Legacy_v4,
+# Payload from scripts/signal_kfactor/convert_run2_signal_kfactor.py (SKFlat HNWR/Run2Legacy_v4,
 # AN-19-083 Appendix A).  Disable with --no-signal-kfactor.  Eras absent here
 # apply no k-factor reweighting.
 signal_kfactor:

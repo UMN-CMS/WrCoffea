@@ -17,7 +17,7 @@ GenPart with |pdgId| 9900012/9900014/9900016; the primary lepton is the
 first electron or muon whose mother is the WR (|pdgId| 9900024 or 34) when
 an on-shell WR with a quark mother exists in the record, otherwise the
 first electron or muon.  Payloads are produced by
-``scripts/convert_run2_signal_kfactor.py``.
+``scripts/signal_kfactor/convert_run2_signal_kfactor.py``.
 """
 
 from __future__ import annotations
