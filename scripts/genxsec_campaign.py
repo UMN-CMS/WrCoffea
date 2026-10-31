@@ -1133,8 +1133,8 @@ def cmd_apply(args) -> int:
             upd[das] = {"xsec": _sig(new), "total_uncertainty": _sig(float(unc) * kk[0], 4) if unc else meta.get("total_uncertainty"),
                         "xsec_source": {"generator": base, "generator_unc": unc, "header": src.get("header", "LO"), "factor": 1.0,
                                         "factor_reason": how, "kfactor": _sig(kk[0], 6), "reference": _sig(new),
-                                        "reference_source": f"LO x k(NLO): direct per-point sigma_NLO / sigma_LO = {kk[0]:.5f} "
-                                                            f"(AN-19-083 App. A method; {kk[1]})",
+                                        "reference_source": f"LO x k(NLO): {'direct per-point sigma_NLO / sigma_LO' if SIGNAL_NORM == 'direct' else 'averaged signal k-factor <k>'}"
+                                                            f" = {kk[0]:.5f} (AN-19-083 App. A method; {kk[1]})",
                                         "normalize": args.normalize, "tool": src.get("tool", "config"), "date": today,
                                         "base_source": how}}
             rows.append((primary, meta.get("era"), meta.get("xsec"), _sig(new), 1.0, kk[0], cp.name))

@@ -18,8 +18,9 @@ GP13=$G/RunII/13TeV/MadGraph5_aMCatNLO/v265/WRtoNLtoLLJJ_emu/WRtoNMutoMuMuJJ_MWR
 GP136=$G/RunIII/13p6TeV/MadGraph5_aMCatNLO/v2918/WRtoNLtoLLJJ_mu/WRtoNMutoMuMuJJ_MWR-2000_MN-100_13p6TeV_slc7_amd64_gcc10_CMSSW_12_4_8_tarball.tar.xz
 # Both energies run MG 2.9.18 (CMSSW_12_4_8, python3).  The 13 TeV samples were made with 2.6.5, whose NLO code
 # cannot find pdfsets.index with the CMSSW_10_6 LHAPDF whatever path it is given; MG13=2.6.5 keeps that route.
-# The LO run with the official card reproduces the 13 TeV gridpack integral (results.dat) at the per-mille level,
-# which is the check that the LO denominator is the samples' own normalisation.
+# The LO run with the official card sits 1.6-3.6 % above the 13 TeV gridpack integrals (results.dat) and 1.8 % above
+# GenXSecAnalyzer on the samples (analysis_<E>.txt): the Breit-Wigner truncation of the samples' decay chain, the factor c
+# of kfactor_analysis.py; with c the LO denominator is the samples' own normalisation.
 if [ "$E" = 13 ]; then
   EBEAM=6500; GP=$GP13
   if [ "${MG13:-2.9.18}" = 2.6.5 ]; then REL=CMSSW_10_6_19; ARCH=slc7_amd64_gcc700; MGV=2.6.5; PY=python2
