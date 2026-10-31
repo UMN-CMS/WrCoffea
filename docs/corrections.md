@@ -1,22 +1,19 @@
 # Corrections and their payloads
 
-What this page answers: which correction each era applies, from which payload, where the payload
-comes from, and what is a placeholder. The mapping is `wrcoffea/config.yaml`; the files are under
-`data/jsonpog/<POG>/<Run>/<era>/` (POG JSONs), `data/reweights/` (our own payloads),
-`data/muon_highpt/` and `data/pdf_sets/`. How each correction enters the event weight is in
-[analysis.md](analysis.md). Verified on 2026-10-12.
+The mapping is `wrcoffea/config.yaml`; the files are under `data/jsonpog/<POG>/<Run>/<era>/` (POG
+JSONs), `data/reweights/` (our own payloads), `data/muon_highpt/` and `data/pdf_sets/`. How each
+correction enters the event weight: [analysis.md](analysis.md).
 
-## Where POG payloads come from, and how to check them
+## POG payloads
 
-The authority is the CAT metadata area on cvmfs,
-`/cvmfs/cms-griddata.cern.ch/cat/metadata/<POG>/<campaign>/latest/` (readable at the LPC), with
-one campaign per era (`Run3-22CDSep23-Summer22-NanoAODv12`, `Run3-22EFGSep23-Summer22EE-NanoAODv12`,
+The source is the CAT metadata area on cvmfs,
+`/cvmfs/cms-griddata.cern.ch/cat/metadata/<POG>/<campaign>/latest/` (readable at the LPC), one
+campaign per era: `Run3-22CDSep23-Summer22-NanoAODv12`, `Run3-22EFGSep23-Summer22EE-NanoAODv12`,
 `Run3-23CSep23-Summer23-NanoAODv12`, `Run3-23DSep23-Summer23BPix-NanoAODv12`,
 `Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15`, `Run3-25Prompt-Summer24-NanoAODv15`, and the
-UL campaigns). The older `jsonpog-integration` mirror stopped in September 2025 and is stale. Compare
-by the sha256 of the canonical JSON, not of the gzip file. Last full check, all ten eras:
-2026-10-11; every file identical to CAT except the 2024 `EGM/electron.json.gz`, which is CAT's plus
-a HEEP working point CAT does not ship (kept on purpose).
+UL campaigns. The `jsonpog-integration` mirror stopped in September 2025. Compare files by the sha256
+of the canonical JSON, not of the gzip. All ten eras match CAT as of 2026-10-11, except the 2024
+`EGM/electron.json.gz`, which is CAT's plus a HEEP working point CAT does not ship.
 
 ## Per era
 
@@ -37,19 +34,18 @@ Era columns: the four UL eras, then 2022, 2022EE, 2023, 2023BPix, 2024, 2025.
 | 2024 | Summer24Prompt24_V5 | Summer24Prompt24_JRV2 | Summer24Prompt24_RunBCDEFGHI_V1 | reject the event | `jetid.json.gz` |
 | 2025 | Summer24Prompt25_V3 | Summer24Prompt25_JRV2 | Summer24Prompt25_RunCDEFG_V1 | reject the event | `jetid.json.gz` (NanoAODv15 has no `Jet_jetId`) |
 
-Jet ID (JME Jet ID page, 2026-10-12): AK4 tight with lepton veto, AK8 tight. NanoAODv15 (2024,
-2025) has no `jetId` and uses the CAT `jetid.json.gz`. NanoAODv12 (2022, 2023) stores a wrong
-lepton-veto bit; the JME repair starts from the Tight bit, adds neHEF < 0.99 for 2.7 < |η| ≤ 3.0
-and neEmEF < 0.4 above, and builds the lepton veto as muEF < 0.8 and chEmEF < 0.8 for |η| ≤ 2.7
-(`ak4_tight_lepton_veto_from_bits` in `analyzer.py`; since 2026-10-12, before: the stored bit; 0.025 %
-of the selected 2023 jets differ). UL (NanoAODv9) uses the stored bits.
+Jet ID: AK4 tight with lepton veto, AK8 tight. NanoAODv15 (2024, 2025) has no `jetId` and uses
+the CAT `jetid.json.gz`. NanoAODv12 (2022, 2023) stores a wrong lepton-veto bit; the JME repair
+starts from the Tight bit, adds neHEF < 0.99 for 2.7 < |η| ≤ 3.0 and neEmEF < 0.4 above, and builds
+the lepton veto as muEF < 0.8 and chEmEF < 0.8 for |η| ≤ 2.7 (`ak4_tight_lepton_veto_from_bits` in
+`analyzer.py`; 0.025 % of the selected 2023 jets differ from the stored bit). UL (NanoAODv9) uses
+the stored bits.
 
-AK4 is CHS in UL and Puppi in Run 3, AK8 is Puppi everywhere; the JES uncertainty source is `Total`
-(`CMS_scale_j_Total`), the UL18 file also ships the regrouped sources. The UL JERC files are the
-CAT repackaging (installed 2026-10-11; values identical to the old files except the UL17 JER
-resolution, ≤ 3 %). The JME recommendations are on the CMS-internal JME documentation sites:
-JERC (cms-jme-jerc.docs.cern.ch: JES, JER, uncertainties, jet veto maps) and JMAR
-(cms-jme-jmar.docs.cern.ch: jet ID, noise filters, jet mass).
+AK4 is CHS in UL and Puppi in Run 3, AK8 is Puppi everywhere. The JES uncertainty source is `Total`
+(`CMS_scale_j_Total`); the UL18 file also ships the regrouped sources. The UL JERC files are the
+CAT repackaging (identical to the earlier files except the UL17 JER resolution, ≤ 3 %). The JME
+recommendations are on the CMS-internal JME sites: JERC (cms-jme-jerc.docs.cern.ch: JES, JER,
+uncertainties, jet veto maps) and JMAR (cms-jme-jmar.docs.cern.ch: jet ID, noise filters, jet mass).
 
 JER smearing on MC follows the JME hybrid method: a jet matched to a generator jet (ΔR < R/2, i.e.
 0.2 for AK4 and 0.4 for AK8, and |pT − pT_gen| < 3 σ_JER pT) is scaled by its JER scale factor
@@ -61,14 +57,11 @@ recommendation in Run 3: the soft-drop subjets get the AK4 PUPPI JEC (production
 PUPPI, where it is 1) and, on MC, the AK4 JER with gen subjets (`SubGenJetAK8`, NanoAOD's index in
 v15, nearest in ΔR otherwise, matched within 0.2), and m_SD is recomputed from them; JES and JER
 vary both subjets; JMS and JMR are the `jms` and `jmr` families. UL keeps NanoAOD's m_SD (no AK4
-PUPPI payload). The random numbers of the stochastic JER and of the
-Run 3 electron smearing are drawn per object from correctionlib's `hashprng` of (event, luminosity
-block, φ, a salt per correction), so they are reproducible and independent between the objects of
-an event (`object_normal_draws` in `wrcoffea/scale_factors.py`; since 2026-10-12). The draws use
-correctionlib's `normal` distribution (since 2026-10-14), which gives the same numbers on macOS and
-on the Linux Condor workers; `stdnormal`, used before, hands the draw to the C++ library's
-`std::normal_distribution`, which differs between the two, so laptop and Condor outputs differed at
-the level of the smearing's statistical noise. The high-pT muon smearing draws the same way.
+PUPPI payload). The random numbers of the stochastic JER, the Run 3 electron smearing and the
+high-pT muon smearing are drawn per object from correctionlib's `hashprng` of (event, luminosity
+block, φ, a salt per correction) with its `normal` distribution (`object_normal_draws` in
+`wrcoffea/scale_factors.py`): reproducible, independent between the objects of an event, and the
+same on macOS and on the Linux Condor workers (`stdnormal` differs between the two).
 
 ### Pileup
 
@@ -97,8 +90,8 @@ SFs to 500 GeV and HEEP ID SFs to 1 TeV instead of using it (open item in analys
 | Correction | UL16APV, UL16, UL17, UL18 | 2022, 2022EE, 2023, 2023BPix | 2024 | 2025 |
 | --- | --- | --- | --- | --- |
 | reco, ID, isolation SFs | `muon_HighPt.json.gz` (global-muon reco vs \|η\| and p, HighPt ID, loose tracker isolation) | same | same | 2025 file |
-| trigger SF | the leading muon's SF from `muon_HighPt.json.gz` (`NUM_HLT_DEN_HighPtLooseRelIsoProbes`); two SFs are never multiplied | per-leg data/MC efficiency OR from `muon_Z.json.gz`, entry `NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose` (our exact OR with the HighPt ID and loose tk-iso denominator; variation since 2026-10-12: each muon's data efficiency moved by the POG per-muon SF uncertainty, `stat` and the fit variations `AltBkg`, `AltSig`, `massBin`, `massRange`, `tagIso` in quadrature, MC efficiency nominal, as the payload's efficiency-level `syst_*eff` are zero) | per-leg efficiency OR from `ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json` | per-leg OR from the 2025 high-pT file |
-| momentum | TuneP; **placeholder** scale uncertainty (5 %/TeV × pT), no resolution variation (`musmear` refused) | `data/muon_highpt/Run3/<year>/<era>.json` (since 2026-10-12): MuonScaRe below 200 GeV; above, the GE κ maps of the Muon POG Run 3 tables on data and the POG's MC smearing, barrel / endcap 0 / 5 % (2022), 5 / 10 % (2022EE, 2023), 0 / 15 % (2023BPix) | `data/muon_highpt/Run3/2024/RunIII2024Summer24.json`: MuonScaRe (`muon_scalesmearing.json.gz`) below 200 GeV, the generalized-endpoint correction on data and extra smearing on MC above (the payload names the source of every number; `scripts/show_muon_highpt.py` prints them) | placeholder as UL (no 2025 recipe yet) |
+| trigger SF | the leading muon's SF from `muon_HighPt.json.gz` (`NUM_HLT_DEN_HighPtLooseRelIsoProbes`); two SFs are never multiplied | per-leg data/MC efficiency OR from `muon_Z.json.gz`, entry `NUM_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose` (our exact OR with the HighPt ID and loose tk-iso denominator; variation: each muon's data efficiency moved by the POG per-muon SF uncertainty, `stat` and the fit variations `AltBkg`, `AltSig`, `massBin`, `massRange`, `tagIso` in quadrature, MC efficiency nominal, as the payload's efficiency-level `syst_*eff` are zero) | per-leg efficiency OR from `ScaleFactors_Muon_highPt_HLT_2024_schemaV2.json` | per-leg OR from the 2025 high-pT file |
+| momentum | TuneP; **placeholder** scale uncertainty (5 %/TeV × pT), no resolution variation (`musmear` refused) | `data/muon_highpt/Run3/<year>/<era>.json`: MuonScaRe below 200 GeV; above, the GE κ maps of the Muon POG Run 3 tables on data and the POG's MC smearing, barrel / endcap 0 / 5 % (2022), 5 / 10 % (2022EE, 2023), 0 / 15 % (2023BPix) | `data/muon_highpt/Run3/2024/RunIII2024Summer24.json`: MuonScaRe (`muon_scalesmearing.json.gz`) below 200 GeV, the generalized-endpoint correction on data and extra smearing on MC above (the payload names the source of every number; `scripts/show_muon_highpt.py` prints them) | placeholder as UL (no 2025 recipe yet) |
 | loose muon (boosted partner) | reco and ID SFs, no isolation | same | same | same |
 
 The reco SF's last bin is open-ended (p > 1.5 TeV; 2024 p > 0.9 TeV) with era-dependent central

@@ -1,13 +1,9 @@
 # Systematics: finished and remaining
 
-What this page answers: which systematic uncertainties are finished for Run 2 UL and for Run 3,
-meaning implemented, fed by a real input and produced in the final histogram sets, and which are
-still placeholders, missing or waiting for a decision. How each family works is in
-[analysis.md](analysis.md#systematics); the payloads are in [corrections.md](corrections.md);
-the open GitHub issues are linked. Verified on 2026-10-12.
-
-Run 2 = UL16APV, UL16, UL17, UL18. Run 3 = 2022, 2022EE, 2023, 2023BPix, 2024 (2025 has no
-production yet). The final sets are `--dir 20261011_systs` in every era.
+Finished means implemented, fed by a real input and produced in the final histogram sets
+(`--dir 20261011_systs` in every era). How each family works: [analysis.md](analysis.md#systematics);
+the payloads: [corrections.md](corrections.md). Run 2 = UL16APV, UL16, UL17, UL18. Run 3 = 2022,
+2022EE, 2023, 2023BPix, 2024; 2025 has no production yet.
 
 ## Finished
 
@@ -16,16 +12,16 @@ production yet). The final sets are `--dir 20261011_systs` in every era.
 | Luminosity (`lumi`) | yes | yes | normtag_PHYSICS luminosity of the skimmed lumisections; uncertainties from the LUM POG tables (2024 and 2025 preliminary). Era correlations: see Remaining. |
 | Pileup (`pileup`) | yes | yes | golden-JSON profiles per era |
 | Muon reco, ID, isolation SFs (`sf`) | yes | yes | POG high-pT payloads; last-bin treatment above 1.5 TeV: see Remaining |
-| Muon trigger SF (`sf`) | yes | yes | UL: the leading muon's SF with its payload uncertainty, not the per-muon efficiency OR of Run 2 (Remaining, #106); 2022/2023: per-leg efficiency OR from the POG `muon_Z` entry of our exact OR, varied by the POG per-muon SF uncertainty (stat and fit variations) on the data efficiency; 2024: per-leg OR from the high-pT HLT file, varied as Run 2 (data up with MC down). Both since 2026-10-12; the Run 3 sets made before carry 0.01 to 0.2 % |
+| Muon trigger SF (`sf`) | yes | yes | UL: the leading muon's SF with its payload uncertainty, not the per-muon efficiency OR of Run 2 (Remaining, #106); 2022/2023: per-leg efficiency OR from the POG `muon_Z` entry of our exact OR, varied by the POG per-muon SF uncertainty (stat and fit variations) on the data efficiency; 2024: per-leg OR from the high-pT HLT file, varied as Run 2 (data up with MC down). Run 3 sets made before 2026-10-12 carry the earlier cancelling variation (0.01 to 0.2 %) |
 | Electron reco SF (`sf`) | yes | yes | EGM payloads; Run 3 clipped at 500 GeV (see Remaining) |
 | Electron HEEP ID SF (`sf`) | yes | yes | UL: flat per year; 2022/2023: the central EGM flat values; 2024: the HEEPID working point, clipped at 1 TeV |
 | Electron trigger SF (`sf`) | yes | proxy | UL: the Run 2 HEEP trigger-OR efficiencies; Run 3: the Ele30 TightID SF stands in for the OR (Remaining, #94) |
 | Loose-lepton SFs (`sf`) | yes | yes | boosted partner: muon reco + ID, electron reco |
 | LSF SF (`lsf`) | yes | placeholder | UL: AN-19-083 Table 60 per year; Run 3: 1.00 ± 0.10 (Remaining, #95) |
-| JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out; in Run 3 they also move the AK8 soft-drop mass (JME recipe, since 2026-10-12), not in UL (no AK4 PUPPI payload) |
-| Soft-drop mass scale and resolution (`jms`, `jmr`) | yes | yes | JME residual JMS ±1 % and JMR ±2 % (since 2026-10-12); validated for 50 ≤ m_SD < 300 GeV, our cut is 40 GeV |
+| JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out; in Run 3 they also move the AK8 soft-drop mass (JME recipe), not in UL (no AK4 PUPPI payload) |
+| Soft-drop mass scale and resolution (`jms`, `jmr`) | yes | yes | JME residual JMS ±1 % and JMR ±2 %; validated for 50 ≤ m_SD < 300 GeV, our cut is 40 GeV |
 | Electron energy scale and smearing (`elescale`, `elesmear`) | no | yes | UL NanoAODv9 MC carries no scale uncertainty (Remaining, #96) |
-| Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder (`musmear` refused) | yes | the high-pT recipe in 2022 to 2024 (2022/2023 since 2026-10-12, POG Run 3 tables); UL and 2025: a 5 %/TeV × pT scale placeholder, no resolution variation (Remaining, #91) |
+| Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder (`musmear` refused) | yes | the high-pT recipe in 2022 to 2024 (2022/2023 from the POG Run 3 tables); UL and 2025: a 5 %/TeV × pT scale placeholder, no resolution variation (Remaining, #91) |
 | DY Z-pT reweight, 6 nuisances (`dyzpt`) | yes | yes | own derivations, AN-19-083 recipe, 2026-10-11; one payload per UL era, 2022+2023 together, 2024 alone; the Run 3 DY CR closure is still to be documented (Remaining, #101) |
 | DY jet-pT reshape, 2 nuisances (`dyreshape`) | yes | yes | per UL era; per Run 3 data-taking year; none for 2025 yet; Run 3 closure: Remaining, #101 |
 | QCD scales μR, μF (`scale`) | yes | yes | normalized per dataset; the plotter takes the envelope |

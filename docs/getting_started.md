@@ -1,7 +1,7 @@
 # Getting started
 
-What this page answers: how to set up the environment on a laptop or at the FNAL LPC, get a grid
-proxy, run one sample and the tests. Verified on 2026-10-12.
+Set up the environment on a laptop or at the FNAL LPC, get a grid proxy, run one sample and the
+tests.
 
 ## Clone
 
