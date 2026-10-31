@@ -61,8 +61,7 @@ ROOT histograms with every systematic variation out. The plots, the fits and the
 the [WR_Plotter](WR_Plotter/) submodule.
 
 Two topologies: **resolved** (two tight leptons and two AK4 jets, observable m(ℓℓjj)) and
-**boosted** (one tight lepton and one AK8 jet with a lepton inside, observable m(ℓJ)). What the
-code does, cut by cut, is in [docs/analysis.md](docs/analysis.md).
+**boosted** (one tight lepton and one AK8 jet with a lepton inside, observable m(ℓJ)).
 
 ## Locally, in five commands
 
@@ -99,16 +98,11 @@ Run 2 only).
 | Page | Answers |
 | --- | --- |
 | [getting_started.md](docs/getting_started.md) | How do I set up the environment on a laptop or at the LPC, and check it works? |
-| [analysis.md](docs/analysis.md) | What does the analysis do: filters, objects, triggers, regions, weights, blinding, systematics, open items? |
 | [run_analysis.md](docs/run_analysis.md) | How do I run the analyzer: modes, flags, outputs, systematics production? |
-| [corrections.md](docs/corrections.md) | Which correction payload does each era use, where it comes from, what is a placeholder? |
 | [systematics_status.md](docs/systematics_status.md) | Which systematic uncertainties are finished for Run 2 and Run 3, and which are still placeholders or missing? |
-| [luminosity.md](docs/luminosity.md) | Golden JSONs, the brilcalc recipe, the processed luminosity of every era, the uncertainties. |
-| [inputs.md](docs/inputs.md) | Dataset configs, how cross sections are built, skimmed and unskimmed filesets. |
 | [skimming.md](docs/skimming.md) | The skim campaign: selection, branch policy, workflow, verification, Condor at the LPC. |
 | [condor.md](docs/condor.md) | Running the analyzer on HTCondor at the LPC. |
 | [WR_Plotter/docs/plotting.md](WR_Plotter/docs/plotting.md) | The WR_Plotter commands: stacks, cutflows, DY comparisons, systematics tables. |
-| [adding_a_new_era.md](docs/adding_a_new_era.md) | The checklist for a new era. |
 
 Reference analysis: CMS-EXO-20-002 (Run 2, 138 fb⁻¹), whose analysis note AN-19-083 and code
 (SKFlat HNWRAnalyzer) this analyzer follows.

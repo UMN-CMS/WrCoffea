@@ -91,10 +91,3 @@ The smoke run writes `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/smoke/WR
 and its manifest. Its normalization is meaningless (one file, the full sum of weights): never read
 data/MC agreement from a smoke run; delete the `smoke` directory afterwards. Everything else about
 running: [run_analysis.md](run_analysis.md).
-
-## Where to read next
-
-- What the analysis does: [analysis.md](analysis.md).
-- Which corrections each era applies: [corrections.md](corrections.md).
-- Configs, cross sections and filesets: [inputs.md](inputs.md).
-- A new era: [adding_a_new_era.md](adding_a_new_era.md).

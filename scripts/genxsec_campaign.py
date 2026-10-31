@@ -844,7 +844,7 @@ def _sig(v: float, n: int = 5) -> float:
 # Perturbative order of the cross section a config entry actually uses ("order" key, right after "xsec")
 # ----------------------------------------------------------------------------
 
-# Vocabulary (documented in docs/inputs.md):
+# Vocabulary:
 #   LO, NLO, NNLO                 the value is a generator or reference cross section at that order
 #   NLO+NNLL, NNLO+NNLL           fixed order plus resummation (tW "approximate NNLO"; ttbar)
 #   LO x k(NLO), LO x k(NNLO)     a LO generator value scaled by an inclusive NLO/LO or NNLO/LO k-factor

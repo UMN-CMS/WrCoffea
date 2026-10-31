@@ -1,8 +1,8 @@
 # Systematics: finished and remaining
 
 Finished means implemented, fed by a real input and produced in the final histogram sets
-(`--dir 20261011_systs` in every era). How each family works: [analysis.md](analysis.md#systematics);
-the payloads: [corrections.md](corrections.md). Run 2 = UL16APV, UL16, UL17, UL18. Run 3 = 2022,
+(`--dir 20261011_systs` in every era). The families and sources: `wrcoffea/systematics.py`;
+the payloads: `wrcoffea/config.yaml`. Run 2 = UL16APV, UL16, UL17, UL18. Run 3 = 2022,
 2022EE, 2023, 2023BPix, 2024; 2025 has no production yet.
 
 ## Finished
@@ -50,7 +50,7 @@ a Run 3 MC file counts only when it was written after that change.
 | Run 3 DY corrections validated | | open | the data/MC ratios of the resolved and boosted DY CRs of every Run 3 era after the corrections (stack plots, the CR1 → CR2 closure with `--study dy-cr-split`), and the one-Z-pT-payload-per-year choice confirmed or changed | #101 |
 | Luminosity correlations between eras | open | open | the LUM POG correlated and uncorrelated components in the datacards | #105 |
 | JES split by source | `Total` only | `Total` only | per-source nuisances in the production and the datacards, if the fit needs them | |
-| Background normalization and MC statistics in the fit | not in the production | not in the production | datacard-level: free DY and tt̄+tW rates, the lnN priors of the other backgrounds, Barlow-Beeston (Run 2 choices in [analysis.md](analysis.md)) | |
+| Background normalization and MC statistics in the fit | not in the production | not in the production | datacard-level: free DY and tt̄+tW rates, the lnN priors of the other backgrounds, Barlow-Beeston | |
 | Signal cross-section uncertainty and the missing N → ℓtb channel | open | open | a decision on the per-point k-factor uncertainty and on the official samples' missing top channel | #99 |
 | 2025 | | no production | skims, processed luminosity, a 2025 reshape, the 2025 electron trigger and muon momentum payloads | #100 |
 | AK8 soft-drop mass definition (corrected vs raw) | open | open | not a systematic but a selection choice that moves the boosted DY CR by ~9 % in UL18 | #97 |

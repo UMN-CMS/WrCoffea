@@ -1,8 +1,5 @@
 # Running the analyzer
 
-The selection and the corrections are in [analysis.md](analysis.md) and
-[corrections.md](corrections.md).
-
 ## Usage
 
 ```bash
@@ -95,8 +92,8 @@ Data is blinded by default; MC never is.
 ## Systematics production
 
 `--systs FAMILY ...` adds the up/down variations of those families to every MC histogram; data
-gets nominal only. Families, sources and what each era can produce:
-[analysis.md, Systematics](analysis.md#systematics).
+gets nominal only. Families and sources: `wrcoffea/systematics.py`; what each era has produced:
+[systematics_status.md](systematics_status.md).
 
 - A family or source the era cannot produce is an error at start-up (UL `elescale`/`elesmear`,
   Run 3 `prefire`, `musmear` in UL and 2025). A deliberate omission is `--omit-systs <Source>`,

@@ -127,7 +127,7 @@ The constants are at the top of `bin/run_analysis.py`.
 ## Laptop and Condor agree
 
 The smearing random numbers (stochastic JER, Run 3 electron smearing, high-pT muon smearing) are the
-same on macOS and Linux ([corrections.md](corrections.md)), so a laptop run and a Condor run of the
+same on macOS and Linux, so a laptop run and a Condor run of the
 same code and inputs give the same histograms (14 unweighted cutflows equal, yields to 1e-16).
 Outputs made before the switch to correctionlib's `normal` distribution differ between the two
 platforms at the level of the smearing's statistical noise.

@@ -53,7 +53,7 @@ python3 bin/skim.py fileset --plan-dir $SKIM_PLAN --out $SKIM_OUT --era RunIII20
 Notes:
 
 - The datasets come from `data/configs/Run3/2025/RunIII2025Summer25/RunIII2025Summer25_data.json`; add
-  new periods or a reprocessing there before planning ([inputs.md](inputs.md)).
+  new periods or a reprocessing there before planning.
 - Running the 2024 data, the same volume, took about a day and a half on Condor. A job that runs longer
   than 8 hours is held and restarted on another node.
 - `validate` exits 1 while some input is bad; add `--accept-bad-files` once unreadable or unavailable
@@ -65,7 +65,7 @@ Notes:
 - The 2025 data skims take about 0.2 TB of the 2 TB EOS quota. Tested end to end on 2026-10-12 on one
   dataset with Billy's grid account.
 
-Then (Billy): the luminosity from the masks ([luminosity.md](luminosity.md)) into `config.yaml` and
+Then (Billy): the luminosity from the masks (`scripts/processed_lumi.py`) into `config.yaml` and
 `WR_Plotter/data/lumi.yaml`; the 2024-MC alias filesets with `python3 bin/skim.py alias-filesets --era
 RunIII2025Summer25`; commit the fileset, the lumi files and the config; then
 `python3 bin/run_analysis.py RunIII2025Summer25 data --dir <tag>` from any machine. Unskimmed filesets
@@ -200,7 +200,7 @@ become one dataset. Non-DAS entries need a `files` list with `file_sizes`, `file
   `LuminosityBlocks` must hold exactly the lumisections DBS lists; certified lumisections in no file are a
   warning (0.31 % for Muon0_Run2024I, a Tier-0 property). `--remote-lumis` writes
   `<dataset>_processed_lumis.json` next to the parts; the era luminosity is brilcalc on that mask
-  ([luminosity.md](luminosity.md)).
+  (`scripts/processed_lumi.py`).
 - UL18: `validate --remote-lumis` fails SingleMuon 2018A, 2018D and EGamma 2018A as expected: DBS's
   per-file lumisection lists are incomplete there. Nothing is lost.
 - `scripts/skim_closure.py`: the analyzer on raw inputs and on their parts agrees bin by bin on every
@@ -212,8 +212,7 @@ become one dataset. Non-DAS entries need a `files` list with `file_sizes`, `file
   scan. The UL18 scans live in `RunIISummer20UL18_signal_scan.json` and its own fileset.
 - Plans built before a cross-section `apply` keep the old numbers until `skim.py refresh-metadata
   --plan-dir ...`; `fileset` writes them into the filesets. The cross-section campaign itself is
-  `scripts/genxsec_campaign.py` (`run`, `review`, `apply`, `annotate-order`); the rules are in
-  [inputs.md](inputs.md).
+  `scripts/genxsec_campaign.py` (`run`, `review`, `apply`, `annotate-order`).
 
 ## Edge eras (2022B, 2023B, 2024B)
 
