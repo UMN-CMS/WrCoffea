@@ -18,7 +18,7 @@ private-sample table are taken from there and marked as such.
 
 Example::
 
-    python scripts/convert_run2_signal_kfactor.py \
+    python scripts/signal_kfactor/convert_run2_signal_kfactor.py \
         --skflat-data /path/to/SKFlatAnalyzer/data/Run2Legacy_v4 --year 2018 \
         --out data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_run2legacy_v4_2018.json
 """
