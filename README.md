@@ -14,16 +14,16 @@ cd ~/nobackup
 git clone -b billy_dev https://github.com/UMN-CMS/WrCoffea.git && cd WrCoffea
 curl -OL https://raw.githubusercontent.com/CoffeaTeam/lpcjobqueue/main/bootstrap.sh
 bash bootstrap.sh
-tmux new -s wr
 ```
 
 **Inside tmux**, the container and one command. It starts 250 Condor workers, runs the nine
 `run_analysis.py` commands of the full 2024 production on them at once and stops them:
 
 ```bash
+tmux new -s wr
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
 pip install -e .                            # first time only
-python bin/run_production.py RunIII2024Summer24 --condor --all-dy
+python bin/run_production.py RunIII2024Summer24 --condor --all-dy # Run background (including all DY variants), data, signal
 ```
 
 This writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data
@@ -31,14 +31,12 @@ This writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<tod
 other DY setups. It takes 30 to 60 minutes, depending on how fast the pool hands out workers, and
 ends with a summary of every command. Each command has its log in `logs/<today's date>/`.
 
-Without the six other DY setups, the three commands `data`, `bkg` and `signal` (143 files):
-
+To run over everything except all the extra DY variants (i.e. LO HT DY only + remaining backgrounds + data + signal):
 ```bash
 python bin/run_production.py RunIII2024Summer24 --condor
 ```
 
-One part alone:
-
+Or you can analyzer data, background and signal seperately:
 ```bash
 python bin/run_production.py RunIII2024Summer24 --condor --only data      # data only
 python bin/run_production.py RunIII2024Summer24 --condor --only bkg       # backgrounds only, LO HT DY
