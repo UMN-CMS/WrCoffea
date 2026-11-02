@@ -33,7 +33,18 @@ It writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today
 other DY setups. It takes 30 to 60 minutes, depending on how fast the pool hands out workers, and
 ends with a summary of every command. Each command has its log in `logs/<today's date>/`.
 
-When these have completed, the output ROOT files can be used to make stackplots, signal plots, cutflow tables, and DY comparison plots here (TO-DO: link to plotter)
+When these have completed, the output ROOT files can be used to make stackplots, signal plots, cutflow tables, and DY comparison plots: [WR_Plotter/docs/plotting.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/docs/plotting.md).
+
+The other years run the same way: one era, several eras, or `all` for every era with data skims.
+```bash
+python bin/run_production.py Run3Summer22 --condor --all-dy
+python bin/run_production.py RunIISummer20UL17 RunIISummer20UL18 --condor --all-dy
+python bin/run_production.py all --condor --all-dy
+```
+Eras: `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer20UL17`, `RunIISummer20UL18`, `Run3Summer22`,
+`Run3Summer22EE`, `Run3Summer23`, `Run3Summer23BPix`, `RunIII2024Summer24`; `RunIII2025Summer25` has no skims yet.
+Each era writes under its own `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<today's date>/` and runs its own DY
+variants (`--plan --all-dy` lists an era's commands).
 
 ## Run all of 2024 except the extra DY variants
 You may wish to run over everything except all the extra DY variants (i.e. LO HT DY only + remaining backgrounds + data + signal):
@@ -87,4 +98,4 @@ Run 2 only).
 | [systematics_status.md](docs/systematics_status.md) | Which systematic uncertainties are finished for Run 2 and Run 3, and which are still placeholders or missing? |
 | [skimming.md](docs/skimming.md) | The skim campaign: selection, branch policy, workflow, verification, Condor at the LPC. |
 | [condor.md](docs/condor.md) | Running the analyzer on HTCondor at the LPC. |
-| [WR_Plotter/docs/plotting.md](WR_Plotter/docs/plotting.md) | The WR_Plotter commands: stacks, cutflows, DY comparisons, systematics tables. |
+| [WR_Plotter/docs/plotting.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/docs/plotting.md) | The WR_Plotter commands: stacks, cutflows, signal plots, DY comparisons, systematics tables. |
