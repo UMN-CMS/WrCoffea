@@ -52,16 +52,6 @@ python bin/run_production.py RunIII2024Summer24 --condor --only signal    # all 
   `-- --systs lumi pileup sf jer jes jms jmr elescale elesmear muscale musmear lsf scale ps pdf --xrootd-timeout 120`
   (the workers then get 8 GB).
 
-## What this is
-
-Search for a right-handed W boson and a heavy neutrino, W_R → ℓN → ℓℓqq' (ee and μμ), in CMS
-Run 2 UL and Run 3 data. This repository is the coffea analyzer: NanoAOD (skimmed or not) in,
-ROOT histograms with every systematic variation out. The plots, the fits and the limits live in
-the [WR_Plotter](WR_Plotter/) submodule.
-
-Two topologies: **resolved** (two tight leptons and two AK4 jets, observable m(ℓℓjj)) and
-**boosted** (one tight lepton and one AK8 jet with a lepton inside, observable m(ℓJ)).
-
 ## Locally, in five commands
 
 ```bash
@@ -69,13 +59,7 @@ git clone --recursive -b billy_dev https://github.com/UMN-CMS/WrCoffea.git && cd
 python3.12 -m venv .venv && .venv/bin/pip install -e ".[xrootd,test]"     # details: docs/getting_started.md
 voms-proxy-init --rfc --voms cms -valid 192:00                            # grid proxy for the skims
 .venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --dir mytag  # one sample, one era
-cd WR_Plotter && ../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir mytag --local-plots
 ```
-
-The work happens on branch `billy_dev`; `main` is far behind and has the old documentation.
-`.venv/bin/python -m pytest tests -q` runs the analyzer tests offline (about two minutes).
-Composite modes (`all`, `bkg`, `data`, `mc`, `signal`), eras, systematics and every flag:
-[docs/run_analysis.md](docs/run_analysis.md).
 
 ## Where things are
 
@@ -102,6 +86,3 @@ Run 2 only).
 | [skimming.md](docs/skimming.md) | The skim campaign: selection, branch policy, workflow, verification, Condor at the LPC. |
 | [condor.md](docs/condor.md) | Running the analyzer on HTCondor at the LPC. |
 | [WR_Plotter/docs/plotting.md](WR_Plotter/docs/plotting.md) | The WR_Plotter commands: stacks, cutflows, DY comparisons, systematics tables. |
-
-Reference analysis: CMS-EXO-20-002 (Run 2, 138 fb⁻¹), whose analysis note AN-19-083 and code
-(SKFlat HNWRAnalyzer) this analyzer follows.
