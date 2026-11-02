@@ -17,27 +17,29 @@ bash bootstrap.sh
 tmux new -s wr
 ```
 
-**Inside tmux**, the container and one command. It starts 250 Condor workers, runs all of 2024 on
-them (seven `run_analysis.py` commands at once) and stops them:
+**Inside tmux**, the container and one command. It starts 250 Condor workers, runs the
+`run_analysis.py` commands of the production on them at once and stops them:
 
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
-pip install -e .                            # first time only
-python bin/run_production.py RunIII2024Summer24 --condor
+pip install -e .                                                          # first time only
+python bin/run_production.py RunIII2024Summer24 --condor                  # all of 2024: seven commands, 149 files
+python bin/run_production.py RunIII2024Summer24 --condor --only nominal   # without the DY variants: one command, 143 files
 ```
 
-This writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data
-(blinded), tt_tW, Nonprompt, Other, all 137 signal points, the default DY and six other DY setups.
-It takes 30 to 60 minutes, depending on how fast the pool hands out workers, and ends with a summary
-of every command. Each command has its log in `logs/<today's date>/`.
+Both write to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data (blinded),
+tt_tW, Nonprompt, Other, all 137 signal points and the default DY (LO HT-binned); the full
+production adds six other DY setups. It takes 30 to 60 minutes, depending on how fast the pool
+hands out workers, and ends with a summary of every command. Each command has its log in
+`logs/<today's date>/`.
 
 - `--plan` prints the seven commands without running them; `--dir TAG` names the output directory.
 - A failed command: the summary names it and prints the line that reruns it alone (`--only NAME`).
 - No worker after an hour (a busy pool, or low priority after heavy use): `--worker-wait-timeout 21600`.
 - A refusal that names directories in `~/.local`: delete them and start `./shell` again.
 - Progress: `condor_q -global $USER -totals` in a tmux window outside `./shell`.
-- Data, backgrounds and signal only: `--only nominal`. Systematics: flags after `--` go to every
-  command, `-- --systs lumi pileup sf jer jes jms jmr elescale elesmear muscale musmear lsf scale ps pdf --xrootd-timeout 120`
+- Systematics: flags after `--` go to every command,
+  `-- --systs lumi pileup sf jer jes jms jmr elescale elesmear muscale musmear lsf scale ps pdf --xrootd-timeout 120`
   (the workers then get 8 GB).
 
 ## What this is
