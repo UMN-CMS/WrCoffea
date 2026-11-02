@@ -7,6 +7,7 @@ at the same time:
 
     python bin/run_analysis.py RunIII2024Summer24 all --scheduler condor_scheduler.json --dir <tag>
     python bin/run_analysis.py RunIII2024Summer24 DYJets --dy nlo_inc --scheduler condor_scheduler.json --dir <tag>
+    python bin/run_production.py RunIII2024Summer24 --scheduler condor_scheduler.json --dir <tag>   # a whole production
 
 Each run then starts on workers that are already there instead of waiting for new ones. The workers
 keep the copy of wrcoffea/ and data/ made when this cluster starts: a run whose checkout differs (or

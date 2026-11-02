@@ -336,6 +336,10 @@ def filter_by_process(fileset: Mapping, desired_process: str, *, mass: str | Non
 # --dy-reweight suffix (WR_Plotter data/dy_samples.yaml uses the same tags).
 DY_REWEIGHT_SUFFIX = {"none": "", "zpt": "_zpt", "zpt+reshape": "_zpt_reshape"}
 
+# DY variants whose samples are added unstitched: they run (run_analysis.py warns) but are not DY
+# predictions, so bin/run_production.py leaves them out of a production.
+UNSTITCHED_DY_VARIANTS = frozenset({"nlo_ptll"})
+
 
 def default_dy_variant(era: str) -> str:
     """The era's default DY variant: config.yaml ``default_mc_tag`` without its ``dy_`` prefix."""

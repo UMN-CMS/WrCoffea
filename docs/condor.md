@@ -39,7 +39,11 @@ cd ~/nobackup/WrCoffea && ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py
 ## Running
 
 ```bash
-python bin/run_analysis.py RunIII2024Summer24 all --condor       # everything
+python bin/run_production.py RunIII2024Summer24 --condor         # the era's production: starts the workers, runs every command at once, stops them
+python bin/run_production.py RunIII2024Summer24 --plan           # the commands of the production, nothing runs
+python bin/run_production.py all --condor                        # every era with a data fileset, one era's commands at a time
+python bin/run_production.py RunIII2024Summer24 --condor -- --systs lumi pileup sf --xrootd-timeout 120
+python bin/run_analysis.py RunIII2024Summer24 all --condor       # one command with workers of its own: everything
 python bin/run_analysis.py RunIII2024Summer24 bkg --condor       # all backgrounds
 python bin/run_analysis.py RunIII2024Summer24 data --condor      # all data
 python bin/run_analysis.py RunIII2024Summer24 mc --condor        # backgrounds + signal
@@ -50,6 +54,16 @@ python bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --condo
 python bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup sf --xrootd-timeout 120
 ```
 
+- A production is every `run_analysis.py` command an era's full set needs, from `config.yaml`:
+  `all --signal-points all`, `DYJets --dy-reweight zpt` and `zpt+reshape` where the era has the
+  payloads, and `DYJets --dy <variant>` for every `dy_variants` entry but the default and `nlo_ptll`.
+  Flags after `--` go to every command; with `--systs` among them the two reweighted DY commands also
+  get `dyzpt` and `dyreshape`, and the workers the memory of a `--systs` run. Every command runs
+  `--preflight-only` first, so a missing fileset or a refused flag stops the production before a
+  worker is requested. Each command writes `logs/<dir>/<era>_<name>.log`; the summary lists every
+  command's outcome and the `--only` line that reruns the failed ones. `--workers` (250) sizes the
+  workers, `--jobs N` runs N commands at a time (default: an era's commands at once on Condor, one
+  locally), `--dir` defaults to today's date.
 - `signal`, `mc` and `all` run the 9-point default grid; `--signal-points all` runs every point of
   `data/signal_points/<era>_mass_points.csv`, `--mwr-range MIN MAX` a range of m(W_R).
 - One composite run is faster than the same samples run one by one: every run pays the wait for
@@ -65,12 +79,16 @@ python bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup s
 python bin/condor_cluster.py --workers 200          # --worker-memory 8GB for runs with --systs
 
 # tmux window 2, same checkout: one command after another, or several at the same time
+python bin/run_production.py RunIII2024Summer24 --scheduler condor_scheduler.json --dir <tag>
 python bin/run_analysis.py RunIII2024Summer24 all --signal-points all --scheduler condor_scheduler.json --dir <tag>
 python bin/run_analysis.py RunIII2024Summer24 DYJets --dy nlo_inc --scheduler condor_scheduler.json --dir <tag>
 ```
 
 - `--scheduler` takes the file `condor_cluster.py` writes (or its address), implies `--condor` and
   starts no workers; `--max-workers` and `--worker-memory` belong to `condor_cluster.py`.
+  `run_production.py --condor` starts workers of its own the same way and stops them when its
+  commands end; with `--scheduler` it uses this cluster instead, so a rerun of a failed command does
+  not wait for new workers.
 - Workers that die are replaced. The cluster stops after `--idle-timeout` seconds (1800) without a
   task and without an attached run.
 - The workers keep the copy of `wrcoffea/` and of the data they read (`data/lumis`, `jsonpog`,
@@ -80,7 +98,7 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --dy nlo_inc --scheduler co
 - Attached runs equal separate `--condor` runs (yields to 2e-16, unweighted cutflows exactly). The
   whole 2024 production (data, backgrounds, six DY setups, 137 signal points, 770 M events) runs as
   seven commands in 30 to 60 minutes on one cluster; every era together (79 commands, 2.3 B events)
-  took 84 minutes on 250 workers.
+  took 84 minutes on 250 workers. `run_production.py` issues these commands.
 
 ## Settings
 

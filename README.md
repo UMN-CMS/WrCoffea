@@ -2,8 +2,8 @@
 
 ## Run all of 2024 on LPC Condor
 
-From an LPC login node, with a CMS grid certificate in `~/.globus`. Tested from a fresh clone on
-2026-10-15; the measurements behind the settings are in [docs/condor.md](docs/condor.md).
+From an LPC login node, with a CMS grid certificate in `~/.globus`. The measurements behind the
+settings are in [docs/condor.md](docs/condor.md).
 
 **Once**, on the node you landed on (the run lives on this node, inside tmux):
 
@@ -17,41 +17,28 @@ bash bootstrap.sh
 tmux new -s wr
 ```
 
-**tmux window 1**, the Condor workers (they stop after 30 idle minutes, or on Ctrl+C):
+**Inside tmux**, the container and one command. It starts 250 Condor workers, runs all of 2024 on
+them (seven `run_analysis.py` commands at once) and stops them:
 
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
 pip install -e .                            # first time only
-python bin/condor_cluster.py --workers 250
+python bin/run_production.py RunIII2024Summer24 --condor
 ```
 
-**tmux window 2** (Ctrl-b c), all of 2024 on those workers, seven commands at once:
+This writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data
+(blinded), tt_tW, Nonprompt, Other, all 137 signal points, the default DY and six other DY setups.
+It takes 30 to 60 minutes, depending on how fast the pool hands out workers, and ends with a summary
+of every command. Each command has its log in `logs/<today's date>/`.
 
-```bash
-./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
-TAG=$(date +%Y%m%d)_2024
-mkdir -p logs
-i=0
-for args in "all --signal-points all" \
-            "DYJets --dy-reweight zpt" "DYJets --dy-reweight zpt+reshape" \
-            "DYJets --dy lo_inc" "DYJets --dy nlo_inc" "DYJets --dy nlo_mll" "DYJets --dy nlo_njet"; do
-  i=$((i + 1))
-  python bin/run_analysis.py RunIII2024Summer24 $args --scheduler condor_scheduler.json --dir $TAG > logs/$TAG.$i.log 2>&1 &
-done
-wait
-grep -h "Execution took" logs/$TAG.*.log    # 7 lines when all succeeded
-```
-
-This writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/$TAG/`: data (blinded),
-tt_tW, Nonprompt, Other, all 137 signal points, the default DY and six other DY setups. It takes 30 to
-60 minutes, depending on how fast the pool hands out workers; then press Ctrl+C in window 1.
-
-- No worker after an hour (a busy pool, or low priority after heavy use): start both the cluster and
-  the runs with `--worker-wait-timeout 21600`.
+- `--plan` prints the seven commands without running them; `--dir TAG` names the output directory.
+- A failed command: the summary names it and prints the line that reruns it alone (`--only NAME`).
+- No worker after an hour (a busy pool, or low priority after heavy use): `--worker-wait-timeout 21600`.
 - A refusal that names directories in `~/.local`: delete them and start `./shell` again.
 - Progress: `condor_q -global $USER -totals` in a tmux window outside `./shell`.
-- Data, backgrounds and signal only: the first command alone. Systematics: start the cluster with
-  `--worker-memory 8GB`.
+- Data, backgrounds and signal only: `--only nominal`. Systematics: flags after `--` go to every
+  command, `-- --systs lumi pileup sf jer jes jms jmr elescale elesmear muscale musmear lsf scale ps pdf --xrootd-timeout 120`
+  (the workers then get 8 GB).
 
 ## What this is
 
@@ -82,7 +69,7 @@ Composite modes (`all`, `bkg`, `data`, `mc`, `signal`), eras, systematics and ev
 
 | | |
 | --- | --- |
-| `bin/` | `run_analysis.py` (the analyzer), `condor_cluster.py` (Condor workers shared by several runs), `skim.py` (skims and filesets), `lpc_condor.sh` |
+| `bin/` | `run_analysis.py` (the analyzer), `run_production.py` (every command of an era's production), `condor_cluster.py` (Condor workers shared by several runs), `skim.py` (skims and filesets), `lpc_condor.sh` |
 | `wrcoffea/` | the package: `analyzer.py`, `regions.py`, `systematics.py`, `scale_factors.py`, `config.yaml`, `skim/` |
 | `data/` | dataset configs, filesets, correction payloads (`jsonpog/`, `reweights/`), golden JSONs and luminosities, PDF sets, signal mass points |
 | `WR_Plotter/` | submodule: stack plots, cutflows, systematics tables |

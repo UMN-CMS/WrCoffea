@@ -24,6 +24,7 @@ from wrcoffea.analysis_config import CONFIG_OVERLAY_ENV, DY_VARIANTS
 from wrcoffea.cli_utils import (
     COMPOSITE_SAMPLES,
     SPLITTABLE_GROUPS,
+    UNSTITCHED_DY_VARIANTS,
     build_fileset_path,
     build_sample_to_group_map,
     default_dy_variant,
@@ -262,7 +263,7 @@ def validate_arguments(args, sig_points):
     # LHEFilterPtZ-0To50 sample is not a 0-50 GeV slice (UL17 header 1504 pb against the
     # inclusive sample's 5917 pb below 50 GeV), so the six slices do not rebuild the spectrum
     # either.  Usable only after stitching on LHE_Vpt (Run 3) and a check of every UL slice.
-    if args.dy == "nlo_ptll":
+    if args.dy in UNSTITCHED_DY_VARIANTS:
         logging.warning("--dy nlo_ptll: the pT(ll)-binned DY samples are added unstitched (Run 3: "
                         "open-ended slices, pT(ll) > 200 GeV counted 2-4 times, nothing below 100 GeV; "
                         "UL: the 0To50 slice is not a slice). Not a DY prediction; see run_analysis.py.")
