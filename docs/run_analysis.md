@@ -28,9 +28,9 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
 | `signal` | Signal: every point of `data/signal_points/<era>_mass_points.csv`, or `--signal-points` |
 | single | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal --mass WR<wr>_N<n>`; the subgroups of `--split-groups` (`TTbar`, `tW`, `tWSemiLep`, `WJets`, `TTSemiLep`, `SingleTop`, `Diboson`, `Triboson`, `ttV`) |
 
-- An era's whole production (`all`, the DY corrections and every DY variant
-  that is a prediction) is one command, `bin/run_production.py <era> [--condor]`
-  ([condor.md](condor.md#running)).
+- An era's production is one command, `bin/run_production.py <era> [--condor]`: `data`, `bkg` and
+  `signal` at once, with `--all-dy` the DY corrections and every DY variant that is a prediction,
+  with `--only` any of them by name ([condor.md](condor.md#running)).
 - Composite modes run the samples one after the other locally (3 Dask workers; a failing sample is
   logged and the next one runs) and in parallel with `--condor` at the LPC ([condor.md](condor.md)).
   `--signal-points grid` runs the 9-point grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV)

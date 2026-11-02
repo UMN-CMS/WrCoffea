@@ -1,22 +1,26 @@
-"""Run a production: every run_analysis.py command of an era, at once on Condor workers started here
+"""Run a production: the run_analysis.py commands of an era, at once on Condor workers started here
 (LPC, inside ./shell) or one after the other locally.
 
-    python bin/run_production.py RunIII2024Summer24 --condor               # the workers and every command of 2024
+    python bin/run_production.py RunIII2024Summer24 --condor               # data, backgrounds and every signal point of 2024
+    python bin/run_production.py RunIII2024Summer24 --condor --all-dy      # also every other DY setup, all at once
+    python bin/run_production.py RunIII2024Summer24 --condor --only data   # one command by name; also bkg, signal, dy_nlo_inc, ...
     python bin/run_production.py RunIII2024Summer24                        # laptop: one command after the other
-    python bin/run_production.py RunIII2024Summer24 --plan                 # print the commands, run nothing
-    python bin/run_production.py RunIII2024Summer24 --condor --dir 20261102 --only dy_nlo_mll    # rerun one
+    python bin/run_production.py RunIII2024Summer24 --plan --all-dy        # print the commands, run nothing
     python bin/run_production.py RunIII2024Summer24 --condor -- --systs lumi pileup sf jer jes   # flags for every command
     python bin/run_production.py all --condor                              # every era with a data fileset
 
-The commands of an era come from config.yaml:
+The commands of an era come from config.yaml; data, bkg and signal run unless --all-dy or --only
+says otherwise:
 
-    nominal         all                                 data, backgrounds and every signal point
+    data            data                                both data streams
+    bkg             bkg                                 the four background groups with the default DY
+    signal          signal                              every signal point of the era
     dy_zpt          DYJets --dy-reweight zpt            eras with a dy_zpt_reweight payload
     dy_zpt_reshape  DYJets --dy-reweight zpt+reshape    eras with a dy_reshape payload as well
     dy_<variant>    DYJets --dy <variant>               every dy_variants entry but the default and nlo_ptll
 
-Flags after "--" go to every command; with --systs among them, dy_zpt also gets dyzpt and
-dy_zpt_reshape gets dyzpt and dyreshape. Every command first runs with --preflight-only, so a missing
+Flags after "--" go to every command (--signal-points and --mwr-range to signal only); with --systs
+among them, dy_zpt also gets dyzpt and dy_zpt_reshape gets dyzpt and dyreshape. Every command first runs with --preflight-only, so a missing
 fileset or a flag the era refuses stops the production before any worker is requested. Each command
 writes its log to logs/<dir>/; the summary names the failed commands and the line that reruns them.
 The output goes to WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<dir>/ (--dir defaults to today's date).
@@ -41,6 +45,8 @@ from wrcoffea.cli_utils import UNSTITCHED_DY_VARIANTS, build_fileset_path, defau
 from wrcoffea.era_utils import get_era_details
 
 DEFAULT_WORKERS = 250
+NOMINAL = ("data", "bkg", "signal")                  # the commands that run without --all-dy or --only
+SIGNAL_FLAGS = ("--signal-points", "--mwr-range")    # pass-through flags that only the signal command takes
 PREFLIGHT_JOBS = 8          # preflights at a time; each is a python process that imports coffea
 LOG_ROOT = Path("logs")
 RUN_ANALYSIS = Path("bin") / "run_analysis.py"
@@ -75,11 +81,29 @@ def with_extra_systs(flags, families):
     return flags[:end] + [f for f in families if f not in flags[start:end]] + flags[end:]
 
 
+def split_signal_flags(flags):
+    """``flags`` as (the flags every command takes, the signal-point flags with their values)."""
+    general, signal = [], []
+    flags = list(flags)
+    i = 0
+    while i < len(flags):
+        target = signal if flags[i] in SIGNAL_FLAGS else general
+        target.append(flags[i])
+        i += 1
+        while i < len(flags) and not flags[i].startswith("-"):   # the flag's values
+            target.append(flags[i])
+            i += 1
+    return general, signal
+
+
 def plan_commands(era, extra=()):
-    """The commands of an era's production, from config.yaml: the nominal composite, the DY corrections
-    the era has payloads for, and every DY variant that is a prediction; ``extra`` flags go to each."""
-    extra = list(extra)
-    commands = [Command(era, "nominal", ("all", *extra))]
+    """The commands of an era's production, from config.yaml: the data, background and signal
+    composites, the DY corrections the era has payloads for, and every DY variant that is a
+    prediction. ``extra`` flags go to each, the signal-point flags to ``signal`` only."""
+    extra, signal_flags = split_signal_flags(extra)
+    commands = [Command(era, "data", ("data", *extra)),
+                Command(era, "bkg", ("bkg", *extra)),
+                Command(era, "signal", ("signal", *extra, *signal_flags))]
     if era in DY_ZPT_REWEIGHT_JSONS:
         commands.append(Command(era, "dy_zpt",
                                 ("DYJets", "--dy-reweight", "zpt", *with_extra_systs(extra, ["dyzpt"]))))
@@ -94,13 +118,20 @@ def plan_commands(era, extra=()):
     return commands
 
 
-def select_commands(commands, *, only=(), skip=()):
-    """The commands named by ``only`` (all when empty) without those named by ``skip``."""
+def select_commands(commands, *, only=(), skip=(), all_dy=False):
+    """The commands that run: those named by ``only``, else every command with ``all_dy``, else data,
+    bkg and signal; ``skip`` removes names. Names are checked against the whole plan."""
     names = list(dict.fromkeys(c.name for c in commands))
     unknown = sorted((set(only) | set(skip)) - set(names))
     if unknown:
         raise ValueError(f"Unknown command name(s): {', '.join(unknown)}. The commands are {', '.join(names)}.")
-    return [c for c in commands if (not only or c.name in only) and c.name not in skip]
+    if only:
+        chosen = [c for c in commands if c.name in only]
+    elif all_dy:
+        chosen = list(commands)
+    else:
+        chosen = [c for c in commands if c.name in NOMINAL]
+    return [c for c in chosen if c.name not in skip]
 
 
 def resolve_eras(spec, *, unskimmed=False):
@@ -290,7 +321,11 @@ def parse_args(argv):
                         help="Seconds to wait for the first worker (default 3600; a busy pool may need 21600).")
     parser.add_argument("--jobs", type=int, default=None, metavar="N",
                         help="Commands at a time (default: with Condor every command of an era at once, locally one).")
-    parser.add_argument("--only", nargs="+", default=(), metavar="NAME", help="Only these commands (names as --plan lists them).")
+    parser.add_argument("--all-dy", action="store_true",
+                        help="Also run every other DY setup of the era: the Z-pT reweight, reweight+reshape and each "
+                             "dy_variants entry but the default and nlo_ptll (default: data, bkg and signal).")
+    parser.add_argument("--only", nargs="+", default=(), metavar="NAME",
+                        help="Only these commands, from the whole plan (names as --plan --all-dy lists them).")
     parser.add_argument("--skip", nargs="+", default=(), metavar="NAME", help="Not these commands.")
     parser.add_argument("--plan", action="store_true", help="Print the commands and exit.")
     args = parser.parse_args(argv)
@@ -312,7 +347,7 @@ def main(argv=None, *, popen=None, cluster=production_cluster):
     try:
         eras = resolve_eras(args.eras, unskimmed="--unskimmed" in args.extra)
         commands = select_commands([c for era in eras for c in plan_commands(era, args.extra)],
-                                   only=args.only, skip=args.skip)
+                                   only=args.only, skip=args.skip, all_dy=args.all_dy)
     except ValueError as exc:
         raise SystemExit(f"error: {exc}")
     if not commands:

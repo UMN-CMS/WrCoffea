@@ -17,23 +17,35 @@ bash bootstrap.sh
 tmux new -s wr
 ```
 
-**Inside tmux**, the container and one command. It starts 250 Condor workers, runs the
-`run_analysis.py` commands of the production on them at once and stops them:
+**Inside tmux**, the container and one command. It starts 250 Condor workers, runs the nine
+`run_analysis.py` commands of the full 2024 production on them at once and stops them:
 
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
-pip install -e .                                                          # first time only
-python bin/run_production.py RunIII2024Summer24 --condor                  # all of 2024: all DY variants, 149 files
-python bin/run_production.py RunIII2024Summer24 --condor --only nominal   # all of 2024: only LO HT DY
+pip install -e .                            # first time only
+python bin/run_production.py RunIII2024Summer24 --condor --all-dy
 ```
 
-Both write to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data (blinded),
-tt_tW, Nonprompt, Other, all 137 signal points and the default DY (LO HT-binned); the full
-production adds six other DY setups. It takes 30 to 60 minutes, depending on how fast the pool
-hands out workers, and ends with a summary of every command. Each command has its log in
-`logs/<today's date>/`.
+This writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data
+(blinded), tt_tW, Nonprompt, Other, all 137 signal points, the default DY (LO HT-binned) and six
+other DY setups. It takes 30 to 60 minutes, depending on how fast the pool hands out workers, and
+ends with a summary of every command. Each command has its log in `logs/<today's date>/`.
 
-- `--plan` prints the seven commands without running them; `--dir TAG` names the output directory.
+Without the six other DY setups, the three commands `data`, `bkg` and `signal` (143 files):
+
+```bash
+python bin/run_production.py RunIII2024Summer24 --condor
+```
+
+One part alone:
+
+```bash
+python bin/run_production.py RunIII2024Summer24 --condor --only data      # data only
+python bin/run_production.py RunIII2024Summer24 --condor --only bkg       # backgrounds only, LO HT DY
+python bin/run_production.py RunIII2024Summer24 --condor --only signal    # all 137 signal points only
+```
+
+- `--plan --all-dy` prints the commands without running them; `--dir TAG` names the output directory.
 - A failed command: the summary names it and prints the line that reruns it alone (`--only NAME`).
 - No worker after an hour (a busy pool, or low priority after heavy use): `--worker-wait-timeout 21600`.
 - A refusal that names directories in `~/.local`: delete them and start `./shell` again.

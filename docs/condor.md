@@ -39,8 +39,10 @@ cd ~/nobackup/WrCoffea && ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py
 ## Running
 
 ```bash
-python bin/run_production.py RunIII2024Summer24 --condor         # the era's production: starts the workers, runs every command at once, stops them
-python bin/run_production.py RunIII2024Summer24 --plan           # the commands of the production, nothing runs
+python bin/run_production.py RunIII2024Summer24 --condor         # data, backgrounds and every signal point: starts the workers, runs the three commands at once, stops them
+python bin/run_production.py RunIII2024Summer24 --condor --all-dy  # also every other DY setup
+python bin/run_production.py RunIII2024Summer24 --condor --only signal   # one command by name; also data, bkg, dy_nlo_inc, ...
+python bin/run_production.py RunIII2024Summer24 --plan --all-dy  # the commands of the production, nothing runs
 python bin/run_production.py all --condor                        # every era with a data fileset, one era's commands at a time
 python bin/run_production.py RunIII2024Summer24 --condor -- --systs lumi pileup sf --xrootd-timeout 120
 python bin/run_analysis.py RunIII2024Summer24 all --condor       # one command with workers of its own: everything
@@ -54,10 +56,11 @@ python bin/run_analysis.py RunIII2024Summer24 Signal --mass WR4000_N2100 --condo
 python bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup sf --xrootd-timeout 120
 ```
 
-- A production is every `run_analysis.py` command an era's full set needs, from `config.yaml`:
-  `all` (data, backgrounds and every signal point), `DYJets --dy-reweight zpt` and `zpt+reshape` where the era has the
-  payloads, and `DYJets --dy <variant>` for every `dy_variants` entry but the default and `nlo_ptll`.
-  Flags after `--` go to every command; with `--systs` among them the two reweighted DY commands also
+- A production is the `data`, `bkg` and `signal` composites (every signal point) and, with
+  `--all-dy`, every other DY setup from `config.yaml`: `DYJets --dy-reweight zpt` and `zpt+reshape`
+  where the era has the payloads, and `DYJets --dy <variant>` for every `dy_variants` entry but the
+  default and `nlo_ptll`. `--only NAME ...` picks any of them. Flags after `--` go to every command
+  (`--signal-points` and `--mwr-range` to `signal` only); with `--systs` among them the two reweighted DY commands also
   get `dyzpt` and `dyreshape`, and the workers the memory of a `--systs` run. Every command runs
   `--preflight-only` first, so a missing fileset or a refused flag stops the production before a
   worker is requested. Each command writes `logs/<dir>/<era>_<name>.log`; the summary lists every
@@ -99,7 +102,8 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --dy nlo_inc --scheduler co
 - Attached runs equal separate `--condor` runs (yields to 2e-16, unweighted cutflows exactly). The
   whole 2024 production (data, backgrounds, six DY setups, 137 signal points, 770 M events) runs as
   seven commands in 30 to 60 minutes on one cluster; every era together (79 commands, 2.3 B events)
-  took 84 minutes on 250 workers. `run_production.py` issues these commands.
+  took 84 minutes on 250 workers. `run_production.py --all-dy` issues the same work, with `all`
+  as its `data`, `bkg` and `signal` commands.
 
 ## Settings
 
