@@ -938,8 +938,9 @@ if __name__ == "__main__":
     optional.add_argument("--mass", type=str, default=None, help="Signal mass point to analyze.")
     optional.add_argument("--signal-points", nargs="+", default=None, metavar="POINT",
                           help="Signal points of a composite mode that includes Signal (signal, mc, all): "
-                               "'default' (the 9-point grid, the default), 'all' (every point of "
-                               "data/signal_points/<era>_mass_points.csv) or WR<wr>_N<n> tags.")
+                               "'all' (every point of data/signal_points/<era>_mass_points.csv, the default), "
+                               "'grid' (the 9-point grid: lowest, median and highest N at m_WR = 2, 4, 6 TeV) "
+                               "or WR<wr>_N<n> tags.")
     optional.add_argument("--mwr-range", nargs=2, type=int, default=None, metavar=("MIN", "MAX"),
                           help="Keep only the signal points with MIN <= M_WR <= MAX (composite modes with Signal).")
     optional.add_argument("--fileset", type=Path, default=None, help="Override automatic fileset path with a custom fileset JSON.")

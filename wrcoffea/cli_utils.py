@@ -204,8 +204,8 @@ def mass_choices_for(era: str, sample: str) -> list[str]:
     return load_masses_from_csv(Path(f"data/signal_points/{era}_mass_points.csv"))
 
 
-def select_default_signal_points(era: str) -> list[str]:
-    """Return the default grid of signal mass points for an era.
+def select_signal_grid_points(era: str) -> list[str]:
+    """The 9-point grid of signal mass points of an era (``--signal-points grid``).
 
     For each WR value in ``SIGNAL_WR_GRID``, picks (min, median, max) N
     from the era's mass-point CSV.  Falls back to 9 evenly spaced points
@@ -261,25 +261,24 @@ def select_signal_points(era: str, spec: list[str] | None = None,
                          mwr_range: tuple[int, int] | list[int] | None = None) -> list[str]:
     """Signal mass points of a composite run (``--signal-points`` / ``--mwr-range``).
 
-    *spec* is ``None`` or ``["default"]`` for the default grid
-    (:func:`select_default_signal_points`), ``["all"]`` for every point of the
-    era's mass-point CSV, or a list of ``WR<wr>_N<n>`` tags (legacy
-    ``MWR<wr>_MN<n>`` accepted) that must all be in the CSV.  *mwr_range*
-    ``(min, max)`` keeps the points with min <= M_WR <= max.  Without *spec*
-    and *mwr_range* this is exactly :func:`select_default_signal_points`;
-    with either, an empty selection or an unknown tag raises ``ValueError``.
+    *spec* is ``None`` or ``["all"]`` for every point of the era's mass-point CSV (the
+    default), ``["grid"]`` for the 9-point grid (:func:`select_signal_grid_points`), or a
+    list of ``WR<wr>_N<n>`` tags (legacy ``MWR<wr>_MN<n>`` accepted) that must all be in
+    the CSV.  *mwr_range* ``(min, max)`` keeps the points with min <= M_WR <= max.  An
+    empty selection or an unknown tag raises ``ValueError``.
     """
-    if spec is None and mwr_range is None:
-        return select_default_signal_points(era)
     csv_path = Path(f"data/signal_points/{era}_mass_points.csv")
-    spec = list(spec or ["default"])
-    if spec == ["default"]:
-        points = select_default_signal_points(era)
-    elif spec == ["all"]:
+    spec = list(spec or ["all"])
+    if "default" in spec:
+        raise ValueError("--signal-points default is gone: every point is the default, "
+                         "'grid' is the 9-point grid.")
+    if spec == ["all"]:
         points = load_masses_from_csv(csv_path)
+    elif spec == ["grid"]:
+        points = select_signal_grid_points(era)
     else:
-        if "default" in spec or "all" in spec:
-            raise ValueError("--signal-points: 'default' and 'all' cannot be combined with mass points.")
+        if "all" in spec or "grid" in spec:
+            raise ValueError("--signal-points: 'all' and 'grid' cannot be combined with mass points.")
         valid = set(load_masses_from_csv(csv_path))
         points = []
         for tag in (normalize_mass_point(p) for p in spec):
@@ -436,8 +435,8 @@ def load_composite_fileset(
     """Merge fileset JSONs for a composite mode (all/data/bkg) into one dict.
 
     When the composite mode includes "Signal", ``signal_points`` controls
-    which mass points are loaded.  If ``None``, defaults are selected via
-    :func:`select_default_signal_points`.
+    which mass points are loaded; ``None`` loads every point of the era's
+    mass-point CSV (:func:`select_signal_points`).
     """
     groups = COMPOSITE_SAMPLES[composite_mode]
     combined: dict = {}
@@ -458,7 +457,7 @@ def load_composite_fileset(
 
     for group in groups:
         if group == "Signal":
-            pts = signal_points if signal_points is not None else select_default_signal_points(era)
+            pts = signal_points if signal_points is not None else select_signal_points(era)
             if not pts:
                 logger.warning("No signal points selected for era %s; skipping Signal.", era)
                 continue

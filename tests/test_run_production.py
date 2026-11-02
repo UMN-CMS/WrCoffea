@@ -53,7 +53,7 @@ def fake_popen(code_of, *, polls=2):
 
 def test_2024_production_is_the_seven_commands_of_the_readme():
     assert names_and_args("RunIII2024Summer24") == [
-        ("nominal", "all --signal-points all"),
+        ("nominal", "all"),
         ("dy_zpt", "DYJets --dy-reweight zpt"),
         ("dy_zpt_reshape", "DYJets --dy-reweight zpt+reshape"),
         ("dy_lo_inc", "DYJets --dy lo_inc"),
@@ -74,7 +74,7 @@ def test_commands_follow_the_era_config():
     for era in run_production.list_eras():
         names = dict(names_and_args(era))
         assert "dy_nlo_ptll" not in names and "dy_lo_ht" not in names
-        assert names["nominal"] == "all --signal-points all"
+        assert names["nominal"] == "all"
     # 2025 runs the 2024 MC with its Z-pT payload; it has no reshape payload
     assert "dy_zpt" in dict(names_and_args("RunIII2025Summer25"))
     assert "dy_zpt_reshape" not in dict(names_and_args("RunIII2025Summer25"))
@@ -83,7 +83,7 @@ def test_commands_follow_the_era_config():
 def test_extra_flags_reach_every_command_and_systs_gain_the_dy_nuisances():
     extra = ["--systs", "lumi", "pileup", "--xrootd-timeout", "120"]
     args = {c.name: list(c.args) for c in plan_commands("RunIII2024Summer24", extra)}
-    assert args["nominal"] == ["all", "--signal-points", "all", *extra]
+    assert args["nominal"] == ["all", *extra]
     assert args["dy_lo_inc"] == ["DYJets", "--dy", "lo_inc", *extra]
     assert args["dy_zpt"] == ["DYJets", "--dy-reweight", "zpt",
                               "--systs", "lumi", "pileup", "dyzpt", "--xrootd-timeout", "120"]

@@ -247,10 +247,14 @@ class TestSelectSignalPoints:
         from wrcoffea.cli_utils import load_masses_from_csv
         return load_masses_from_csv(Path(f"data/signal_points/{self.ERA}_mass_points.csv"))
 
-    def test_default_is_the_default_grid(self):
-        from wrcoffea.cli_utils import select_default_signal_points, select_signal_points
-        assert select_signal_points(self.ERA) == select_default_signal_points(self.ERA)
-        assert select_signal_points(self.ERA, ["default"]) == select_default_signal_points(self.ERA)
+    def test_default_is_every_csv_point_and_grid_the_nine(self):
+        from wrcoffea.cli_utils import select_signal_grid_points, select_signal_points
+        assert select_signal_points(self.ERA) == self._csv_points()
+        grid = select_signal_points(self.ERA, ["grid"])
+        assert grid == select_signal_grid_points(self.ERA) and len(grid) == 9
+        assert set(grid) < set(self._csv_points())
+        with pytest.raises(ValueError, match="grid"):
+            select_signal_points(self.ERA, ["default"])     # the old name of the grid
 
     def test_all_is_every_csv_point(self):
         from wrcoffea.cli_utils import select_signal_points

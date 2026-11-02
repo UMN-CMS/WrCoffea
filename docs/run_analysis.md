@@ -25,16 +25,16 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
 | `data` | EGamma, Muon |
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
-| `signal` | Signal: the 9-point default grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV), or `--signal-points` |
+| `signal` | Signal: every point of `data/signal_points/<era>_mass_points.csv`, or `--signal-points` |
 | single | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal --mass WR<wr>_N<n>`; the subgroups of `--split-groups` (`TTbar`, `tW`, `tWSemiLep`, `WJets`, `TTSemiLep`, `SingleTop`, `Diboson`, `Triboson`, `ttV`) |
 
-- An era's whole production (`all --signal-points all`, the DY corrections and every DY variant
+- An era's whole production (`all`, the DY corrections and every DY variant
   that is a prediction) is one command, `bin/run_production.py <era> [--condor]`
   ([condor.md](condor.md#running)).
 - Composite modes run the samples one after the other locally (3 Dask workers; a failing sample is
   logged and the next one runs) and in parallel with `--condor` at the LPC ([condor.md](condor.md)).
-  `--signal-points all` runs every point of `data/signal_points/<era>_mass_points.csv`,
-  `--mwr-range MIN MAX` a range.
+  `--signal-points grid` runs the 9-point grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV)
+  instead of every point, `--mwr-range MIN MAX` a range.
 - Signal samples: Run 3 the official grid (100 points per 2022/2023 era) and the 2024 private
   production (137 points); UL the official pair `WRtoNEltoElElJJ` + `WRtoNMutoMuMuJJ` per point (105
   points per era) into one file. The UL private pre-legacy scan (`WRtoNLtoLLJJ`, 490 points) runs
@@ -127,7 +127,7 @@ gets nominal only. Families and sources: `wrcoffea/systematics.py`; what each er
 | `--list-eras`, `--list-samples`, `--list-masses` | Print the choices and exit (`--list-masses` per era). |
 | `--preflight-only` | Validate the fileset path, schema and selection, then exit. |
 | `--mass WR<wr>_N<n>` | The signal point (required for `Signal`). |
-| `--signal-points default`, `all` or `POINT ...`; `--mwr-range MIN MAX` | Signal points of a composite mode. |
+| `--signal-points all` (default), `grid` or `POINT ...`; `--mwr-range MIN MAX` | Signal points of a composite mode. |
 | `--dy VARIANT` | DY variant (`dy_variants` per era in `config.yaml`); default `lo_ht`. `nlo_ptll` runs with a warning: its pT(ll) slices are added unstitched, so it is not a DY prediction. |
 | `--region resolved`, `boosted` or `both` | Topologies to fill (default both). |
 | `--unblind` | Fill the data signal regions and full cutflows (Run 2 only). |

@@ -55,7 +55,7 @@ python bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup s
 ```
 
 - A production is every `run_analysis.py` command an era's full set needs, from `config.yaml`:
-  `all --signal-points all`, `DYJets --dy-reweight zpt` and `zpt+reshape` where the era has the
+  `all` (data, backgrounds and every signal point), `DYJets --dy-reweight zpt` and `zpt+reshape` where the era has the
   payloads, and `DYJets --dy <variant>` for every `dy_variants` entry but the default and `nlo_ptll`.
   Flags after `--` go to every command; with `--systs` among them the two reweighted DY commands also
   get `dyzpt` and `dyreshape`, and the workers the memory of a `--systs` run. Every command runs
@@ -64,8 +64,9 @@ python bin/run_analysis.py RunIII2024Summer24 all --condor --systs lumi pileup s
   command's outcome and the `--only` line that reruns the failed ones. `--workers` (250) sizes the
   workers, `--jobs N` runs N commands at a time (default: an era's commands at once on Condor, one
   locally), `--dir` defaults to today's date.
-- `signal`, `mc` and `all` run the 9-point default grid; `--signal-points all` runs every point of
-  `data/signal_points/<era>_mass_points.csv`, `--mwr-range MIN MAX` a range of m(W_R).
+- `signal`, `mc` and `all` run every point of `data/signal_points/<era>_mass_points.csv`;
+  `--signal-points grid` the 9-point grid (lowest, median and highest N at m_WR = 2, 4, 6 TeV),
+  `--mwr-range MIN MAX` a range of m(W_R).
 - One composite run is faster than the same samples run one by one: every run pays the wait for
   its first workers and the slow end.
 - Systematics apply to MC only. The XRootD read timeout per chunk is 60 s under `--condor`; runs
@@ -80,7 +81,7 @@ python bin/condor_cluster.py --workers 200          # --worker-memory 8GB for ru
 
 # tmux window 2, same checkout: one command after another, or several at the same time
 python bin/run_production.py RunIII2024Summer24 --scheduler condor_scheduler.json --dir <tag>
-python bin/run_analysis.py RunIII2024Summer24 all --signal-points all --scheduler condor_scheduler.json --dir <tag>
+python bin/run_analysis.py RunIII2024Summer24 all --scheduler condor_scheduler.json --dir <tag>
 python bin/run_analysis.py RunIII2024Summer24 DYJets --dy nlo_inc --scheduler condor_scheduler.json --dir <tag>
 ```
 
@@ -113,7 +114,7 @@ The constants are at the top of `bin/run_analysis.py`.
 
 - Chunk outputs are merged in a tree on the workers, ten at a time. A composite's merged result
   holds every dataset's histograms, about 4 MB per dataset nominal, 1.2 GB for
-  `all --signal-points all`; the last merges build it on one worker on top of the 1.5 to 2 GB a
+  `all` with every signal point; the last merges build it on one worker on top of the 1.5 to 2 GB a
   worker keeps after processing.
 - Dask pauses a worker at 80 % of `--worker-memory` and restarts it at 95 %. A paused worker keeps
   its queued chunk; a restarted one loses its merged results, which are recomputed; a merge whose
@@ -135,7 +136,7 @@ The constants are at the top of `bin/run_analysis.py`.
   minutes. Smaller chunks end sooner.
 - After saving: closing the workers takes about 1.5 minutes. Once the log says `All output saved`,
   Ctrl+C is safe.
-- Reference: `all --signal-points all` for 2024 (368 M events) took 44 minutes (10 waiting for the
+- Reference: `all` for 2024 (every signal point, 368 M events) took 44 minutes (10 waiting for the
   first worker, 1.5 preprocessing, 26 processing on 60 to 90 workers, 1.5 saving, 3.5 closing),
   against 8.2 hours on a laptop.
 - Tested and not worth changing: skipping the preprocessing (it overlaps the wait for workers),

@@ -23,8 +23,8 @@ tmux new -s wr
 ```bash
 ./shell coffeateam/coffea-dask-almalinux8:2025.12.0-py3.12
 pip install -e .                                                          # first time only
-python bin/run_production.py RunIII2024Summer24 --condor                  # all of 2024: seven commands, 149 files
-python bin/run_production.py RunIII2024Summer24 --condor --only nominal   # without the DY variants: one command, 143 files
+python bin/run_production.py RunIII2024Summer24 --condor                  # all of 2024: all DY variants, 149 files
+python bin/run_production.py RunIII2024Summer24 --condor --only nominal   # all of 2024: only LO HT DY
 ```
 
 Both write to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data (blinded),

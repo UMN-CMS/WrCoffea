@@ -10,7 +10,7 @@
 
 The commands of an era come from config.yaml:
 
-    nominal         all --signal-points all
+    nominal         all                                 data, backgrounds and every signal point
     dy_zpt          DYJets --dy-reweight zpt            eras with a dy_zpt_reweight payload
     dy_zpt_reshape  DYJets --dy-reweight zpt+reshape    eras with a dy_reshape payload as well
     dy_<variant>    DYJets --dy <variant>               every dy_variants entry but the default and nlo_ptll
@@ -79,7 +79,7 @@ def plan_commands(era, extra=()):
     """The commands of an era's production, from config.yaml: the nominal composite, the DY corrections
     the era has payloads for, and every DY variant that is a prediction; ``extra`` flags go to each."""
     extra = list(extra)
-    commands = [Command(era, "nominal", ("all", "--signal-points", "all", *extra))]
+    commands = [Command(era, "nominal", ("all", *extra))]
     if era in DY_ZPT_REWEIGHT_JSONS:
         commands.append(Command(era, "dy_zpt",
                                 ("DYJets", "--dy-reweight", "zpt", *with_extra_systs(extra, ["dyzpt"]))))
