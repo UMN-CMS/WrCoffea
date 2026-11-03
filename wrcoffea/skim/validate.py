@@ -109,12 +109,14 @@ def _part_lumis(path: str) -> set[tuple[int, int]]:
 
 
 def dbs_dataset_lumis(dbs, das_paths: list[str]) -> set[tuple[int, int]] | None:
-    """Every (run, lumi) DBS lists in any file of the datasets, or None if unavailable."""
+    """Every (run, lumi) DBS lists in any valid file of the datasets, or None if unavailable.
+
+    Files marked invalid in DBS are not in the plan, so their lumisections are not expected in the skims."""
     out: set[tuple[int, int]] = set()
     try:
         for das in das_paths:
             for b in dbs.get("blocks", dataset=das):
-                for row in dbs.get("filelumis", block_name=b["block_name"]):
+                for row in dbs.get("filelumis", block_name=b["block_name"], validFileOnly=1):
                     ls = row["lumi_section_num"] if isinstance(row["lumi_section_num"], list) else [row["lumi_section_num"]]
                     out.update((int(row["run_num"]), int(l)) for l in ls)
     except Exception as e:
