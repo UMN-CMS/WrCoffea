@@ -6,16 +6,17 @@ Inputs: a per-lumisection brilcalc table of the era's golden JSON and the
 to the parts of every data stream.  The analyzer applies the golden JSON to
 data, so only golden lumisections count.
 
-Run 3 splits each primary dataset in two halves (Muon0/Muon1, EGamma0/EGamma1)
-that share every lumisection and hold about half of its events each.  Per
-golden lumisection, the fraction of a channel's events present in the skims is
-taken from the primary-dataset families of that channel: a family with halves
-contributes (halves containing the lumisection) / (number of halves), a family
-without halves 1 if it contains it, and the channel takes the largest family
-fraction (2022C has SingleMuon and Muon for different runs; overlapping
+Run 3 splits each primary dataset into numbered streams (Muon0/Muon1,
+EGamma0/EGamma1; four EGamma streams in 2025) that share every lumisection
+and hold an equal share of its events each.  Per golden lumisection, the
+fraction of a channel's events present in the skims is taken from the
+primary-dataset families of that channel: a family with numbered streams
+contributes (streams containing the lumisection) / (number of streams), a
+family without them 1 if it contains it, and the channel takes the largest
+family fraction (2022C has SingleMuon and Muon for different runs; overlapping
 families are not double counted).  The channel luminosity is the sum of
-lumi x fraction, exact in expectation; with one halved family it equals the
-mean of the two halves' processed luminosities.
+lumi x fraction, exact in expectation; with one split family it equals the
+mean of the streams' processed luminosities.
 
 Make the table once on a cmslpc node (about 3 minutes for 2024):
 
@@ -82,9 +83,10 @@ def compute(byls: dict, golden: set, masks: dict[str, set]) -> dict:
     covered = set().union(*runs_by_period.values()) if runs_by_period else set()
     orphan_runs = sorted({r for (r, _) in byls if r not in covered})
     orphan_lumi = sum(v for (r, _), v in byls.items() if r in orphan_runs)
-    # family = one primary dataset in one period.  Its members are either numbered halves (Run 3 Muon0/Muon1,
-    # EGamma0/EGamma1: every lumisection in both, half of the events in each) or version splits of disjoint run
-    # ranges (2016B_ver1/_ver2): halves contribute (halves containing the lumisection) / (number of halves),
+    # family = one primary dataset in one period.  Its members are either numbered streams (Run 3 Muon0/Muon1,
+    # EGamma0/EGamma1, EGamma0-3 in 2025: every lumisection in all, an equal share of the events in each) or
+    # version splits of disjoint run ranges (2016B_ver1/_ver2): numbered streams contribute (streams containing
+    # the lumisection) / (number of streams),
     # version splits are a plain union (a lumisection is fully processed if any member holds it).
     families: dict[tuple[str, str, str], list[tuple[set, str]]] = collections.defaultdict(list)
     for name, mask in masks.items():

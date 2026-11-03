@@ -41,7 +41,10 @@ lumis:
   # lumisections missing from the official datasets (-0.13 to -0.17). Masks, table and recipe:
   # data/lumis/Run3/2024/RunIII2024Summer24/processed_skims_v2/ and scripts/processed_lumi.py (2026-10-06).
   RunIII2024Summer24: 109.70
-  RunIII2025Summer25: 110.63
+  # 2025: the same recipe on the skims_v2 2025 data (Run2025B-G, EGamma0-3 and Muon0/1) with the preliminary
+  # normtag_BRIL (the LUM POG's 2025 prescription; normtag_PHYSICS has no 2025 table): ee 110.618, mumu 110.625,
+  # golden JSON 110.628. Masks and table: data/lumis/Run3/2025/RunIII2025Summer25/processed_skims_v2/ (2026-11-03).
+  RunIII2025Summer25: 110.62
 
 # Default MC fileset tag per era.  Controls which DY variant is used
 # when --dy is not explicitly given on the command line.
