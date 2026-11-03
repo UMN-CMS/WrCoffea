@@ -132,7 +132,7 @@ def test_resolve_eras():
         ["RunIII2024Summer24", "Run3Summer22"]
     every = run_production.resolve_eras(["all"])
     assert "RunIII2024Summer24" in every and "RunIISummer20UL18" in every
-    assert "RunIII2025Summer25" not in every        # no 2025 data fileset yet
+    assert "RunIII2025Summer25" in every            # data-only era with a data fileset since 2026-11-03
     with pytest.raises(ValueError, match="Run3Summer24"):
         run_production.resolve_eras(["Run3Summer24"])
 

@@ -39,6 +39,7 @@ from wrcoffea.cli_utils import (
     split_sample_groups,
 )
 from wrcoffea.regions import STUDIES, check_unblind_allowed, resolve_studies
+from wrcoffea.signal_kfactor import points_without_average
 from wrcoffea.systematics import FAMILIES, FIT_OBSERVABLES, validate_requested, resolve_syst_observables, normalize_omitted
 from wrcoffea.xrootd_fallback import (
     DEFAULT_RETRIES_PER_REDIRECTOR,
@@ -206,6 +207,24 @@ def _wait_for_workers_or_raise(client, *, requested_workers, min_workers, timeou
         f"after {timeout_s}s (requested {requested_workers}; {_format_job_states(states)}). "
         f"Idle jobs mean the pool had no free slot: rerun later or raise --worker-wait-timeout.{diag_msg}"
     )
+
+
+def check_signal_kfactor_coverage(args, mass_points):
+    """Refuse a signal selection the era's k-factor payload does not cover, before any processing.
+
+    Every selected point needs an average in the payload ``config.yaml`` maps for the era; without
+    one the workers fail chunk by chunk.  ``--no-signal-kfactor`` skips the check.
+    """
+    if getattr(args, "no_signal_kfactor", False) or not mass_points:
+        return
+    missing = points_without_average(args.era, mass_points)
+    if missing:
+        shown = ", ".join(missing[:5]) + (", ..." if len(missing) > 5 else "")
+        raise ValueError(
+            f"{len(missing)} of {len(mass_points)} selected signal point(s) have no k-factor average in the "
+            f"{args.era} payload ({shown}): extend the payload, narrow the selection (--signal-points, "
+            "--mwr-range) or run with --no-signal-kfactor."
+        )
 
 
 def validate_arguments(args, sig_points):
@@ -1088,6 +1107,8 @@ if __name__ == "__main__":
 
     logging.info(f"Analyzing {args.era} - {args.sample} events")
     validate_arguments(args, MASS_CHOICES)
+    if args.sample == "Signal":
+        check_signal_kfactor_coverage(args, [args.mass])
     if args.unblind:
         logging.warning("--unblind: data signal regions and full data cutflows will be filled.")
     run, year, era = get_era_details(args.era)
@@ -1102,6 +1123,7 @@ if __name__ == "__main__":
                       if has_signal else None)
         if sig_points:
             logging.info("Signal points: %s", ", ".join(sig_points))
+        check_signal_kfactor_coverage(args, sig_points or [])
 
         fileset = load_composite_fileset(
             era=era,

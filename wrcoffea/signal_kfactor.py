@@ -82,6 +82,15 @@ def load_payload(path: str) -> dict:
     return payload
 
 
+def points_without_average(era: str, mass_points) -> list[str]:
+    """The *mass_points* the k-factor payload of *era* has no average for (``[]`` when the era has no payload)."""
+    path = SIGNAL_KFACTOR_JSONS.get(era)
+    if path is None:
+        return []
+    averages = load_payload(path)["averages"]
+    return [p for p in mass_points if p not in averages]
+
+
 def _bin_index(x: np.ndarray, edges: np.ndarray) -> np.ndarray:
     idx = np.searchsorted(edges, x, side="right") - 1
     return np.clip(idx, 0, len(edges) - 2)

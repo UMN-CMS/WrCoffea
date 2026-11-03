@@ -36,8 +36,9 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
   `--signal-points grid` runs the 9-point grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV)
   instead of every point, `--mwr-range MIN MAX` a range.
 - Signal samples: Run 3 the official grid (100 points per 2022/2023 era) and the 2024 private
-  production (137 points); UL the official pair `WRtoNEltoElElJJ` + `WRtoNMutoMuMuJJ` per point (105
-  points per era) into one file. The UL private pre-legacy scan (`WRtoNLtoLLJJ`, 490 points) runs
+  production (1323 points; the k-factor payload covers 137 of them, and a run that selects any other
+  is refused unless `--no-signal-kfactor`); UL the official pair `WRtoNEltoElElJJ` + `WRtoNMutoMuMuJJ`
+  per point (105 points per era) into one file. The UL private pre-legacy scan (`WRtoNLtoLLJJ`, 490 points) runs
   only when its fileset is named: `--fileset data/filesets/RunII/2018/RunIISummer20UL18/skimmed/RunIISummer20UL18_signal_scan_fileset.json`.
 
 ## Output
@@ -132,7 +133,7 @@ gets nominal only. Families and sources: `wrcoffea/systematics.py`; what each er
 | `--region resolved`, `boosted` or `both` | Topologies to fill (default both). |
 | `--unblind` | Fill the data signal regions and full cutflows (Run 2 only). |
 | `--dy-reweight none`, `zpt` or `zpt+reshape` | Corrections of the LO HT-binned DY: none (default), the Z-pT reweight, or both. `--systs dyzpt` needs `zpt` or `zpt+reshape`, `--systs dyreshape` needs `zpt+reshape`. Only `lo_ht` takes it; output `WRAnalyzer_DYJets_lo_ht_zpt[_reshape].root`. `--no-dy-zpt-reweight` and `--no-dy-reshape` still work and mean `none` and `zpt`. |
-| `--no-signal-kfactor` | Switch the signal k(m(ℓN))/⟨k⟩ reweight off. |
+| `--no-signal-kfactor` | Switch the signal k(m(ℓN))/⟨k⟩ reweight off; also runs points the payload has no average for. |
 | `--unskimmed` | Read the unskimmed filesets (the original NanoAOD files); sums genWeight itself. |
 | `--fileset PATH` | An explicit fileset; with `Signal`, `--mass` only has to be a point of that fileset. |
 | `--dir TAG`, `--name SUFFIX` | Output sub-directory and file-name suffix. |

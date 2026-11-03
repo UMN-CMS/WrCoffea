@@ -18,6 +18,7 @@ from wrcoffea.signal_kfactor import (
     find_gen_ln,
     load_payload,
     mass_point_key,
+    points_without_average,
     signal_kfactor_weight,
 )
 from wrcoffea.systematics import NOMINAL
@@ -260,3 +261,14 @@ class TestAnalyzerWiring:
         off = WrAnalysis(mass_point=None, enabled_systs=[], region="resolved", signal_kfactor=False)
         _, syst_off = off.build_event_weights(self._events(), self._meta(SIGNAL_PROCESS_GROUP), is_mc=True)
         np.testing.assert_allclose(syst_off[NOMINAL], base)
+
+
+def test_points_without_average(monkeypatch):
+    """The points the era's payload has no average for; an era without a payload reports none."""
+    import wrcoffea.signal_kfactor as kf
+
+    monkeypatch.setitem(kf.SIGNAL_KFACTOR_JSONS, "FakeEra", "fake-kfactor.json")
+    monkeypatch.setitem(kf._PAYLOAD_CACHE, "fake-kfactor.json", {"averages": {"WR2000_N100": {"ee": 1.3, "mm": 1.3}}})
+    assert points_without_average("FakeEra", ["WR2000_N100", "WR2000_N50", "WR4000_N50"]) == ["WR2000_N50", "WR4000_N50"]
+    assert points_without_average("FakeEra", []) == []
+    assert points_without_average("EraWithoutPayload", ["WR2000_N50"]) == []

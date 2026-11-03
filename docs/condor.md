@@ -100,7 +100,7 @@ python bin/run_analysis.py RunIII2024Summer24 DYJets --dy nlo_inc --scheduler co
   a hash of every file; a run whose checkout differs is refused with the list of files. After a
   change to the code, `config.yaml` or a payload, stop the cluster and start it again.
 - Attached runs equal separate `--condor` runs (yields to 2e-16, unweighted cutflows exactly). The
-  whole 2024 production (data, backgrounds, six DY setups, 137 signal points, 770 M events) runs as
+  whole 2024 production (data, backgrounds, six DY setups, 137 signal points, 770 M events) ran as
   seven commands in 30 to 60 minutes on one cluster; every era together (79 commands, 2.3 B events)
   took 84 minutes on 250 workers. `run_production.py --all-dy` issues the same work, with `all`
   as its `data`, `bkg` and `signal` commands.

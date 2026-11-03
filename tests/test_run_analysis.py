@@ -698,6 +698,27 @@ def test_validate_signal_points_only_for_composites_with_signal():
     run_analysis.validate_arguments(sig, [])
 
 
+def test_check_signal_kfactor_coverage(monkeypatch):
+    """A selection with a point the era's k-factor payload has no average for is refused up front."""
+    import wrcoffea.signal_kfactor as kf
+
+    monkeypatch.setitem(kf.SIGNAL_KFACTOR_JSONS, "FakeEra", "fake-kfactor.json")
+    monkeypatch.setitem(kf._PAYLOAD_CACHE, "fake-kfactor.json", {"averages": {"WR2000_N100": {"ee": 1.3, "mm": 1.3}}})
+    args = SimpleNamespace(era="FakeEra", sample="signal", no_signal_kfactor=False)
+
+    run_analysis.check_signal_kfactor_coverage(args, ["WR2000_N100"])
+    run_analysis.check_signal_kfactor_coverage(args, [])
+    with pytest.raises(ValueError, match=r"1 of 2 selected signal point\(s\) have no k-factor average .*WR2000_N50"):
+        run_analysis.check_signal_kfactor_coverage(args, ["WR2000_N100", "WR2000_N50"])
+
+    args.no_signal_kfactor = True
+    run_analysis.check_signal_kfactor_coverage(args, ["WR2000_N50"])
+
+    # An era without a payload applies no k-factor, so nothing is refused.
+    none = SimpleNamespace(era="EraWithoutPayload", sample="signal", no_signal_kfactor=False)
+    run_analysis.check_signal_kfactor_coverage(none, ["WR2000_N50"])
+
+
 # ---------------------------------------------------------------------------
 # Condor workers: the files they read must be shipped to them
 # ---------------------------------------------------------------------------

@@ -28,10 +28,10 @@ To run over everything for 2024 (all backgrounds including every DY variant, dat
 python bin/run_production.py RunIII2024Summer24 --condor --all-dy # Run background (including all DY variants), data, signal
 ```
 This starts 250 Condor workers and runs nine `run_analysis.py` commands of the full 2024 production on them at once.
-It writes 149 files to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`: data
-(blinded), tt_tW, Nonprompt, Other, all 137 signal points, the default DY (LO HT-binned) and six
-other DY setups. It takes 30 to 60 minutes, depending on how fast the pool hands out workers, and
-ends with a summary of every command. Each command has its log in `logs/<today's date>/`.
+It writes one file per sample to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`:
+data (blinded), tt_tW, Nonprompt, Other, every signal point of the era's mass-point CSV, the default
+DY (LO HT-binned) and six other DY setups. It takes 30 to 60 minutes, depending on how fast the pool
+hands out workers, and ends with a summary of every command. Each command has its log in `logs/<today's date>/`.
 
 When these have completed, the output ROOT files can be used to make stackplots, signal plots, cutflow tables, and DY comparison plots: [WR_Plotter/docs/plotting.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/docs/plotting.md).
 
@@ -56,7 +56,7 @@ Or you can analyzer data, background and signal seperately:
 ```bash
 python bin/run_production.py RunIII2024Summer24 --condor --only data      # data only
 python bin/run_production.py RunIII2024Summer24 --condor --only bkg       # backgrounds only, LO HT DY
-python bin/run_production.py RunIII2024Summer24 --condor --only signal    # all 137 signal points only
+python bin/run_production.py RunIII2024Summer24 --condor --only signal    # every signal point of the mass-point CSV
 ```
 
 - A refusal that names directories in `~/.local`: delete them and start `./shell` again.
