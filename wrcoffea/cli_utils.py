@@ -8,7 +8,7 @@ from pathlib import Path
 
 from wrcoffea.fileset_validation import validate_fileset_schema, validate_selection
 from wrcoffea.era_utils import ERA_MAPPING, get_era_details, load_json
-from wrcoffea.analysis_config import DEFAULT_MC_TAG, DY_VARIANTS
+from wrcoffea.analysis_config import DEFAULT_MC_TAG, DY_VARIANTS, MC_ALIAS
 
 logger = logging.getLogger(__name__)
 
@@ -193,15 +193,20 @@ def needs_mass_points(sample: str) -> bool:
     return sample == "Signal" or "Signal" in COMPOSITE_SAMPLES.get(sample, ())
 
 
+def mass_points_csv(era: str) -> Path:
+    """``data/signal_points/<era>_mass_points.csv``; a data-only era reads the CSV of its ``mc_alias`` era."""
+    return Path(f"data/signal_points/{MC_ALIAS.get(era, era)}_mass_points.csv")
+
+
 def mass_choices_for(era: str, sample: str) -> list[str]:
     """The era's signal mass points when *sample* needs them, else ``[]``.
 
-    Data and background runs never read ``data/signal_points/<era>_mass_points.csv``,
-    so a data-only era without a CSV (RunIII2025Summer25) runs.
+    Data and background runs never read the mass-point CSV; a signal run of a data-only
+    era (RunIII2025Summer25) reads the CSV of the era whose MC it runs.
     """
     if not needs_mass_points(sample):
         return []
-    return load_masses_from_csv(Path(f"data/signal_points/{era}_mass_points.csv"))
+    return load_masses_from_csv(mass_points_csv(era))
 
 
 def select_signal_grid_points(era: str) -> list[str]:
@@ -213,7 +218,7 @@ def select_signal_grid_points(era: str) -> list[str]:
 
     Edit ``SIGNAL_WR_GRID`` to change which WR values are scanned.
     """
-    csv_path = Path(f"data/signal_points/{era}_mass_points.csv")
+    csv_path = mass_points_csv(era)
     all_masses = load_masses_from_csv(csv_path)
 
     # Parse into {wr: [n, ...]} mapping.
@@ -267,7 +272,7 @@ def select_signal_points(era: str, spec: list[str] | None = None,
     the CSV.  *mwr_range* ``(min, max)`` keeps the points with min <= M_WR <= max.  An
     empty selection or an unknown tag raises ``ValueError``.
     """
-    csv_path = Path(f"data/signal_points/{era}_mass_points.csv")
+    csv_path = mass_points_csv(era)
     spec = list(spec or ["all"])
     if "default" in spec:
         raise ValueError("--signal-points default is gone: every point is the default, "

@@ -22,6 +22,7 @@ from pathlib import Path
 from wrcoffea.era_utils import get_era_details
 from wrcoffea.analysis_config import CONFIG_OVERLAY_ENV, DY_VARIANTS
 from wrcoffea.cli_utils import (
+    mass_points_csv,
     COMPOSITE_SAMPLES,
     SPLITTABLE_GROUPS,
     UNSTITCHED_DY_VARIANTS,
@@ -1086,8 +1087,7 @@ if __name__ == "__main__":
     if args.list_masses:
         eras = [args.era] if args.era else ERA_CHOICES
         for e in eras:
-            csv_path = Path(f"data/signal_points/{e}_mass_points.csv")
-            masses = load_masses_from_csv(csv_path)
+            masses = load_masses_from_csv(mass_points_csv(e))
             if args.era is None:
                 print(f"[{e}]")
             print("\n".join(masses))

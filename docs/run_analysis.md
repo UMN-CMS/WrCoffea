@@ -25,7 +25,7 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
 | `data` | EGamma, Muon |
 | `bkg` | DYJets, tt_tW, Nonprompt, Other |
 | `mc` | DYJets, tt_tW, Nonprompt, Other, Signal |
-| `signal` | Signal: every point of `data/signal_points/<era>_mass_points.csv`, or `--signal-points` |
+| `signal` | Signal: every point of `data/signal_points/<era>_mass_points.csv` (2025: the 2024 CSV, its `mc_alias`), or `--signal-points` |
 | single | `DYJets`, `tt_tW`, `Nonprompt`, `Other`, `EGamma`, `Muon`, `Signal --mass WR<wr>_N<n>`; the subgroups of `--split-groups` (`TTbar`, `tW`, `tWSemiLep`, `WJets`, `TTSemiLep`, `SingleTop`, `Diboson`, `Triboson`, `ttV`) |
 
 - An era's production is one command, `bin/run_production.py <era> [--condor]`: `data`, `bkg` and

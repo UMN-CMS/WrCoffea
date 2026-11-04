@@ -318,13 +318,16 @@ class TestMassPointsOnlyForSignalRuns:
         assert needs_mass_points("Signal") and needs_mass_points("signal") and needs_mass_points("mc") and needs_mass_points("all")
         assert not any(needs_mass_points(s) for s in ("EGamma", "Muon", "DYJets", "tt_tW", "Nonprompt", "Other", "data", "bkg"))
 
-    def test_data_run_of_an_era_without_csv(self):
-        from wrcoffea.cli_utils import mass_choices_for
+    def test_data_only_era_reads_its_mc_alias_csv(self):
+        """2025 has no CSV of its own: data runs read none, a signal run reads the 2024 one (mc_alias)."""
+        from wrcoffea.cli_utils import mass_choices_for, mass_points_csv
         assert not Path("data/signal_points/RunIII2025Summer25_mass_points.csv").exists()
+        assert mass_points_csv("RunIII2025Summer25") == Path("data/signal_points/RunIII2024Summer24_mass_points.csv")
+        assert mass_points_csv("RunIII2024Summer24") == Path("data/signal_points/RunIII2024Summer24_mass_points.csv")
         assert mass_choices_for("RunIII2025Summer25", "EGamma") == []
         assert mass_choices_for("RunIII2025Summer25", "data") == []
-        with pytest.raises(FileNotFoundError):
-            mass_choices_for("RunIII2025Summer25", "Signal")
+        points = mass_choices_for("RunIII2025Summer25", "Signal")
+        assert points and points == mass_choices_for("RunIII2024Summer24", "Signal")
 
     def test_signal_run_reads_the_csv(self):
         from wrcoffea.cli_utils import mass_choices_for
