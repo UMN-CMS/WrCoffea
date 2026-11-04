@@ -100,7 +100,7 @@ gets nominal only. Families and sources: `wrcoffea/systematics.py`; what each er
 [systematics_status.md](systematics_status.md).
 
 - A family or source the era cannot produce is an error at start-up (UL `elescale`/`elesmear`,
-  Run 3 `prefire`, `musmear` in UL and 2025). A deliberate omission is `--omit-systs <Source>`,
+  Run 3 `prefire`, `musmear` in UL). A deliberate omission is `--omit-systs <Source>`,
   listed in the manifest.
 - `scale` and `ps` need the dataset-level weight means in the fileset (`LHEScaleSumw`, `PSSumw`); a
   dataset without them fails at its first chunk.

@@ -704,15 +704,19 @@ pdf_sets:
 # above; the others keep the TuneP placeholder (flat 5 %/TeV scale, no smearing).  The
 # payloads (data/muon_highpt/) hold numbers from CMS-internal documents and name the
 # source of each (scripts/show_muon_highpt.py prints them).
-# RunIII2024Summer24 switched on 2026-10-10 ~12:00 CDT, without a rerun: 2024 histogram
-# sets made before then have uncorrected muons (final full 2024 rerun pending).
+# RunIII2024Summer24 switched on 2026-10-10 ~12:00 CDT: 2024 histogram sets made before then
+# have uncorrected muons. RunIII2025Summer25 switched on 2026-11-03, before any 2025 set.
 muon_highpt:
   # 2022/2023 (2026-10-12): the Muon POG Run 3 tables (GE kappa maps, barrel/endcap MC smearing).
   Run3Summer22: data/muon_highpt/Run3/2022/Run3Summer22.json
   Run3Summer22EE: data/muon_highpt/Run3/2022/Run3Summer22EE.json
   Run3Summer23: data/muon_highpt/Run3/2023/Run3Summer23.json
   Run3Summer23BPix: data/muon_highpt/Run3/2023/Run3Summer23BPix.json
+  # 2024/2025: the EXO-25-021 GE kappa maps (the values the Muon POG page gives for 2024 and
+  # 2025) and its 2024 sigma(p) with 15 % (2024) / 25 % (2025) extra MC smearing; the 2025
+  # data is compared with the 2024 MC.
   RunIII2024Summer24: data/muon_highpt/Run3/2024/RunIII2024Summer24.json
+  RunIII2025Summer25: data/muon_highpt/Run3/2025/RunIII2025Summer25.json
 
 # HEM 15/16 veto (2018 only).  Ported from the Run 2 HNWRAnalyzer
 # (``isHEMVetoEvent``): an event is dropped when one of the two leptons the

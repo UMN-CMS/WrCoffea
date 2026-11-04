@@ -21,7 +21,7 @@ the payloads: `wrcoffea/config.yaml`. Run 2 = UL16APV, UL16, UL17, UL18. Run 3 =
 | JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out; in Run 3 they also move the AK8 soft-drop mass (JME recipe), not in UL (no AK4 PUPPI payload) |
 | Soft-drop mass scale and resolution (`jms`, `jmr`) | yes | yes | JME residual JMS ±1 % and JMR ±2 %; validated for 50 ≤ m_SD < 300 GeV, our cut is 40 GeV |
 | Electron energy scale and smearing (`elescale`, `elesmear`) | no | yes | UL NanoAODv9 MC carries no scale uncertainty (Remaining, #96) |
-| Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder (`musmear` refused) | yes | the high-pT recipe in 2022 to 2024 (2022/2023 from the POG Run 3 tables); UL and 2025: a 5 %/TeV × pT scale placeholder, no resolution variation (Remaining, #91) |
+| Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder (`musmear` refused) | yes | the high-pT recipe in Run 3 (2022/2023 from the POG Run 3 tables, 2024/2025 from EXO-25-021); UL: a 5 %/TeV × pT scale placeholder, no resolution variation (Remaining, #91) |
 | DY Z-pT reweight, 6 nuisances (`dyzpt`) | yes | yes | own derivations, AN-19-083 recipe, 2026-10-11; one payload per UL era, 2022+2023 together, 2024 alone; the Run 3 DY CR closure is still to be documented (Remaining, #101) |
 | DY jet-pT reshape, 2 nuisances (`dyreshape`) | yes | yes | per UL era; per Run 3 data-taking year; none for 2025 yet; Run 3 closure: Remaining, #101 |
 | QCD scales μR, μF (`scale`) | yes | yes | normalized per dataset; the plotter takes the envelope |
@@ -41,7 +41,7 @@ a Run 3 MC file counts only when it was written after that change.
 | --- | --- | --- | --- | --- |
 | Electron trigger-OR scale factor | done | proxy (Ele30 TightID) | a tag-and-probe measurement of the OR per era, a correctionlib file, the `ElectronTrigSf` variation rebuilt from its uncertainties | #94 |
 | LSF scale factor | done | placeholder 1.00 ± 0.10 | a Run 3 measurement (semileptonic-top tag-and-probe, as in Run 2) | #95 |
-| Muon momentum calibration at high pT | placeholder | done (2025 placeholder) | UL: the Run 2 GE maps of the POG page and a Rochester-type correction below 200 GeV; 2025: a POG recipe | #91 |
+| Muon momentum calibration at high pT | placeholder | done | UL: the Run 2 GE maps of the POG page and a Rochester-type correction below 200 GeV | #91 |
 | Electron energy scale and smearing variations | missing | done | a prescription for UL (data scale uncertainty mirrored onto MC plus the MC smearing, or EgammaPostRecoTools) | #96 |
 | Muon reco SF above the last measured bin (p > 1.5 TeV; 2024 > 0.9 TeV) | open | open | a treatment: clip, clip with the spread as a systematic, or a common high-p value | #92 |
 | Electron SFs above the measured range (reco > 500 GeV, HEEP ID > 1 TeV, clipped) | not affected (flat SFs) | open | a high-pT prescription (freeze point and uncertainty) | #93 |
@@ -52,7 +52,7 @@ a Run 3 MC file counts only when it was written after that change.
 | JES split by source | `Total` only | `Total` only | per-source nuisances in the production and the datacards, if the fit needs them | |
 | Background normalization and MC statistics in the fit | not in the production | not in the production | datacard-level: free DY and tt̄+tW rates, the lnN priors of the other backgrounds, Barlow-Beeston | |
 | Signal cross-section uncertainty and the missing N → ℓtb channel | open | open | a decision on the per-point k-factor uncertainty and on the official samples' missing top channel | #99 |
-| 2025 | | no production | skims, processed luminosity, a 2025 reshape, the 2025 electron trigger and muon momentum payloads | #100 |
+| 2025 | | no production | a production, then a 2025 reshape; a 2025 electron trigger payload | #100 |
 | AK8 soft-drop mass definition (corrected vs raw) | open | open | not a systematic but a selection choice that moves the boosted DY CR by ~9 % in UL18 | #97 |
 
 ## How to check the state of a production
