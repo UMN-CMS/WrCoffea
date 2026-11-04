@@ -676,12 +676,12 @@ signal_kfactor:
   RunIISummer20UL16APV: data/reweights/RunII/2018/RunIISummer20UL18/signal_kfactor_13tev_20261010.json
   # 13.6 TeV: the same derivation on the Run 3 gridpacks; one payload for the 2022/2023 official samples and the
   # 2024 private production (averages per mass point and channel, the samples of a point are one gridpack).
-  Run3Summer22: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
-  Run3Summer22EE: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
-  Run3Summer23: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
-  Run3Summer23BPix: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
-  RunIII2024Summer24: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json
-  RunIII2025Summer25: data/reweights/Run3/signal_kfactor_13p6tev_20261010.json   # the 2024 MC
+  Run3Summer22: data/reweights/Run3/signal_kfactor_13p6tev_20261103.json
+  Run3Summer22EE: data/reweights/Run3/signal_kfactor_13p6tev_20261103.json
+  Run3Summer23: data/reweights/Run3/signal_kfactor_13p6tev_20261103.json
+  Run3Summer23BPix: data/reweights/Run3/signal_kfactor_13p6tev_20261103.json
+  RunIII2024Summer24: data/reweights/Run3/signal_kfactor_13p6tev_20261103.json
+  RunIII2025Summer25: data/reweights/Run3/signal_kfactor_13p6tev_20261103.json   # the 2024 MC
 
 # PDF set of each MC sample's LHEPdfWeight (first LHA ID, read from an original
 # NanoAOD file by scripts/pdf_sets.py; the skims drop the branch description).

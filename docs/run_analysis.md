@@ -36,8 +36,8 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
   `--signal-points grid` runs the 9-point grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV)
   instead of every point, `--mwr-range MIN MAX` a range.
 - Signal samples: Run 3 the official grid (100 points per 2022/2023 era) and the 2024 private
-  production (1323 points; the k-factor payload covers 137 of them, and a run that selects any other
-  is refused unless `--no-signal-kfactor`); UL the official pair `WRtoNEltoElElJJ` + `WRtoNMutoMuMuJJ`
+  production (1323 points, of which the 1167 with both an electron and a muon sample are in the
+  mass-point CSV and run; the k-factor payload covers every point); UL the official pair `WRtoNEltoElElJJ` + `WRtoNMutoMuMuJJ`
   per point (105 points per era) into one file. The UL private pre-legacy scan (`WRtoNLtoLLJJ`, 490 points) runs
   only when its fileset is named: `--fileset data/filesets/RunII/2018/RunIISummer20UL18/skimmed/RunIISummer20UL18_signal_scan_fileset.json`.
 

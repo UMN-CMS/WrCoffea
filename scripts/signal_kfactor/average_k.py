@@ -9,6 +9,8 @@ Reads the unskimmed NanoAOD of the plan's signal datasets over xrootd, with the 
 
     average_k.py --era RunIISummer20UL18 --payload <k(m_lN) json> --out averages.json [--dataset SUBSTR ...]
     average_k.py --merge averages.json --payload <json> --write-payload <json>   # add the averages to a payload
+    average_k.py --era RunIII2024Summer24 --payload <json> --hists hists.json            # the m_lN histograms, once
+    average_k.py --era RunIII2024Summer24 --payload <json> --from-hists hists.json --out averages.json
 
 Output: {dataset: {"mass_point": "WR2000_N100", "ee": <k> or null, "mm": <k> or null, "n_ee", "n_mm",
                    "events", "no_gen_match", "bad_files"}}.
@@ -99,6 +101,64 @@ def sample_averages(key: str, lfns: list[str], payload_path: str, redirector: st
             "n_ee": n_ch[9900012], "n_mm": n_ch[9900014], "events": n, "no_gen_match": n_missing, "bad_files": bad}
 
 
+def sample_hists(key: str, lfns: list[str], payload_path: str, redirector: str) -> dict:
+    """The genWeight-weighted m_lN histogram of a sample per channel at the payload's bin edges (the analyzer's
+    binning, overflow in the last bin), the events below 200 GeV summed apart (a curve places them at its own
+    mln_min), with the bookkeeping of sample_averages.  --from-hists turns it into <k> for any payload with these
+    edges without reading the files again."""
+    edges = load_curve(payload_path)["edges"]
+    nb = len(edges) - 1
+    hist = {9900012: np.zeros(nb), 9900014: np.zeros(nb)}
+    under = {9900012: 0.0, 9900014: 0.0}
+    n_ch = {9900012: 0, 9900014: 0}
+    n = n_missing = 0
+    bad = []
+    for lfn in lfns:
+        try:
+            with uproot.open(file_url(lfn, redirector), timeout=180) as f:
+                a = f["Events"].arrays(BRANCHES)
+        except Exception as e:                      # unreachable input: recorded, left out
+            bad.append(f"{lfn}: {type(e).__name__}")
+            continue
+        gp = ak.zip({"pt": a.GenPart_pt, "eta": a.GenPart_eta, "phi": a.GenPart_phi, "mass": a.GenPart_mass,
+                     "pdgId": a.GenPart_pdgId, "genPartIdxMother": a.GenPart_genPartIdxMother},
+                    with_name="PtEtaPhiMLorentzVector")
+        m_ln, channel, found = find_gen_ln(types.SimpleNamespace(GenPart=gp))
+        idx = _bin_index(m_ln, edges)
+        low = m_ln < 200.0
+        w = np.asarray(a.genWeight, dtype=np.float64)
+        for ch in hist:
+            sel = found & (channel == ch)
+            hist[ch] += np.bincount(idx[sel & ~low], weights=w[sel & ~low], minlength=nb)
+            under[ch] += float(w[sel & low].sum())
+            n_ch[ch] += int(sel.sum())
+        n += len(w); n_missing += int((~found).sum())
+    return {"key": key, "mass_point": mass_point_key(key), "edges": edges.tolist(),
+            "hist_ee": hist[9900012].tolist(), "hist_mm": hist[9900014].tolist(),
+            "under200_ee": under[9900012], "under200_mm": under[9900014],
+            "n_ee": n_ch[9900012], "n_mm": n_ch[9900014], "events": n, "no_gen_match": n_missing, "bad_files": bad}
+
+
+def averages_from_hists(hists: dict, payload_path: str) -> dict:
+    """The sample_averages records from cached histograms (--hists) and the payload's curves."""
+    curves = load_curve(payload_path)
+    res = {}
+    for key, r in hists.items():
+        curve = curve_for(curves, r["mass_point"])
+        nb = len(r["edges"]) - 1
+        if not (np.array_equal(curve["edges"], np.asarray(r["edges"], float)) and len(curve["values"]) >= nb):
+            raise SystemExit(f"{key}: the cached histogram binning differs from the payload's curve")
+        k_low = curve["values"][_bin_index(np.asarray([curve["mln_min"]]), curve["edges"])[0]]
+        out = {k: r[k] for k in ("key", "mass_point")}
+        for ch in ("ee", "mm"):
+            h = np.asarray(r[f"hist_{ch}"], float)
+            den = h.sum() + r[f"under200_{ch}"]
+            out[ch] = float(((h * curve["values"][:nb]).sum() + r[f"under200_{ch}"] * k_low) / den) if den else None
+        out.update({k: r[k] for k in ("n_ee", "n_mm", "events", "no_gen_match", "bad_files")})
+        res[key] = out
+    return res
+
+
 def scan_averages(key: str, lfns: list[str], payload_path: str, redirector: str, chunk: int = 200_000) -> dict:
     """Per-model <k> of a multi-model scan sample (one dataset, GenModel_<model> flags per event):
     {model: {"ee", "mm", "n_ee", "n_mm"}} plus the file bookkeeping, computed as sample_averages does."""
@@ -159,6 +219,10 @@ def main() -> None:
     ap.add_argument("--scan", action="store_true",
                     help="the plan's scan datasets (multi-model samples) instead of the single-point ones: one output "
                          "record per model, from the unskimmed inputs")
+    ap.add_argument("--hists", default=None,
+                    help="write each sample's m_lN histogram at the payload's binning here instead of the averages")
+    ap.add_argument("--from-hists", default=None,
+                    help="compute the averages from a --hists file with the payload's curves (no file reads)")
     args = ap.parse_args()
 
     if args.merge:
@@ -175,12 +239,20 @@ def main() -> None:
             mp = r["mass_point"]
             if not mp:
                 continue
-            entry = raw.setdefault("averages", {}).setdefault(mp, {"source": args.source or args.era or "computed"})
+            source = args.source or args.era or "computed"
+            entry = raw.setdefault("averages", {}).setdefault(mp, {"source": source})
             for ch in ("ee", "mm"):
                 if r.get(ch) is not None:
-                    entry[ch] = round(r[ch], 8); added += 1
+                    entry[ch] = round(r[ch], 8); entry["source"] = source; added += 1
         Path(args.write_payload).write_text(json.dumps(raw, indent=1) + "\n")
         print(f"merged {added} channel averages for {len(avgs)} datasets into {args.write_payload}")
+        return
+
+    if args.from_hists:
+        res = averages_from_hists(json.loads(Path(args.from_hists).read_text()), args.payload)
+        out = args.out or f"averages_{args.era}.json"
+        Path(out).write_text(json.dumps(res, indent=1) + "\n")
+        print(f"wrote {out}: {len(res)} datasets from {args.from_hists}")
         return
 
     plan_dir = Path(args.plan_dir).expanduser() if args.plan_dir else default_plan_dir(args.era)
@@ -207,14 +279,16 @@ def main() -> None:
                 print(f"[{i}/{len(jobs)}] {r['key']}: {len(r['models'])} models, {r['events']} events, "
                       f"{r['no_gen_match']} unmatched, {len(r['bad_files'])} bad", flush=True)
     else:
+      fn = sample_hists if args.hists else sample_averages
       with ProcessPoolExecutor(args.workers) as ex:
-        futs = {ex.submit(sample_averages, k, v, args.payload, args.redirector): k for k, v in jobs.items()}
+        futs = {ex.submit(fn, k, v, args.payload, args.redirector): k for k, v in jobs.items()}
         for i, fu in enumerate(as_completed(futs), 1):
             r = fu.result(); res[r["key"]] = r
-            print(f"[{i}/{len(jobs)}] {r['key'][:48]:48s} {r['mass_point'] or '?':14s} ee {r['ee'] if r['ee'] is None else round(r['ee'], 5)} "
-                  f"mm {r['mm'] if r['mm'] is None else round(r['mm'], 5)} ({r['events']} ev, {r['no_gen_match']} unmatched, "
-                  f"{len(r['bad_files'])} bad)", flush=True)
-    out = args.out or f"averages_{args.era}.json"
+            kk = "" if args.hists else (f"ee {r['ee'] if r['ee'] is None else round(r['ee'], 5)} "
+                                        f"mm {r['mm'] if r['mm'] is None else round(r['mm'], 5)} ")
+            print(f"[{i}/{len(jobs)}] {r['key'][:48]:48s} {r['mass_point'] or '?':14s} {kk}({r['events']} ev, "
+                  f"{r['no_gen_match']} unmatched, {len(r['bad_files'])} bad)", flush=True)
+    out = args.hists or args.out or f"averages_{args.era}.json"
     Path(out).write_text(json.dumps(res, indent=1) + "\n")
     print(f"wrote {out}")
 
