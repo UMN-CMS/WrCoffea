@@ -37,8 +37,8 @@ hands out workers, and ends with a summary of every command. Each command has it
 When these have completed, the plotter reads the set back by its directory name:
 ```bash
 cd WR_Plotter
-../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir 20261011 --local-plots               # the set rootfiles/Run3/2024/RunIII2024Summer24/20261011/
-../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir 20261011 --dy nlo_inc --local-plots  # one of its DY variants instead of the default
+../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir 20261011               # the set rootfiles/Run3/2024/RunIII2024Summer24/20261011/
+../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir 20261011 --dy nlo_inc  # one of its DY variants instead of the default
 ```
 - `--dir` is the name of the directory under `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`: the date the production
   ran, or its `--dir`.
@@ -47,7 +47,7 @@ cd WR_Plotter
   default LO HT-binned DY, `WRAnalyzer_DYJets.root`, and stops when that file is missing.
 
 The cutflow tables, signal plots, event-weight plots and DY comparisons take the same `--era`, `--dir` and `--dy`:
-[WR_Plotter/docs/plotting.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/docs/plotting.md).
+[WR_Plotter/README.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/README.md).
 
 The other years run the same way: one era, several eras, or `all` for every era with data skims.
 ```bash
@@ -113,4 +113,4 @@ Run 2 only).
 | [systematics_status.md](docs/systematics_status.md) | Which systematic uncertainties are finished for Run 2 and Run 3, and which are still placeholders or missing? |
 | [skimming.md](docs/skimming.md) | The skim campaign: selection, branch policy, workflow, verification, Condor at the LPC. |
 | [condor.md](docs/condor.md) | Running the analyzer on HTCondor at the LPC. |
-| [WR_Plotter/docs/plotting.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/docs/plotting.md) | The WR_Plotter commands: stacks, cutflows, signal plots, DY comparisons, systematics tables. |
+| [WR_Plotter/README.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/README.md) | The WR_Plotter commands: stacks, cutflows, signal plots, DY comparisons, systematics tables. |

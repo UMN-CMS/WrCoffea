@@ -30,7 +30,7 @@ the payloads: `wrcoffea/config.yaml`. Run 2 = UL16APV, UL16, UL17, UL18. Run 3 =
 | L1 prefiring (`prefire`) | yes | not applicable | NanoAOD `L1PreFiringWeight` |
 
 "yes" means the variation is in the `20261011_systs` files of every era of that Run and the
-plotter's band and the systematics tables ([WR_Plotter/docs/plotting.md](../WR_Plotter/docs/plotting.md)) pick it up. A set is final
+plotter's band and the systematics tables ([WR_Plotter/README.md](../WR_Plotter/README.md)) pick it up. A set is final
 for a family once every MC manifest of the set lists it in `requested_families`; every UL MC
 manifest lists `ps`. The Run 3 MC is remade after the muon trigger variation change of 2026-10-12:
 a Run 3 MC file counts only when it was written after that change.

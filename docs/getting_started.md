@@ -84,7 +84,7 @@ they are set, which is the way to keep a proxy at a fixed path on a laptop.
 ```bash
 .venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --maxfiles 1 --maxchunks 1 --dir smoke   # a few minutes
 .venv/bin/python bin/run_analysis.py RunIII2024Summer24 DYJets --dir mytag                              # the full sample
-cd WR_Plotter && ../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir mytag --local-plots
+cd WR_Plotter && ../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir mytag
 ```
 
 The smoke run writes `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/smoke/WRAnalyzer_DYJets.root`
