@@ -28,12 +28,26 @@ To run over everything for 2024 (all backgrounds including every DY variant, dat
 python bin/run_production.py RunIII2024Summer24 --condor --all-dy # Run background (including all DY variants), data, signal
 ```
 This starts 250 Condor workers and runs nine `run_analysis.py` commands of the full 2024 production on them at once.
-It writes one file per sample to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<today's date>/`:
+It writes one file per sample to `WR_Plotter/rootfiles/Run3/2024/RunIII2024Summer24/<YYYYMMDD>/`, today's date
+(`--dir <tag>` names the directory instead):
 data (blinded), tt_tW, Nonprompt, Other, every signal point of the era's mass-point CSV, the default
 DY (LO HT-binned) and six other DY setups. It takes 30 to 60 minutes, depending on how fast the pool
 hands out workers, and ends with a summary of every command. Each command has its log in `logs/<today's date>/`.
 
-When these have completed, the output ROOT files can be used to make stackplots, signal plots, cutflow tables, and DY comparison plots: [WR_Plotter/docs/plotting.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/docs/plotting.md).
+When these have completed, the plotter reads the set back by its directory name:
+```bash
+cd WR_Plotter
+../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir 20261011 --local-plots               # the set rootfiles/Run3/2024/RunIII2024Summer24/20261011/
+../.venv/bin/python bin/make_stackplots.py --era RunIII2024Summer24 --dir 20261011 --dy nlo_inc --local-plots  # one of its DY variants instead of the default
+```
+- `--dir` is the name of the directory under `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/`: the date the production
+  ran, or its `--dir`.
+- `--dy <variant>` picks a DY variant file of the set, `WRAnalyzer_DYJets_<variant>.root`: `lo_inc`, `nlo_inc`,
+  `nlo_mll`, `nlo_njet`, `lo_ht_zpt`, `lo_ht_zpt_reshape` (the `--all-dy` commands). Without it the stack uses the
+  default LO HT-binned DY, `WRAnalyzer_DYJets.root`, and stops when that file is missing.
+
+The cutflow tables, signal plots, event-weight plots and DY comparisons take the same `--era`, `--dir` and `--dy`:
+[WR_Plotter/docs/plotting.md](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/docs/plotting.md).
 
 The other years run the same way: one era, several eras, or `all` for every era with data skims.
 ```bash
@@ -42,8 +56,9 @@ python bin/run_production.py RunIISummer20UL17 RunIISummer20UL18 --condor --all-
 python bin/run_production.py all --condor --all-dy
 ```
 Eras: `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer20UL17`, `RunIISummer20UL18`, `Run3Summer22`,
-`Run3Summer22EE`, `Run3Summer23`, `Run3Summer23BPix`, `RunIII2024Summer24`; `RunIII2025Summer25` has no skims yet.
-Each era writes under its own `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<today's date>/` and runs its own DY
+`Run3Summer22EE`, `Run3Summer23`, `Run3Summer23BPix`, `RunIII2024Summer24`, `RunIII2025Summer25` (data; its MC and
+signal are the 2024 samples, `mc_alias` in `wrcoffea/config.yaml`).
+Each era writes under its own `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/<YYYYMMDD>/` and runs its own DY
 variants (`--plan --all-dy` lists an era's commands).
 
 ## Run all of 2024 except the extra DY variants
