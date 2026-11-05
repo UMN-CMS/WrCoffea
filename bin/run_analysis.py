@@ -902,6 +902,7 @@ def _run_local_composite(args, era, *, client, sample_to_group):
     has_signal = "Signal" in samples
     sig_points = (select_signal_points(era, getattr(args, "signal_points", None),
                                        getattr(args, "mwr_range", None)) if has_signal else [])
+    failed = []   # (sample, mass point or None) of every run that raised; the caller reports them
 
     for sample in samples:
         sample_runs = [(sample, None)]
@@ -938,9 +939,25 @@ def _run_local_composite(args, era, *, client, sample_to_group):
                 logging.info("=== Finished %s ===", label)
             except Exception:
                 logging.exception("Failed processing %s. Continuing...", label)
+                failed.append((sample_name, mass_point))
 
     args.sample = composite_mode
     args.mass = None
+    return failed
+
+
+def composite_failure_line(composite_mode, failed):
+    """The last log line of a composite run that lost samples or signal points: what failed and what
+    reruns it (``--signal-points`` for the points, single-sample runs for the samples)."""
+    samples = [sample for sample, point in failed if point is None]
+    points = [point for _, point in failed if point is not None]
+    parts = []
+    if samples:
+        parts.append("rerun " + ", ".join(samples) + " as single-sample runs")
+    if points:
+        parts.append("rerun the points with --signal-points " + " ".join(points))
+    return (f"Composite mode {composite_mode}: {len(failed)} run(s) failed "
+            f"({len(samples)} sample(s), {len(points)} signal point(s)); " + "; ".join(parts) + ".")
 
 
 if __name__ == "__main__":
@@ -1176,6 +1193,7 @@ if __name__ == "__main__":
 
     # --- Process and save ---
     t0 = time.monotonic()
+    failed_runs = []   # local composite modes continue past a failed sample or point and report them at the end
 
     if is_condor:
         if args.scheduler:
@@ -1218,7 +1236,7 @@ if __name__ == "__main__":
         n_workers = args.max_workers or 3
         with _local_cluster(n_workers=n_workers, threads_per_worker=args.threads_per_worker or 1) as client:
             if is_composite:
-                _run_local_composite(args, era, client=client, sample_to_group=sample_to_group)
+                failed_runs = _run_local_composite(args, era, client=client, sample_to_group=sample_to_group)
             else:
                 try:
                     hists = _process_fileset(args, fileset, client=client, condor=False)
@@ -1239,3 +1257,6 @@ if __name__ == "__main__":
 
     exec_time = time.monotonic() - t0
     logging.info(f"Execution took {exec_time/60:.2f} minutes")
+    if failed_runs:
+        logging.error(composite_failure_line(args.sample, failed_runs))
+        raise SystemExit(1)

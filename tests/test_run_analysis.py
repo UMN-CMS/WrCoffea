@@ -671,6 +671,38 @@ def test_local_composite_saves_through_group_map(monkeypatch):
     assert args.sample == "bkg" and args.mass is None
 
 
+def test_local_composite_reports_failed_runs(monkeypatch):
+    """A failed sample or signal point does not stop the loop; the loop returns them and the summary line
+    names them with the flag that reruns them (the 2025 production of 2026-11-04 lost 94 points when the
+    laptop slept and every XRootD open failed, and the production summary still said "ok")."""
+    import wrcoffea.save_hists as save_hists_mod
+
+    monkeypatch.setattr(run_analysis, "COMPOSITE_SAMPLES", {"mc": ["DYJets", "Signal"]})
+    monkeypatch.setattr(run_analysis, "select_signal_points", lambda era, pts, rng: ["WR8000_N750", "WR8000_N900"])
+    monkeypatch.setattr(run_analysis, "build_fileset_path", lambda **kw: f"{kw['sample']}.json")
+    monkeypatch.setattr(run_analysis, "load_and_select_fileset", lambda **kw: {"fs": kw["desired_process"]})
+
+    def process(args, fileset, *, client, condor=False):
+        if args.mass == "WR8000_N750" or args.sample == "DYJets":
+            raise OSError("[FATAL] Invalid address")
+        return {"WRtoNMutoMuMuJJ_MWR8000_N900": {"h": 1}}
+
+    monkeypatch.setattr(run_analysis, "_process_fileset", process)
+    saved = []
+    monkeypatch.setattr(save_hists_mod, "save_histograms", lambda hists, group_args: saved.append(group_args.sample))
+    args = SimpleNamespace(sample="mc", mass=None, unskimmed=False, dy=None, maxfiles=None, debug=False)
+
+    failed = run_analysis._run_local_composite(args, "RunIII2025Summer25", client=object(),
+                                               sample_to_group={"WRtoNMutoMuMuJJ_MWR8000_N900": "Signal"})
+
+    assert saved == ["Signal"]   # the one point that ran was saved under its group
+    assert failed == [("DYJets", None), ("Signal", "WR8000_N750")]
+    assert args.sample == "mc" and args.mass is None
+    line = run_analysis.composite_failure_line("mc", failed)
+    assert line == ("Composite mode mc: 2 run(s) failed (1 sample(s), 1 signal point(s)); "
+                    "rerun DYJets as single-sample runs; rerun the points with --signal-points WR8000_N750.")
+
+
 def test_validate_mass_outside_the_csv_needs_fileset():
     """Signal --mass must be a point of the era's CSV, unless --fileset names the fileset that holds it."""
     args = _dy_args("RunIISummer20UL18", None)

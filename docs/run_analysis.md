@@ -31,8 +31,9 @@ Eras (`--list-eras`): `RunIISummer20UL16APV`, `RunIISummer20UL16`, `RunIISummer2
 - An era's production is one command, `bin/run_production.py <era> [--condor]`: `data`, `bkg` and
   `signal` at once, with `--all-dy` the DY corrections and every DY variant that is a prediction,
   with `--only` any of them by name ([condor.md](condor.md#running)).
-- Composite modes run the samples one after the other locally (3 Dask workers; a failing sample is
-  logged and the next one runs) and in parallel with `--condor` at the LPC ([condor.md](condor.md)).
+- Composite modes run the samples one after the other locally (3 Dask workers; a failing sample or
+  signal point is logged and the next one runs; the run then exits 1 with a last line naming them and
+  the `--signal-points` rerun) and in parallel with `--condor` at the LPC ([condor.md](condor.md)).
   `--signal-points grid` runs the 9-point grid (lowest, median and highest N for m_WR = 2, 4, 6 TeV)
   instead of every point, `--mwr-range MIN MAX` a range.
 - Signal samples: Run 3 the official grid (100 points per 2022/2023 era) and the 2024 private
