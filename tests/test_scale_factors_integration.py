@@ -1253,14 +1253,53 @@ class TestRawSoftdropMass:
         assert got[0] == pytest.approx((p4[0] + p4[1]).mass, rel=1e-5)
         assert got[1:] == [66.0, 77.0]
 
-    def test_ul_keeps_nanoaod_msoftdrop(self, monkeypatch, caplog):
-        """The UL JERC payloads have no AK4 PUPPI corrections: NanoAOD's m_SD stays, with a warning."""
+    def test_every_era_has_the_subjet_corrections(self):
+        """The recipe runs in every era: Run 3 reads the AK4 PUPPI corrections from the AK4 payload, Run 2 UL
+        from JERC_SUBJET, with the tags of the era's AK4 jets and the JES sources of its AK8 jets."""
+        algo = sf.SUBJET_JEC_ALGO
+        for era, entry in sf.JERC_JSONS.items():
+            assert sf.has_subjet_jec(era), era
+            cfg = sf._subjet_jerc_cfg(era)
+            assert (cfg is entry["JERC_AK4"]) == ("JERC_SUBJET" not in entry), era
+            assert entry["JERC_AK4"]["algo"] == algo or "JERC_SUBJET" in entry, era
+            for key in ("tag_MC", "tag_Data", "JR_tag_MC"):
+                assert cfg[key] == entry["JERC_AK4"][key], (era, key)
+            assert cfg["jes_unc_mapping"] == entry["JERC_AK8"]["jes_unc_mapping"], era
+            ceval = sf._get_ceval(cfg["json"])
+            names = [f"{cfg['tag_MC']}_L2Relative_{algo}", f"{cfg['JR_tag_MC']}_MC_PtResolution_{algo}",
+                     f"{cfg['JR_tag_MC']}_MC_ScaleFactor_{algo}"]
+            names += [f"{cfg['tag_MC']}_{source}_{algo}" for source in cfg["jes_unc_mapping"].values()]
+            if isinstance(cfg["tag_Data"], str):
+                names += [f"{cfg['tag_Data']}_L2Relative_{algo}", f"{cfg['tag_Data']}_L2L3Residual_{algo}"]
+            for name in names:
+                assert sf._has_correction(ceval, name), name
+
+    def test_ul_data_follows_the_jme_recipe(self, monkeypatch):
+        """Run 2 UL data: the same recipe with the AK4 PUPPI corrections of JERC_SUBJET; the residual takes the
+        run number."""
+        vector = pytest.importorskip("vector")
         monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {})
-        assert not sf.has_subjet_jec("RunIISummer20UL18") and sf.has_subjet_jec(self.ERA)
-        with caplog.at_level("WARNING"):
-            out = sf.apply_jet_corrections(_make_subjet_events(), "RunIISummer20UL18", True)
-        assert ak.to_list(out.FatJet.msoftdrop) == [[55.0, 66.0, 77.0]]
-        assert "AK4PFPuppi" in caplog.text
+        era, run = "RunIISummer20UL18", 316500
+        events = ak.with_field(_make_subjet_events(), ak.Array([run]), "run")
+        out = sf.apply_jet_corrections(events, era, False)
+
+        cfg = sf.JERC_JSONS[era]["JERC_SUBJET"]
+        ceval = sf._get_ceval(cfg["json"])
+        tag = cfg["tag_Data"]
+        p4 = []
+        for pt, eta, phi, mass, raw in [(120.0, 0.3, 0.1, 10.0, 0.1), (80.0, 0.6, 0.5, 8.0, 0.2)]:
+            pt_raw, mass_raw = pt * (1 - raw), mass * (1 - raw)
+            args = {"JetEta": eta, "JetPt": pt_raw, "run": float(run)}
+            l2 = ceval[f"{tag}_L2Relative_AK4PFPuppi"]
+            c2 = l2.evaluate(*[args[i.name] for i in l2.inputs])
+            res = ceval[f"{tag}_L2L3Residual_AK4PFPuppi"]
+            args["JetPt"] = pt_raw * c2
+            c = c2 * res.evaluate(*[args[i.name] for i in res.inputs])
+            assert c != pytest.approx(1.0, abs=1e-3)
+            p4.append(vector.obj(pt=pt_raw * c, eta=eta, phi=phi, mass=mass_raw * c))
+        got = ak.to_list(out.FatJet.msoftdrop)[0]
+        assert got[0] == pytest.approx((p4[0] + p4[1]).mass, rel=1e-5)
+        assert got[1:] == [66.0, 77.0]
 
     def test_raw_mode_replaces_msoftdrop(self, monkeypatch):
         monkeypatch.setattr(sf, "AK8_MSOFTDROP_MODES", {self.ERA: "raw"})
@@ -1299,8 +1338,35 @@ class TestSoftdropJME:
         events = _make_subjet_mc_events()
         assert ak.to_list(sf._subjet_gen_index(events.SubJet, events)) == [[2, 1, 0]]
 
-    def test_variations_move_only_jets_with_two_subjets(self):
-        out = sf.apply_jet_corrections(_make_subjet_mc_events(), self.ERA, True,
+    @pytest.mark.parametrize("era", ["RunIII2024Summer24", "RunIISummer20UL18"])
+    def test_mc_mass_is_the_jec_and_jer_corrected_subjet_pair(self, era):
+        """MC, Run 3 and Run 2 UL: m_SD from the subjets with the AK4 PUPPI L2Relative and the JER scaling
+        method (each subjet has a gen subjet at 0.97 of its stored pT)."""
+        vector = pytest.importorskip("vector")
+        out = sf.apply_jet_corrections(_make_subjet_mc_events(), era, True).FatJet
+        cfg = sf._subjet_jerc_cfg(era)
+        ceval = sf._get_ceval(cfg["json"])
+        algo = sf.SUBJET_JEC_ALGO
+        p4 = []
+        for pt, eta, phi, mass, raw in [(120.0, 0.3, 0.1, 10.0, 0.1), (80.0, 0.6, 0.5, 8.0, 0.2)]:
+            pt_raw, mass_raw = pt * (1 - raw), mass * (1 - raw)
+            args = {"JetEta": eta, "JetPhi": phi, "JetPt": pt_raw, "Rho": 20.0}
+            l2 = ceval[f"{cfg['tag_MC']}_L2Relative_{algo}"]
+            c = l2.evaluate(*[args[i.name] for i in l2.inputs])
+            pt_jec = pt_raw * c
+            sigma = ceval[f"{cfg['JR_tag_MC']}_MC_PtResolution_{algo}"].evaluate(eta, pt_jec, 20.0)
+            sf_nom = float(sf._jer_scale_factor(ceval, cfg["JR_tag_MC"], algo, eta, pt_jec, "nom"))
+            gen_pt = 0.97 * pt
+            assert abs(pt_jec - gen_pt) < 3 * sigma * pt_jec and sf_nom > 1.0
+            cjer = 1 + (sf_nom - 1) * (pt_jec - gen_pt) / pt_jec
+            p4.append(vector.obj(pt=pt_jec * cjer, eta=eta, phi=phi, mass=mass_raw * c * cjer))
+        got = ak.to_list(out.msoftdrop)[0]
+        assert got[0] == pytest.approx((p4[0] + p4[1]).mass, rel=1e-5)
+        assert got[1:] == [66.0, 77.0]
+
+    @pytest.mark.parametrize("era", ["RunIII2024Summer24", "RunIISummer20UL18"])
+    def test_variations_move_only_jets_with_two_subjets(self, era):
+        out = sf.apply_jet_corrections(_make_subjet_mc_events(), era, True,
                                        variations={"jer", "jes", "jms", "jmr"}).FatJet
         nominal = ak.to_list(out.msoftdrop)[0]
         assert nominal[1:] == [66.0, 77.0]

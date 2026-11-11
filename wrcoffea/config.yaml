@@ -151,6 +151,9 @@ jerc_jsons:
   # JER retagged (Summer20UL16(APV)_JRV5, Summer19UL17_JRV4, Summer19UL18_JRV3): same scale factors as the previous
   # JRV3/JRV2 tags (nominal identical, up/down within 1e-4), new schema (ScaleFactor + SFUncertainty); only the UL17
   # pT-resolution function changed (<= 3 %).  Values verified against the previous files on 2026-10-11.
+  # JERC_SUBJET: the AK4 PUPPI JEC and JER of the same tags, for the AK8 soft-drop subjets (JME jet mass
+  # recommendation).  The official UL files hold AK4 CHS and AK8 PUPPI only; scripts/ul_subjet_jerc.py converts
+  # the JME text files.  Eras without the entry (Run 3) take the subjet corrections from JERC_AK4.
   RunIISummer20UL16APV:
     JERC_AK4:
       json: data/jsonpog/JME/RunII/RunIISummer20UL16APV/jet_jerc.json.gz
@@ -165,6 +168,14 @@ jerc_jsons:
       tag_MC: "Summer19UL16APV_V7_MC"
       tag_Data: "Summer19UL16APV_V7_DATA"
       algo: "AK8PFPuppi"
+      JR_tag_MC: "Summer20UL16APV_JRV5"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JERC_SUBJET:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL16APV/subjet_jerc.json.gz
+      tag_MC: "Summer19UL16APV_V7_MC"
+      tag_Data: "Summer19UL16APV_V7_DATA"
+      algo: "AK4PFPuppi"
       JR_tag_MC: "Summer20UL16APV_JRV5"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
@@ -186,6 +197,14 @@ jerc_jsons:
       JR_tag_MC: "Summer20UL16_JRV5"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
+    JERC_SUBJET:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL16/subjet_jerc.json.gz
+      tag_MC: "Summer19UL16_V7_MC"
+      tag_Data: "Summer19UL16_V7_DATA"
+      algo: "AK4PFPuppi"
+      JR_tag_MC: "Summer20UL16_JRV5"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
     JMAR: data/jsonpog/JME/RunII/RunIISummer20UL16/jmar.json.gz
   RunIISummer20UL17:
     JERC_AK4:
@@ -204,6 +223,14 @@ jerc_jsons:
       JR_tag_MC: "Summer19UL17_JRV4"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"
+    JERC_SUBJET:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL17/subjet_jerc.json.gz
+      tag_MC: "Summer19UL17_V5_MC"
+      tag_Data: "Summer19UL17_V5_DATA"
+      algo: "AK4PFPuppi"
+      JR_tag_MC: "Summer19UL17_JRV4"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
     JMAR: data/jsonpog/JME/RunII/RunIISummer20UL17/jmar.json.gz
   RunIISummer20UL18:
     JERC_AK4:
@@ -219,6 +246,14 @@ jerc_jsons:
       tag_MC: "Summer19UL18_V5_MC"
       tag_Data: "Summer19UL18_V5_DATA"
       algo: "AK8PFPuppi"
+      JR_tag_MC: "Summer19UL18_JRV3"
+      jes_unc_mapping:
+        CMS_scale_j_Total: "Total"
+    JERC_SUBJET:
+      json: data/jsonpog/JME/RunII/RunIISummer20UL18/subjet_jerc.json.gz
+      tag_MC: "Summer19UL18_V5_MC"
+      tag_Data: "Summer19UL18_V5_DATA"
+      algo: "AK4PFPuppi"
       JR_tag_MC: "Summer19UL18_JRV3"
       jes_unc_mapping:
         CMS_scale_j_Total: "Total"

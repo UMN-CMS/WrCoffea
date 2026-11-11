@@ -343,7 +343,7 @@ tests/       # Automated test suite (pytest)
 - See [`WR_Plotter/README.md`](https://github.com/UMN-CMS/WR_Plotter/blob/billyDev/README.md) for every script
 
 **`scripts/`** - Derivations and Campaigns
-- Cross sections (`genxsec_campaign.py`), luminosities (`processed_lumi.py`), PDF sets, the DY Z-pT reweight and jet-pT reshape derivations, the signal k-factor campaign (`signal_kfactor/`), the Run 2 payload converters
+- Cross sections (`genxsec_campaign.py`), luminosities (`processed_lumi.py`), PDF sets, the DY Z-pT reweight and jet-pT reshape derivations, the signal k-factor campaign (`signal_kfactor/`), the Run 2 payload converters (the UL subjet corrections: `ul_subjet_jerc.py`)
 
 **`docs/`** - Documentation
 - [`getting_started.md`](docs/getting_started.md) - Environment on a laptop or at the LPC, grid proxy, a first run

@@ -18,7 +18,7 @@ the payloads: `wrcoffea/config.yaml`. Run 2 = UL16APV, UL16, UL17, UL18. Run 3 =
 | Electron trigger SF (`sf`) | yes | proxy | UL: the Run 2 HEEP trigger-OR efficiencies; Run 3: the Ele30 TightID SF stands in for the OR (Remaining, #94) |
 | Loose-lepton SFs (`sf`) | yes | yes | boosted partner: muon reco + ID, electron reco |
 | LSF SF (`lsf`) | yes | placeholder | UL: AN-19-083 Table 60 per year; Run 3: 1.00 ± 0.10 (Remaining, #95) |
-| JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out; in Run 3 they also move the AK8 soft-drop mass (JME recipe), not in UL (no AK4 PUPPI payload) |
+| JES, JER (`jes`, `jer`) | yes | yes | the `Total` JES source; the regrouped sources are not split out; they also move the AK8 soft-drop mass through its subjets (JME recipe; UL sets made before 2026-11-11 keep NanoAOD's mass) |
 | Soft-drop mass scale and resolution (`jms`, `jmr`) | yes | yes | JME residual JMS ±1 % and JMR ±2 %; validated for 50 ≤ m_SD < 300 GeV, our cut is 40 GeV |
 | Electron energy scale and smearing (`elescale`, `elesmear`) | no | yes | UL NanoAODv9 MC carries no scale uncertainty (Remaining, #96) |
 | Muon momentum scale and smearing (`muscale`, `musmear`) | placeholder (`musmear` refused) | yes | the high-pT recipe in Run 3 (2022/2023 from the POG Run 3 tables, 2024/2025 from EXO-25-021); UL: a 5 %/TeV × pT scale placeholder, no resolution variation (Remaining, #91) |
@@ -53,7 +53,6 @@ a Run 3 MC file counts only when it was written after that change.
 | Background normalization and MC statistics in the fit | not in the production | not in the production | datacard-level: free DY and tt̄+tW rates, the lnN priors of the other backgrounds, Barlow-Beeston | |
 | Signal cross-section uncertainty and the missing N → ℓtb channel | open | open | a decision on the per-point k-factor uncertainty and on the official samples' missing top channel | #99 |
 | 2025 | | no production | a production, then a 2025 reshape; a 2025 electron trigger payload | #100 |
-| AK8 soft-drop mass definition (corrected vs raw) | open | open | not a systematic but a selection choice that moves the boosted DY CR by ~9 % in UL18 | #97 |
 
 ## How to check the state of a production
 

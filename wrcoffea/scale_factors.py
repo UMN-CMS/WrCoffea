@@ -1559,10 +1559,16 @@ def _event_rho(events):
     return None
 
 
+def _subjet_jerc_cfg(era):
+    """The JERC entry the soft-drop subjets are corrected with: ``JERC_SUBJET`` where the era has one (Run 2
+    UL, whose AK4 payload is AK4PFchs; scripts/ul_subjet_jerc.py), otherwise ``JERC_AK4`` (Run 3: AK4 PUPPI)."""
+    entry = JERC_JSONS[era]
+    return entry.get("JERC_SUBJET") or entry["JERC_AK4"]
+
+
 def has_subjet_jec(era):
-    """Does *era*'s AK4 JERC payload carry the AK4 PUPPI corrections the subjets need?  (The UL payloads hold
-    AK4PFchs only.)"""
-    cfg = JERC_JSONS[era]["JERC_AK4"]
+    """Does *era* have the AK4 PUPPI corrections the subjets need?"""
+    cfg = _subjet_jerc_cfg(era)
     return _has_correction(_get_ceval(cfg["json"]), f"{cfg['tag_MC']}_L2Relative_{SUBJET_JEC_ALGO}")
 
 
@@ -1716,11 +1722,12 @@ def _jet_mass_variations(fatjets, events, variations):
     return fatjets
 
 
-#: Which AK8 soft-drop mass the selection cuts on.  "corrected" (the default) is
-#: NanoAOD's ``FatJet_msoftdrop``, the mass of the JEC-corrected soft-drop
-#: subjets.  "raw" is the mass of the uncorrected subjets, the SDMass the Run 2
-#: analysis cut on (SKFlatMaker / HNWRAnalyzer).  ``ak8_msoftdrop_mode`` in
-#: config.yaml selects it per era.
+#: Which AK8 soft-drop mass the selection cuts on.  "corrected" (the default, every
+#: era) is the JME jet mass recommendation: the mass of the soft-drop subjets with
+#: the AK4 PUPPI JEC and JER.  "raw" is the mass of the uncorrected subjets, the
+#: SDMass the Run 2 analysis cut on (SKFlatMaker / HNWRAnalyzer); a study option
+#: for the comparison with Run 2.  ``ak8_msoftdrop_mode`` in config.yaml selects
+#: it per era.
 AK8_MSOFTDROP_MODE_CHOICES = ("corrected", "raw")
 
 
@@ -1766,12 +1773,13 @@ def apply_jet_corrections(events, era, isMC, variations=()):
         (``msoftdrop_jms_up`` ...; FatJet only)
     Nothing is computed for variations that are not requested.
 
-    ``FatJet.msoftdrop`` follows the JME jet mass recommendation where the AK4
-    JERC payload has AK4 PUPPI corrections (Run 3): the subjets get the AK4 JEC
-    and, on MC, the AK4 JER, and m_SD is their summed mass; JER and JES also
-    vary it (``msoftdrop_jer_up`` ...).  Without them (UL) NanoAOD's m_SD is
-    kept.  For an era whose ``ak8_msoftdrop_mode`` is ``"raw"``, ``msoftdrop``
-    is the soft-drop mass of the uncorrected input subjets instead.
+    ``FatJet.msoftdrop`` follows the JME jet mass recommendation in every era:
+    the subjets get the AK4 PUPPI JEC and, on MC, the AK4 PUPPI JER, and m_SD
+    is their summed mass; JER and JES also vary it (``msoftdrop_jer_up`` ...).
+    Run 3 takes the corrections from the AK4 payload, Run 2 UL from
+    ``JERC_SUBJET`` (_subjet_jerc_cfg).  For an era whose
+    ``ak8_msoftdrop_mode`` is ``"raw"`` (a study option), ``msoftdrop`` is the
+    soft-drop mass of the uncorrected input subjets instead.
     """
     msd_mode = ak8_msoftdrop_mode(era)
     input_subjets = events.SubJet if "SubJet" in events.fields else None
@@ -1901,14 +1909,16 @@ def apply_jet_corrections(events, era, isMC, variations=()):
     if msd_mode == "raw":
         fatjets = ak.with_field(fatjets, _raw_softdrop_mass(fatjets, input_subjets), "msoftdrop")
     elif input_subjets is not None and "rawFactor" in input_subjets.fields and has_subjet_jec(era):
-        fatjets = _softdrop_from_subjets(fatjets, events, cevalAK4, tagAK4, cfgAK4, isMC, variations)
+        cfgSub = _subjet_jerc_cfg(era)
+        tagSub = cfgSub["tag_MC"] if isMC else _select_data_tag(cfgSub["tag_Data"], events.run)
+        fatjets = _softdrop_from_subjets(fatjets, events, _get_ceval(cfgSub["json"]), tagSub, cfgSub, isMC, variations)
     else:
         key = f"subjet_jec::{era}"
         if key not in _WARN_ONCE:
             _WARN_ONCE.add(key)
             logger.warning(
-                "Era '%s': no %s JEC in the AK4 JERC payload (or no SubJet collection); FatJet.msoftdrop is "
-                "NanoAOD's and the JES/JER variations do not move it.", era, SUBJET_JEC_ALGO,
+                "Era '%s': no %s corrections for the subjets (or no SubJet collection in the input); "
+                "FatJet.msoftdrop is NanoAOD's and the JES/JER variations do not move it.", era, SUBJET_JEC_ALGO,
             )
     if isMC and ({"jms", "jmr"} & set(variations)):
         fatjets = _jet_mass_variations(fatjets, events, variations)
