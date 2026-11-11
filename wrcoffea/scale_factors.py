@@ -920,11 +920,19 @@ def electron_id_sf(tight_electrons, era):
         
     evaluator = ceval[correction_name]
 
+    # Accepted electrons are barrel (|eta_SC| <= 1.4442) or endcap (|eta_SC| >= 1.566).  The payloads put their crack
+    # edges at 1.444 / 1.566 (2024) or 1.44 / 1.57 (2025) and hold a 1 +- 1 placeholder in the crack bin, so each
+    # electron is evaluated inside its own region.
+    abs_sc_eta = np.abs(flat_sc_eta)
+    sf_eta = np.where(abs_sc_eta <= 1.4442, np.minimum(abs_sc_eta, 1.4399), abs_sc_eta)
+    sf_eta = np.where(abs_sc_eta >= 1.566, np.maximum(abs_sc_eta, 1.5701), sf_eta)
+    sf_eta = np.copysign(sf_eta, flat_sc_eta)
+
     # 6. Evaluate SFs using the correctionlib signature: [year, ValType, WorkingPoint, eta, pt]
     try:
-        sf_nom = evaluator.evaluate(sf_era_key, "sf", "HEEPID", flat_sc_eta, safe_pt)
-        sf_up = evaluator.evaluate(sf_era_key, "sfup", "HEEPID", flat_sc_eta, safe_pt)
-        sf_down = evaluator.evaluate(sf_era_key, "sfdown", "HEEPID", flat_sc_eta, safe_pt)
+        sf_nom = evaluator.evaluate(sf_era_key, "sf", "HEEPID", sf_eta, safe_pt)
+        sf_up = evaluator.evaluate(sf_era_key, "sfup", "HEEPID", sf_eta, safe_pt)
+        sf_down = evaluator.evaluate(sf_era_key, "sfdown", "HEEPID", sf_eta, safe_pt)
     except (IndexError, RuntimeError, ValueError):
         # JSON for this era has no HEEPID working point (e.g. Run2 UL and
         # pre-2024 Run3 payloads). Fall back to the flat UL2018 HEEP V7.0

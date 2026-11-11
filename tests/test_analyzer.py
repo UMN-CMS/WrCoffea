@@ -1828,3 +1828,48 @@ class TestNolsfVariant:
         assert WrAnalysis._jet_lepton_flavor("wr_mue_boosted_flavor_cr_nolsf") is None
         from wrcoffea.systematics import _uses_lsf
         assert _uses_lsf("wr_mumu_boosted_sr") and not _uses_lsf("wr_mumu_boosted_sr_nolsf")
+
+
+# ---------------------------------------------------------------------------
+# Boosted SR: the jet is the leading LSF jet, and every HEEP electron counts in the extra-tight-lepton veto
+# ---------------------------------------------------------------------------
+
+class TestBoostedJetAndVeto:
+    def test_sr_jet_is_the_leading_lsf_jet(self):
+        """Two LSF jets opposite the tight muon, stored in ascending pT: the SR jet is the 700 GeV one."""
+        events = _boosted_mumu_event(0.9)
+        two = _make_integration_events(n_events=1, n_muons=2, n_electrons=0, n_jets=0, n_fatjets=2).FatJet
+        two = ak.with_field(two, ak.Array([[500.0, 700.0]]), "pt")
+        two = ak.with_field(two, ak.zeros_like(two.eta), "eta")
+        two = ak.with_field(two, ak.Array([[np.pi - 0.3, np.pi]]), "phi")
+        events.FatJet = two
+        proc = WrAnalysis(mass_point=None, region="both")
+        true, false = np.ones(1, dtype=bool), np.zeros(1, dtype=bool)
+        payload = proc.boosted_selections(events, "RunIISummer20UL18", triggers=(false, true, false))
+        assert float(payload[4].pt[0]) == pytest.approx(700.0)
+
+    @staticmethod
+    def _ee_sr(n_electrons):
+        """A tight electron at phi 0 and a loose one inside the AK8 jet at phi pi; a third electron, if any,
+        is HEEP but fails the loose ID."""
+        from wrcoffea.analysis_config import SEL_EE_SR
+        events = _make_integration_events(n_events=1, n_muons=0, n_electrons=n_electrons, n_jets=0, n_fatjets=1)
+        el = events.Electron
+        el = ak.with_field(el, ak.Array([[300.0, 250.0, 100.0][:n_electrons]]), "pt")
+        el = ak.with_field(el, ak.zeros_like(el.eta), "eta")
+        el = ak.with_field(el, ak.Array([[0.0, np.pi, 1.5][:n_electrons]]), "phi")
+        bitmap = np.asarray(el.vidNestedWPBitmap[0]).copy()
+        bitmap[2:] = 0
+        events.Electron = ak.with_field(el, ak.Array([bitmap]), "vidNestedWPBitmap")
+        fj = events.FatJet
+        fj = ak.with_field(fj, ak.full_like(fj.pt, 600.0), "pt")
+        fj = ak.with_field(fj, ak.zeros_like(fj.eta), "eta")
+        events.FatJet = ak.with_field(fj, ak.full_like(fj.phi, np.pi), "phi")
+        proc = WrAnalysis(mass_point=None, region="both")
+        true, false = np.ones(1, dtype=bool), np.zeros(1, dtype=bool)
+        sel = proc.boosted_selections(events, "RunIISummer20UL18", triggers=(true, false, false))[0]
+        return bool(sel.all(SEL_EE_SR)[0])
+
+    def test_heep_electron_failing_the_loose_id_is_an_extra_tight_lepton(self):
+        assert self._ee_sr(2) is True
+        assert self._ee_sr(3) is False

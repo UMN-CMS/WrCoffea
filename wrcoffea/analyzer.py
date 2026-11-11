@@ -951,6 +951,8 @@ class WrAnalysis(processor.ProcessorABC):
         ## define loose 
         cut_bitmap = looseElectrons.vidNestedWPBitmap
         loose_e_mask = self.ElectronCut(cut_bitmap, id_level=2)
+        # The extra-tight-lepton veto counts every HEEP electron, also one that fails the loose ID.
+        vetoElectrons = looseElectrons
         looseElectrons = looseElectrons[loose_e_mask]
         ## -- tight muons --- ##
         tight_mask_mu = (looseMuons.tkRelIso < CUTS["muon_iso_max"])
@@ -1085,9 +1087,10 @@ class WrAnalysis(processor.ProcessorABC):
         self._add_dycr_split_selections(selections, mll_dy)
         # Veto extra tight leptons for DY CR.
         no_extra_tight_dyCR = self._no_extra_tight_leptons(
-            looseMuons, looseElectrons, tight_lep, DY_loose_lep)
+            looseMuons, vetoElectrons, tight_lep, DY_loose_lep)
 
         # Case 2: SR (no DY, SF near AK8, no OF near AK8).
+        AK8Jets_withLSF = AK8Jets_withLSF[ak.argsort(AK8Jets_withLSF.pt, axis=1, ascending=False)]
         flag_ak8Jet_lsf = ak.num(AK8Jets_withLSF)>=1
         AK8Jets_withLSF = ak.pad_none(AK8Jets_withLSF, 1, axis=1)
         dphi_lsf       = ak.fill_none(abs(AK8Jets_withLSF.delta_phi(tight_lep)),0.0)
@@ -1120,7 +1123,7 @@ class WrAnalysis(processor.ProcessorABC):
         SR_mask = is_sr
         # Veto extra tight leptons for SR.
         no_extra_tight_sr = self._no_extra_tight_leptons(
-            looseMuons, looseElectrons, tight_lep, sf_candidate)
+            looseMuons, vetoElectrons, tight_lep, sf_candidate)
 
         # Case 3: Flavor CR (no DY, OF near AK8).
         is_cr = (~has_dy_pair) & (~ak.is_none(of_candidate))  & ak.is_none(sf_candidate) #(~sf_exist) & of_exist #(~ak.is_none(of_candidate))  & ak.is_none(sf_candidate)  
@@ -1136,7 +1139,7 @@ class WrAnalysis(processor.ProcessorABC):
         CR_mask = is_cr
         # Veto extra tight leptons for flavor CR.
         no_extra_tight_flav_cr = self._no_extra_tight_leptons(
-            looseMuons, looseElectrons, tight_lep, of_candidate)
+            looseMuons, vetoElectrons, tight_lep, of_candidate)
 
         # Expanded boosted cutflow selections.
         selections.add(SEL_LEAD_IS_ELECTRON, is_lead_e)
@@ -1184,13 +1187,13 @@ class WrAnalysis(processor.ProcessorABC):
         if SEL_EE_SR_NOLSF in added:
             nolsf = self._nolsf_selections(
                 selections, era, eTrig, muTrig, tight_lep, is_lead_e, is_lead_mu, has_dy_pair,
-                AK8_cand_dy, sf_loose, of_loose, looseMuons, looseElectrons,
+                AK8_cand_dy, sf_loose, of_loose, looseMuons, vetoElectrons,
             )
 
         return selections, tight_lep, AK8_cand_dy,DY_loose_lep, AK8_cand,of_candidate, sf_candidate, nolsf
 
     def _nolsf_selections(self, selections, era, eTrig, muTrig, tight_lep, is_lead_e, is_lead_mu, has_dy_pair,
-                          jet, sf_loose, of_loose, looseMuons, looseElectrons):
+                          jet, sf_loose, of_loose, looseMuons, vetoElectrons):
         """The ``nolsf`` region variant (AN-19-083 Fig. 12): the boosted SR / flavour-CR region masks
         and masses rebuilt on *jet*, the leading AK8 jet with |dphi| > 2 and no LSF requirement (the DY
         CR jet), exactly as ``boosted_selections`` builds them on the LSF jet.  Fills the ``*_NOLSF``
@@ -1200,8 +1203,8 @@ class WrAnalysis(processor.ProcessorABC):
         of_cand = ak.firsts(of_loose[jet.deltaR(of_loose) < dr])
         is_sr = (~has_dy_pair) & (~ak.is_none(sf_cand)) & ak.is_none(of_cand)
         is_cr = (~has_dy_pair) & (~ak.is_none(of_cand)) & ak.is_none(sf_cand)
-        no_extra_sr = self._no_extra_tight_leptons(looseMuons, looseElectrons, tight_lep, sf_cand)
-        no_extra_cr = self._no_extra_tight_leptons(looseMuons, looseElectrons, tight_lep, of_cand)
+        no_extra_sr = self._no_extra_tight_leptons(looseMuons, vetoElectrons, tight_lep, sf_cand)
+        no_extra_cr = self._no_extra_tight_leptons(looseMuons, vetoElectrons, tight_lep, of_cand)
         hem_sr = ak.Array(self._hem_veto_ok(era, tight_lep, sf_cand))
         hem_cr = ak.Array(self._hem_veto_ok(era, tight_lep, of_cand))
         sub_sr, sub_cr = abs(sf_cand.pdgId), abs(of_cand.pdgId)

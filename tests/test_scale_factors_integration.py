@@ -614,6 +614,21 @@ class TestElectronScaleFactors:
         assert nom[1] == pytest.approx(0.961394, abs=1e-4)
         assert nom[0] != nom[1]
 
+    @pytest.mark.parametrize("era", ["RunIII2024Summer24", "RunIII2025Summer25"])
+    def test_electron_id_sf_at_the_crack_edges(self, era):
+        """Accepted electrons next to the crack (|eta_SC| <= 1.4442 or >= 1.566) take the barrel / endcap
+        value, whatever crack edges the payload has (1.444 / 1.566 in 2024, 1.44 / 1.57 in 2025)."""
+        tight_electrons = _make_tight_leptons(
+            [[50.0]] * 4,
+            [[1.0], [1.4441], [1.5661], [2.0]],
+            deltaEtaSC_lists=[[0.0]] * 4,
+        )
+
+        nom, up, down = sf.electron_id_sf(tight_electrons, era)
+
+        np.testing.assert_allclose([nom[1], up[1], down[1]], [nom[0], up[0], down[0]])
+        np.testing.assert_allclose([nom[2], up[2], down[2]], [nom[3], up[3], down[3]])
+
     def test_electron_id_sf_flat_fallback_era(self):
         """Eras whose JSON lacks the HEEPID WP fall back to flat UL2018 SFs."""
         tight_electrons = _make_tight_leptons(
