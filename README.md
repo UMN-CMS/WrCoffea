@@ -235,7 +235,7 @@ Without `--condor` or `--scheduler` the commands run one after the other on the 
 | `--signal-points` | `all` \| `grid` \| `<point> ...` | Signal points of a composite mode: every point of `data/signal_points/<era>_mass_points.csv` (default), the 9-point grid, or a list |
 | `--mwr-range` | `<min> <max>` | Keep only the signal points with min ≤ m(W_R) ≤ max |
 | `--dy` | `<variant>` | DY variant (`dy_variants` per era in `config.yaml`); default `lo_ht` |
-| `--dy-reweight` | `none` \| `zpt` \| `zpt+reshape` | Corrections of the LO HT-binned DY: none (default), the Z-pT reweight, or both |
+| `--dy-reweight` | `none` \| `zpt` \| `zpt+reshape` | Corrections of the LO HT-binned DY: none (default), the Z-pT reweight, or both; refused for an era without the payload |
 | `--no-signal-kfactor` | | Switch the signal k(m(ℓN))/⟨k⟩ reweight off |
 | `--region` | `resolved` \| `boosted` \| `both` | Topologies to fill (default: both) |
 | `--unblind` | | Fill the data signal regions and full cutflows (Run 2 only) |
@@ -248,7 +248,7 @@ Without `--condor` or `--scheduler` the commands run one after the other on the 
 | `--dir` | `<tag>` | Output subdirectory under `WR_Plotter/rootfiles/<Run>/<Year>/<Era>/` |
 | `--name` | `<suffix>` | `WRAnalyzer_<suffix>_<sample>.root` |
 | `--unskimmed` | | Read the unskimmed filesets (the original NanoAOD files) |
-| `--fileset` | `<path>` | An explicit fileset JSON |
+| `--fileset` | `<path>` | An explicit fileset JSON, for one sample group (refused in composite modes) |
 | `--debug` | | Run without saving histograms |
 | `--condor` | | Run on Condor at the LPC (inside `./shell`) with workers of its own |
 | `--scheduler` | `<file>` | Run on the workers of `bin/condor_cluster.py` (implies `--condor`) |

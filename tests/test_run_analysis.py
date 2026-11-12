@@ -381,6 +381,31 @@ def test_validate_dy_reweight_only_for_lo_ht(dy, ok):
             run_analysis.validate_arguments(args, [])
 
 
+def test_validate_dy_reshape_needs_a_payload():
+    """An era without a reshape payload cannot produce the reshaped DY: asking for it is an error, not a
+    Z-pT-only file under the _zpt_reshape name.  2025 has the 2024 Z-pT payload and no reshape."""
+    args = _dy_args("RunIII2025Summer25", None)
+    args.dy_reweight = "zpt"
+    run_analysis.validate_arguments(args, [])
+    args.dy_reweight = "zpt+reshape"
+    with pytest.raises(ValueError, match="RunIII2025Summer25 has no jet-pT reshape payload"):
+        run_analysis.validate_arguments(args, [])
+    args = _dy_args("RunIII2024Summer24", None)
+    args.dy_reweight = "zpt+reshape"
+    run_analysis.validate_arguments(args, [])
+
+
+def test_validate_fileset_refused_in_composite_modes(tmp_path):
+    """--fileset names one group's fileset; a composite mode reads each group's own and ignored it."""
+    args = _dy_args("RunIII2024Summer24", None)
+    args.fileset = tmp_path / "custom.json"
+    run_analysis.validate_arguments(args, [])                  # a single group: accepted
+    for mode in ("bkg", "all", "mc", "data", "signal"):
+        args.sample = mode
+        with pytest.raises(ValueError, match="--fileset replaces the fileset of one sample group"):
+            run_analysis.validate_arguments(args, [])
+
+
 def test_resolve_dy_reweight_legacy_flag_conflicts():
     with pytest.raises(ValueError, match="--no-dy-reshape cannot be combined with --dy-reweight"):
         run_analysis.resolve_dy_reweight(SimpleNamespace(dy_reweight="zpt+reshape", no_dy_reshape=True))

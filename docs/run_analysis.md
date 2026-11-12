@@ -133,10 +133,10 @@ gets nominal only. Families and sources: `wrcoffea/systematics.py`; what each er
 | `--dy VARIANT` | DY variant (`dy_variants` per era in `config.yaml`); default `lo_ht`. `nlo_ptll` runs with a warning: its pT(ll) slices are added unstitched, so it is not a DY prediction. |
 | `--region resolved`, `boosted` or `both` | Topologies to fill (default both). |
 | `--unblind` | Fill the data signal regions and full cutflows (Run 2 only). |
-| `--dy-reweight none`, `zpt` or `zpt+reshape` | Corrections of the LO HT-binned DY: none (default), the Z-pT reweight, or both. `--systs dyzpt` needs `zpt` or `zpt+reshape`, `--systs dyreshape` needs `zpt+reshape`. Only `lo_ht` takes it; output `WRAnalyzer_DYJets_lo_ht_zpt[_reshape].root`. `--no-dy-zpt-reweight` and `--no-dy-reshape` still work and mean `none` and `zpt`. |
+| `--dy-reweight none`, `zpt` or `zpt+reshape` | Corrections of the LO HT-binned DY: none (default), the Z-pT reweight, or both. `--systs dyzpt` needs `zpt` or `zpt+reshape`, `--systs dyreshape` needs `zpt+reshape`. Only `lo_ht` takes it; output `WRAnalyzer_DYJets_lo_ht_zpt[_reshape].root`. An era without the payload is refused (2025 has no reshape). `--no-dy-zpt-reweight` and `--no-dy-reshape` still work and mean `none` and `zpt`. |
 | `--no-signal-kfactor` | Switch the signal k(m(ℓN))/⟨k⟩ reweight off; also runs points the payload has no average for. |
 | `--unskimmed` | Read the unskimmed filesets (the original NanoAOD files); sums genWeight itself. |
-| `--fileset PATH` | An explicit fileset; with `Signal`, `--mass` only has to be a point of that fileset. |
+| `--fileset PATH` | An explicit fileset for one sample group; with `Signal`, `--mass` only has to be a point of that fileset. Refused in composite modes, which read each group's own fileset. |
 | `--dir TAG`, `--name SUFFIX` | Output sub-directory and file-name suffix. |
 | `--debug` | Run without saving histograms. |
 | `--study STUDY ...` | Extra regions: `transfer-factor` (`<region>_nomass`), `dy-cr-split` (the DY CR split at m(ℓℓ) = 100 GeV), `no-lsf` (`<region>_nolsf`). |

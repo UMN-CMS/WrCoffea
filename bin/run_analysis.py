@@ -20,7 +20,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from wrcoffea.era_utils import get_era_details
-from wrcoffea.analysis_config import CONFIG_OVERLAY_ENV, DY_VARIANTS
+from wrcoffea.analysis_config import CONFIG_OVERLAY_ENV, DY_RESHAPE_JSONS, DY_VARIANTS, DY_ZPT_REWEIGHT_JSONS
 from wrcoffea.cli_utils import (
     mass_points_csv,
     COMPOSITE_SAMPLES,
@@ -245,6 +245,10 @@ def validate_arguments(args, sig_points):
     if is_composite:
         if args.mass:
             raise ValueError("--mass is not valid for composite modes.")
+        if getattr(args, "fileset", None):
+            raise ValueError("--fileset replaces the fileset of one sample group; a composite mode "
+                             f"({', '.join(COMPOSITE_SAMPLES)}) reads each group's own fileset and would "
+                             "not use it. Run the group on its own.")
         if picks_points and "Signal" not in COMPOSITE_SAMPLES[args.sample]:
             raise ValueError("--signal-points / --mwr-range need a composite mode that includes Signal "
                              f"({', '.join(k for k, v in COMPOSITE_SAMPLES.items() if 'Signal' in v)}).")
@@ -296,6 +300,13 @@ def validate_arguments(args, sig_points):
     if dy_reweight != "none" and args.dy not in (None, default_dy_variant(args.era)):
         raise ValueError(f"--dy-reweight corrects the {default_dy_variant(args.era)} DY sample only "
                          f"(config.yaml dy_reweight_datasets); --dy {args.dy} has nothing to reweight.")
+    if dy_reweight != "none" and args.era not in DY_ZPT_REWEIGHT_JSONS:
+        raise ValueError(f"--dy-reweight {dy_reweight}: {args.era} has no Z-pT reweight payload "
+                         "(config.yaml dy_zpt_reweight).")
+    if dy_reweight == "zpt+reshape" and args.era not in DY_RESHAPE_JSONS:
+        raise ValueError(f"--dy-reweight zpt+reshape: {args.era} has no jet-pT reshape payload (config.yaml "
+                         "dy_reshape), so the DY file named _zpt_reshape would hold the Z-pT reweight alone. "
+                         "Use --dy-reweight zpt.")
     if "dyzpt" in (getattr(args, "systs", None) or []) and dy_reweight == "none":
         raise ValueError("--systs dyzpt varies the DY Z-pT reweighting, which is off by default: "
                          "add --dy-reweight zpt or --dy-reweight zpt+reshape.")
