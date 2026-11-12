@@ -1181,6 +1181,59 @@ class TestJetVariationGating:
         assert self._var_fields(out.Jet) == set()
 
 
+class TestSameJetCountInEveryEvent:
+    """Rho and the run number are per event.  correctionlib broadcasts as NumPy does, which misplaces them on
+    a chunk whose events all have the same number of jets: an error, or another event's value when that number
+    equals the number of events.  A chunk has to give what its events give one at a time."""
+
+    @pytest.fixture(autouse=True)
+    def _real_correctionlib(self):
+        pytest.importorskip("correctionlib")
+
+    @staticmethod
+    def _events(n_events, runs):
+        events = _make_jec_events(jet_counts=(3,) * n_events)
+        rho = ak.zip({"fixedGridRhoFastjetAll": ak.Array(np.linspace(5.0, 45.0, n_events))})
+        events = ak.with_field(events, rho, "Rho")
+        return ak.with_field(events, ak.Array(list(runs)[:n_events]), "run")
+
+    @pytest.mark.parametrize("n_events", [3, 4])
+    @pytest.mark.parametrize("era, is_mc, runs", [
+        ("RunIISummer20UL18", True, (1, 1, 1, 1)),
+        ("RunIISummer20UL18", False, (315300, 318000, 320000, 323000)),
+        ("RunIII2024Summer24", True, (1, 1, 1, 1)),
+        ("RunIII2024Summer24", False, (380000, 382000, 384000, 386000)),
+    ])
+    def test_chunk_equals_its_events_one_at_a_time(self, era, is_mc, runs, n_events):
+        events = self._events(n_events, runs)
+        whole = sf.apply_jet_corrections(events, era, is_mc)
+        single = [sf.apply_jet_corrections(events[i:i + 1], era, is_mc) for i in range(n_events)]
+        for coll in ("Jet", "FatJet"):
+            for field in ("pt", "mass"):
+                got = whole[coll][field]
+                assert ak.to_list(ak.num(got)) == [3] * n_events
+                expected = ak.concatenate([s[coll][field] for s in single])
+                np.testing.assert_allclose(ak.flatten(got), ak.flatten(expected), rtol=1e-12)
+
+    def test_rho_and_run_reach_the_jets_of_their_own_event(self):
+        """Three events of three jets: the pileup offset follows each event's rho, the data residual its run."""
+        era = "RunIISummer20UL18"
+        cfg = sf.JERC_JSONS[era]["JERC_AK4"]
+        ceval = sf._get_ceval(cfg["json"])
+        events = self._events(3, (315300, 318000, 323000))
+        jets, rho = events.Jet, events.Rho.fixedGridRhoFastjetAll
+        for key in (f"{cfg['tag_MC']}_L1FastJet_AK4PFchs", f"{cfg['tag_Data']}_L2L3Residual_AK4PFchs"):
+            corr = ceval[key]
+            got = ak.to_list(sf._safe_eval(corr, jets, events, jets.pt, rho))
+            for i in range(3):
+                for j in range(3):
+                    args = {"JetA": jets.area[i][j], "JetEta": jets.eta[i][j], "JetPt": jets.pt[i][j],
+                            "Rho": rho[i], "run": events.run[i]}
+                    assert got[i][j] == pytest.approx(corr.evaluate(*[float(args[x.name]) for x in corr.inputs]))
+            # the per-event input matters here: not every event gets the same correction for the same jet
+            assert len({round(v, 6) for row in got for v in row}) > 3
+
+
 # ---------------------------------------------------------------------------
 # Tests: AK8 soft-drop mass from the uncorrected subjets (ak8_msoftdrop_mode)
 # ---------------------------------------------------------------------------

@@ -1316,6 +1316,27 @@ import correctionlib
 
 
 #_CORRECTIONSET_CACHE = {}
+def _evaluate_per_object(corr_obj, counts, *values):
+    """``corr_obj.evaluate`` with one value per object, returned jagged with *counts* objects per event.
+
+    Each of *values* is a jagged per-object array, a per-event array or a scalar.  The per-object ones are
+    flattened and the per-event ones repeated before the call, so correctionlib only sees flat arrays of one
+    length.  Left to itself it broadcasts as NumPy does: on a chunk whose events all have the same number of
+    objects a per-event array (rho, run) is matched to the object axis, which raises, or, when that number
+    equals the number of events, silently gives each object another event's value.
+    """
+    counts = np.asarray(counts, dtype=np.int64)
+    flat = []
+    for value in values:
+        if isinstance(value, (str, int, float)):
+            flat.append(value)
+        elif getattr(value, "ndim", 1) > 1:
+            flat.append(np.asarray(ak.flatten(value, axis=1)))
+        else:
+            flat.append(np.repeat(np.asarray(value), counts))
+    return ak.unflatten(np.asarray(corr_obj.evaluate(*flat)), counts)
+
+
 def _safe_eval(corr_obj, jets, events, pt_current, rho_val):
     """
     Dynamically maps Awkward arrays to the exact inputs requested by the correctionlib object.
@@ -1339,9 +1360,9 @@ def _safe_eval(corr_obj, jets, events, pt_current, rho_val):
             args.append(events.run)
         else:
             raise ValueError(f"Unknown input requested by JEC JSON: {inp}")
-            
-    # Unpack the dynamically built list of arguments into evaluate()
-    return corr_obj.evaluate(*args)
+
+    # Rho and the run number are per event, the others per jet.
+    return _evaluate_per_object(corr_obj, ak.num(pt_current, axis=1), *args)
 
 def _get_ceval(json_path):
     if json_path not in _CORRECTIONSET_CACHE:
@@ -1464,7 +1485,7 @@ def _get_smeared_kinematics(jets, pt_to_smear, mass_to_smear, genpt, matched, ev
         return pt_to_smear, mass_to_smear
     res = ceval[f"{tag}_MC_PtResolution_{algo}"]
 
-    sigma = res.evaluate(jets.eta, pt_to_smear, rho)
+    sigma = _evaluate_per_object(res, ak.num(pt_to_smear, axis=1), jets.eta, pt_to_smear, rho)
     sf_val = _jer_scale_factor(ceval, tag, algo, jets.eta, pt_to_smear, sys_var)
 
     # JME hybrid method: the scaling method for a jet matched to a gen jet (dR < R/2, _gen_jet_match)
