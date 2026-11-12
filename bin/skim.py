@@ -505,7 +505,8 @@ def cmd_unskimmed_fileset(args) -> int:
         try:
             write_era_filesets(era, config_root=args.config_root, out_root=args.fileset_dir, dbs=dbs,
                                families=args.family, redirector=args.redirector, runs=args.runs_sums,
-                               workers=args.workers, dry_run=args.dry_run)
+                               workers=args.workers, dry_run=args.dry_run,
+                               include_optional=args.include_optional)
         except (FileNotFoundError, ValueError, RuntimeError) as exc:
             logger.error("%s: %s", era, exc)
             rc = 1
@@ -703,6 +704,9 @@ def main(argv=None) -> int:
     p.add_argument("--config-root", default=str(REPO_ROOT / "data" / "configs"))
     p.add_argument("--fileset-dir", default=str(REPO_ROOT / "data" / "filesets"))
     p.add_argument("--dry-run", action="store_true", help="list the configs and output paths without querying DBS")
+    p.add_argument("--include-optional", action="store_true",
+                   help="keep the config entries marked optional (not part of the analysis; left out by default, "
+                        "as in the skim plan)")
     p.set_defaults(func=cmd_unskimmed_fileset)
 
     p = sub.add_parser("cuts", help="print the selection and branch policy")

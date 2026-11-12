@@ -1,5 +1,5 @@
-"""Unskimmed filesets from the configs and DBS: file URLs, metadata, optional datasets, private
-file lists, the scan families left out, and the optional Runs-tree sums."""
+"""Unskimmed filesets from the configs and DBS: file URLs, metadata, optional datasets, extensions merged
+into their nominal sample, private file lists, the scan families left out, and the optional Runs-tree sums."""
 import json
 import subprocess
 import sys
@@ -95,11 +95,11 @@ def test_write_era_filesets(roots, caplog):
     assert md["sample"] == "EGamma0_Run2024C" and md["nfiles"] == 2 and md["nevts"] == 30
     assert md["physics_group"] == "EGamma" and md["datatype"] == "data" and md["das_name"] == DATA_A
     assert md["listing"] == {"date": "2026-10-11", "source": "DBS valid files", "redirector": "root://cmsxrootd.fnal.gov/"}
-    assert all((d, True) in dbs.calls for d in (DATA_A, DATA_B, MC, MC_OPT))
-    # MC: the optional dataset without files is skipped and reported; bookkeeping keys and note dropped
+    assert all((d, True) in dbs.calls for d in (DATA_A, DATA_B, MC))
+    # MC: the optional dataset is left out without a DBS query; bookkeeping keys and note dropped
     mc = json.loads(paths[1].read_text())
     assert list(mc) == [MC]
-    assert "WWW_4F" in caplog.text and "optional, skipped" in caplog.text
+    assert not any(d == MC_OPT for d, _ in dbs.calls)
     md = mc[MC]["metadata"]
     assert md["xsec"] == 1.5 and md["order"] == "NLO" and "note" not in md and "genEventSumw" not in md
     assert "dataset" not in md             # reserved by coffea's preprocess
@@ -112,6 +112,58 @@ def test_write_era_filesets(roots, caplog):
     md = sig[key]["metadata"]
     assert md["nevts"] == 1000 and md["nfiles"] == 2 and md["listing"]["source"] == "files listed in the config"
     assert not any(k in md for k in ("files", "file_events", "file_sizes", "file_adler32"))
+
+
+MC_EXT = MC.replace("150X_v2-v2", "150X_v2_ext1-v2")
+MC_INCL = "/WtoLNu-4Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_v2-v2/NANOAODSIM"
+
+
+def _config(tmp_path, entries):
+    path = tmp_path / f"{ERA}_mc_dy_lo_ht.json"
+    path.write_text(json.dumps(entries))
+    return path
+
+
+def test_extension_is_merged_into_its_nominal_sample(tmp_path):
+    """An extension carries the cross section of its nominal sample.  As a dataset of its own it would be
+    normalized to that cross section a second time, so its files join the nominal entry, as in the skim plan."""
+    name = "TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8"
+    config = _config(tmp_path, {MC: _entry(MC, name, "tt_tW"), MC_EXT: _entry(MC_EXT, name, "tt_tW"),
+                                MC_REQ: _entry(MC_REQ, "ZZ", "Other")})
+    dbs = FakeDBS({MC: [("/store/mc/TT/x/2.root", 1000), ("/store/mc/TT/x/1.root", 500)],
+                   MC_EXT: [("/store/mc/TT/ext/1.root", 4000)], MC_REQ: [("/store/mc/ZZ/x/1.root", 7)]})
+    fileset, skipped = build_family(config, dbs=dbs, today="d")
+    assert list(fileset) == [MC, MC_REQ] and skipped == []
+    assert list(fileset[MC]["files"]) == ["root://cmsxrootd.fnal.gov//store/mc/TT/ext/1.root",
+                                          "root://cmsxrootd.fnal.gov//store/mc/TT/x/1.root",
+                                          "root://cmsxrootd.fnal.gov//store/mc/TT/x/2.root"]
+    md = fileset[MC]["metadata"]
+    assert md["nevts"] == 5500 and md["nfiles"] == 3 and md["sample"] == name
+    assert md["das_name"] == MC and md["das_names"] == [MC, MC_EXT]
+    assert "das_names" not in fileset[MC_REQ]["metadata"] and fileset[MC_REQ]["metadata"]["nevts"] == 7
+
+
+def test_entries_sharing_a_name_must_share_the_cross_section(tmp_path):
+    config = _config(tmp_path, {MC: _entry(MC, "TT", "tt_tW"), MC_EXT: _entry(MC_EXT, "TT", "tt_tW", xsec=2.5)})
+    dbs = FakeDBS({MC: [("/store/mc/TT/x/1.root", 1)], MC_EXT: [("/store/mc/TT/ext/1.root", 1)]})
+    with pytest.raises(ValueError, match="share the dataset name but not the cross section"):
+        build_family(config, dbs=dbs, today="d")
+
+
+def test_optional_samples_are_left_out_unless_asked(tmp_path):
+    """The inclusive W+jets sample is the reference of the HT bins' k-factor, not an analysed sample: next to
+    the HT bins it would count W+jets twice."""
+    config = _config(tmp_path, {MC: _entry(MC, "TT", "tt_tW"),
+                                MC_INCL: _entry(MC_INCL, "WtoLNu-4Jets", "Nonprompt", optional=True),
+                                MC_OPT: _entry(MC_OPT, "WWW_4F", "Other", optional=True)})
+    dbs = FakeDBS({MC: [("/store/mc/TT/x/1.root", 1)], MC_INCL: [("/store/mc/W/x/1.root", 9)]})
+    fileset, skipped = build_family(config, dbs=dbs, today="d")
+    assert list(fileset) == [MC] and skipped == [MC_INCL, MC_OPT]
+    assert [d for d, _ in dbs.calls] == [MC]
+    # --include-optional: kept when it has files, skipped when DBS has none
+    fileset, skipped = build_family(config, dbs=dbs, today="d", include_optional=True)
+    assert list(fileset) == [MC, MC_INCL] and skipped == [MC_OPT]
+    assert fileset[MC_INCL]["metadata"]["optional"] is True
 
 
 def test_family_restriction_and_dry_run(roots):
@@ -159,3 +211,18 @@ def test_cli_help():
     out = subprocess.run([sys.executable, str(root / "bin" / "skim.py"), "unskimmed-fileset", "--help"],
                          capture_output=True, text=True)
     assert out.returncode == 0 and "--runs-sums" in out.stdout and "--all" in out.stdout
+
+
+def test_committed_unskimmed_filesets_list_the_skimmed_samples():
+    """An unskimmed run has to analyse the samples a skimmed run analyses, each once: no extension and no
+    optional reference sample as an entry of its own."""
+    root = Path(__file__).resolve().parent.parent / "data" / "filesets"
+    pairs = [(p, Path(str(p).replace("/unskimmed/", "/skimmed/")))
+             for p in sorted(root.glob("*/*/*/unskimmed/*_fileset.json"))]
+    pairs = [(u, s) for u, s in pairs if s.exists()]
+    assert len(pairs) > 50
+    for unskimmed, skimmed in pairs:
+        u = [e["metadata"]["sample"] for e in json.loads(unskimmed.read_text()).values()]
+        s = [e["metadata"]["sample"] for e in json.loads(skimmed.read_text()).values()]
+        assert len(u) == len(set(u)), unskimmed.name
+        assert sorted(u) == sorted(s), unskimmed.name

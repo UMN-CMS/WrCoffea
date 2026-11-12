@@ -9515,27 +9515,7 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15-v1/90000/ba8f6e16-8f83-4825-bf2c-2a01d06179ab.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15-v1/90000/c80641e2-3771-4052-92d7-983cc306a152.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15-v1/90000/cd99a553-1b4d-430f-922a-07710cb3bde8.root": "Events",
-   "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15-v1/90000/edb7a965-45cf-4fe8-b800-b35b102d90d6.root": "Events"
-  },
-  "metadata": {
-   "das_name": "/Muon0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
-   "run": "Run3",
-   "year": "2024",
-   "era": "RunIII2024Summer24",
-   "physics_group": "Muon",
-   "datatype": "data",
-   "sample": "Muon0_Run2024I",
-   "nfiles": 173,
-   "nevts": 97634104,
-   "listing": {
-    "date": "2026-10-11",
-    "source": "DBS valid files",
-    "redirector": "root://cmsxrootd.fnal.gov/"
-   }
-  }
- },
- "/Muon0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
-  "files": {
+   "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15-v1/90000/edb7a965-45cf-4fe8-b800-b35b102d90d6.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15_v2-v1/120000/0c86bf88-53c7-4c8c-8fe8-6523d8414260.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15_v2-v1/120000/1cbb1f3a-8fe0-46c2-b57e-3b5a3c706d94.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15_v2-v1/120000/22dfdb3b-0865-4c27-8e25-0eccf27d60b4.root": "Events",
@@ -9712,20 +9692,24 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon0/NANOAOD/MINIv6NANOv15_v2-v1/90000/fe925f9b-2e59-40be-ba76-396e41cb7ca1.root": "Events"
   },
   "metadata": {
-   "das_name": "/Muon0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD",
+   "das_name": "/Muon0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
    "run": "Run3",
    "year": "2024",
    "era": "RunIII2024Summer24",
    "physics_group": "Muon",
    "datatype": "data",
    "sample": "Muon0_Run2024I",
-   "nfiles": 174,
-   "nevts": 105194627,
+   "nfiles": 347,
+   "nevts": 202828731,
    "listing": {
     "date": "2026-10-11",
     "source": "DBS valid files",
     "redirector": "root://cmsxrootd.fnal.gov/"
-   }
+   },
+   "das_names": [
+    "/Muon0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "/Muon0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD"
+   ]
   }
  },
  "/Muon1/Run2024I-MINIv6NANOv15-v1/NANOAOD": {
@@ -9823,27 +9807,7 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15-v1/110000/fca14e7c-593c-4492-8b8f-2c7ea70976db.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15-v1/110000/fd1658e5-a2cf-4dd7-98ce-8e42e1ebecf0.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15-v1/110000/fd431167-a25b-4b5c-b35a-36e63e97d85d.root": "Events",
-   "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15-v1/2540000/8d9628b0-2920-42dd-897a-5a02bf3a54c8.root": "Events"
-  },
-  "metadata": {
-   "das_name": "/Muon1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
-   "run": "Run3",
-   "year": "2024",
-   "era": "RunIII2024Summer24",
-   "physics_group": "Muon",
-   "datatype": "data",
-   "sample": "Muon1_Run2024I",
-   "nfiles": 94,
-   "nevts": 97630010,
-   "listing": {
-    "date": "2026-10-11",
-    "source": "DBS valid files",
-    "redirector": "root://cmsxrootd.fnal.gov/"
-   }
-  }
- },
- "/Muon1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
-  "files": {
+   "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15-v1/2540000/8d9628b0-2920-42dd-897a-5a02bf3a54c8.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15_v2-v1/90000/029b8945-4f4a-41ec-a0df-d4e669114abf.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15_v2-v1/90000/02b5a4a3-31a1-4f1a-a616-282f2de071fe.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15_v2-v1/90000/036b9194-9df7-482a-8fb7-c5696e4f7fb1.root": "Events",
@@ -9979,20 +9943,24 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/Muon1/NANOAOD/MINIv6NANOv15_v2-v1/90000/fc966216-b986-4815-9fe2-5b97381f2910.root": "Events"
   },
   "metadata": {
-   "das_name": "/Muon1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD",
+   "das_name": "/Muon1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
    "run": "Run3",
    "year": "2024",
    "era": "RunIII2024Summer24",
    "physics_group": "Muon",
    "datatype": "data",
    "sample": "Muon1_Run2024I",
-   "nfiles": 133,
-   "nevts": 105189040,
+   "nfiles": 227,
+   "nevts": 202819050,
    "listing": {
     "date": "2026-10-11",
     "source": "DBS valid files",
     "redirector": "root://cmsxrootd.fnal.gov/"
-   }
+   },
+   "das_names": [
+    "/Muon1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "/Muon1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD"
+   ]
   }
  },
  "/EGamma0/Run2024I-MINIv6NANOv15-v1/NANOAOD": {
@@ -10207,27 +10175,7 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15-v1/90000/fc44af34-da0d-49c8-9d03-e25d5afe7bf7.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15-v1/90000/fe0a6564-7c3c-4631-8146-2ff2aa6388b9.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15-v1/90000/fe304990-cd9f-4360-81c3-33221c326843.root": "Events",
-   "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15-v1/90000/fec1ef9d-0187-4729-b0c0-b36c14c415e2.root": "Events"
-  },
-  "metadata": {
-   "das_name": "/EGamma0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
-   "run": "Run3",
-   "year": "2024",
-   "era": "RunIII2024Summer24",
-   "physics_group": "EGamma",
-   "datatype": "data",
-   "sample": "EGamma0_Run2024I",
-   "nfiles": 211,
-   "nevts": 132904290,
-   "listing": {
-    "date": "2026-10-11",
-    "source": "DBS valid files",
-    "redirector": "root://cmsxrootd.fnal.gov/"
-   }
-  }
- },
- "/EGamma0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
-  "files": {
+   "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15-v1/90000/fec1ef9d-0187-4729-b0c0-b36c14c415e2.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15_v2-v1/110000/081b19d2-508f-4dea-8883-725201bc82e7.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15_v2-v1/110000/1285d1b8-65de-4c9c-b2ef-1e38ef3e28d2.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15_v2-v1/110000/12dd69b3-82c6-42b5-aaad-37c7118c671f.root": "Events",
@@ -10428,20 +10376,24 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma0/NANOAOD/MINIv6NANOv15_v2-v1/2540000/ff2f644d-7596-41fc-8827-255e9c550a17.root": "Events"
   },
   "metadata": {
-   "das_name": "/EGamma0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD",
+   "das_name": "/EGamma0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
    "run": "Run3",
    "year": "2024",
    "era": "RunIII2024Summer24",
    "physics_group": "EGamma",
    "datatype": "data",
    "sample": "EGamma0_Run2024I",
-   "nfiles": 198,
-   "nevts": 150687674,
+   "nfiles": 409,
+   "nevts": 283591964,
    "listing": {
     "date": "2026-10-11",
     "source": "DBS valid files",
     "redirector": "root://cmsxrootd.fnal.gov/"
-   }
+   },
+   "das_names": [
+    "/EGamma0/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "/EGamma0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD"
+   ]
   }
  },
  "/EGamma1/Run2024I-MINIv6NANOv15-v1/NANOAOD": {
@@ -10621,27 +10573,7 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15-v1/110000/ffe516d0-4abd-42bf-9cce-aa27790475fa.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15-v1/90000/26e977a1-cbaf-4bf6-8b94-6eb30bd94b70.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15-v1/90000/3615a07d-38e0-4a15-988f-34e8b2337032.root": "Events",
-   "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15-v1/910000/d731e0a2-94eb-4e01-ba0c-a6bc4db003f1.root": "Events"
-  },
-  "metadata": {
-   "das_name": "/EGamma1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
-   "run": "Run3",
-   "year": "2024",
-   "era": "RunIII2024Summer24",
-   "physics_group": "EGamma",
-   "datatype": "data",
-   "sample": "EGamma1_Run2024I",
-   "nfiles": 176,
-   "nevts": 132903874,
-   "listing": {
-    "date": "2026-10-11",
-    "source": "DBS valid files",
-    "redirector": "root://cmsxrootd.fnal.gov/"
-   }
-  }
- },
- "/EGamma1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD": {
-  "files": {
+   "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15-v1/910000/d731e0a2-94eb-4e01-ba0c-a6bc4db003f1.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15_v2-v1/120000/74352345-3459-4765-917d-885c1b7dd5ec.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15_v2-v1/2540000/0131f851-b4ac-42a4-8ffb-21960e46459a.root": "Events",
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15_v2-v1/2540000/01acd988-764d-4615-88f3-f385408d25f1.root": "Events",
@@ -10823,20 +10755,24 @@
    "root://cmsxrootd.fnal.gov//store/data/Run2024I/EGamma1/NANOAOD/MINIv6NANOv15_v2-v1/2540000/ff6d6525-895b-49fc-bd6d-b215c1e09dea.root": "Events"
   },
   "metadata": {
-   "das_name": "/EGamma1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD",
+   "das_name": "/EGamma1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
    "run": "Run3",
    "year": "2024",
    "era": "RunIII2024Summer24",
    "physics_group": "EGamma",
    "datatype": "data",
    "sample": "EGamma1_Run2024I",
-   "nfiles": 179,
-   "nevts": 150687112,
+   "nfiles": 355,
+   "nevts": 283590986,
    "listing": {
     "date": "2026-10-11",
     "source": "DBS valid files",
     "redirector": "root://cmsxrootd.fnal.gov/"
-   }
+   },
+   "das_names": [
+    "/EGamma1/Run2024I-MINIv6NANOv15-v1/NANOAOD",
+    "/EGamma1/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD"
+   ]
   }
  },
  "/Muon0/Run2024B-PromptReco-v1/NANOAOD": {

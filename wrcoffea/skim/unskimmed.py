@@ -19,8 +19,15 @@ in the layout ``bin/run_analysis.py --unskimmed`` reads:
 - ``--runs-sums`` adds ``genEventSumw``, ``genEventCount`` and the ratio-valued
   theory-weight sums from every file's ``Runs`` tree (one read per file, so
   slow for a whole era), which the theory-weight systematics need.
-- An ``optional`` config entry without valid files in DBS is skipped with a
-  warning; a required one stops the run.
+- Config entries that share a dataset name become one fileset entry, as in
+  the skim plan: an extension of an MC sample (same cross section as its
+  nominal sample; on its own it would count the process a second time) and
+  the versions of one data period.
+- ``optional`` config entries are left out, as the skim plan leaves them out:
+  they are not part of the analysis (the inclusive W+jets sample next to its
+  HT bins, the low-mass DY companions).  ``--include-optional`` keeps them;
+  one without valid files in DBS is then skipped with a warning.  A required
+  dataset without valid files stops the run.
 - The ``signal_scan`` families (multi-model samples, split per mass point only
   when skimmed) are left out.
 
@@ -40,7 +47,7 @@ from pathlib import Path
 import awkward as ak
 
 from wrcoffea.era_utils import get_era_details
-from wrcoffea.skim.plan import FILE_LIST_KEYS
+from wrcoffea.skim.plan import FILE_LIST_KEYS, dataset_key_for
 from wrcoffea.skim.runs import (collapse_runs, collapse_scan_runs, concat_runs, is_scan_runs, pad_ratio_branches,
                                 pad_scan_runs)
 
@@ -168,18 +175,55 @@ def dataset_entry(key: str, cfg: Mapping, *, dbs, redirector: str, today: str,
 
 
 def build_family(config_path: str | Path, *, dbs, redirector: str = DEFAULT_REDIRECTOR, runs: bool = False,
-                 workers: int = 16, today: str | None = None) -> tuple[dict, list[str]]:
-    """``(fileset, skipped dataset keys)`` of one config file."""
+                 workers: int = 16, today: str | None = None,
+                 include_optional: bool = False) -> tuple[dict, list[str]]:
+    """``(fileset, skipped dataset keys)`` of one config file.
+
+    Entries that share a dataset name (``plan.dataset_key_for``) are merged under the first one's key, with
+    the files of all of them; ``optional`` entries are left out unless *include_optional* is set."""
     today = today or time.strftime("%Y-%m-%d")
     config = json.loads(Path(config_path).read_text())
-    fileset: dict = {}
     skipped: list[str] = []
+    groups: dict[str, list[tuple[str, Mapping]]] = {}
     for key, cfg in config.items():
-        entry = dataset_entry(key, cfg, dbs=dbs, redirector=redirector, today=today, runs=runs, workers=workers)
-        if entry is None:
+        if cfg.get("optional") and not include_optional:
+            logger.info("%s: optional, left out (--include-optional keeps it)", key)
             skipped.append(key)
             continue
-        fileset[key] = entry
+        groups.setdefault(dataset_key_for(key, dict(cfg)), []).append((key, cfg))
+
+    fileset: dict = {}
+    for name, items in groups.items():
+        parts = []
+        for key, cfg in items:
+            entry = dataset_entry(key, cfg, dbs=dbs, redirector=redirector, today=today)
+            if entry is None:
+                skipped.append(key)
+            else:
+                parts.append((key, cfg, entry))
+        if not parts:
+            continue
+        key, cfg, merged = parts[0]
+        if len(parts) > 1:
+            xsecs = {c.get("xsec") for _, c, _ in parts}
+            if len(xsecs) > 1:
+                raise ValueError(f"{name}: the config entries {[k for k, _, _ in parts]} share the dataset name "
+                                 f"but not the cross section ({sorted(xsecs, key=str)})")
+            urls: set[str] = set()
+            for _, _, entry in parts:
+                urls.update(entry["files"])
+            metadata = merged["metadata"]
+            merged["files"] = {u: TREE for u in sorted(urls)}
+            metadata["das_names"] = [entry["metadata"]["das_name"] for _, _, entry in parts]
+            metadata["nfiles"] = len(urls)
+            counts = [entry["metadata"].get("nevts") for _, _, entry in parts]
+            if all(c is not None for c in counts):
+                metadata["nevts"] = int(sum(counts))
+            else:
+                metadata.pop("nevts", None)
+        if runs and cfg.get("datatype", "mc") != "data":
+            merged["metadata"].update(runs_sums(list(merged["files"]), workers=workers))
+        fileset[key] = merged
     return fileset, skipped
 
 
@@ -190,7 +234,7 @@ def fileset_path(out_root: str | Path, era: str, family: str) -> Path:
 def write_era_filesets(era: str, *, config_root: str | Path, out_root: str | Path, dbs,
                        families: Iterable[str] | None = None, redirector: str = DEFAULT_REDIRECTOR,
                        runs: bool = False, workers: int = 16, dry_run: bool = False,
-                       today: str | None = None) -> list[Path]:
+                       today: str | None = None, include_optional: bool = False) -> list[Path]:
     """Write the unskimmed fileset of every config family of *era*; returns the paths."""
     written: list[Path] = []
     for family, config_path in config_files(config_root, era, families).items():
@@ -200,7 +244,7 @@ def write_era_filesets(era: str, *, config_root: str | Path, out_root: str | Pat
             written.append(path)
             continue
         fileset, skipped = build_family(config_path, dbs=dbs, redirector=redirector, runs=runs, workers=workers,
-                                        today=today)
+                                        today=today, include_optional=include_optional)
         if not fileset:
             logger.warning("%s %s: no dataset with files; nothing written", era, family)
             continue
@@ -210,7 +254,7 @@ def write_era_filesets(era: str, *, config_root: str | Path, out_root: str | Pat
         n_evts = sum(int(v["metadata"].get("nevts") or 0) for v in fileset.values())
         logger.info("%s %s: %d datasets, %d files, %s events -> %s%s", era, family, len(fileset), n_files,
                     f"{n_evts:,}" if n_evts else "?", path,
-                    f" (skipped optional: {', '.join(k.split('/')[1] if k.startswith('/') else k for k in skipped)})" if skipped else "")
+                    f" (left out: {', '.join(k.split('/')[1] if k.startswith('/') else k for k in skipped)})" if skipped else "")
         written.append(path)
     return written
 

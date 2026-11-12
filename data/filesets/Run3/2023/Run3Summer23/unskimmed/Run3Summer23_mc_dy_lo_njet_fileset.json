@@ -2198,45 +2198,7 @@
    "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v3/2520000/80ab552f-8460-4d43-852b-5101f85d5ced.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v3/2520000/abf199ac-e0f7-46ff-a464-f6ba5efcfb9e.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v3/2520000/e3ad7a55-8dad-4fee-950a-e4830c0d17e4.root": "Events",
-   "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v3/2520000/f616d553-4d33-4eb1-bcc4-5bc4a4ff258c.root": "Events"
-  },
-  "metadata": {
-   "das_name": "/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM",
-   "run": "Run3",
-   "year": "2023",
-   "era": "Run3Summer23",
-   "physics_group": "Other",
-   "xsec": 0.08646,
-   "order": "NLO",
-   "total_uncertainty": 3.903e-05,
-   "datatype": "mc",
-   "xsec_source": {
-    "generator": 0.08646,
-    "generator_unc": 3.903e-05,
-    "header": "inclusive",
-    "factor": 1.0,
-    "factor_reason": "generator value taken as is",
-    "kfactor": 1.0,
-    "reference": null,
-    "reference_source": "",
-    "normalize": "reference",
-    "release": "CMSSW_13_0_13",
-    "events_run": 50000,
-    "tool": "GenXSecAnalyzer",
-    "date": "2026-10-07"
-   },
-   "sample": "TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8",
-   "nfiles": 5,
-   "nevts": 800000,
-   "listing": {
-    "date": "2026-10-11",
-    "source": "DBS valid files",
-    "redirector": "root://cmsxrootd.fnal.gov/"
-   }
-  }
- },
- "/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15_ext1-v2/NANOAODSIM": {
-  "files": {
+   "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15-v3/2520000/f616d553-4d33-4eb1-bcc4-5bc4a4ff258c.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15_ext1-v2/2520000/070a7d98-7cc8-4b46-ac0a-232e9f04d0af.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15_ext1-v2/2520000/0d69cba0-f183-4b70-9968-d40a16224193.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15_ext1-v2/2520000/0f23a694-409a-4974-8222-a033222aeb3e.root": "Events",
@@ -2294,7 +2256,7 @@
    "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23NanoAODv12/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_v15_ext1-v2/2520000/fb55dd9a-a975-4ef6-a0f0-ba0f13284d22.root": "Events"
   },
   "metadata": {
-   "das_name": "/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15_ext1-v2/NANOAODSIM",
+   "das_name": "/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM",
    "run": "Run3",
    "year": "2023",
    "era": "Run3Summer23",
@@ -2319,13 +2281,17 @@
     "date": "2026-10-07"
    },
    "sample": "TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8",
-   "nfiles": 55,
-   "nevts": 7850000,
+   "nfiles": 60,
+   "nevts": 8650000,
    "listing": {
     "date": "2026-10-11",
     "source": "DBS valid files",
     "redirector": "root://cmsxrootd.fnal.gov/"
-   }
+   },
+   "das_names": [
+    "/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM",
+    "/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15_ext1-v2/NANOAODSIM"
+   ]
   }
  },
  "/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-mg35x_130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM": {

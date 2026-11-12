@@ -3986,45 +3986,7 @@
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/90000/fe7a9e5b-785a-4183-b5e5-64e5e729b343.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/90000/fef3c437-9e6b-4398-9f30-cd45c4f46f57.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/90000/fef490b8-51ad-40a1-a9e2-378f13db1d09.root": "Events",
-   "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/90000/ffd6eb34-4c59-4e7e-994e-e9036d751d30.root": "Events"
-  },
-  "metadata": {
-   "das_name": "/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM",
-   "run": "Run3",
-   "year": "2024",
-   "era": "RunIII2024Summer24",
-   "physics_group": "DYJets",
-   "xsec": 307.72,
-   "order": "NLO x k(NNLO)",
-   "total_uncertainty": 2.511,
-   "datatype": "mc",
-   "xsec_source": {
-    "generator": 971.4,
-    "generator_unc": 7.928,
-    "header": "three-flavour",
-    "factor": 0.333333,
-    "factor_reason": "MG5_aMC header is the three-flavour cross section although the events hold one flavour (DYto2E-2Jets_MLL-50 header 6685 pb = three-flavour NLO 6688 pb; powheg per-flavour bins sum to 2244 pb)",
-    "kfactor": 0.950341,
-    "reference": 6340.2,
-    "reference_source": "NLO x k(NNLO): NNLO QCD, MATRIX v2.1.0, pp -> e+e- with m(ll) > 50 GeV: 2113.4 pb per flavour (+0.7/-1.2 % scale, 1.0 % PDF), x3 flavours = 6340.2 pb; CMS twiki MATRIXCrossSectionsat13p6TeV r12 (2023-10-25, L. Markovic, R. Covarelli); k = reference / NLO FxFX inclusive three-flavour header of this era (GenXSec)",
-    "normalize": "reference",
-    "release": "CMSSW_15_0_21",
-    "events_run": 56253,
-    "tool": "GenXSecAnalyzer",
-    "date": "2026-10-10"
-   },
-   "sample": "DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8",
-   "nfiles": 327,
-   "nevts": 404580799,
-   "listing": {
-    "date": "2026-10-11",
-    "source": "DBS valid files",
-    "redirector": "root://cmsxrootd.fnal.gov/"
-   }
-  }
- },
- "/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2_ext1-v2/NANOAODSIM": {
-  "files": {
+   "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/90000/ffd6eb34-4c59-4e7e-994e-e9036d751d30.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/110000/0063fa88-aa99-4e60-9add-2e2d77b53a61.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/110000/00d3d8b6-3e0a-4f18-94d7-76a92d535f69.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/110000/00d503dd-ea7b-4c22-a28d-bc4ef6c8bf52.root": "Events",
@@ -5410,7 +5372,7 @@
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/2810000/ff93a9ee-2a01-4b17-b538-872afec393e3.root": "Events"
   },
   "metadata": {
-   "das_name": "/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2_ext1-v2/NANOAODSIM",
+   "das_name": "/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM",
    "run": "Run3",
    "year": "2024",
    "era": "RunIII2024Summer24",
@@ -5435,13 +5397,17 @@
     "date": "2026-10-10"
    },
    "sample": "DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8",
-   "nfiles": 1383,
-   "nevts": 203751907,
+   "nfiles": 1710,
+   "nevts": 608332706,
    "listing": {
     "date": "2026-10-11",
     "source": "DBS valid files",
     "redirector": "root://cmsxrootd.fnal.gov/"
-   }
+   },
+   "das_names": [
+    "/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM",
+    "/DYto2Mu-2Jets_Bin-1J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2_ext1-v2/NANOAODSIM"
+   ]
   }
  },
  "/DYto2Mu-2Jets_Bin-2J-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM": {
@@ -10126,45 +10092,7 @@
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2810000/fcd22649-c90f-44a1-9a31-d043e93787f7.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2810000/fe12fc77-a9d6-49ac-b5dd-100d234f27ff.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2810000/fe877517-d0d0-4d3c-978c-8266622c6b77.root": "Events",
-   "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2810000/ff18b047-94d8-4c2d-8cfe-7b46a5504a9a.root": "Events"
-  },
-  "metadata": {
-   "das_name": "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
-   "run": "Run3",
-   "year": "2024",
-   "era": "RunIII2024Summer24",
-   "physics_group": "Nonprompt",
-   "xsec": 405.75,
-   "order": "NNLO+NNLL",
-   "total_uncertainty": 0.05064,
-   "datatype": "mc",
-   "xsec_source": {
-    "generator": 762.1,
-    "generator_unc": 0.09511,
-    "header": "inclusive",
-    "factor": 0.439309,
-    "factor_reason": "all events are LNu2Q but the header is inclusive: the sibling samples TTto2L2Nu carry the same header value",
-    "kfactor": 1.21191,
-    "reference": 923.6,
-    "reference_source": "NNLO+NNLL, TOP twiki TtbarNNLO, mt = 172.5 GeV",
-    "normalize": "reference",
-    "release": "CMSSW_15_0_21",
-    "events_run": 44220,
-    "tool": "GenXSecAnalyzer",
-    "date": "2026-10-05"
-   },
-   "sample": "TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8",
-   "nfiles": 790,
-   "nevts": 484475057,
-   "listing": {
-    "date": "2026-10-11",
-    "source": "DBS valid files",
-    "redirector": "root://cmsxrootd.fnal.gov/"
-   }
-  }
- },
- "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2_ext1-v2/NANOAODSIM": {
-  "files": {
+   "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2810000/ff18b047-94d8-4c2d-8cfe-7b46a5504a9a.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/110000/00a25e15-aad7-481e-bb1a-a18c91a99c6c.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/110000/013f0615-c178-43a8-9fc7-954423ee1520.root": "Events",
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/110000/016c609c-c778-4461-b699-d1fd040cde6d.root": "Events",
@@ -11328,7 +11256,7 @@
    "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2_ext1-v2/2810000/ff4c55de-3631-4dff-b08e-ce2fa60e04cc.root": "Events"
   },
   "metadata": {
-   "das_name": "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2_ext1-v2/NANOAODSIM",
+   "das_name": "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
    "run": "Run3",
    "year": "2024",
    "era": "RunIII2024Summer24",
@@ -11353,13 +11281,17 @@
     "date": "2026-10-05"
    },
    "sample": "TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8",
-   "nfiles": 1161,
-   "nevts": 199701000,
+   "nfiles": 1951,
+   "nevts": 684176057,
    "listing": {
     "date": "2026-10-11",
     "source": "DBS valid files",
     "redirector": "root://cmsxrootd.fnal.gov/"
-   }
+   },
+   "das_names": [
+    "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM",
+    "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2_ext1-v2/NANOAODSIM"
+   ]
   }
  },
  "/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM": {

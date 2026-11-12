@@ -147,8 +147,9 @@ Looser than every analysis cut, so threshold changes and systematic shifts stay 
 - Defaults a new user overrides: `--remote` (Billy's Wisconsin area) on `condor`, `mirror`, `upload`
   and `fileset`; `--rucio-account` (his; `RUCIO_ACCOUNT` is read first and passed to the jobs);
   `--out` and `--scratch` of `run` (his laptop layout); `SKIM_PLAN` and `SKIM_OUT` of the wrapper.
-- Config entries with `"optional": true` (the `MLL-10to50` DY companions, 1.5 B events in 2024) are
-  skipped unless `plan --include-optional`.
+- Config entries with `"optional": true` (the `MLL-10to50` DY companions, 1.5 B events in 2024; the
+  inclusive W+jets sample, which is only the reference of the HT bins' k-factor) are skipped unless
+  `plan --include-optional`. `unskimmed-fileset` leaves them out the same way.
 
 ## Plan
 
