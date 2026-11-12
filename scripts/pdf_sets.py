@@ -22,6 +22,10 @@ dibosons) are recorded with ``lhaid: null`` without opening anything.
 writes ``data/pdf_sets/<Run>/<Year>/<Era>.json`` (``config.yaml`` ``pdf_sets``
 points the analyzer at it).  Every set found must be described in
 ``wrcoffea.pdf_weights.KNOWN_SETS``; the script says so otherwise.
+
+A sample the table already lists keeps its entry, so a rerun after samples
+were added reads only the new ones; ``--refresh`` reads every sample again.
+A sample that left the filesets leaves the table.
 """
 from __future__ import annotations
 
@@ -116,6 +120,11 @@ def scan(args) -> int:
         print(f"no MC filesets found for {args.era} under {fileset_dir}", file=sys.stderr)
         return 1
     originals = private_files(Path(args.config_dir), run, year, args.era)
+    out = Path(args.out) if args.out else REPO / "data" / "pdf_sets" / run / year / f"{args.era}.json"
+    # Samples the table already lists keep their entry; only the others are read (--refresh reads all).
+    known = {}
+    if out.exists() and not args.refresh:
+        known = {k: v for k, v in json.loads(out.read_text()).get("samples", {}).items() if k in samples}
 
     def one(item):
         sample, md = item
@@ -141,9 +150,9 @@ def scan(args) -> int:
             raise RuntimeError(f"{sample}: LHA IDs {first}-{last} but LHEPdfSumw has {n_meta} entries")
         return sample, {"lhaid": first, "lhaid_last": last, "n": n_meta, "source": url}
 
-    results, errors = {}, []
+    results, errors = dict(known), []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {pool.submit(one, item): item[0] for item in sorted(samples.items())}
+        futures = {pool.submit(one, item): item[0] for item in sorted(samples.items()) if item[0] not in known}
         for fut, sample in futures.items():
             try:
                 name, rec = fut.result()
@@ -160,7 +169,6 @@ def scan(args) -> int:
     if unknown:
         print(f"\nLHA sets {unknown} are not in wrcoffea.pdf_weights.KNOWN_SETS: add their member "
               "layout (from the set's .info file) first.", file=sys.stderr)
-    out = Path(args.out) if args.out else REPO / "data" / "pdf_sets" / run / year / f"{args.era}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "era": args.era,
@@ -172,7 +180,8 @@ def scan(args) -> int:
         "samples": dict(sorted(results.items())),
     }
     out.write_text(json.dumps(payload, indent=1) + "\n")
-    print(f"\n{len(results)} samples, sets {sets} -> {out}")
+    print(f"\n{len(results)} samples ({len(known)} kept from the table, {len(results) - len(known)} read), "
+          f"sets {sets} -> {out}")
     return 2 if unknown else 0
 
 
@@ -187,6 +196,8 @@ def main(argv=None) -> int:
     ap.add_argument("--redirector", default="root://cmsxrootd.fnal.gov/")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--out", help="output JSON (default data/pdf_sets/<Run>/<Year>/<Era>.json)")
+    ap.add_argument("--refresh", action="store_true",
+                    help="read every sample again; by default a sample the table already lists keeps its entry")
     return scan(ap.parse_args(argv))
 
 
