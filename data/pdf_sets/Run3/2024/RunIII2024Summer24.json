@@ -1,7 +1,7 @@
 {
  "era": "RunIII2024Summer24",
  "written": "2026-11-12",
- "command": "scripts/pdf_sets.py --era RunIII2024Summer24 --workers 8",
+ "command": "scripts/pdf_sets.py --era RunIII2024Summer24",
  "note": "First LHA ID of each sample's LHEPdfWeight (read from an original NanoAOD file's branch description); null = no PDF weights. Written by scripts/pdf_sets.py.",
  "sets": {
   "325300": "NNPDF31_nnlo_as_0118_mc_hessian_pdfas",
@@ -342,7 +342,7 @@
    "lhaid": 325500,
    "lhaid_last": 325600,
    "n": 101,
-   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/0246d424-9633-47de-b653-3478451609dc.root"
+   "source": "root://cmsxrootd.fnal.gov//store/mc/RunIII2024Summer24NanoAODv15/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v4/110000/012fb3a4-92c4-49bb-94d6-5b02c4136e6b.root"
   },
   "TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8": {
    "lhaid": 325500,

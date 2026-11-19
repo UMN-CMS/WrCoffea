@@ -1,9 +1,10 @@
 {
  "era": "Run3Summer23BPix",
- "written": "2026-10-11",
- "command": "scripts/pdf_sets.py --era Run3Summer23BPix --workers 6",
+ "written": "2026-11-12",
+ "command": "scripts/pdf_sets.py --era Run3Summer23BPix",
  "note": "First LHA ID of each sample's LHEPdfWeight (read from an original NanoAOD file's branch description); null = no PDF weights. Written by scripts/pdf_sets.py.",
  "sets": {
+  "320900": "NNPDF31_nnlo_as_0118_nf_4",
   "325300": "NNPDF31_nnlo_as_0118_mc_hessian_pdfas",
   "325500": "NNPDF31_nnlo_as_0118_nf_4_mc_hessian"
  },
@@ -363,10 +364,10 @@
    "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v2-v3/2560000/0313519a-38d4-4aaa-b665-1453ff73408c.root"
   },
   "TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8": {
-   "lhaid": 325500,
-   "lhaid_last": 325600,
+   "lhaid": 320900,
+   "lhaid_last": 321000,
    "n": 101,
-   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v1/2520000/0f161a59-be73-4a69-9f8c-0222594b6794.root"
+   "source": "root://cmsxrootd.fnal.gov//store/mc/Run3Summer23BPixNanoAODv12/TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v3/2810000/11197563-0fb0-4441-9fcc-9fbde2f7c686.root"
   },
   "TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8": {
    "lhaid": 325500,
