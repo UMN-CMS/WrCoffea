@@ -226,8 +226,10 @@ def combine_extension_sumw(fileset: dict) -> list[str]:
     planned under different ``dataset`` names (e.g. ``X`` and ``X_ext1``).  Each entry is then
     weighted by ``xsec / genEventSumw`` on its own, which would count the sample once per dataset.
     MC entries that share a primary dataset name get the combined ``genEventSumw`` (and
-    ``genEventCount``) of all of them, so the sample is normalised once; the entry's own sum is kept
-    as ``genEventSumw_own``.  Returns one note per combined sample.
+    ``genEventCount``) of all of them, so the sample is normalised once; the entry's own values are
+    kept as ``genEventSumw_own`` and ``genEventCount_own``, which makes a second pass over entries
+    already combined (the ones a narrowed ``fileset`` run keeps) a no-op.  Returns one note per
+    combined sample.
     """
     by_primary: dict[str, list[str]] = {}
     for das, entry in fileset.items():
@@ -244,10 +246,22 @@ def combine_extension_sumw(fileset: dict) -> list[str]:
         if len(xsecs) != 1:
             raise ValueError(f"{primary}: datasets of one sample carry different cross sections {sorted(map(str, xsecs))}")
         total = sum(float(m.get("genEventSumw_own", m.get("genEventSumw")) or 0.0) for m in metas)
-        count = sum(int(m.get("genEventCount") or 0) for m in metas)
+        # An entry without genEventSumw_own was not combined before: its count is its own.  Entries combined
+        # before genEventCount_own existed hold only the sample's count.
+        no_own_count = [m for m in metas if "genEventSumw_own" in m and "genEventCount_own" not in m]
+        if not no_own_count:
+            count = sum(int(m.get("genEventCount_own", m.get("genEventCount")) or 0) for m in metas)
+        elif len(no_own_count) == len(metas):
+            count = None
+        else:
+            raise ValueError(f"{primary}: some of its datasets were combined without their own event counts; "
+                             "select every dataset of the sample so that all are rewritten")
         samples = sorted(str(m.get("sample")) for m in metas)
         for m in metas:
-            m.setdefault("genEventSumw_own", m.get("genEventSumw"))
+            if "genEventSumw_own" not in m:
+                m["genEventSumw_own"] = m.get("genEventSumw")
+                if m.get("genEventCount") is not None:
+                    m["genEventCount_own"] = m["genEventCount"]
             m["genEventSumw"] = total
             if count:
                 m["genEventCount"] = count
@@ -431,6 +445,13 @@ def write_filesets(args) -> int:
                                out.name, len(missing), listing)
             if narrowed and out.is_file():
                 merged = json.loads(out.read_text())
+                # A selected sample whose config entry was renamed since the file was written (a dataset
+                # re-released under a new version) leaves its old key behind; kept, it would be counted twice.
+                rewritten = {e["metadata"].get("sample") for e in fileset.values()}
+                for old_key in [k for k, e in merged.items()
+                                if k not in fileset and e.get("metadata", {}).get("sample") in rewritten]:
+                    del merged[old_key]
+                    logger.info("%s: %s removed, its sample is now written under another name", out.name, old_key)
                 kept = len([k for k in merged if k not in fileset])
                 merged.update(fileset)
                 fileset = merged

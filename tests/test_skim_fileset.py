@@ -103,6 +103,21 @@ def test_a_narrowed_run_merges_into_the_existing_family_file(campaign):
     assert new[DAS["TTtest"]]["metadata"]["genEventSumw"] > 0
 
 
+def test_a_narrowed_run_drops_the_old_name_of_a_renamed_dataset(campaign):
+    """A dataset re-released under a new version: the selected sample is written once, under the config's name."""
+    p = campaign / "filesets" / SUB / "skimmed" / "Run3Summer22_mc_dy_lo_ht_fileset.json"
+    p.parent.mkdir(parents=True)
+    old_name = DAS["TTtest"].replace("-x/", "-old/")
+    old = {old_name: {"files": {"old.root": "Events"}, "metadata": {"sample": "TTtest", "xsec": 1.0}},
+           DAS["TTtest2"]: {"files": {"kept.root": "Events"}, "metadata": {"sample": "TTtest2", "xsec": 1.0}}}
+    p.write_text(json.dumps(old))
+    assert _run(campaign, dataset=["TTtest"], exclude=["TTtest2"]) == 0
+    new = _read(campaign, "mc_dy_lo_ht")
+    assert set(new) == {DAS["TTtest"], DAS["TTtest2"]}
+    assert "normalised_with" not in new[DAS["TTtest"]]["metadata"]
+    assert new[DAS["TTtest2"]] == old[DAS["TTtest2"]]
+
+
 def test_a_full_run_rewrites_the_family_file(campaign):
     _run(campaign, allow_missing=True)
     p = campaign / "filesets" / SUB / "skimmed" / "Run3Summer22_mc_dy_lo_ht_fileset.json"

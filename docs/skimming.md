@@ -139,7 +139,8 @@ Looser than every analysis cut, so threshold changes and systematic shifts stay 
   status to the remote, status last.
 - MC eras: the recipe above with `--datatype mc` on `bin/lpc_condor.sh`, `mirror` and `status`;
   `--exclude _scan` leaves out the UL multi-model scans, which need `split-scan` before `fileset`.
-  With a selection, `fileset` replaces only the selected entries of a family file.
+  With a selection, `fileset` replaces only the selected entries of a family file; a selected sample
+  whose dataset name changed in the config replaces its old entry.
 - Laptop variant: the same `plan`, then `skim.py run --plan-dir ... --out <root> --scratch <scratch>
   --workers 3`, `validate` without `--skip-reread`, `skim.py upload --plan-dir ... --out <root>
   --remote <remote>`, `fileset`. `scripts/skim_closure.py` compares the analyzer on a skimmed dataset

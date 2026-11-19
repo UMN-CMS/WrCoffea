@@ -31,10 +31,33 @@ def test_nominal_and_extension_under_different_names_share_one_normalisation():
 
 
 def test_combining_twice_is_stable():
-    fs = {NOM: _entry("TWminustoLNu2Q", 167.1), EXT: _entry("TWminustoLNu2Q_ext1", 176.3)}
+    fs = {NOM: _entry("TWminustoLNu2Q", 167.1), EXT: _entry("TWminustoLNu2Q_ext1", 176.3, count=12)}
     combine_extension_sumw(fs)
     combine_extension_sumw(fs)
-    assert fs[NOM]["metadata"]["genEventSumw"] == pytest.approx(343.4)
+    for k in (NOM, EXT):
+        assert fs[k]["metadata"]["genEventSumw"] == pytest.approx(343.4)
+        assert fs[k]["metadata"]["genEventCount"] == 22
+    assert fs[NOM]["metadata"]["genEventCount_own"] == 10 and fs[EXT]["metadata"]["genEventCount_own"] == 12
+
+
+def _combined_before_own_counts():
+    fs = {NOM: _entry("TWminustoLNu2Q", 343.4, count=22), EXT: _entry("TWminustoLNu2Q_ext1", 343.4, count=22)}
+    fs[NOM]["metadata"]["genEventSumw_own"], fs[EXT]["metadata"]["genEventSumw_own"] = 167.1, 176.3
+    return fs
+
+
+def test_entries_combined_without_own_counts_keep_the_sample_count():
+    fs = _combined_before_own_counts()
+    combine_extension_sumw(fs)
+    for k in (NOM, EXT):
+        assert fs[k]["metadata"]["genEventCount"] == 22 and fs[k]["metadata"]["genEventSumw"] == pytest.approx(343.4)
+
+
+def test_one_rewritten_dataset_next_to_one_without_its_own_count_is_an_error():
+    fs = _combined_before_own_counts()
+    fs[EXT] = _entry("TWminustoLNu2Q_ext1", 180.0, count=13)
+    with pytest.raises(ValueError, match="select every dataset of the sample"):
+        combine_extension_sumw(fs)
 
 
 def test_different_cross_sections_for_one_sample_are_an_error():
